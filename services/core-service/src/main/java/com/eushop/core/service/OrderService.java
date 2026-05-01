@@ -1,0 +1,77 @@
+package com.eushop.core.service;
+
+import java.time.LocalDateTime;
+import java.util.Optional;
+
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import com.eushop.core.entity.Order;
+import com.eushop.core.repository.OrderRepository;
+
+@Service
+@Transactional
+public class OrderService {
+
+    private final OrderRepository orderRepository;
+
+    public OrderService(OrderRepository orderRepository) {
+        this.orderRepository = orderRepository;
+    }
+
+    public Order createOrder(Order order) {
+        order.setStatus(Order.OrderStatus.PENDING);
+        return orderRepository.save(order);
+    }
+
+    public Optional<Order> getOrderById(String id) {
+        return orderRepository.findById(id);
+    }
+
+    public Page<Order> getBuyerOrders(String buyerId, int page, int size) {
+        Pageable pageable = PageRequest.of(page, size);
+        return orderRepository.findByBuyerId(buyerId, pageable);
+    }
+
+    public Page<Order> getSellerOrders(String sellerId, int page, int size) {
+        Pageable pageable = PageRequest.of(page, size);
+        return orderRepository.findBySellerId(sellerId, pageable);
+    }
+
+    public Page<Order> getOrdersByStatus(Order.OrderStatus status, int page, int size) {
+        Pageable pageable = PageRequest.of(page, size);
+        return orderRepository.findByStatus(status, pageable);
+    }
+
+    public Order updateOrderStatus(String orderId, Order.OrderStatus status) {
+        Order order = orderRepository.findById(orderId)
+                .orElseThrow(() -> new IllegalArgumentException("Order not found"));
+        order.setStatus(status);
+        
+        if (status == Order.OrderStatus.DELIVERED) {
+            order.setCompletedAt(LocalDateTime.now());
+        }
+        
+        return orderRepository.save(order);
+    }
+
+    public Order cancelOrder(String orderId) {
+        Order order = orderRepository.findById(orderId)
+                .orElseThrow(() -> new IllegalArgumentException("Order not found"));
+        
+        if (order.getStatus() != Order.OrderStatus.PENDING && order.getStatus() != Order.OrderStatus.CONFIRMED) {
+            throw new IllegalStateException("Order cannot be cancelled in current status");
+        }
+        
+        order.setStatus(Order.OrderStatus.CANCELLED);
+        return orderRepository.save(order);
+    }
+
+    public Double getSellerRevenue(String sellerId) {
+        Double revenue = orderRepository.calculateSellerRevenue(sellerId);
+        return revenue != null ? revenue : 0.0;
+    }
+}

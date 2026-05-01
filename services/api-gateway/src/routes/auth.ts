@@ -16,24 +16,33 @@ const SignupSchema = z.object({
   country: z.string().optional(),
 });
 
+const VerifyTokenSchema = z.object({
+  token: z.string(),
+});
+
 /**
  * POST /api/auth/login
- * User login
+ * User login with email/password
  */
 router.post('/login', async (req: Request, res: Response) => {
   try {
     const payload = LoginSchema.parse(req.body);
 
-    // TODO: Verify credentials with Auth0 or database
-    // Return JWT token
+    // Mock implementation - would call Auth0 Management API or database
+    const mockUser = {
+      id: 'user_' + Math.random().toString(36).substr(2, 9),
+      email: payload.email,
+      name: payload.email.split('@')[0],
+      role: 'buyer',
+    };
+
+    // Generate mock JWT (in production, Auth0 handles this)
+    const mockToken = Buffer.from(JSON.stringify({ sub: mockUser.id, email: mockUser.email })).toString('base64');
 
     res.json({
       success: true,
-      token: 'jwt_token_placeholder',
-      user: {
-        id: 'user_123',
-        email: payload.email,
-      },
+      token: mockToken,
+      user: mockUser,
     });
   } catch (error: any) {
     res.status(400).json({
@@ -51,21 +60,51 @@ router.post('/signup', async (req: Request, res: Response) => {
   try {
     const payload = SignupSchema.parse(req.body);
 
-    // TODO: Create user in database via Core Service
-    // Hash password, store in PostgreSQL
+    // Mock implementation - would create user in PostgreSQL via Core Service
+    const newUser = {
+      id: 'user_' + Math.random().toString(36).substr(2, 9),
+      email: payload.email,
+      name: payload.name,
+      country: payload.country || 'EU',
+      role: 'buyer',
+      verified: false,
+    };
+
+    const mockToken = Buffer.from(JSON.stringify({ sub: newUser.id, email: newUser.email })).toString('base64');
 
     res.status(201).json({
       success: true,
-      user: {
-        id: 'user_new_123',
-        email: payload.email,
-        name: payload.name,
-      },
-      token: 'jwt_token_placeholder',
+      user: newUser,
+      token: mockToken,
+      message: 'User created successfully. Please verify your email.',
     });
   } catch (error: any) {
     res.status(400).json({
       error: 'Invalid registration data',
+      details: error.message,
+    });
+  }verify
+ * Verify Auth0 token and return user
+ */
+router.post('/verify', async (req: Request, res: Response) => {
+  try {
+    const { token } = VerifyTokenSchema.parse(req.body);
+    
+    // In production, verify with Auth0 using `jose` or `jsonwebtoken`
+    // For now, mock verification
+    const decoded = JSON.parse(Buffer.from(token, 'base64').toString());
+
+    res.json({
+      valid: true,
+      user: {
+        id: decoded.sub,
+        email: decoded.email,
+      },
+    });
+  } catch (error: any) {
+    res.status(401).json({
+      valid: false,
+      error: 'Invalid token',
       details: error.message,
     });
   }
@@ -73,7 +112,30 @@ router.post('/signup', async (req: Request, res: Response) => {
 
 /**
  * POST /api/auth/logout
- * User logout (client-side primarily)
+ * User logout (invalidate token in Redis blacklist)
+ */
+router.post('/logout', (req: Request, res: Response) => {
+  // TODO: Add token to Redis blacklist
+  res.json({ success: true, message: 'Logged out successfully' });
+});
+
+/**
+ * GET /api/auth/me
+ * Get current authenticated user
+ */
+router.get('/me', (req: Request, res: Response) => {
+  // This would normally use authMiddleware to extract user from token
+  const userId = (req as any).userId;
+  
+  if (!userId) {
+    return res.status(401).json({ error: 'Unauthorized' });
+  }
+
+  res.json({
+    id: userId,
+    email: 'user@example.com',
+    role: 'buyer',
+ 
  */
 router.post('/logout', (req: Request, res: Response) => {
   // TODO: Invalidate token in Redis blacklist

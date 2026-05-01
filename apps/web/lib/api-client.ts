@@ -1,9 +1,9 @@
 import axios, { AxiosInstance } from 'axios';
-
-const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000/api';
+import API_CONFIG from './config';
 
 const apiClient: AxiosInstance = axios.create({
-  baseURL: API_URL,
+  baseURL: API_CONFIG.BASE_URL,
+  timeout: API_CONFIG.TIMEOUT,
   headers: {
     'Content-Type': 'application/json',
   },
@@ -17,5 +17,20 @@ apiClient.interceptors.request.use((config) => {
   }
   return config;
 });
+
+// Handle 401 errors (unauthorized)
+apiClient.interceptors.response.use(
+  (response) => response,
+  (error) => {
+    if (error.response?.status === 401) {
+      typeof window !== 'undefined' && localStorage.removeItem('token');
+      typeof window !== 'undefined' && localStorage.removeItem('user');
+      if (typeof window !== 'undefined' && window.location.pathname !== '/login') {
+        window.location.href = '/login';
+      }
+    }
+    return Promise.reject(error);
+  }
+);
 
 export default apiClient;

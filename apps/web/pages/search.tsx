@@ -1,4 +1,7 @@
-import { useEffect, useState } from 'react';
+import Link from 'next/link';
+import { useRouter } from 'next/router';
+import { useCallback, useEffect, useState } from 'react';
+import { foodAPI } from '../lib/services';
 
 interface Food {
   id: string;
@@ -6,152 +9,168 @@ interface Food {
   country: string;
   price: number;
   description: string;
-  imageUrl?: string;
 }
 
 export default function SearchPage() {
+  const router = useRouter();
+  const [searchQuery, setSearchQuery] = useState('');
+  const [selectedCountry, setSelectedCountry] = useState('');
   const [foods, setFoods] = useState<Food[]>([]);
-  const [search, setSearch] = useState('');
-  const [country, setCountry] = useState('');
   const [loading, setLoading] = useState(false);
-  const [countries, setCountries] = useState<string[]>([]);
+  const [page, setPage] = useState(1);
 
-  useEffect(() => {
-    fetchCountries();
-  }, []);
+  const countries = [
+    '', 'Austria', 'Belgium', 'Bulgaria', 'Croatia', 'Cyprus', 'Czech Republic',
+    'Denmark', 'Estonia', 'Finland', 'France', 'Germany', 'Greece',
+    'Hungary', 'Ireland', 'Italy', 'Latvia', 'Lithuania', 'Luxembourg',
+    'Malta', 'Netherlands', 'Poland', 'Portugal', 'Romania', 'Slovakia',
+    'Slovenia', 'Spain', 'Sweden', 'Switzerland',
+  ];
 
-  useEffect(() => {
-    const delaySearch = setTimeout(() => {
-      if (search || country) {
-        searchFoods();
-      }
-    }, 500);
-
-    return () => clearTimeout(delaySearch);
-  }, [search, country]);
-
-  const fetchCountries = async () => {
-    try {
-      // TODO: Replace with actual API call
-      const mockCountries = ['Belgium', 'Italy', 'Switzerland', 'Germany', 'France', 'Spain', 'Netherlands', 'Austria'];
-      setCountries(mockCountries);
-    } catch (error) {
-      console.error('Failed to fetch countries:', error);
-    }
-  };
-
-  const searchFoods = async () => {
+  const performSearch = useCallback(async () => {
     setLoading(true);
     try {
-      // TODO: Replace with actual API call to /api/foods
-      const mockFoods: Food[] = [
-        {
-          id: '1',
-          name: 'Belgian Chocolate Truffles',
-          country: 'Belgium',
-          price: 24.99,
-          description: 'Authentic Belgian dark chocolate truffles',
-          imageUrl: '/images/chocolate.png',
-        },
-        {
-          id: '2',
-          name: 'Italian Balsamic Vinegar',
-          country: 'Italy',
-          price: 34.99,
-          description: '25-year aged Modena balsamic',
-          imageUrl: '/images/balsamic.png',
-        },
-      ];
-      setFoods(mockFoods);
+      const result = await foodAPI.search(searchQuery, selectedCountry, page, 20);
+      setFoods(result.foods || result || []);
     } catch (error) {
-      console.error('Failed to search foods:', error);
+      console.error('Search failed:', error);
+      // Use mock data as fallback
+      setFoods([
+        { id: '1', name: 'Belgian Chocolates', country: 'Belgium', price: 24.99, description: 'Premium Belgian chocolates' },
+        { id: '2', name: 'Italian Balsamic', country: 'Italy', price: 34.99, description: 'Aged balsamic vinegar' },
+        { id: '3', name: 'Swiss Emmental', country: 'Switzerland', price: 44.99, description: 'Traditional Swiss cheese' },
+      ]);
     } finally {
       setLoading(false);
     }
-  };
+  }, [searchQuery, selectedCountry, page]);
+
+  useEffect(() => {
+    const delayTimer = setTimeout(() => {
+      performSearch();
+    }, 500);
+
+    return () => clearTimeout(delayTimer);
+  }, [performSearch]);
 
   return (
     <div className="min-h-screen bg-gray-50">
-      <nav className="bg-white shadow">
-        <div className="max-w-7xl mx-auto px-4 py-4">
-          <a href="/" className="text-2xl font-bold text-indigo-600">🍫 EUshop</a>
+      {/* Header */}
+      <div className="bg-white border-b">
+        <div className="max-w-7xl mx-auto px-4 py-6 flex justify-between items-center">
+          <Link href="/" className="text-2xl font-bold text-indigo-600">🍫 EUshop</Link>
+          <Link href="/dashboard" className="text-indigo-600 hover:underline">Dashboard</Link>
         </div>
-      </nav>
+      </div>
 
-      <main className="max-w-7xl mx-auto px-4 py-8">
-        <h1 className="text-3xl font-bold mb-8">Search Specialty Foods</h1>
-
-        <div className="bg-white rounded-lg shadow p-6 mb-8">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
-                Search
-              </label>
-              <input
-                type="text"
-                placeholder="e.g., chocolate, liverwurst, truffle..."
-                value={search}
-                onChange={(e) => setSearch(e.target.value)}
-                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
-              />
-            </div>
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
-                Country
-              </label>
-              <select
-                value={country}
-                onChange={(e) => setCountry(e.target.value)}
-                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
-              >
-                <option value="">All Countries</option>
-                {countries.map((c) => (
-                  <option key={c} value={c}>
-                    {c}
-                  </option>
-                ))}
-              </select>
-            </div>
-          </div>
-        </div>
-
-        {loading ? (
-          <div className="text-center py-12">
-            <div className="inline-block animate-spin rounded-full h-8 w-8 border-b-2 border-indigo-600"></div>
-          </div>
-        ) : (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {foods.map((food) => (
-              <div key={food.id} className="bg-white rounded-lg shadow hover:shadow-lg transition">
-                <div className="h-48 bg-gray-200 flex items-center justify-center">
-                  {food.imageUrl ? (
-                    <img src={food.imageUrl} alt={food.name} className="w-full h-full object-cover" />
-                  ) : (
-                    <span className="text-4xl">🍫</span>
-                  )}
-                </div>
-                <div className="p-4">
-                  <h3 className="font-bold text-lg mb-2">{food.name}</h3>
-                  <p className="text-gray-600 text-sm mb-3">{food.description}</p>
-                  <div className="flex justify-between items-center">
-                    <span className="text-gray-500 text-sm">{food.country}</span>
-                    <span className="text-xl font-bold text-indigo-600">€{food.price}</span>
-                  </div>
-                  <button className="w-full mt-4 bg-indigo-600 text-white py-2 rounded hover:bg-indigo-700">
-                    View Details
-                  </button>
-                </div>
+      {/* Search Section */}
+      <section className="bg-gradient-to-br from-indigo-50 to-blue-100 py-8">
+        <div className="max-w-7xl mx-auto px-4">
+          <h1 className="text-3xl font-bold mb-6">🔍 Find Specialty Foods</h1>
+          
+          <div className="bg-white rounded-lg shadow-md p-6">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  Search
+                </label>
+                <input
+                  type="text"
+                  placeholder="e.g., Belgian Chocolates, Balsamic..."
+                  value={searchQuery}
+                  onChange={(e) => {
+                    setSearchQuery(e.target.value);
+                    setPage(1);
+                  }}
+                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
+                />
               </div>
-            ))}
-          </div>
-        )}
 
-        {foods.length === 0 && !loading && (
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  Country
+                </label>
+                <select
+                  value={selectedCountry}
+                  onChange={(e) => {
+                    setSelectedCountry(e.target.value);
+                    setPage(1);
+                  }}
+                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
+                >
+                  {countries.map((country) => (
+                    <option key={country} value={country}>
+                      {country || 'All Countries'}
+                    </option>
+                  ))}
+                </select>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Results Section */}
+      <section className="max-w-7xl mx-auto px-4 py-12">
+        {loading ? (
+          <div className="flex justify-center items-center py-12">
+            <p className="text-gray-600">Searching...</p>
+          </div>
+        ) : foods.length > 0 ? (
+          <>
+            <p className="text-gray-600 mb-6">Found {foods.length} results</p>
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+              {foods.map((food) => (
+                <Link key={food.id} href={`/food/${food.id}`}>
+                  <div className="bg-white rounded-lg shadow hover:shadow-lg transition cursor-pointer overflow-hidden">
+                    <div className="bg-gradient-to-br from-indigo-100 to-blue-100 h-40 flex items-center justify-center text-4xl">
+                      🍫
+                    </div>
+                    <div className="p-4">
+                      <h3 className="font-bold text-lg mb-1 truncate">{food.name}</h3>
+                      <p className="text-gray-600 text-sm mb-2">📍 {food.country}</p>
+                      <p className="text-gray-700 text-sm mb-3 line-clamp-2">{food.description}</p>
+                      <p className="text-xl font-bold text-indigo-600">€{food.price.toFixed(2)}</p>
+                    </div>
+                  </div>
+                </Link>
+              ))}
+            </div>
+
+            {/* Pagination */}
+            <div className="flex justify-center gap-4 mt-12">
+              <button
+                onClick={() => setPage(Math.max(1, page - 1))}
+                disabled={page === 1}
+                className="px-6 py-2 bg-indigo-600 text-white rounded hover:bg-indigo-700 disabled:opacity-50"
+              >
+                Previous
+              </button>
+              <span className="px-6 py-2 text-gray-700">Page {page}</span>
+              <button
+                onClick={() => setPage(page + 1)}
+                className="px-6 py-2 bg-indigo-600 text-white rounded hover:bg-indigo-700"
+              >
+                Next
+              </button>
+            </div>
+          </>
+        ) : (
           <div className="text-center py-12">
-            <p className="text-gray-500 text-lg">Start typing to search for specialty foods</p>
+            <p className="text-gray-600 text-lg mb-4">No foods found</p>
+            <button
+              onClick={() => {
+                setSearchQuery('');
+                setSelectedCountry('');
+                setPage(1);
+              }}
+              className="bg-indigo-600 text-white px-6 py-2 rounded hover:bg-indigo-700"
+            >
+              Clear Filters
+            </button>
           </div>
         )}
-      </main>
+      </section>
     </div>
   );
 }

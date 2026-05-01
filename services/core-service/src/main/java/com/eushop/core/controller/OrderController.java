@@ -1,0 +1,109 @@
+package com.eushop.core.controller;
+
+import org.springframework.data.domain.Page;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestHeader;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
+
+import com.eushop.core.dto.ApiResponse;
+import com.eushop.core.entity.Order;
+import com.eushop.core.service.OrderService;
+
+@RestController
+@RequestMapping("/api/orders")
+@CrossOrigin(origins = "*")
+public class OrderController {
+
+    private final OrderService orderService;
+
+    public OrderController(OrderService orderService) {
+        this.orderService = orderService;
+    }
+
+    @GetMapping("/{id}")
+    public ResponseEntity<ApiResponse<Order>> getOrderById(@PathVariable String id) {
+        return orderService.getOrderById(id)
+                .map(order -> ResponseEntity.ok(ApiResponse.success(order)))
+                .orElse(ResponseEntity.status(HttpStatus.NOT_FOUND)
+                        .body(ApiResponse.error("Order not found")));
+    }
+
+    @GetMapping
+    public ResponseEntity<ApiResponse<Page<Order>>> getUserOrders(
+            @RequestHeader("X-User-Id") String userId,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size) {
+        
+        Page<Order> orders = orderService.getBuyerOrders(userId, page, size);
+        return ResponseEntity.ok(ApiResponse.success(orders));
+    }
+
+    @GetMapping("/seller")
+    public ResponseEntity<ApiResponse<Page<Order>>> getSellerOrders(
+            @RequestHeader("X-User-Id") String userId,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size) {
+        
+        Page<Order> orders = orderService.getSellerOrders(userId, page, size);
+        return ResponseEntity.ok(ApiResponse.success(orders));
+    }
+
+    @PostMapping
+    public ResponseEntity<ApiResponse<Order>> createOrder(
+            @RequestBody Order order,
+            @RequestHeader("X-User-Id") String userId) {
+        
+        order.setBuyerId(userId);
+        Order created = orderService.createOrder(order);
+        
+        return ResponseEntity.status(HttpStatus.CREATED)
+                .body(ApiResponse.success(created, "Order created successfully"));
+    }
+
+    @PutMapping("/{id}/status")
+    public ResponseEntity<ApiResponse<Order>> updateOrderStatus(
+            @PathVariable String id,
+            @RequestParam String status,
+            @RequestHeader("X-User-Id") String userId) {
+        
+        Order order = orderService.getOrderById(id)
+                .orElseThrow(() -> new IllegalArgumentException("Order not found"));
+        
+        if (!order.getSellerId().equals(userId) && !order.getBuyerId().equals(userId)) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN)
+                    .body(ApiResponse.error("No permission to update this order"));
+        }
+
+        Order.OrderStatus orderStatus = Order.OrderStatus.valueOf(status.toUpperCase());
+        Order updated = orderService.updateOrderStatus(id, orderStatus);
+        
+        return ResponseEntity.ok(ApiResponse.success(updated, "Order status updated"));
+    }
+
+    @PostMapping("/{id}/cancel")
+    public ResponseEntity<ApiResponse<Order>> cancelOrder(
+            @PathVariable String id,
+            @RequestHeader("X-User-Id") String userId) {
+        
+        Order order = orderService.getOrderById(id)
+                .orElseThrow(() -> new IllegalArgumentException("Order not found"));
+        
+        if (!order.getBuyerId().equals(userId)) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN)
+                    .body(ApiResponse.error("Only buyer can cancel order"));
+        }
+
+        Order cancelled = orderService.cancelOrder(id);
+        
+        return ResponseEntity.ok(ApiResponse.success(cancelled, "Order cancelled"));
+    }
+}
