@@ -1,0 +1,13 @@
+{
+  "name": "@eushop/db",
+  "version": "0.1.0",
+  "description": "Database migrations and seed data",
+  "scripts": {
+    "migrate": "node scripts/migrate.js",
+    "seed": "node scripts/seed.js"
+  },
+  "dependencies": {
+    "pg": "^8.11.0",
+    "dotenv": "^16.0.0"
+  }
+}
