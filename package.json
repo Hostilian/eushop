@@ -3,10 +3,6 @@
   "version": "0.1.0",
   "description": "EU Specialty Food Marketplace Platform",
   "private": true,
-  "workspaces": [
-    "apps/*",
-    "services/*"
-  ],
   "scripts": {
     "dev": "pnpm -r --parallel run dev",
     "build": "pnpm -r run build",
