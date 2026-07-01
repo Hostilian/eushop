@@ -83,7 +83,10 @@ router.post('/signup', async (req: Request, res: Response) => {
       error: 'Invalid registration data',
       details: error.message,
     });
-  }verify
+  }
+});
+
+/**
  * Verify Auth0 token and return user
  */
 router.post('/verify', async (req: Request, res: Response) => {
@@ -114,7 +117,7 @@ router.post('/verify', async (req: Request, res: Response) => {
  * POST /api/auth/logout
  * User logout (invalidate token in Redis blacklist)
  */
-router.post('/logout', (req: Request, res: Response) => {
+router.post('/logout', (_req: Request, res: Response) => {
   // TODO: Add token to Redis blacklist
   res.json({ success: true, message: 'Logged out successfully' });
 });
@@ -131,15 +134,11 @@ router.get('/me', (req: Request, res: Response) => {
     return res.status(401).json({ error: 'Unauthorized' });
   }
 
-  res.json({
+  return res.json({
     id: userId,
     email: 'user@example.com',
     role: 'buyer',
- 
- */
-router.post('/logout', (req: Request, res: Response) => {
-  // TODO: Invalidate token in Redis blacklist
-  res.json({ success: true, message: 'Logged out successfully' });
+  });
 });
 
 export default router;

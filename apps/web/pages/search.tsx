@@ -31,7 +31,7 @@ export default function SearchPage() {
     setLoading(true);
     try {
       const result = await foodAPI.search(searchQuery, selectedCountry, page, 20);
-      setFoods(result.foods || result || []);
+      setFoods(Array.isArray(result) ? result : (result?.data || result?.foods || []));
     } catch (error) {
       console.error('Search failed:', error);
       // Use mock data as fallback

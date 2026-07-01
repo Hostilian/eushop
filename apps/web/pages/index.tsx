@@ -26,7 +26,7 @@ export default function Home() {
     const fetchTrending = async () => {
       try {
         const foods = await foodAPI.getTrending();
-        setTrendingFoods(foods.foods || foods || []);
+        setTrendingFoods(Array.isArray(foods) ? foods : (foods?.data || foods?.foods || []));
       } catch (error) {
         console.error('Failed to fetch trending foods:', error);
         // Use mock data as fallback

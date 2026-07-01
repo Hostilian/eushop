@@ -29,6 +29,32 @@ app.use('/api/health', healthRoutes);
 app.use('/api/auth', authRoutes);
 app.use('/api/foods', foodRoutes);
 
+app.get('/', (_req: Request, res: Response) => {
+  res.send(`
+    <html>
+      <head>
+        <title>EUshop API Gateway</title>
+        <style>
+          body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; background: #0a0a1a; color: #fff; display: flex; justify-content: center; align-items: center; height: 100vh; margin: 0; text-align: center; }
+          .card { background: rgba(255, 255, 255, 0.05); padding: 40px; border-radius: 12px; border: 1px solid rgba(255, 255, 255, 0.1); box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37); backdrop-filter: blur(4px); }
+          h1 { color: #3b82f6; margin-top: 0; }
+          p { color: #94a3b8; font-size: 1.1em; line-height: 1.6; }
+          a { color: #3b82f6; text-decoration: none; font-weight: bold; border-bottom: 2px solid transparent; transition: all 0.2s; }
+          a:hover { border-bottom-color: #3b82f6; }
+        </style>
+      </head>
+      <body>
+        <div class="card">
+          <h1>🚀 EUshop API Gateway</h1>
+          <p>This is the backend API gateway running on port <b>3001</b>.</p>
+          <p>To view the user interface, open the frontend portal here:<br>
+             <a href="http://localhost:3002/">👉 http://localhost:3002</a></p>
+        </div>
+      </body>
+    </html>
+  `);
+});
+
 // 404 handler
 app.use((req: Request, res: Response) => {
   res.status(404).json({

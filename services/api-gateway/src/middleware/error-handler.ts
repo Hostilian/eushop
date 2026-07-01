@@ -13,9 +13,9 @@ export class ApiError extends Error {
 
 export const errorHandler = (
   err: Error | ApiError,
-  req: Request,
+  _req: Request,
   res: Response,
-  next: NextFunction
+  _next: NextFunction
 ) => {
   console.error('Error:', err);
 
@@ -28,7 +28,7 @@ export const errorHandler = (
   }
 
   // Default error
-  res.status(500).json({
+  return res.status(500).json({
     error: 'Internal Server Error',
     message: err.message || 'An unexpected error occurred',
     timestamp: new Date().toISOString(),
@@ -78,10 +78,10 @@ export const authMiddleware = async (req: Request, res: Response, next: NextFunc
 
     (req as any).userId = decoded.sub;
     (req as any).user = decoded;
-    next();
+    return next();
   } catch (error: any) {
     console.error('Token verification error:', error);
-    res.status(401).json({
+    return res.status(401).json({
       error: 'Unauthorized',
       message: 'Invalid or expired token',
       details: process.env.NODE_ENV === 'development' ? error.message : undefined,

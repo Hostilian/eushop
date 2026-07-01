@@ -99,7 +99,7 @@ router.get('/:id', async (req: Request, res: Response) => {
  * GET /api/foods/trending
  * Get trending foods
  */
-router.get('/trending', async (req: Request, res: Response) => {
+router.get('/trending', async (_req: Request, res: Response) => {
   // TODO: Query Redis cache for trending foods
   res.json({
     data: [
