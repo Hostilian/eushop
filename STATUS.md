@@ -1,164 +1,92 @@
-# EUshop Phase 1 - Status & Completion Report
+# EUshop — Project Status Report
 
-## Overview
-Phase 1 Foundation implementation for EU Specialty Food Marketplace. Complete scaffolding and infrastructure setup for a production-ready microservices platform.
+**Last Updated:** July 2026
 
----
-
-## ✅ PHASE 1 - COMPLETED
-
-### 1. Project Structure & Configuration
-- ✅ Monorepo setup with pnpm workspaces
-- ✅ Root-level configuration files (package.json, pnpm-workspace.yaml, docker-compose.yml)
-- ✅ TypeScript strict mode enabled across all projects
-- ✅ Environment configuration template (.env.example)
-- ✅ GitHub Actions CI/CD pipeline (.github/workflows/ci-cd.yml)
-- ✅ Project documentation (README.md, QUICKSTART.md, DEVELOPMENT.md, API.md)
-
-### 2. Frontend - Next.js Web Application
-- ✅ Next.js 16 + React 19 setup
-- ✅ Pages scaffolded:
-  - ✅ `pages/index.tsx` - Landing page with hero, features, trending foods
-  - ✅ `pages/login.tsx` - Login form with API integration
-  - ✅ `pages/signup.tsx` - User registration with country selector
-  - ✅ `pages/dashboard.tsx` - Authenticated user dashboard
-  - ✅ `pages/search.tsx` - Food search with filters and pagination
-  - ✅ `pages/become-seller.tsx` - Seller onboarding form
-  - ✅ `pages/_app.tsx` - App wrapper
-  - ✅ `pages/_document.tsx` - Document setup
-
-- ✅ Styling:
-  - ✅ Tailwind CSS 3.4 with custom color palette
-  - ✅ globals.css with CSS variables
-  - ✅ Responsive design
-
-- ✅ API Integration:
-  - ✅ Axios client with Bearer token (lib/api-client.ts)
-  - ✅ Service layer (lib/services.ts)
-  - ✅ Auth0 initialization stub
-
-### 3. Frontend - React Native Mobile Application
-- ✅ React Native + Expo 51
-- ✅ Bottom tab navigation (4 screens)
-- ✅ HomeScreen, SearchScreen, MessagesScreen, ProfileScreen
-- ✅ TypeScript configuration
-
-### 4. Backend - API Gateway (Node.js/Express)
-- ✅ Express server with middleware stack
-- ✅ Routes: Auth (login, signup, verify, logout, me), Foods (search, trending)
-- ✅ Request logging and error handling
-- ✅ Zod validation schemas
-- ✅ Bearer token authentication
-
-### 5. Backend - Spring Boot Core Service
-- ✅ Maven project structure
-- ✅ Spring Boot 3.2 configured
-- ✅ Database connection setup
-
-### 6. Backend - Spring WebFlux Messaging Service
-- ✅ Spring WebFlux setup
-- ✅ Redis connection configured
-
-### 7. Database - PostgreSQL
-- ✅ 8 tables with proper relationships
-- ✅ 7 migration files
-- ✅ Seed data with 3 sellers and 3 foods
-
-### 8. Infrastructure
-- ✅ Docker Compose with PostgreSQL, Redis, Elasticsearch, pgAdmin
-
-### 9. Documentation
-- ✅ DEVELOPMENT.md - Complete setup guide
-- ✅ API.md - Endpoint documentation
-- ✅ AUTH0_SETUP.md - Auth0 configuration
-- ✅ QUICKSTART.md - Quick start guide
+This document tracks the verified status of the `eushop` codebase, highlighting what is currently functional, what is mocked/placeholder, and what is currently in development.
 
 ---
 
-## 🚀 HOW TO RUN
+## 🟢 Currently Implemented & Functional
 
-```bash
-# 1. Setup
-cp .env.example .env.local
+### 1. Database Schema (`db/migrations/001_initial_schema.sql`)
+- Verified 8-table relational PostgreSQL schema implemented in a single migration script (divided into 7 distinct logical migration segments):
+  - `users` (buyer/seller profiles, credential hashes)
+  - `foods` (seller listings, price, currency, category, allergens, dietary restriction JSONB)
+  - `food_requests` (buyer posting for specialty foods)
+  - `orders` (transactions, quantity, tracking numbers, status flow)
+  - `conversations` (chat threads between buyers and sellers)
+  - `messages` (chat message contents, read status)
+  - `reviews` (5-star rating system with verified purchase flags)
+  - `notifications` (system event records)
 
-# 2. Start infrastructure
-docker-compose up -d
+### 2. Core Service Business Logic (`services/core-service/`)
+- Functional Java Spring Boot application structured with controllers, services, repositories, and JPA entities matching the relational database schema.
+- Exposes REST endpoints for:
+  - Users (`UserController`)
+  - Food listings (`FoodController`)
+  - Order management (`OrderController`)
+  - Conversations & Messages (`ConversationController` / REST-based chat)
+  - Notifications (`NotificationController`)
+  - Reviews (`ReviewController`)
 
-# 3. Install & initialize
-pnpm install
-pnpm db:migrate
-pnpm db:seed
+### 3. API Gateway Routing (`services/api-gateway/`)
+- Node.js/Express server configured with Express HTTP routing, request loggers, and Zod validator middleware schemas.
+- Interfaces with the frontend on port `3000`.
 
-# 4. Start development
-pnpm dev
-```
-
-### Access Points
-- **Web**: http://localhost:3000
-- **API**: http://localhost:3001/api
-- **Database UI**: http://localhost:5050
-
----
-
-## 📊 Statistics
-
-- **Total Files**: 100+
-- **Lines of Code**: 5,000+
-- **Pages/Components**: 12 (web + mobile)
-- **Database Tables**: 8
-- **API Endpoints**: 10+
-- **Documentation**: 6 comprehensive guides
+### 4. Monorepo Setup & Local Dev Lifecycle
+- `pnpm` workspaces routing the Next.js frontend (`apps/web`) and Express backend API Gateway (`services/api-gateway`).
+- Docker Compose setup running PostgreSQL (`port 5432`) and Redis (`port 6379`) containers locally.
 
 ---
 
-## 🎯 Phase 1 Deliverables Complete ✅
+## 🟡 Currently Mocked / Placeholder
 
-- Monorepo scaffolding
-- Full-stack microservices
-- Authentication framework
-- Database schema
-- API Gateway with routing
-- Web and mobile UI
-- Local dev environment
-- Comprehensive documentation
+### 1. User Authentication (API Gateway / Frontend)
+- Authentication uses a mock token exchange gateway (base64 payload mimicking JWTs) and persists user information in `localStorage`.
+- Gated integration code exists for checking Auth0 JWKS signatures, but requires connection to a live Auth0 tenant client.
 
----
-
-## 📋 Phase 2 Planning (Next)
-
-- [ ] Auth0 OAuth 2.0 integration
-- [ ] Spring Boot controllers
-- [ ] Seller dashboard
-- [ ] Real-time messaging
-- [ ] Elasticsearch integration
-- [ ] Email verification
-- [ ] Stripe payments
+### 2. Payments (Stripe Checkout)
+- Environment variable stubs exist in `.env.example`.
+- No payment processing, webhook listener, or payout split code has been integrated into the Spring Boot Core Service or Next.js frontend yet.
 
 ---
 
-**Status**: Phase 1 COMPLETE ✅  
-**Next**: Phase 2 - Auth0 & Advanced Features  
-**Date**: 2025-05-02
+## 🔴 Removed / Consolidated for MVP
 
-## CI/CD Status
-✅ GitHub Actions pipeline
-  - Linting & testing on PR
-  - Build on push to main/develop
+### 1. Real-Time WebSocket Messaging Service (`services/messaging-service/`)
+- Deprecated the separate Java WebFlux messaging service to simplify infrastructure.
+- Messaging and chat threads are handled via the Spring Boot Core Service (`ConversationController` & `Message` JPA entities) using client-side REST polling.
 
-## Next Steps (Phase 1 Continuation)
-- [ ] Install dependencies (pnpm install)
-- [ ] Start Docker Compose (docker-compose up -d)
-- [ ] Migrate database schema
-- [ ] Seed initial data
-- [ ] Start development servers (pnpm dev)
-- [ ] Implement Auth0 integration
-- [ ] Connect web/mobile to API Gateway
-- [ ] Implement Elasticsearch for food search
-- [ ] Add fuzzy matching for typo tolerance
+### 2. Elasticsearch Full-Text Search
+- Decommissioned Elasticsearch container to reduce local system resource footprint.
+- Search queries are resolved via direct PostgreSQL indexing and query logic inside `FoodRepository` for the initial launch.
 
-## Out of Scope (Future Phases)
-- Spring Boot REST endpoints (Phase 2)
-- WebSocket messaging (Phase 3)
-- Payment processing (Phase 4)
-- Reviews & reputation (Phase 5)
-- Production deployment (Phase 6)
+### 3. Mobile App (`apps/mobile`)
+- Mobile application remains a static 4-screen layout shell (Expo/React Native) and is frozen for the pre-seed fundraising MVP, prioritizing the Web application (`apps/web`).
+
+---
+
+## 🛠️ How to Run the Local Stack
+
+1. **Configure Environment:**
+   ```bash
+   cp .env.example .env.local
+   # Edit values as necessary
+   ```
+
+2. **Launch Postgres & Redis Infrastructure:**
+   ```bash
+   docker-compose up -d
+   ```
+
+3. **Install Dependencies & Seed Database:**
+   ```bash
+   pnpm install
+   pnpm run db:migrate
+   pnpm run db:seed
+   ```
+
+4. **Start Web & Gateway Servers:**
+   ```bash
+   pnpm dev
+   ```

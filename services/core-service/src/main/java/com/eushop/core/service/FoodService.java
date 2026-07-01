@@ -92,6 +92,7 @@ public class FoodService {
         food.setCountry(updatedFood.getCountry());
         food.setDietaryRestrictions(updatedFood.getDietaryRestrictions());
         food.setImages(updatedFood.getImages());
+        food.setAllergens(updatedFood.getAllergens());
 
         return foodRepository.save(food);
     }

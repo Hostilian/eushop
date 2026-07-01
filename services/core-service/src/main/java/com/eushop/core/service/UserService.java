@@ -73,10 +73,18 @@ public class UserService {
         return userRepository.findSellersByCountry(country);
     }
 
-    public User becomeSeller(String userId) {
+    public User becomeSeller(String userId, com.eushop.core.dto.BecomeSellerRequest request) {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new IllegalArgumentException("User not found"));
         user.setRole(User.UserRole.SELLER);
+        user.setTaxId(request.getTaxId());
+        user.setVatNumber(request.getVatNumber());
+        user.setTradeRegisterNumber(request.getTradeRegisterNumber());
+        user.setAddressStreet(request.getAddressStreet());
+        user.setAddressCity(request.getAddressCity());
+        user.setAddressPostalCode(request.getAddressPostalCode());
+        user.setSelfCertifiedCompliant(request.getSelfCertifiedCompliant());
+        user.setKycVerified(true);
         return userRepository.save(user);
     }
 }

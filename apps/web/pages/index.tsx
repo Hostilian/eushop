@@ -33,7 +33,7 @@ export default function Home() {
         setTrendingFoods([
           { id: '1', name: 'Belgian Chocolates', country: 'Belgium', price: 24.99 },
           { id: '2', name: 'Italian Balsamic', country: 'Italy', price: 34.99 },
-          { id: '3', name: 'Swiss Emmental', country: 'Switzerland', price: 44.99 },
+          { id: '3', name: 'Spanish Manchego Cheese', country: 'Spain', price: 44.99 },
         ]);
       } finally {
         setLoading(false);
@@ -120,7 +120,7 @@ export default function Home() {
               <div className="text-5xl mb-4">🌍</div>
               <h3 className="text-xl font-bold mb-2">Pan-European</h3>
               <p className="text-gray-600">
-                Access specialty foods from across the EU, from Belgium to Switzerland
+                Access specialty foods from across the EU, from Belgium to Italy
               </p>
             </div>
             
@@ -191,7 +191,11 @@ export default function Home() {
       {/* Footer */}
       <footer className="bg-gray-900 text-gray-300 py-8">
         <div className="max-w-7xl mx-auto px-4 text-center">
-          <p>&copy; 2025 EUshop. All rights reserved. | Privacy Policy | Terms of Service</p>
+          <p>
+            &copy; {new Date().getFullYear()} EUshop. All rights reserved. |{' '}
+            <Link href="/privacy" className="hover:underline">Privacy Policy</Link> |{' '}
+            <Link href="/terms" className="hover:underline">Terms of Service</Link>
+          </p>
         </div>
       </footer>
     </div>

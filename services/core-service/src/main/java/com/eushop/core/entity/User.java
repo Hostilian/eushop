@@ -65,6 +65,27 @@ public class User {
     @Column(columnDefinition = "INTEGER DEFAULT 0")
     private Integer completedOrders;
 
+    @Column(name = "tax_id")
+    private String taxId;
+
+    @Column(name = "vat_number")
+    private String vatNumber;
+
+    @Column(name = "trade_register_number")
+    private String tradeRegisterNumber;
+
+    @Column(name = "address_street")
+    private String addressStreet;
+
+    @Column(name = "address_city")
+    private String addressCity;
+
+    @Column(name = "address_postal_code")
+    private String addressPostalCode;
+
+    @Column(name = "self_certified_compliant", columnDefinition = "BOOLEAN DEFAULT false")
+    private Boolean selfCertifiedCompliant;
+
     @Column(name = "created_at", nullable = false, updatable = false)
     private LocalDateTime createdAt;
 
@@ -80,6 +101,7 @@ public class User {
         updatedAt = LocalDateTime.now();
         emailVerified = false;
         kycVerified = false;
+        selfCertifiedCompliant = false;
         averageRating = 5.0f;
         reviewCount = 0;
         completedOrders = 0;

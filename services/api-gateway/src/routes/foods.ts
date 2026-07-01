@@ -1,117 +1,117 @@
 import { Request, Response, Router } from 'express';
-import { z } from 'zod';
+import axios from 'axios';
+import { authMiddleware, AuthenticatedRequest } from '../middleware/auth';
 
 const router = Router();
-
-// Validation schema
-const FoodSearchSchema = z.object({
-  search: z.string().optional(),
-  country: z.string().optional(),
-  page: z.coerce.number().default(1),
-  limit: z.coerce.number().default(20),
-});
+const CORE_SERVICE_URL = process.env.CORE_SERVICE_URL || 'http://localhost:3001';
 
 /**
  * GET /api/foods
- * Search foods with filters
+ * Forward food search/listing to Core Service
  */
 router.get('/', async (req: Request, res: Response) => {
   try {
-    const query = FoodSearchSchema.parse(req.query);
-
-    // TODO: Query Elasticsearch for food search
-    // Apply fuzzy matching, filters, pagination
-
-    const mockResults = {
-      data: [
-        {
-          id: '1',
-          name: 'Belgian Chocolate Truffles',
-          country: 'Belgium',
-          price: 24.99,
-          description: 'Authentic Belgian dark chocolate truffles',
-          sellerId: 'seller_1',
-          imageUrl: null,
-        },
-        {
-          id: '2',
-          name: 'Italian Balsamic Vinegar',
-          country: 'Italy',
-          price: 34.99,
-          description: '25-year aged Modena balsamic',
-          sellerId: 'seller_2',
-          imageUrl: null,
-        },
-      ],
-      pagination: {
-        page: query.page,
-        limit: query.limit,
-        total: 2,
-        pages: 1,
-      },
-    };
-
-    res.json(mockResults);
-  } catch (error: any) {
-    res.status(400).json({
-      error: 'Invalid search parameters',
-      details: error.message,
+    const response = await axios.get(`${CORE_SERVICE_URL}/api/foods`, {
+      params: req.query
     });
-  }
-});
-
-/**
- * GET /api/foods/:id
- * Get food details
- */
-router.get('/:id', async (req: Request, res: Response) => {
-  try {
-    const { id } = req.params;
-
-    // TODO: Fetch food details from Core Service / PostgreSQL
-
-    const mockFood = {
-      id,
-      name: 'Belgian Chocolate Truffles',
-      country: 'Belgium',
-      price: 24.99,
-      description: 'Authentic Belgian dark chocolate truffles',
-      sellerId: 'seller_1',
-      images: [],
-      seller: {
-        id: 'seller_1',
-        name: 'Belgian Chocolates Ltd',
-        rating: 4.8,
-        reviewCount: 245,
-      },
-    };
-
-    res.json(mockFood);
+    res.status(response.status).json(response.data);
   } catch (error: any) {
-    res.status(404).json({
-      error: 'Food not found',
-      details: error.message,
-    });
+    const status = error.response?.status || 500;
+    const data = error.response?.data || { error: 'Internal Server Error', message: error.message };
+    res.status(status).json(data);
   }
 });
 
 /**
  * GET /api/foods/trending
- * Get trending foods
+ * Forward trending foods request
  */
-router.get('/trending', async (_req: Request, res: Response) => {
-  // TODO: Query Redis cache for trending foods
-  res.json({
-    data: [
-      {
-        id: '1',
-        name: 'Belgian Chocolate Truffles',
-        country: 'Belgium',
-        price: 24.99,
-        imageUrl: null,
-      },
-    ],
-  });
+router.get('/trending', async (req: Request, res: Response) => {
+  try {
+    const response = await axios.get(`${CORE_SERVICE_URL}/api/foods/trending`, {
+      params: req.query
+    });
+    res.status(response.status).json(response.data);
+  } catch (error: any) {
+    const status = error.response?.status || 500;
+    const data = error.response?.data || { error: 'Internal Server Error', message: error.message };
+    res.status(status).json(data);
+  }
+});
+
+/**
+ * GET /api/foods/:id
+ * Forward details fetch to Core Service
+ */
+router.get('/:id', async (req: Request, res: Response) => {
+  try {
+    const { id } = req.params;
+    const response = await axios.get(`${CORE_SERVICE_URL}/api/foods/${id}`);
+    res.status(response.status).json(response.data);
+  } catch (error: any) {
+    const status = error.response?.status || 500;
+    const data = error.response?.data || { error: 'Food not found', message: error.message };
+    res.status(status).json(data);
+  }
+});
+
+/**
+ * POST /api/foods
+ * Create food listing (Authenticated)
+ */
+router.post('/', authMiddleware, async (req: AuthenticatedRequest, res: Response) => {
+  try {
+    const response = await axios.post(`${CORE_SERVICE_URL}/api/foods`, req.body, {
+      headers: {
+        'X-User-Id': req.userId || ''
+      }
+    });
+    res.status(response.status).json(response.data);
+  } catch (error: any) {
+    const status = error.response?.status || 500;
+    const data = error.response?.data || { error: 'Failed to create listing', message: error.message };
+    res.status(status).json(data);
+  }
+});
+
+/**
+ * PUT /api/foods/:id
+ * Update listing (Authenticated)
+ */
+router.put('/:id', authMiddleware, async (req: AuthenticatedRequest, res: Response) => {
+  try {
+    const { id } = req.params;
+    const response = await axios.put(`${CORE_SERVICE_URL}/api/foods/${id}`, req.body, {
+      headers: {
+        'X-User-Id': req.userId || ''
+      }
+    });
+    res.status(response.status).json(response.data);
+  } catch (error: any) {
+    const status = error.response?.status || 500;
+    const data = error.response?.data || { error: 'Failed to update listing', message: error.message };
+    res.status(status).json(data);
+  }
+});
+
+/**
+ * DELETE /api/foods/:id
+ * Delete listing (Authenticated)
+ */
+router.delete('/:id', authMiddleware, async (req: AuthenticatedRequest, res: Response) => {
+  try {
+    const { id } = req.params;
+    const response = await axios.delete(`${CORE_SERVICE_URL}/api/foods/${id}`, {
+      headers: {
+        'X-User-Id': req.userId || ''
+      }
+    });
+    res.status(response.status).json(response.data);
+  } catch (error: any) {
+    const status = error.response?.status || 500;
+    const data = error.response?.data || { error: 'Failed to delete listing', message: error.message };
+    res.status(status).json(data);
+  }
 });
 
 export default router;

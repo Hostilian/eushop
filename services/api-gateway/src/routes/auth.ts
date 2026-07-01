@@ -1,5 +1,6 @@
 import { Request, Response, Router } from 'express';
 import { z } from 'zod';
+import { authMiddleware, AuthenticatedRequest } from '../middleware/auth';
 
 const router = Router();
 
@@ -117,7 +118,7 @@ router.post('/verify', async (req: Request, res: Response) => {
  * POST /api/auth/logout
  * User logout (invalidate token in Redis blacklist)
  */
-router.post('/logout', (_req: Request, res: Response) => {
+router.post('/logout', authMiddleware, (_req: Request, res: Response) => {
   // TODO: Add token to Redis blacklist
   res.json({ success: true, message: 'Logged out successfully' });
 });
@@ -126,9 +127,10 @@ router.post('/logout', (_req: Request, res: Response) => {
  * GET /api/auth/me
  * Get current authenticated user
  */
-router.get('/me', (req: Request, res: Response) => {
-  // This would normally use authMiddleware to extract user from token
-  const userId = (req as any).userId;
+router.get('/me', authMiddleware, (req: AuthenticatedRequest, res: Response) => {
+  const userId = req.userId;
+  const userEmail = req.userEmail;
+  const userRole = req.userRole;
   
   if (!userId) {
     return res.status(401).json({ error: 'Unauthorized' });
@@ -136,8 +138,8 @@ router.get('/me', (req: Request, res: Response) => {
 
   return res.json({
     id: userId,
-    email: 'user@example.com',
-    role: 'buyer',
+    email: userEmail || 'user@example.com',
+    role: userRole || 'buyer',
   });
 });
 

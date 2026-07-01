@@ -5,7 +5,7 @@
 
 export const API_CONFIG = {
   // API Gateway endpoints
-  BASE_URL: process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001/api',
+  BASE_URL: process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000/api',
   TIMEOUT: 30000, // 30 seconds
 
   // Auth0 configuration

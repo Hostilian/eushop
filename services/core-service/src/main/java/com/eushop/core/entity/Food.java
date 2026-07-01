@@ -28,7 +28,8 @@ public class Food {
     @Column(nullable = false)
     private String name;
 
-    @Column(length = 1000)
+    @NotBlank(message = "Description is required")
+    @Column(length = 1000, nullable = false)
     private String description;
 
     @Column(name = "seller_id", nullable = false)
@@ -59,6 +60,9 @@ public class Food {
 
     @Column(columnDefinition = "JSONB")
     private String dietaryRestrictions; // JSON array: ["Vegan", "Gluten-Free"]
+
+    @Column(columnDefinition = "JSONB", nullable = false)
+    private String allergens; // JSON array of allergens (e.g., ["Nuts", "Gluten"])
 
     @Column(columnDefinition = "JSONB")
     private String images; // JSON array of image URLs

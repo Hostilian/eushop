@@ -1,5 +1,4 @@
 import Link from 'next/link';
-import { useRouter } from 'next/router';
 import { useCallback, useEffect, useState } from 'react';
 import { foodAPI } from '../lib/services';
 
@@ -12,7 +11,6 @@ interface Food {
 }
 
 export default function SearchPage() {
-  const router = useRouter();
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedCountry, setSelectedCountry] = useState('');
   const [foods, setFoods] = useState<Food[]>([]);
@@ -24,7 +22,7 @@ export default function SearchPage() {
     'Denmark', 'Estonia', 'Finland', 'France', 'Germany', 'Greece',
     'Hungary', 'Ireland', 'Italy', 'Latvia', 'Lithuania', 'Luxembourg',
     'Malta', 'Netherlands', 'Poland', 'Portugal', 'Romania', 'Slovakia',
-    'Slovenia', 'Spain', 'Sweden', 'Switzerland',
+    'Slovenia', 'Spain', 'Sweden',
   ];
 
   const performSearch = useCallback(async () => {
@@ -38,7 +36,7 @@ export default function SearchPage() {
       setFoods([
         { id: '1', name: 'Belgian Chocolates', country: 'Belgium', price: 24.99, description: 'Premium Belgian chocolates' },
         { id: '2', name: 'Italian Balsamic', country: 'Italy', price: 34.99, description: 'Aged balsamic vinegar' },
-        { id: '3', name: 'Swiss Emmental', country: 'Switzerland', price: 44.99, description: 'Traditional Swiss cheese' },
+        { id: '3', name: 'French Brie Cheese', country: 'France', price: 19.99, description: 'Soft and creamy traditional French cheese' },
       ]);
     } finally {
       setLoading(false);

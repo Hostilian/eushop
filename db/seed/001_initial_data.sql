@@ -3,7 +3,7 @@ INSERT INTO users (email, name, country, role, verified) VALUES
 ('admin@eushop.local', 'Admin User', 'BE', 'admin', TRUE),
 ('seller_belgium@eushop.local', 'Belgian Chocolates Ltd', 'BE', 'seller', TRUE),
 ('seller_italy@eushop.local', 'Italian Delights', 'IT', 'seller', TRUE),
-('seller_switzerland@eushop.local', 'Swiss Foods Co', 'CH', 'seller', TRUE),
+('seller_austria@eushop.local', 'Austrian Alpine Foods', 'AT', 'seller', TRUE),
 ('buyer_france@eushop.local', 'Jean Dupont', 'FR', 'buyer', FALSE)
 ON CONFLICT (email) DO NOTHING;
 
@@ -19,6 +19,6 @@ FROM users u WHERE u.email = 'seller_italy@eushop.local'
 ON CONFLICT DO NOTHING;
 
 INSERT INTO foods (seller_id, name, description, country, category, price, quantity_available, finder_fee_amount, is_active)
-SELECT u.id, 'Swiss Emmental Cheese', 'Premium Swiss Emmental cheese wheel', 'CH', 'Cheese', 44.99, 30, 8.00, TRUE
-FROM users u WHERE u.email = 'seller_switzerland@eushop.local'
+SELECT u.id, 'Austrian Mountain Cheese', 'Premium aged Austrian alpine cheese from Tyrol', 'AT', 'Cheese', 44.99, 30, 8.00, TRUE
+FROM users u WHERE u.email = 'seller_austria@eushop.local'
 ON CONFLICT DO NOTHING;

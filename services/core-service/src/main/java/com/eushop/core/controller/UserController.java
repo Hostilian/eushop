@@ -15,8 +15,11 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.eushop.core.dto.ApiResponse;
 import com.eushop.core.dto.UserDTO;
+import com.eushop.core.dto.BecomeSellerRequest;
 import com.eushop.core.entity.User;
 import com.eushop.core.service.UserService;
+import org.springframework.web.bind.annotation.RequestBody;
+import jakarta.validation.Valid;
 
 @RestController
 @RequestMapping("/api/users")
@@ -81,14 +84,15 @@ public class UserController {
     @PostMapping("/{id}/become-seller")
     public ResponseEntity<ApiResponse<UserDTO>> becomeSeller(
             @PathVariable String id,
-            @RequestHeader("X-User-Id") String userId) {
+            @RequestHeader("X-User-Id") String userId,
+            @Valid @RequestBody BecomeSellerRequest request) {
         
         if (!id.equals(userId)) {
             return ResponseEntity.status(HttpStatus.FORBIDDEN)
                     .body(ApiResponse.error("Cannot update other user"));
         }
 
-        User user = userService.becomeSeller(id);
+        User user = userService.becomeSeller(id, request);
         
         return ResponseEntity.ok(ApiResponse.success(toDTO(user), "Now a seller"));
     }
@@ -106,6 +110,13 @@ public class UserController {
         dto.setProfileBio(user.getProfileBio());
         dto.setProfileImageUrl(user.getProfileImageUrl());
         dto.setKycVerified(user.getKycVerified());
+        dto.setTaxId(user.getTaxId());
+        dto.setVatNumber(user.getVatNumber());
+        dto.setTradeRegisterNumber(user.getTradeRegisterNumber());
+        dto.setAddressStreet(user.getAddressStreet());
+        dto.setAddressCity(user.getAddressCity());
+        dto.setAddressPostalCode(user.getAddressPostalCode());
+        dto.setSelfCertifiedCompliant(user.getSelfCertifiedCompliant());
         return dto;
     }
 }

@@ -24,10 +24,39 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(requestLogger);
 
+import axios from 'axios';
+import { authMiddleware, AuthenticatedRequest } from './middleware/auth';
+
+const CORE_SERVICE_URL = process.env.CORE_SERVICE_URL || 'http://localhost:3001';
+
 // Routes
 app.use('/api/health', healthRoutes);
 app.use('/api/auth', authRoutes);
 app.use('/api/foods', foodRoutes);
+
+// Catch-all proxy for other core services (orders, reviews, users, notifications, conversations)
+app.use('/api/:resource*', authMiddleware, async (req: AuthenticatedRequest, res: Response) => {
+  const targetUrl = `${CORE_SERVICE_URL}${req.originalUrl}`;
+  try {
+    const response = await axios({
+      method: req.method,
+      url: targetUrl,
+      data: req.body,
+      params: req.query,
+      headers: {
+        'Content-Type': 'application/json',
+        'X-User-Id': req.userId || '',
+        'X-User-Email': req.userEmail || '',
+        'X-User-Role': req.userRole || '',
+      }
+    });
+    res.status(response.status).json(response.data);
+  } catch (error: any) {
+    const status = error.response?.status || 500;
+    const data = error.response?.data || { error: 'Gateway Error', message: error.message };
+    res.status(status).json(data);
+  }
+});
 
 app.get('/', (_req: Request, res: Response) => {
   res.send(`

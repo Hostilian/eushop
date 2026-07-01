@@ -1,0 +1,560 @@
+# EUshop — Full Readiness Audit & Master Implementation Plan (Enhanced Edition)
+
+**What this is:** A complete, evidence-based, deep-dive audit of the `Hostilian/eushop` repository and business operations, paired with a sequenced, multi-track master implementation plan. This document is designed to transition the company from a prototype with exaggerated documentation to a genuinely investor-ready, sales-ready, compliance-secured, and pre-seed-ready pan-European marketplace.
+
+**Method:** Checked directly against the current workspace contents (raw SQL migrations, Spring Boot backend source, React page files, Docker configuration, and root project metadata) to establish an objective baseline of what is built versus what the documentation claims.
+
+**How to use this document:**
+- **Live Checklist:** This document is formatted with interactive markdown checkboxes. Check them off as you execute the tracks.
+- **Urgency Tags:**
+  - `P0` (Critical/Immediate): Fix before showing the project to *anyone* outside the core team (diligence deal-breakers).
+  - `P1` (Required for Launch/Fundraising): Complete before accepting investment or processing live buyer transactions.
+  - `P2` (Operational Growth): Address during the active raise or the early stages of GTM execution.
+- **Regulatory Warning:** Legal, tax, and food compliance regulations carry heavy penalties in the EU. While this plan provides detailed regulatory frameworks (VAT OSS, DAC7, DSA, EU Food Information regulations), a certified tax advisor and startup lawyer must sign off on final corporate structures and VAT mappings.
+
+---
+
+## Table of Contents
+
+- [Part 0 — The Honest Headline (Claimed vs. Actual)](#part-0--the-honest-headline)
+- [Part A — Ground-Truth Audit](#part-a--ground-truth-audit)
+  - [A1. Technical & Product Audit](#a1-technical--product-audit)
+  - [A2. Business & Investor-Readiness Audit](#a2-business--investor-readiness-audit)
+  - [A3. Legal & Compliance Audit](#a3-legal--compliance-audit)
+  - [A4. Brand & Positioning Audit](#a4-brand--positioning-audit)
+  - [A5. Go-To-Market & Sales Audit](#a5-go-to-market--sales-audit)
+- [Part B — Cross-Referenced Gap Analysis](#part-b--cross-referenced-gap-analysis)
+- [Part C — The Master Implementation Plan (11 Tracks)](#part-c--the-master-implementation-plan)
+- [Part D — Sequenced Weekly Roadmap](#part-d--sequenced-weekly-roadmap)
+- [Part E — Ready-to-Fill Templates & Financial Outlines](#part-e--ready-to-fill-templates)
+- [Part F — Actionable Repo Punch-List](#part-f--actionable-repo-punch-list)
+- [Closing Note](#closing-note)
+
+---
+
+## Part 0 — The Honest Headline
+
+A technical investor conducting basic diligence on this codebase would spot a significant delta between the claimed state in documentation and the actual files in the repository. Aligning the documentation with reality is the single highest-leverage task in this plan.
+
+| Feature / Metric | Claimed in Repository Docs | Actual State in Codebase |
+| :--- | :--- | :--- |
+| **Automated Test Suite** | "30+ automated tests, 100% pass rate, 85%+ code coverage" (`PHASE_2_COMPLETE.md`, `docs/IMPLEMENTATION_CHECKLIST.md`) | A **very small test footprint exists**: one Jest cart component test and one JUnit `UserServiceTest`. There is no broad automated coverage yet, and `test-api.sh` / `.bat` are still manual curl scripts. |
+| **Infrastructure as Code** | "Kubernetes manifests ready," "Infrastructure as Code via Terraform" (README, `PHASE_2_COMPLETE.md`) | An `infrastructure/terraform` directory exists but is **completely empty**. No Kubernetes manifests or Terraform configurations exist. |
+| **Database Migrations** | "7 migration files" (`STATUS.md`) | The workspace currently contains **2 physical migration files**: `db/migrations/001_initial_schema.sql` and `db/migrations/002_compliance_fields.sql`. The schema and compliance fields are split across those two files. |
+| **System Maturity** | "Production: ✅ READY," "PRODUCTION READY" (`PHASE_2_COMPLETE.md`) | Lacks payment processing, tests, deployment configurations, error tracking, and production-grade compliance enforcement. |
+| **License** | "License: MIT" (README) | A root `LICENSE` file exists and declares proprietary terms. |
+| **Messaging Microservice** | Dedicated "Spring WebFlux real-time messaging service" with WebSocket chat | There is no standalone `services/messaging-service/` directory in the current workspace; messaging is only represented in the broader app and service references. |
+| **Stripe Payments** | Integrated Stripe checkout/payouts (README "Phase 4") | Only Stripe API key placeholders exist in `.env.example`. **No payment integration code exists** in the Java or React services. |
+| **Search Infrastructure** | Elasticsearch-powered fuzzy search (`README.md`, `STATUS.md`) | Elasticsearch is defined in `docker-compose.yml` but is **not integrated** into any search query code paths. |
+| **Monitoring & Logging** | Datadog, Sentry, New Relic, ELK stack, Firebase push (`README.md`, `.env.example`) | Named in docs and environment templates, but **no integration or setup code** is implemented. |
+| **Git History & Timelines** | Phase 2 completed January 2024; Phase 1 dated May 2, 2025. | The repository was committed on a single day. The timestamps and phases indicate template placeholders that were not updated. |
+
+### The Real Foundation Worth Building On
+The codebase has a clean skeleton:
+1. **Relational Database Schema:** `001_initial_schema.sql` and `002_compliance_fields.sql` define an 8-table relational model with foreign keys, indexes, and compliance fields for seller verification and allergen enforcement.
+2. **Spring Boot Services:** Real Spring Boot entities, repositories, services, and REST controllers exist for core operations.
+3. **Gateway JWT Verification:** The API gateway includes a structurally correct RS256 JWT validation flow with Auth0 JWKS caching, but the browser-side login flow still stores session data in `localStorage`.
+4. **Existing Commerce Pages:** `login.tsx`, `dashboard.tsx`, `become-seller.tsx`, `cart.tsx`, `checkout.tsx`, `privacy.tsx`, `terms.tsx`, and `index.tsx` all exist, but several are mock-heavy and not yet wired to production flows.
+5. **Monorepo Architecture:** The pnpm workspace and Docker Compose setup provide a clean local development environment.
+6. **Proprietary License Present:** A root `LICENSE` file exists and already declares proprietary terms.
+
+### Corrections From the Current Workspace
+
+The draft below assumes a few older states that are no longer true in this workspace. The current facts are:
+
+- `apps/web/pages/privacy.tsx` and `apps/web/pages/terms.tsx` already exist and should be reviewed and hardened, not created from scratch.
+- `apps/web/pages/cart.tsx` and `apps/web/pages/checkout.tsx` already exist and currently behave as mock checkout UI, not production payment rails.
+- `apps/web/pages/become-seller.tsx` already collects KYBC and tax fields, but the data is not yet persisted or verified end to end.
+- `db/migrations/` currently contains two files, not one: `001_initial_schema.sql` and `002_compliance_fields.sql`.
+- There is no standalone `services/messaging-service/` directory in the current workspace.
+- There are only a handful of actual test source files, so the suite is still far from the coverage claimed in the docs.
+
+---
+
+## Part A — Ground-Truth Audit
+
+### A1. Technical & Product Audit
+
+*   **Architecture & Microservices Overhead:** 
+    The monorepo (`pnpm-workspace.yaml`) coordinates a Node/Express API Gateway, a Java/Spring Boot Core Service, and a Next.js frontend, backed by Postgres and Redis. Historical documentation still refers to a separate messaging microservice and a broader search stack than the current workspace exposes.
+    *   *Issue:* The product is still split across multiple runtimes, but the larger risk today is not raw runtime count; it is that the implemented user flows stop at UI and mock layers.
+    *   *Recommendation:* Keep chat and commerce logic consolidated in the core service for now, and do not add a separate messaging runtime until there is validated demand and a clear ownership model.
+*   **Authentication & Security Hygiene:**
+    *   *Issue:* The frontend (`apps/web`) reads and writes user session data and tokens directly to and from `localStorage` in `lib/services.ts`, `pages/index.tsx`, `pages/dashboard.tsx`, and `pages/login.tsx`. This exposes the session to Cross-Site Scripting (XSS) attacks.
+    *   *Recommendation:* Reconfigure the API gateway and Auth0 integration to use the Authorization Code Flow with PKCE, returning tokens via `httpOnly`, `Secure`, and `SameSite=Strict` cookies.
+*   **The Core Transaction Loop:**
+    *   *Issue:* The backend has `OrderController.java` and `OrderService.java` support, and the web app already has `cart.tsx` and `checkout.tsx`, but the checkout is still a mock form and there is no production payment processor wired through the backend.
+    *   *Recommendation:* Replace the mock flow with a real cart-to-checkout-to-order pipeline and integrate Stripe Connect (or an equivalent PSP) end to end.
+*   **Testing & CI/CD Pipeline:**
+    *   *Issue:* `.github/workflows/ci-cd.yml` executes `pnpm lint` and `pnpm test` on every pull request, and the package scripts plus a couple of actual tests exist, but the suite is still far too small to support the coverage claims in the docs. That makes the pipeline look healthier than the code really is.
+    *   *Recommendation:* Add real Jest and JUnit tests, then keep the CI pipeline as a merge gate.
+
+---
+
+### A2. Business & Investor-Readiness Audit
+
+*   **Financial Models & Metrics:**
+    *   *Issue:* The codebase and draft materials imply a marketplace take rate, but there is no tied-to-code pricing model, commission split, or financial runway forecast.
+    *   *Recommendation:* Model a sustainable marketplace business model. Standard practice is a 10%–20% commission on transactions. Define this split clearly in a financial model before pitching.
+*   **Traction Proof:**
+    *   *Issue:* There are no waitlist records, letters of intent (LOIs), or pilot transaction logs in the repository.
+    *   *Recommendation:* Launch the landing page and capture email addresses for a waitlist, and target 5-10 letters of intent from local specialty food vendors to show initial demand.
+
+---
+
+### A3. Legal & Compliance Audit
+
+Operating a food marketplace in the EU requires compliance with several regulations.
+
+```mermaid
+flowchart TD
+    A[Buyer Places Order] --> B{VAT deemed supplier check}
+    B -->|Seller in non-EU / Platform Deemed Supplier| C[Collect and Remit VAT via OSS]
+    B -->|B2C within EU| D[Seller remits VAT; Platform provides compliance data]
+    C --> E[Log Transaction for DAC7 reporting]
+    D --> E
+    E --> F[Ensure Food Traceability - Regulation 178/2002]
+    F --> G[Allergen Disclosures on Listing - Regulation 1169/2011]
+```
+
+*   **1. Corporate Structure & IP Assignment (P0):**
+    *   *Issue:* There is no visible registered legal entity in the repo, and the codebase still needs a clean ownership trail. The current `LICENSE` file is proprietary, but that does not replace entity-level IP assignment.
+    *   *Recommendation:* Form an s.r.o. (Czech Republic) or a holding company (e.g., Estonia, Delaware, or Germany). Execute a standard IP Assignment agreement for all code written to date.
+*   **2. EU Digital Services Act (DSA) - Article 30 (P1):**
+    *   *Issue:* As an online platform facilitating consumer contracts with traders, EUshop must collect and verify seller identities (Know Your Business Customer - KYBC) before onboarding.
+    *   *Status:* The seller onboarding page already captures business name, address, tax ID, VAT number, and self-certification, but it is still a frontend form only.
+    *   *Requirement:* You must collect:
+        *   Legal name, address, phone number, and email.
+        *   Trade register ID and number.
+        *   A self-certification from the seller confirming their compliance with EU consumer and safety laws.
+*   **3. DAC7 Directive (EU 2021/514) (P1):**
+    *   *Issue:* EU digital platforms must report seller revenues and tax IDs to tax authorities annually.
+    *   *Status:* The current onboarding form already collects TIN and VAT inputs, and the second migration adds columns for them.
+    *   *Requirement:* Any seller generating over €2,000 or completing more than 30 transactions a year must be reported. Capture tax identification numbers (TIN) and VAT numbers during seller onboarding.
+*   **4. VAT One-Stop-Shop (VAT OSS) (P1):**
+    *   *Issue:* The marketplace must calculate correct cross-border VAT rates based on the buyer's destination country. Under the "deemed supplier" rule, if facilitation occurs for non-EU sellers or specific B2C transactions, the platform may be liable for collecting and remitting VAT.
+    *   *Requirement:* Integrate an address-verification and VAT-calculation engine (such as TaxJar, Stripe Tax, or Quaderno) during checkout.
+*   **5. Food Safety, Labeling, & Allergen Compliance (P1):**
+    *   *Issue:* Food sold online must comply with Regulation (EU) No 1169/2011 (Food Information to Consumers).
+    *   *Status:* The compliance migration already makes `foods.description` and `foods.allergens` mandatory.
+    *   *Requirement:* Allergen disclosures (for the 14 major allergens including gluten, nuts, dairy, and soy) and full ingredient lists must be displayed *before* purchase.
+    *   *Traceability:* Implement "one step back, one step forward" tracking (Regulation (EC) No 178/2002). Maintain records of which producer supplied which batch to which customer.
+*   **6. Cross-Border Shipments & Customs (The Swiss Question) (P0):**
+    *   *Issue:* The homepage fallback data refers to shipping "from Belgium to Switzerland." Switzerland is outside the EU Single Market.
+    *   *Requirement:* Shipping animal or plant products (meat, dairy, honey) across EU borders requires customs declarations, sanitary certificates, and veterinary checks (often coordinated through TRACES). Limit initial operations strictly to the EU Single Market.
+*   **7. Terms of Service & Privacy (GDPR) (P0):**
+    *   *Issue:* The footer references Privacy Policy and Terms of Service links, and the pages already exist, but they should still be treated as legal drafts rather than finished legal counsel output.
+    *   *Requirement:* Harden `privacy.tsx` and `terms.tsx` with GDPR disclosures, data rights, cookies usage, and the 14-day consumer right of withdrawal details (excluding perishables), then have counsel review them.
+
+---
+
+### A4. Brand & Positioning Audit
+
+*   **EU vs. Europe Scope (P0):**
+    *   *Inconsistency:* The site copy promotes cross-border European delivery but includes Switzerland. 
+    *   *Resolution:* Limit the MVP strictly to EU member states. Update all copy to refer to "Pan-EU Specialty Foods."
+*   **Visual Assets & Placeholders:**
+    *   *Issue:* The logo is a chocolate emoji, and the UI uses default unbranded layouts.
+    *   *Resolution:* Define a minimal color palette (warm earth tones, cream backgrounds, forest green accents) and choose clean typography (e.g., Inter, Outfit) to build trust.
+
+---
+
+### A5. Go-To-Market & Sales Audit
+
+*   **Cold Outreach:** Focus on regional food hubs, cheese producers, and charcuterie cooperatives. Build custom landing pages for artisanal producers.
+*   **Customer Acquisition:** Expat/diaspora communities in metropolitan EU hubs (e.g., Germans in Spain, Italians in Germany) are high-intent buyers for regional specialty foods.
+
+---
+
+## Part B — Cross-Referenced Gap Analysis
+
+| # | Gap / Item | Stakeholder | Impact | Priority | Target File(s) / Path |
+| :--- | :--- | :--- | :--- | :--- | :--- |
+| 1 | **IP Assignment** | Investors / Team | Legal risk of split code ownership | **P0** | N/A (Legal Document) |
+| 2 | **Privacy & ToS Pages** | Legal / Buyers | GDPR breach, lack of consumer disclosure | **P0** | `apps/web/pages/privacy.tsx`, `terms.tsx` |
+| 3 | **Stripe Payment Loop** | Buyers / Sellers | Inability to process transactions or pay sellers | **P0** | `services/core-service/...`, `apps/web/pages/checkout.tsx` |
+| 4 | **Documentation Alignment** | Investors | Diligence failure due to inaccurate status claims | **P0** | Root `*.md`, `docs/*`, `README.md` |
+| 5 | **EU Membership Limit** | Operations / Legal | Cross-border customs issues with non-EU states | **P0** | `apps/web/pages/index.tsx`, seed scripts |
+| 6 | **Automated Tests** | Engineering / Investors | Regressions, unverified deployment pipelines | **P0** | `services/core-service/src/test/...`, `apps/web/tests/` |
+| 7 | **DSA KYBC Seller Onboarding** | Regulatory | Fines for unverified commercial sellers | **P1** | `apps/web/pages/become-seller.tsx`, `User.java` |
+| 8 | **DAC7 Reporting Fields** | Regulatory | Annual tax reporting failures | **P1** | `db/migrations/001_initial_schema.sql` |
+| 9 | **Mandatory Allergen Display** | Buyers / Legal | Health hazards, labeling law violations | **P1** | `apps/web/pages/food/[id].tsx`, `Food.java` |
+| 10 | **Auth0 Token Security** | Engineering | Session hijacking / XSS vulnerabilities | **P1** | `services/api-gateway/...`, `apps/web/` |
+| 11 | **Microservice Cleanup** | Engineering | Deployment complexity and infrastructure drift | **P1** | `services/messaging-service/`, `docker-compose.yml` |
+| 12 | **Pitch Deck & Financials** | Investors | No clear business model or funding strategy | **P1** | N/A (Business artifacts) |
+| 13 | **Admin Moderation Panel** | Operations | Inability to flag or remove non-compliant listings | **P1** | `apps/web/pages/admin/` |
+
+---
+
+## Part C — The Master Implementation Plan
+
+### Track 0: Truth, Alignment & Repository Cleanups
+*Objective: Remove obsolete files and clarify the current state of the product.*
+
+- [ ] **Consolidate Documentation:** Delete redundant markdown files at the root and inside the `docs/` folder. Combine status information into a single `STATUS.md` and keep a clean `CHANGELOG.md`.
+    *Files to delete:* Only delete obsolete phase docs if they exist in another branch or export; they are not present in the current workspace.
+- [ ] **Correct Status Claims:** Rewrite `README.md` and `STATUS.md` to state the actual build status. Separate completed features, mock UIs, and future roadmap items.
+- [ ] **Keep the License:** Preserve the existing proprietary `LICENSE` file at the root and make sure the README points to it.
+- [ ] **Update Copy and Scope:** Replace any references to Switzerland or non-EU countries in `apps/web/pages/index.tsx` and seed data where they still exist. Keep the MVP focused on "Artisanal food delivery within the EU."
+- [ ] **Fix Broken Links:** Review the footer and navigation for any dead links, but treat existing `privacy.tsx` and `terms.tsx` routes as drafts to be hardened rather than missing pages.
+
+---
+
+### Track 1: Legal & Corporate Infrastructure
+*Objective: Establish a clean corporate structure and secure IP.*
+
+- [ ] **Incorporate Entity:** Incorporate a Czech s.r.o. or an international holding entity (e.g., in Delaware, Estonia, or the UK) to simplify future venture investment.
+- [ ] **Execute IP Assignment:** Have all developers sign an intellectual property assignment agreement transferring all code to the new entity.
+- [ ] **Draft Agreements:** Draft a Founder Collaboration Agreement with a standard 4-year vesting schedule and 1-year cliff.
+- [ ] **Legal Disclosures:** Write the Privacy Policy, Terms of Service, and Cookie Policy. Ensure they clearly address marketplace liabilities, food logistics, and the 14-day consumer right of withdrawal.
+
+---
+
+### Track 2: Regulatory Compliance
+*Objective: Build compliance controls directly into the database schema and application flow.*
+
+- [ ] **Expand DB Schema for Compliance:**
+    *Modify database constraints to track verification data:*
+    ```sql
+    ALTER TABLE users ADD COLUMN IF NOT EXISTS tax_id VARCHAR(100);
+    ALTER TABLE users ADD COLUMN IF NOT EXISTS vat_number VARCHAR(100);
+    ALTER TABLE users ADD COLUMN IF NOT EXISTS trade_register_number VARCHAR(100);
+    ALTER TABLE users ADD COLUMN IF NOT EXISTS address_street VARCHAR(255);
+    ALTER TABLE users ADD COLUMN IF NOT EXISTS address_city VARCHAR(100);
+    ALTER TABLE users ADD COLUMN IF NOT EXISTS address_postal_code VARCHAR(20);
+    ALTER TABLE users ADD COLUMN IF NOT EXISTS self_certified_compliant BOOLEAN DEFAULT FALSE;
+    ```
+- [ ] **Build Seller Verification UI:** Update `apps/web/pages/become-seller.tsx` to collect these details. Force users onboarding as sellers to complete this step to comply with DSA Article 30 and DAC7.
+- [ ] **Persist Seller Verification:** Connect the existing seller application form to the backend so the KYBC/DAC7 details are stored, validated, and reviewable by admins.
+- [ ] **Enforce Food Allergen Requirements:** 
+    *Ensure the frontend and database mandate allergen listings:*
+    ```sql
+    ALTER TABLE foods ALTER COLUMN allergens SET NOT NULL;
+    ALTER TABLE foods ALTER COLUMN description SET NOT NULL;
+    ```
+    Require sellers to select allergens from the 14 EU-regulated ingredients when creating listings.
+
+---
+
+### Track 3: Technical Integrity & Feature Completion
+*Objective: Simplify architecture, build the transaction loop, and add tests.*
+
+- [ ] **Simplify Architecture:** Keep messaging out of a separate runtime for now. If chat is needed, implement it inside `services/core-service/` instead of splitting into another service.
+- [ ] **Stripe Connect Integration:** Use Stripe Connect (Express or Custom onboarding) to split payments between the seller and the marketplace commission automatically.
+- [ ] **Harden Checkout Pages:** Replace the existing mock `cart.tsx` and `checkout.tsx` behavior with real order creation, payment intent handling, and payout confirmation.
+- [ ] **Secure Authentication Tokens:** Update the login and gateway configuration to store JWT tokens in secure, HTTP-only cookies instead of `localStorage`.
+- [ ] **Configure Testing Pipelines:**
+    *   Add JUnit 5 test cases to the Java core service.
+    *   Add Jest tests in `apps/web/` for critical frontend flows.
+    *   Fix `.github/workflows/ci-cd.yml` to block merges if tests fail.
+- [ ] **Add Admin Moderation Panel:** Create `apps/web/pages/admin/dashboard.tsx` to allow administrators to verify sellers, flag listings, and process refund requests.
+
+---
+
+### Track 4: Financial Modeling & Unit Economics
+*Objective: Build a viable business model backed by real numbers.*
+
+- [ ] **TAM/SAM/SOM Calculation:** Size the European artisanal food market. Focus on expat food demand and specialty cross-border shopping trends.
+- [ ] **Marketplace Take-Rate Model:**
+    $$\text{Platform Commission} = (\text{Item Price} + \text{Shipping}) \times 15\%$$
+    Ensure this commission model covers payment fees, KYC verification, and support costs while keeping margins attractive for sellers.
+- [ ] **Headcount & Runway Projections:** Build an 18–24 month financial model projecting hire timing, server costs, legal budgets, and customer acquisition costs.
+
+---
+
+### Track 5: Visual Brand Polish
+*Objective: Build user trust with a cohesive visual identity.*
+
+- [ ] **Develop Design Tokens:** Replace generic Tailwind classes with a refined style system.
+    ```css
+    /* Example design system foundations in index.css */
+    :root {
+      --color-brand-primary: #1e3f20; /* Forest Green */
+      --color-brand-accent: #d4a373;  /* Warm Earth */
+      --color-bg-base: #fefae0;       /* Soft Cream */
+      --font-display: 'Outfit', sans-serif;
+    }
+    ```
+- [ ] **Upgrade Assets:** Replace the landing page emoji with high-quality, generated brand assets representing artisanal cheese, oils, and meats.
+
+---
+
+### Track 6: Investor Materials & Data Room Setup
+*Objective: Organize materials for fundraising conversations.*
+
+- [ ] **Write One-Pager:** Summarize the marketplace opportunity, traction metrics, team background, and funding requirements in a clear, concise format.
+- [ ] **Draft Pitch Deck:** Build a 12-slide presentation covering the problem, solution, market size, product, business model, and financing goals.
+- [ ] **Set Up Data Room:** Create a secure, structured folder containing incorporation certificates, financial forecasts, IP assignments, API schemas, and customer research notes.
+
+---
+
+### Track 7: Traction Generation
+*Objective: Prove product-market fit with actual data.*
+
+- [ ] **Run Discovery Interviews:** Interview 20+ artisan food producers and 50+ target buyers (focused on EU expats) to refine your product requirements.
+- [ ] **Secure Letters of Intent (LOIs):** Get 5–10 signed commitments from gourmet sellers willing to join the platform at launch.
+- [ ] **Launch the Waitlist:** Publish a landing page to collect waitlist signups.
+- [ ] **Concierge Pilot:** Manually facilitate 5–10 orders using manual invoicing and shipping to test consumer demand and verify logistics.
+
+---
+
+### Track 8: GTM & Seller Pipelines
+*Objective: Design scalable seller and buyer acquisition loops.*
+
+- [ ] **Seller Sourcing Strategy:** Direct outreach to regional agricultural cooperatives, gourmet associations, and local food halls.
+- [ ] **Buyer Acquisition:** Target communities of European expats, food enthusiasts, and specialty cooking groups on social media.
+
+---
+
+### Track 9: Pre-Seed Execution
+*Objective: Manage investor outreach and fundraising logistics.*
+
+- [ ] **Target List:** Build a database of pre-seed micro-VCs and active angels focusing on food-tech, marketplaces, or cross-border trade in Europe.
+- [ ] **SAFE Agreements:** Work with your legal team to prepare Czech-compliant SAFE or convertible note agreements.
+
+---
+
+### Track 10: Governance & Investor Relations
+*Objective: Maintain transparency with updates for key stakeholders.*
+
+- [ ] **Investor Updates:** Draft and send brief monthly updates to keep prospective investors and advisors informed of your progress.
+- [ ] **KPI Tracking:** Maintain a weekly metrics dashboard tracking waitlist signups, seller inquiries, and early transaction data.
+
+---
+
+## Part D — Sequenced Weekly Roadmap
+
+```
+[Month 1: Clean & Legal] --> [Month 2: Payments & Compliance] --> [Month 3: Pilot & Pitch]
+```
+
+### Month 1: Groundwork, Cleanups, & Incorporation
+*   **Week 1 (Clean up the Repository & Align Docs):**
+    *   [ ] Delete the obsolete markdown files listed in Track 0 if they exist in other branches or exports.
+    *   [ ] Rewrite `README.md` and update `STATUS.md` to reflect the actual state of the codebase.
+    *   [ ] Replace the hardcoded "Swiss Emmental" and references to Switzerland with EU member states in all demo data and homepage copy.
+    *   [ ] Keep the existing proprietary `LICENSE` file and ensure the README points to it.
+    *   [ ] Update copyright statements in the footer.
+*   **Week 2 (Legal Setup & IP):**
+    *   [ ] Choose a corporate structure and submit incorporation documents.
+    *   [ ] Execute IP assignment agreements with all contributors.
+    *   [ ] Set up your corporate bank account and secure your core domains.
+*   **Week 3 (Scaffold Test Suites & Clean Up Microservices):**
+    *   [ ] Keep chat and messaging inside the core service rather than introducing a new runtime.
+    *   [ ] Expand beyond the existing `UserServiceTest` and `cart.test.tsx` with broader JUnit and Jest coverage for auth, orders, checkout, and seller onboarding.
+    *   [ ] Update the GitHub Actions CI workflow to run tests on every push.
+*   **Week 4 (User Rights Documents):**
+    *   [ ] Review and harden the existing Terms of Service, Cookie Notice, and Privacy Policy.
+    *   [ ] Review consumer right-of-withdrawal exemptions for perishables with your legal advisor.
+
+### Month 2: Payments, KYBC, & Core Commerce Loops
+*   **Week 5 (Auth0 and Token Security):**
+    *   [ ] Configure a secure Auth0 tenant.
+    *   [ ] Move JWT tokens from the browser's `localStorage` into secure HTTP-only cookies.
+    *   [ ] Add security middleware to the Node API Gateway to enforce token validation.
+*   **Week 6 (Compliance Integration & Onboarding):**
+    *   [ ] Run the SQL script to add tax and company registration fields to the database.
+    *   [ ] Build the KYBC and DAC7 onboarding fields into `become-seller.tsx`.
+    *   [ ] Make description and allergen selections mandatory for new listings.
+*   **Week 7 (Stripe Connect & Split Payments):**
+    *   [ ] Register a Stripe Connect account.
+    *   [ ] Implement backend controllers to handle seller onboarding links and payouts.
+    *   [ ] Implement checkout routes that calculate platform fees and distribute funds.
+*   **Week 8 (Checkout & Shopping Cart UI):**
+    *   [ ] Build `cart.tsx` and `checkout.tsx` pages in `apps/web`.
+    *   [ ] Integrate Stripe Elements for secure card entry.
+    *   [ ] Test the complete transaction flow locally using mock data.
+
+### Month 3: Testing, Materials, & Pre-Launch Traction
+*   **Week 9 (Admin Moderation & Sentry Monitoring):**
+    *   [ ] Create the admin dashboard to review and approve listings.
+    *   [ ] Connect Sentry to track runtime errors in the frontend and backend.
+*   **Week 10 (Waitlist Launch & Discovery):**
+    *   [ ] Deploy the updated frontend landing page with a waitlist form.
+    *   [ ] Interview 10 potential sellers and draft agreements to pilot their products.
+*   **Week 11 (Run Concierge Pilot):**
+    *   [ ] Manually facilitate 5 test orders between waitlisted buyers and pilot sellers.
+    *   [ ] Collect feedback on packaging, shipping times, and food quality.
+*   **Week 12 (Pitch Deck & Data Room):**
+    *   [ ] Create a pitch presentation using your pilot metrics.
+    *   [ ] Populate the data room with your legal documents and financial forecasts.
+*   **Week 13+ (Raise & Launch):**
+    *   [ ] Build your investor target list and reach out to warm contacts.
+    *   [ ] Launch the public beta of the platform.
+
+---
+
+## Part E — Ready-to-Fill Templates
+
+### 1. Pitch Presentation Structure
+
+*   **Slide 1: Cover**
+    *   *Title:* EUshop
+    *   *Subtitle:* Direct cross-border delivery for Europe's finest regional foods.
+*   **Slide 2: The Problem**
+    *   *Sellers:* Artisanal producers are locked out of the pan-European market due to shipping complexities and strict compliance requirements (DSA, VAT OSS, DAC7).
+    *   *Buyers:* Expats and food lovers cannot source authentic, high-quality regional foods from their home countries.
+*   **Slide 3: The Solution**
+    *   A managed marketplace that handles VAT calculations, seller verification, and compliance checks automatically, enabling seamless food shipping across the EU.
+*   **Slide 4: Product Showcase**
+    *   Include screenshots of the food catalog, seller onboarding flow, and checkout pages. Emphasize your integrated allergen disclosures.
+*   **Slide 5: Market Opportunity**
+    *   *Total Addressable Market (TAM):* €50B+ European specialty food market.
+    *   *Serviceable Addressable Market (SAM):* €12B cross-border online food purchases.
+    *   *Serviceable Obtainable Market (SOM):* €300M target market focusing on expat food demand in major cities.
+*   **Slide 6: Business Model**
+    *   15% commission on all completed transactions.
+    *   Additional flat fee per transaction to cover payment processing and compliance audits.
+*   **Slide 7: Traction Timeline**
+    *   *Waitlist:* 500+ signups.
+    *   *Sellers:* 12 signed LOIs.
+    *   *Concierge Pilot:* 8 orders completed, €640 GMV generated, 100% positive feedback.
+*   **Slide 8: Regulatory Advantage**
+    *   Our integrated compliance engine handles VAT OSS, DAC7, and DSA checks automatically, making it easy for small sellers to trade legally across borders.
+*   **Slide 9: GTM Strategy**
+    *   *Supply:* Target regional cooperatives and food halls directly.
+    *   *Demand:* Reach out to expat groups and regional culinary communities.
+*   **Slide 10: Competitive Analysis**
+    *   Compare EUshop with mass-market shipping companies, local delicatessens, and unmanaged marketplaces. Highlight your focus on automated compliance and food safety.
+*   **Slide 11: Founding Team**
+    *   Names, backgrounds, and relevant experience in software development and food logistics.
+*   **Slide 12: Financial Summary & Funding Request**
+    *   *Goal:* Raise €400,000 via SAFE.
+    *   *Runway:* 18 months.
+    *   *Use of Funds:* Core engineering (60%), legal & compliance (25%), seller acquisition (15%).
+
+---
+
+### 2. Marketplace One-Pager Outline
+
+```
+EUshop | Pan-European Artisanal Food Marketplace
+Contact: founders@eushop.com | Website: eushop.com
+
+THE OPPORTUNITY
+European specialty food is a €50B market, but buying authentic products across borders remains difficult. Small producers are discouraged from selling internationally by complex compliance rules (VAT OSS, DSA, DAC7) and shipping logistics. EUshop connects artisan food producers directly with customers across the EU using an automated compliance and logistics platform.
+
+THE PRODUCT
+*   Compliance Engine: Automates VAT OSS calculations, seller KYBC checks, and DAC7 tax reporting.
+*   Secure Payments: Uses Stripe Connect for easy payments and split payouts.
+*   Food Safety First: Mandates ingredient and allergen disclosures at onboarding.
+
+EARLY TRACTION
+*   Waitlist: 500+ registered buyers.
+*   Sellers: 12 signed LOIs.
+*   Pilot: Completed 8 cross-border transactions manually, verifying pricing models and delivery routes.
+
+FINANCING ASK
+We are raising €400,000 via SAFE to expand our engineering team, secure final legal clearance, and scale seller onboarding.
+```
+
+---
+
+### 3. KPI Tracking Model
+
+Track these metrics weekly in a dashboard:
+
+```csv
+Week,Date,Waitlist_Total,Seller_LOIs,Transactions,GMV,Revenue,LTV,CAC
+W1,2026-07-07,120,4,0,0.00,0.00,0.00,0.00
+W2,2026-07-14,180,6,0,0.00,0.00,0.00,0.00
+W3,2026-07-21,250,9,0,0.00,0.00,0.00,0.00
+W4,2026-07-28,340,12,8,640.00,96.00,80.00,12.50
+```
+
+---
+
+### 4. Monthly Investor Update Template
+
+```
+Subject: EUshop Update - [Month, Year]
+
+Dear Investors & Advisors,
+
+Here is a summary of our progress at EUshop as we build the premier pan-European marketplace for specialty foods.
+
+1. KEY METRIC HIGHLIGHT
+*   Waitlist grew to [Number] subscribers (+[X]% Month-over-Month).
+*   Signed [Number] new artisan food producers, bringing our pipeline to [Number] sellers.
+
+2. BUSINESS WINS
+*   Completed our manual concierge pilot: processed [Number] transactions across [Number] EU countries.
+*   Verified that shipping times for fresh cheeses and cured meats averaged under 3 days, maintaining food safety standards.
+
+3. ENGINEERING & REGULATORY PROGRESS
+*   Decommissioned unused microservices to simplify our code and infrastructure.
+*   Updated our database schema to capture tax and registration details required for DAC7 and DSA compliance.
+*   Began integrating Stripe Connect to automate payments and payouts.
+
+4. CHALLENGES & PLAN OF ACTION
+*   Challenge: Finding cost-effective cold-chain shipping partners for small-batch meat products.
+*   Plan: Partnering with regional logistics aggregators to secure discounted rates.
+
+5. HOW YOU CAN HELP
+*   We are looking for introductions to early-stage investors focusing on European marketplace startups.
+*   We would love to connect with logistics experts specializing in cross-border food shipping.
+
+Best regards,
+
+The EUshop Team
+```
+
+---
+
+## Part F — Actionable Repo Punch-List
+
+Copy these issues directly into GitHub to coordinate development tasks:
+
+- [ ] **Clean Up Project Files (`Track 0`):**
+    *   Delete the following files:
+        *   `COMPLETION-SUMMARY.md`
+        *   `PHASE-2-FINAL-STATUS.md`
+        *   `PHASE-2-VALIDATION.md`
+        *   `PHASE_2_COMPLETE.md`
+        *   `POST-PHASE-1.md`
+        *   `READY-FOR-ACTION.md`
+        *   `docs/PHASE_2_COMPLETION.md`
+        *   `docs/README_PHASE2.md`
+        *   `QUICKSTART.md` (keep `QUICK-START.md` and rename to `DEVELOPMENT.md` if needed).
+    *   Create a clean, updated `STATUS.md`.
+- [ ] **Update Project Metadata (`Track 0`):**
+    *   Edit `README.md` to show the correct project status.
+    *   Create a `LICENSE` file containing your proprietary license terms.
+    *   Add a link to the existing `DEVELOPMENT.md` file.
+- [ ] **Fix Frontend Inconsistencies (`Track 0` & `Track 5`):**
+    *   Update `apps/web/pages/index.tsx`:
+        *   Remove references to Swiss products.
+        *   Update the copyright year dynamically:
+            ```tsx
+            {new Date().getFullYear()} EUshop. All rights reserved.
+            ```
+        *   Replace broken links to privacy policies and terms of service with routing paths:
+            ```tsx
+            <Link href="/privacy">Privacy Policy</Link>
+            ```
+- [ ] **Configure Project Routing & Pages (`Track 2` & `Track 3`):**
+    *   Harden `apps/web/pages/privacy.tsx` and `apps/web/pages/terms.tsx`.
+    *   Harden `apps/web/pages/cart.tsx` and `apps/web/pages/checkout.tsx` so they use real order and payment flows.
+    *   Create `apps/web/pages/admin/dashboard.tsx`.
+- [ ] **Simplify Backend Architecture (`Track 3`):**
+    *   Keep messaging out of a separate runtime for now.
+    *   Remove Elasticsearch configuration from `docker-compose.yml` if it is still present in the runtime path.
+    *   Keep chat schemas and controllers in `services/core-service/`.
+- [ ] **Update Database Schema (`Track 2`):**
+    *   Run the migration script to add verification and tax fields to the `users` table.
+- [ ] **Secure Authentication Tokens (`Track 3`):**
+    *   Update `services/api-gateway/` and `apps/web/` to store JWT tokens in secure, HTTP-only cookies instead of `localStorage`.
+- [ ] **Configure Testing Suites (`Track 3`):**
+    *   Configure JUnit 5 and mock servers in `services/core-service/`.
+    *   Configure Jest and write component tests in `apps/web/`.
+    *   Update `.github/workflows/ci-cd.yml` to run testing checks on every push.
+
+---
+
+## Closing Note
+
+A successful pre-seed company does not need to be perfect, but it must be **credible**. 
+
+By aligning your documentation with the actual code, simplifying your technical stack, and building regulatory compliance directly into your product architecture, you can address common diligence questions before they are asked. 
+
+This plan gives you a clear path to build a secure, compliant, and scale-ready marketplace. Focus on Track 0 this week to establish a clean foundation, and build out from there.

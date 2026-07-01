@@ -87,6 +87,7 @@ public class FoodController {
         food.setCountry(request.getCountry());
         food.setQuantity(request.getQuantity());
         food.setDietaryRestrictions(request.getDietaryRestrictions());
+        food.setAllergens(request.getAllergens());
         food.setImages(request.getImages());
 
         Food created = foodService.createFood(food, userId);
@@ -118,6 +119,7 @@ public class FoodController {
         food.setCountry(request.getCountry());
         food.setQuantity(request.getQuantity());
         food.setDietaryRestrictions(request.getDietaryRestrictions());
+        food.setAllergens(request.getAllergens());
         food.setImages(request.getImages());
 
         Food updated = foodService.updateFood(id, food);
@@ -154,6 +156,7 @@ public class FoodController {
         dto.setCountry(food.getCountry());
         dto.setQuantity(food.getQuantity());
         dto.setDietaryRestrictions(food.getDietaryRestrictions());
+        dto.setAllergens(food.getAllergens());
         dto.setImages(food.getImages());
         dto.setAvailable(food.getAvailable());
         dto.setAverageRating(food.getAverageRating());

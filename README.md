@@ -1,46 +1,39 @@
 # EU Specialty Food Marketplace Platform
 
-A full-featured marketplace connecting European users to discover and trade niche specialty foods (chocolates, liverwurst, regional candies, etc.). Modern 2026 tech stack with web + mobile apps, real-time messaging, payments, and location-based discovery.
+A marketplace platform connecting European users to discover and trade niche specialty foods (chocolates, regional candies, pantry staples, etc.) within the EU Single Market.
+
+> [!NOTE]
+> This project is currently in the **MVP development phase**. The core relational schema and Spring Boot API endpoints are implemented. Several other features (such as Stripe payments and Auth0 integration) are currently represented by development mocks or placeholders.
 
 ## Project Structure
 
 ```
 eushop/
 ├── apps/
-│   ├── web/              # Next.js web application
-│   └── mobile/           # React Native mobile app
+│   └── web/              # Next.js web application
 ├── services/
-│   ├── api-gateway/      # Node.js/Express API Gateway (REST + GraphQL)
-│   ├── core-service/     # Spring Boot core business logic
-│   └── messaging-service/ # Spring WebFlux real-time messaging
+│   └── core-service/     # Spring Boot core business logic monolith
 ├── db/
-│   ├── migrations/       # Database migrations (Flyway)
+│   ├── migrations/       # Database migrations (PostgreSQL)
 │   └── seed/            # Seed data (countries, food categories)
-├── infrastructure/
-│   └── terraform/        # Infrastructure as Code
-├── docs/                 # Documentation
-└── docker-compose.yml    # Local development environment
+├── docs/                 # Project documentation
+└── docker-compose.yml    # Local development environment (Postgres + Redis)
 ```
 
-## Tech Stack
+## Tech Stack (MVP Status)
 
 ### Frontend
 - **Web**: Next.js 16 + React 19 + TypeScript + Tailwind CSS
-- **Mobile**: React Native + Expo (iOS/Android)
 
-### Backend (Microservices)
-- **API Gateway**: Node.js + Express (REST + GraphQL Router)
-- **Core Service**: Spring Boot/Java (listings, orders, transactions)
-- **Messaging**: Spring WebFlux (WebSocket for real-time chat)
+### Backend
+- **Core Service**: Spring Boot / Java 17 + JPA + Hibernate + REST endpoints (running on port `3001` or routed via gateway)
+- **API Gateway**: Node.js + Express (JWT token validation skeleton, running on port `3000`)
 
 ### Database & Cache
-- **PostgreSQL 18+**: Primary data store (ACID for transactions)
-- **Redis 8**: Session management, real-time feeds, caching
-- **Elasticsearch 8+**: Full-text search with fuzzy matching
+- **PostgreSQL 18+**: Primary data store with 8-table relational schema
+- **Redis 8**: Cache and session storage
 
-### Storage & Media
-- **AWS S3 + Cloudflare CDN**: Image storage and delivery
-- **Cloudinary**: Automatic image optimization and transformations
+---
 
 ## Getting Started
 
@@ -48,9 +41,9 @@ eushop/
 - Node.js 20+
 - pnpm 8+
 - Docker & Docker Compose
-- Java 17+ (for Spring Boot)
+- Java 17+
 
-### Installation
+### Installation & Local Setup
 
 1. **Clone and setup**
    ```bash
@@ -62,178 +55,64 @@ eushop/
 2. **Configure environment**
    ```bash
    cp .env.example .env.local
-   # Edit .env.local with your configuration
+   # Edit .env.local with your configuration (such as local DB/Redis settings)
    ```
 
-3. **Start infrastructure**
+3. **Start local database & cache**
    ```bash
    docker-compose up -d
-   # Verify all services are healthy
+   # Verify containers (postgres and redis) are healthy
    docker-compose ps
    ```
 
-4. **Start development servers**
+4. **Initialize database schema and seed data**
+   ```bash
+   pnpm run db:migrate
+   pnpm run db:seed
+   ```
+
+5. **Start development servers**
    ```bash
    pnpm dev
    ```
 
    This starts:
-   - Web app: http://localhost:3000
-   - Mobile app: Expo dev server (instructions in terminal)
+   - Web application: http://localhost:3000
    - API Gateway: http://localhost:3000/api
    - Core Service: http://localhost:3001
-   - Messaging: ws://localhost:3002
 
-### Database Setup
+---
 
-Initialize database schema and seed data:
-```bash
-pnpm run db:migrate
-pnpm run db:seed
-```
+## Project Status & Roadmap
 
-## Development Workflow
+### Phase 1: Discovery & Auth (Current Focus)
+- [x] Solid relational database schema setup (Users, Foods, Food Requests, Orders, Reviews, Notifications)
+- [x] Basic Spring Boot Core API REST endpoints (CRUD for foods, users, orders)
+- [/] User login/signup (using Next.js frontend, currently wired to mock token gateway)
+- [ ] Map view with seller locations (Future)
 
-### Running Individual Services
+### Phase 2: Seller Listings & Compliance (In Progress)
+- [x] Create/edit/delete listings in core database
+- [x] Allergen disclosure fields (14 EU allergens)
+- [ ] KYBC (Know-Your-Business-Customer) & DAC7 tax registration forms (In progress)
+- [ ] Photo upload with Cloudinary or S3 integration (Planned)
 
-```bash
-# Web app only
-cd apps/web && pnpm dev
+### Phase 3: Messaging & Requests (Planned)
+- [ ] Messaging/Conversation schema defined in database
+- [ ] REST API message retrieval and polling (Consolidated into Core Service)
+- [ ] Direct buyer-seller chat interface
 
-# Mobile app only
-cd apps/mobile && pnpm start
+### Phase 4: Payments & Orders (Planned)
+- [x] Database model for order processing
+- [ ] Shopping cart & Checkout flow UI (In progress)
+- [ ] Stripe Connect B2C split-payment integration
 
-# API Gateway
-cd services/api-gateway && pnpm dev
+### Phase 5: Reviews & Reputation (Planned)
+- [x] Review/rating schema and average-rating calculation in core services
+- [ ] Verified purchase badge checks
 
-# Core Service (requires Java)
-cd services/core-service && ./gradlew bootRun
-```
-
-### Running Tests
-
-```bash
-pnpm test
-```
-
-### Linting & Formatting
-
-```bash
-pnpm lint
-pnpm format
-```
-
-## Project Phases
-
-### Phase 1: Discovery & Auth (Weeks 1-4)
-- [ ] User registration/login (OAuth 2.0 + JWT)
-- [ ] Food discovery by EU country
-- [ ] Full-text search with fuzzy matching
-- [ ] Filters (country, food type, price, ratings)
-- [ ] Map view with seller locations
-
-### Phase 2: Seller Listings (Weeks 5-8)
-- [ ] Create/edit/delete listings
-- [ ] Photo upload with Cloudinary optimization
-- [ ] Set finder's fees
-- [ ] Real-time notifications (WebSocket)
-
-### Phase 3: Messaging & Requests (Weeks 9-12)
-- [ ] Real-time buyer-seller chat
-- [ ] Food request posting
-- [ ] Request matching algorithm
-
-### Phase 4: Payments & Orders (Weeks 13-16)
-- [ ] Shopping cart
-- [ ] Stripe checkout integration
-- [ ] Order management workflow
-- [ ] Seller payouts
-
-### Phase 5: Reviews & Reputation (Weeks 17-20)
-- [ ] Review/rating system
-- [ ] Seller reputation scoring
-- [ ] Verified purchase badges
-
-### Phase 6: Polish & Launch (Weeks 21-24)
-- [ ] Performance optimization
-- [ ] UX/accessibility polish
-- [ ] Comprehensive testing (unit, integration, E2E)
-- [ ] Production deployment
-- [ ] GDPR compliance
-
-## API Overview
-
-### REST Endpoints (API Gateway)
-
-```
-POST   /api/auth/signup         # Register new user
-POST   /api/auth/login          # User login
-GET    /api/foods               # List foods (with filters)
-GET    /api/foods/:id           # Get food details
-POST   /api/listings            # Create listing (seller)
-PUT    /api/listings/:id        # Update listing
-DELETE /api/listings/:id        # Delete listing
-GET    /api/sellers/:id/reviews # Get seller reviews
-POST   /api/orders              # Create order
-GET    /api/orders/:id          # Get order details
-POST   /api/reviews             # Submit review
-```
-
-### GraphQL Endpoints (API Gateway)
-
-```
-POST   /graphql                 # GraphQL queries
-```
-
-### WebSocket Endpoints (Messaging Service)
-
-```
-ws://localhost:3002/messages/:conversationId
-```
-
-## Monitoring & Logging
-
-- **Logs**: Centralized via ELK Stack (Elasticsearch, Logstash, Kibana)
-- **Monitoring**: Datadog (APM, infrastructure)
-- **Error Tracking**: Sentry for real-time error alerts
-- **Performance**: New Relic for application performance
-
-## Deployment
-
-### Local
-```bash
-docker-compose up -d
-pnpm dev
-```
-
-### Staging
-```bash
-# Deployed to Vercel (web), EKS (backend)
-git push origin staging
-```
-
-### Production
-```bash
-# Deployed to Vercel (web), EKS (backend)
-git push origin main
-```
-
-## Documentation
-
-See [docs/](docs/) directory for:
-- [Architecture Overview](docs/ARCHITECTURE.md)
-- [API Documentation](docs/API.md)
-- [Database Schema](docs/DATABASE.md)
-- [Deployment Guide](docs/DEPLOYMENT.md)
-
-## Contributing
-
-See [CONTRIBUTING.md](CONTRIBUTING.md) for guidelines.
+---
 
 ## License
 
-MIT
-
-## Contact
-
-For questions or feedback, reach out to the team.
+Proprietary — All Rights Reserved.

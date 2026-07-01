@@ -1,7 +1,7 @@
 import Link from 'next/link';
 import { useRouter } from 'next/router';
 import { useEffect, useState } from 'react';
-import { foodAPI } from '../lib/services';
+import { foodAPI } from '../../lib/services';
 
 interface FoodDetail {
   id: string;

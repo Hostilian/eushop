@@ -19,4 +19,11 @@ public class UserDTO {
     private String profileBio;
     private String profileImageUrl;
     private Boolean kycVerified;
+    private String taxId;
+    private String vatNumber;
+    private String tradeRegisterNumber;
+    private String addressStreet;
+    private String addressCity;
+    private String addressPostalCode;
+    private Boolean selfCertifiedCompliant;
 }

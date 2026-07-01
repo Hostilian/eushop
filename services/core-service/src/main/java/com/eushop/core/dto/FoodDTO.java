@@ -21,6 +21,7 @@ public class FoodDTO {
     private Integer quantity;
     @JsonProperty("dietary_restrictions")
     private String dietaryRestrictions;
+    private String allergens;
     private String images;
     private Boolean available;
     @JsonProperty("average_rating")

@@ -11,7 +11,7 @@ VALUES
 ('demo@eushop.local', 'Demo Admin', 'BE', 'admin', TRUE, 'auth0|demo', 'System Administrator', 5.0, 0),
 ('seller1@example.com', 'Belgian Chocolates Ltd', 'BE', 'seller', TRUE, 'auth0|seller1', 'Premium Belgian chocolate manufacturer since 1950', 4.8, 45),
 ('seller2@example.com', 'Italian Delights S.r.l', 'IT', 'seller', TRUE, 'auth0|seller2', 'Authentic Italian specialty foods from Tuscany', 4.9, 67),
-('seller3@example.com', 'Swiss Foods Company', 'CH', 'seller', TRUE, 'auth0|seller3', 'Premium Swiss dairy and chocolate products', 4.7, 38),
+('seller3@example.com', 'German Delicatessen GmbH', 'DE', 'seller', TRUE, 'auth0|seller3', 'Premium German cheese and confectionery products', 4.7, 38),
 ('buyer1@example.com', 'Jean Dupont', 'FR', 'buyer', TRUE, 'auth0|buyer1', 'Food enthusiast from France', 0.0, 0),
 ('buyer2@example.com', 'Maria Garcia', 'ES', 'buyer', FALSE, 'auth0|buyer2', 'Spanish cuisine lover', 0.0, 0),
 ('buyer3@example.com', 'Hans Mueller', 'DE', 'buyer', TRUE, 'auth0|buyer3', 'German food specialist', 0.0, 0)
@@ -48,15 +48,15 @@ SELECT u.id, 'Parmigiano Reggiano 36 Months', 'Aged Parmigiano Reggiano from Emi
 FROM users u WHERE u.email = 'seller2@example.com'
 ON CONFLICT DO NOTHING;
 
--- Swiss Foods
+-- German Foods
 INSERT INTO foods (seller_id, name, description, category, price, finder_fee_amount, country, quantity_available, is_active, average_rating, review_count, sales_count, view_count)
-SELECT u.id, 'Swiss Emmental Cheese Wheel', 'Traditional Swiss Emmental cheese with characteristic holes. 500g wheel', 'Cheese', 38.99, 7.80, 'CH', 45, TRUE, 4.7, 10, 25, 289
+SELECT u.id, 'German Tilsiter Cheese Wheel', 'Traditional German semi-hard cheese from East Prussia. 500g wheel', 'Cheese', 38.99, 7.80, 'DE', 45, TRUE, 4.7, 10, 25, 289
 FROM users u WHERE u.email = 'seller3@example.com'
 UNION ALL
-SELECT u.id, 'Swiss Gruyère AOP', 'Protected designation Gruyère cheese from Switzerland. Nutty flavor. 300g', 'Cheese', 35.99, 7.20, 'CH', 55, TRUE, 4.8, 12, 32, 234
+SELECT u.id, 'German Allgäuer Bergkäse', 'Protected designation mountain cheese from Bavaria. Robust flavor. 300g', 'Cheese', 35.99, 7.20, 'DE', 55, TRUE, 4.8, 12, 32, 234
 FROM users u WHERE u.email = 'seller3@example.com'
 UNION ALL
-SELECT u.id, 'Lindt Lindor Truffles - Assorted', 'Swiss Lindor truffles with smooth melting centers. 200g box', 'Chocolates', 16.99, 3.40, 'CH', 180, TRUE, 4.6, 8, 67, 512
+SELECT u.id, 'German Marzipan Chocolates - Assorted', 'Assorted traditional Lübeck marzipan covered in dark chocolate. 200g box', 'Chocolates', 16.99, 3.40, 'DE', 180, TRUE, 4.6, 8, 67, 512
 FROM users u WHERE u.email = 'seller3@example.com'
 ON CONFLICT DO NOTHING;
 
@@ -82,14 +82,14 @@ ON CONFLICT DO NOTHING;
 INSERT INTO orders (buyer_id, food_id, quantity, total_price, status, notes)
 SELECT b.id, f.id, 1, 38.99, 'CONFIRMED', 'Order confirmed, awaiting shipment'
 FROM users b, foods f
-WHERE b.email = 'buyer2@example.com' AND f.name = 'Swiss Emmental Cheese Wheel'
+WHERE b.email = 'buyer2@example.com' AND f.name = 'German Tilsiter Cheese Wheel'
 LIMIT 1
 ON CONFLICT DO NOTHING;
 
 INSERT INTO orders (buyer_id, food_id, quantity, total_price, status, notes)
 SELECT b.id, f.id, 3, 50.97, 'PENDING', 'New order'
 FROM users b, foods f
-WHERE b.email = 'buyer3@example.com' AND f.name = 'Lindt Lindor Truffles - Assorted'
+WHERE b.email = 'buyer3@example.com' AND f.name = 'German Marzipan Chocolates - Assorted'
 LIMIT 1
 ON CONFLICT DO NOTHING;
 
