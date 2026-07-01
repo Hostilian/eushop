@@ -33,4 +33,14 @@ public interface ReviewRepository extends JpaRepository<Review, String> {
     Long countBySellerId(String sellerId);
 
     boolean existsByFoodIdAndReviewerId(String foodId, String reviewerId);
+
+    java.util.List<Review> findByFoodIdOrderByCreatedAtDesc(String foodId);
+
+    java.util.List<Review> findByReviewerId(String reviewerId);
+
+    @Query("SELECT COUNT(r) FROM Review r WHERE r.foodId = :foodId")
+    Long getReviewCountByFood(@Param("foodId") String foodId);
+
+    @Query("SELECT COUNT(r) FROM Review r WHERE r.sellerId = :sellerId")
+    Long getReviewCountBySeller(@Param("sellerId") String sellerId);
 }
