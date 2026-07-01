@@ -17,17 +17,22 @@ async function migrate() {
   console.log('🚀 Running database migrations...');
   
   try {
-    const migrationFile = fs.readFileSync(
-      path.join(__dirname, '../migrations/001_initial_schema.sql'),
-      'utf8'
-    );
+    const migrationsDir = path.join(__dirname, '../migrations');
+    const files = fs.readdirSync(migrationsDir)
+      .filter(f => f.endsWith('.sql'))
+      .sort();
 
-    const statements = migrationFile.split(';').filter(s => s.trim());
+    for (const file of files) {
+      console.log(`▸ Applying migration: ${file}`);
+      const filePath = path.join(migrationsDir, file);
+      const migrationFile = fs.readFileSync(filePath, 'utf8');
+      const statements = migrationFile.split(';').filter(s => s.trim());
 
-    for (const statement of statements) {
-      if (statement.trim()) {
-        console.log(`Executing: ${statement.substring(0, 50)}...`);
-        await pool.query(statement);
+      for (const statement of statements) {
+        if (statement.trim()) {
+          console.log(`  Executing: ${statement.substring(0, 50).replace(/\s+/g, ' ')}...`);
+          await pool.query(statement);
+        }
       }
     }
 
