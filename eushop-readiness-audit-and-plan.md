@@ -1,6 +1,6 @@
 # EUshop — Full Readiness Audit & Master Implementation Plan (Enhanced Edition)
 
-**What this is:** A complete, evidence-based, deep-dive audit of the `Hostilian/eushop` repository and business operations, paired with a sequenced, multi-track master implementation plan. This document is designed to transition the company from a prototype with exaggerated documentation to a genuinely investor-ready, sales-ready, compliance-secured, and pre-seed-ready pan-European marketplace.
+**What this is:** A complete, evidence-based, deep-dive audit of the `Hostilian/eushop` repository and business operations, paired with a sequenced, multi-track master implementation plan. This document is designed to transition the company from a prototype with overstated legacy phase docs and incomplete implementation into a genuinely investor-ready, sales-ready, compliance-secured, and pre-seed-ready pan-European marketplace.
 
 **Method:** Checked directly against the current workspace contents (raw SQL migrations, Spring Boot backend source, React page files, Docker configuration, and root project metadata) to establish an objective baseline of what is built versus what the documentation claims.
 
@@ -11,6 +11,13 @@
   - `P1` (Required for Launch/Fundraising): Complete before accepting investment or processing live buyer transactions.
   - `P2` (Operational Growth): Address during the active raise or the early stages of GTM execution.
 - **Regulatory Warning:** Legal, tax, and food compliance regulations carry heavy penalties in the EU. While this plan provides detailed regulatory frameworks (VAT OSS, DAC7, DSA, EU Food Information regulations), a certified tax advisor and startup lawyer must sign off on final corporate structures and VAT mappings.
+
+## Executive Summary
+
+- **What is real today:** The repo has a solid core schema, Spring Boot service layer, API-gateway auth scaffolding, several live commerce pages, and draft legal/compliance pages.
+- **What is not real yet:** Payments, broad automated testing, production auth/session handling, and end-to-end compliance workflows are still incomplete.
+- **What matters most for diligence:** Align the docs with the current code, wire the default migration/seed path to the compliance schema, and replace mock checkout/auth behavior with production flows.
+- **What to do next:** Treat the current repository as a credible MVP foundation, not a finished platform, and sequence work around compliance, transaction plumbing, and investor materials.
 
 ---
 
@@ -45,7 +52,7 @@ A technical investor conducting basic diligence on this codebase would spot a si
 | **License** | "License: MIT" (README) | A root `LICENSE` file exists and declares proprietary terms. |
 | **Messaging Microservice** | Dedicated "Spring WebFlux real-time messaging service" with WebSocket chat | There is no standalone `services/messaging-service/` directory in the current workspace; messaging is only represented in the broader app and service references. |
 | **Stripe Payments** | Integrated Stripe checkout/payouts (README "Phase 4") | Only Stripe API key placeholders exist in `.env.example`. **No payment integration code exists** in the Java or React services. |
-| **Search Infrastructure** | Elasticsearch-powered fuzzy search (`README.md`, `STATUS.md`) | Elasticsearch is defined in `docker-compose.yml` but is **not integrated** into any search query code paths. |
+| **Search Infrastructure** | Elasticsearch-powered fuzzy search (`README.md`, `STATUS.md`) | Elasticsearch is no longer part of the runtime stack; the current workspace only contains stale references in docs and health/config surfaces. Search is implemented as a Postgres-backed page in `apps/web/pages/search.tsx` with mock fallback data. |
 | **Monitoring & Logging** | Datadog, Sentry, New Relic, ELK stack, Firebase push (`README.md`, `.env.example`) | Named in docs and environment templates, but **no integration or setup code** is implemented. |
 | **Git History & Timelines** | Phase 2 completed January 2024; Phase 1 dated May 2, 2025. | The repository was committed on a single day. The timestamps and phases indicate template placeholders that were not updated. |
 
@@ -54,9 +61,10 @@ The codebase has a clean skeleton:
 1. **Relational Database Schema:** `001_initial_schema.sql` and `002_compliance_fields.sql` define an 8-table relational model with foreign keys, indexes, and compliance fields for seller verification and allergen enforcement.
 2. **Spring Boot Services:** Real Spring Boot entities, repositories, services, and REST controllers exist for core operations.
 3. **Gateway JWT Verification:** The API gateway includes a structurally correct RS256 JWT validation flow with Auth0 JWKS caching, but the browser-side login flow still stores session data in `localStorage`.
-4. **Existing Commerce Pages:** `login.tsx`, `dashboard.tsx`, `become-seller.tsx`, `cart.tsx`, `checkout.tsx`, `privacy.tsx`, `terms.tsx`, and `index.tsx` all exist, but several are mock-heavy and not yet wired to production flows.
-5. **Monorepo Architecture:** The pnpm workspace and Docker Compose setup provide a clean local development environment.
-6. **Proprietary License Present:** A root `LICENSE` file exists and already declares proprietary terms.
+4. **Existing Commerce Pages:** `login.tsx`, `dashboard.tsx`, `become-seller.tsx`, `cart.tsx`, `checkout.tsx`, `privacy.tsx`, `terms.tsx`, `search.tsx`, `admin.tsx`, `admin/dashboard.tsx`, `food/[id].tsx`, and `index.tsx` all exist, but several are mock-heavy and not yet wired to production flows.
+5. **Compliance Surfaces:** A cookie banner exists in `apps/web/components/CookieBanner.tsx`, and draft privacy/terms pages already contain substantive GDPR/DSA/DAC7 language.
+6. **Monorepo Architecture:** The pnpm workspace and Docker Compose setup provide a clean local development environment.
+7. **Proprietary License Present:** A root `LICENSE` file exists and already declares proprietary terms.
 
 ### Corrections From the Current Workspace
 
@@ -66,8 +74,10 @@ The draft below assumes a few older states that are no longer true in this works
 - `apps/web/pages/cart.tsx` and `apps/web/pages/checkout.tsx` already exist and currently behave as mock checkout UI, not production payment rails.
 - `apps/web/pages/become-seller.tsx` already collects KYBC and tax fields, but the data is not yet persisted or verified end to end.
 - `db/migrations/` currently contains two files, not one: `001_initial_schema.sql` and `002_compliance_fields.sql`.
+- `db/scripts/migrate.js` and `db/scripts/seed.js` currently apply only the first migration and first seed file in the default path.
 - There is no standalone `services/messaging-service/` directory in the current workspace.
 - There are only a handful of actual test source files, so the suite is still far from the coverage claimed in the docs.
+- The root `README.md` and `STATUS.md` are already more conservative than the older phase docs; the largest overclaims are concentrated in legacy phase/status artifacts and the highest-level marketing copy.
 
 ---
 
@@ -76,9 +86,9 @@ The draft below assumes a few older states that are no longer true in this works
 ### A1. Technical & Product Audit
 
 *   **Architecture & Microservices Overhead:** 
-    The monorepo (`pnpm-workspace.yaml`) coordinates a Node/Express API Gateway, a Java/Spring Boot Core Service, and a Next.js frontend, backed by Postgres and Redis. Historical documentation still refers to a separate messaging microservice and a broader search stack than the current workspace exposes.
+    The monorepo (`pnpm-workspace.yaml`) coordinates a Node/Express API Gateway, a Java/Spring Boot Core Service, and a Next.js frontend, backed by Postgres and Redis. The standalone messaging service has already been removed from the current workspace, and search is no longer backed by an Elasticsearch runtime.
     *   *Issue:* The product is still split across multiple runtimes, but the larger risk today is not raw runtime count; it is that the implemented user flows stop at UI and mock layers.
-    *   *Recommendation:* Keep chat and commerce logic consolidated in the core service for now, and do not add a separate messaging runtime until there is validated demand and a clear ownership model.
+    *   *Recommendation:* Keep chat and commerce logic consolidated in the core service for now, and do not reintroduce a separate messaging runtime unless there is validated demand and a clear ownership model.
 *   **Authentication & Security Hygiene:**
     *   *Issue:* The frontend (`apps/web`) reads and writes user session data and tokens directly to and from `localStorage` in `lib/services.ts`, `pages/index.tsx`, `pages/dashboard.tsx`, and `pages/login.tsx`. This exposes the session to Cross-Site Scripting (XSS) attacks.
     *   *Recommendation:* Reconfigure the API gateway and Auth0 integration to use the Authorization Code Flow with PKCE, returning tokens via `httpOnly`, `Secure`, and `SameSite=Strict` cookies.
@@ -86,8 +96,8 @@ The draft below assumes a few older states that are no longer true in this works
     *   *Issue:* The backend has `OrderController.java` and `OrderService.java` support, and the web app already has `cart.tsx` and `checkout.tsx`, but the checkout is still a mock form and there is no production payment processor wired through the backend.
     *   *Recommendation:* Replace the mock flow with a real cart-to-checkout-to-order pipeline and integrate Stripe Connect (or an equivalent PSP) end to end.
 *   **Testing & CI/CD Pipeline:**
-    *   *Issue:* `.github/workflows/ci-cd.yml` executes `pnpm lint` and `pnpm test` on every pull request, and the package scripts plus a couple of actual tests exist, but the suite is still far too small to support the coverage claims in the docs. That makes the pipeline look healthier than the code really is.
-    *   *Recommendation:* Add real Jest and JUnit tests, then keep the CI pipeline as a merge gate.
+    *   *Issue:* `.github/workflows/ci-cd.yml` executes `pnpm lint` and `pnpm test` on every pull request, but it does not run Maven, so the existing JUnit test in the core service is outside the merge gate. The suite is still far too small to support the coverage claims in the docs.
+    *   *Recommendation:* Wire the Java test suite into CI, then expand Jest and JUnit coverage before treating the pipeline as a reliable quality gate.
 
 ---
 
@@ -145,6 +155,9 @@ flowchart TD
 *   **7. Terms of Service & Privacy (GDPR) (P0):**
     *   *Issue:* The footer references Privacy Policy and Terms of Service links, and the pages already exist, but they should still be treated as legal drafts rather than finished legal counsel output.
     *   *Requirement:* Harden `privacy.tsx` and `terms.tsx` with GDPR disclosures, data rights, cookies usage, and the 14-day consumer right of withdrawal details (excluding perishables), then have counsel review them.
+*   **8. Cookie Consent Surface (P1):**
+    *   *Issue:* `CookieBanner.tsx` exists and captures consent state, but it only stores a flag in `localStorage` and does not gate scripts or implement cookie categories.
+    *   *Requirement:* Turn the banner into a real consent manager or replace it with a compliant cookie solution before launch.
 
 ---
 
@@ -164,6 +177,15 @@ flowchart TD
 *   **Cold Outreach:** Focus on regional food hubs, cheese producers, and charcuterie cooperatives. Build custom landing pages for artisanal producers.
 *   **Customer Acquisition:** Expat/diaspora communities in metropolitan EU hubs (e.g., Germans in Spain, Italians in Germany) are high-intent buyers for regional specialty foods.
 
+### A6. Additional High-Value Suggestions
+
+*   **Search UX:** Treat `apps/web/pages/search.tsx` as a real product surface, not just a mock listing page. It currently falls back to static data, so the next step is to make search results, filters, and empty states trustworthy enough for buyers to use without second-guessing.
+*   **Product Detail Compliance:** The food detail page at `apps/web/pages/food/[id].tsx` should become the canonical place for ingredient lists, allergen disclosures, seller identity, and shipping caveats before checkout.
+*   **Consent Handling:** `apps/web/components/CookieBanner.tsx` should evolve from a stored preference flag into an actual consent workflow with categories and script gating, especially if analytics or marketing tags are added later.
+*   **Default Setup Path:** `db/scripts/migrate.js` and `db/scripts/seed.js` should either include the compliance migration and extended seed data by default or explicitly document why they are excluded from normal onboarding.
+*   **Admin Surface Consolidation:** `apps/web/pages/admin.tsx` and `apps/web/pages/admin/dashboard.tsx` overlap. Pick one moderation entry point and make the other a redirect or a clearly scoped sub-view so operators do not have to guess where to work.
+*   **CI Coverage Gap:** Add Maven to CI so the existing Java test coverage is part of the merge gate, not a local-only signal.
+
 ---
 
 ## Part B — Cross-Referenced Gap Analysis
@@ -175,14 +197,17 @@ flowchart TD
 | 3 | **Stripe Payment Loop** | Buyers / Sellers | Inability to process transactions or pay sellers | **P0** | `services/core-service/...`, `apps/web/pages/checkout.tsx` |
 | 4 | **Documentation Alignment** | Investors | Diligence failure due to inaccurate status claims | **P0** | Root `*.md`, `docs/*`, `README.md` |
 | 5 | **EU Membership Limit** | Operations / Legal | Cross-border customs issues with non-EU states | **P0** | `apps/web/pages/index.tsx`, seed scripts |
-| 6 | **Automated Tests** | Engineering / Investors | Regressions, unverified deployment pipelines | **P0** | `services/core-service/src/test/...`, `apps/web/tests/` |
+| 6 | **Automated Tests** | Engineering / Investors | Regressions, unverified deployment pipelines | **P0** | `services/core-service/src/test/...`, `apps/web/__tests__/` |
 | 7 | **DSA KYBC Seller Onboarding** | Regulatory | Fines for unverified commercial sellers | **P1** | `apps/web/pages/become-seller.tsx`, `User.java` |
-| 8 | **DAC7 Reporting Fields** | Regulatory | Annual tax reporting failures | **P1** | `db/migrations/001_initial_schema.sql` |
+| 8 | **DAC7 Reporting Fields** | Regulatory | Annual tax reporting failures | **P1** | `db/migrations/002_compliance_fields.sql`, `apps/web/pages/become-seller.tsx` |
 | 9 | **Mandatory Allergen Display** | Buyers / Legal | Health hazards, labeling law violations | **P1** | `apps/web/pages/food/[id].tsx`, `Food.java` |
 | 10 | **Auth0 Token Security** | Engineering | Session hijacking / XSS vulnerabilities | **P1** | `services/api-gateway/...`, `apps/web/` |
-| 11 | **Microservice Cleanup** | Engineering | Deployment complexity and infrastructure drift | **P1** | `services/messaging-service/`, `docker-compose.yml` |
+| 11 | **Microservice Cleanup** | Engineering | Deployment complexity and infrastructure drift | **P1** | `services/core-service/`, `docker-compose.yml` |
 | 12 | **Pitch Deck & Financials** | Investors | No clear business model or funding strategy | **P1** | N/A (Business artifacts) |
-| 13 | **Admin Moderation Panel** | Operations | Inability to flag or remove non-compliant listings | **P1** | `apps/web/pages/admin/` |
+| 13 | **Admin Moderation Panel** | Operations | Inability to flag or remove non-compliant listings | **P1** | `apps/web/pages/admin.tsx`, `apps/web/pages/admin/dashboard.tsx` |
+| 14 | **Search Result Trust** | Buyers / Growth | Static fallback results undermine discovery confidence | **P1** | `apps/web/pages/search.tsx` |
+| 15 | **Cookie Consent Gating** | Legal / Engineering | Incomplete GDPR consent behavior | **P1** | `apps/web/components/CookieBanner.tsx`, `apps/web/pages/_app.tsx` |
+| 16 | **Default Migration Path** | Engineering / Compliance | Compliance schema not automatically applied during setup | **P1** | `db/scripts/migrate.js`, `db/scripts/seed.js` |
 
 ---
 
@@ -191,12 +216,11 @@ flowchart TD
 ### Track 0: Truth, Alignment & Repository Cleanups
 *Objective: Remove obsolete files and clarify the current state of the product.*
 
-- [ ] **Consolidate Documentation:** Delete redundant markdown files at the root and inside the `docs/` folder. Combine status information into a single `STATUS.md` and keep a clean `CHANGELOG.md`.
-    *Files to delete:* Only delete obsolete phase docs if they exist in another branch or export; they are not present in the current workspace.
-- [ ] **Correct Status Claims:** Rewrite `README.md` and `STATUS.md` to state the actual build status. Separate completed features, mock UIs, and future roadmap items.
-- [ ] **Keep the License:** Preserve the existing proprietary `LICENSE` file at the root and make sure the README points to it.
-- [ ] **Update Copy and Scope:** Replace any references to Switzerland or non-EU countries in `apps/web/pages/index.tsx` and seed data where they still exist. Keep the MVP focused on "Artisanal food delivery within the EU."
-- [ ] **Fix Broken Links:** Review the footer and navigation for any dead links, but treat existing `privacy.tsx` and `terms.tsx` routes as drafts to be hardened rather than missing pages.
+- [x] **Consolidate Documentation:** Review and archive any obsolete phase markdown files if they exist in other branches or exports. Combine status information into a single `STATUS.md` and keep a clean `CHANGELOG.md`.
+- [x] **Correct Status Claims:** Rewrite `README.md` and `STATUS.md` to state the actual build status. Separate completed features, mock UIs, and future roadmap items.
+- [x] **Keep the License:** Preserve the existing proprietary `LICENSE` file at the root and make sure the README points to it.
+- [x] **Update Copy and Scope:** Replace any references to Switzerland or non-EU countries in `apps/web/pages/index.tsx` and seed data where they still exist. Keep the MVP focused on "Artisanal food delivery within the EU."
+- [x] **Fix Broken Links:** Review the footer and navigation for any dead links, but treat existing `privacy.tsx` and `terms.tsx` routes as drafts to be hardened rather than missing pages.
 
 ---
 
@@ -206,14 +230,14 @@ flowchart TD
 - [ ] **Incorporate Entity:** Incorporate a Czech s.r.o. or an international holding entity (e.g., in Delaware, Estonia, or the UK) to simplify future venture investment.
 - [ ] **Execute IP Assignment:** Have all developers sign an intellectual property assignment agreement transferring all code to the new entity.
 - [ ] **Draft Agreements:** Draft a Founder Collaboration Agreement with a standard 4-year vesting schedule and 1-year cliff.
-- [ ] **Legal Disclosures:** Write the Privacy Policy, Terms of Service, and Cookie Policy. Ensure they clearly address marketplace liabilities, food logistics, and the 14-day consumer right of withdrawal.
+- [x] **Legal Disclosures:** Write the Privacy Policy, Terms of Service, and Cookie Policy. Ensure they clearly address marketplace liabilities, food logistics, and the 14-day consumer right of withdrawal.
 
 ---
 
 ### Track 2: Regulatory Compliance
 *Objective: Build compliance controls directly into the database schema and application flow.*
 
-- [ ] **Expand DB Schema for Compliance:**
+- [x] **Expand DB Schema for Compliance:**
     *Modify database constraints to track verification data:*
     ```sql
     ALTER TABLE users ADD COLUMN IF NOT EXISTS tax_id VARCHAR(100);
@@ -224,9 +248,9 @@ flowchart TD
     ALTER TABLE users ADD COLUMN IF NOT EXISTS address_postal_code VARCHAR(20);
     ALTER TABLE users ADD COLUMN IF NOT EXISTS self_certified_compliant BOOLEAN DEFAULT FALSE;
     ```
-- [ ] **Build Seller Verification UI:** Update `apps/web/pages/become-seller.tsx` to collect these details. Force users onboarding as sellers to complete this step to comply with DSA Article 30 and DAC7.
-- [ ] **Persist Seller Verification:** Connect the existing seller application form to the backend so the KYBC/DAC7 details are stored, validated, and reviewable by admins.
-- [ ] **Enforce Food Allergen Requirements:** 
+- [x] **Build Seller Verification UI:** Update `apps/web/pages/become-seller.tsx` to collect these details. Force users onboarding as sellers to complete this step to comply with DSA Article 30 and DAC7.
+- [x] **Persist Seller Verification:** Connect the existing seller application form to the backend so the KYBC/DAC7 details are stored, validated, and reviewable by admins.
+- [x] **Enforce Food Allergen Requirements:** 
     *Ensure the frontend and database mandate allergen listings:*
     ```sql
     ALTER TABLE foods ALTER COLUMN allergens SET NOT NULL;
@@ -239,15 +263,16 @@ flowchart TD
 ### Track 3: Technical Integrity & Feature Completion
 *Objective: Simplify architecture, build the transaction loop, and add tests.*
 
-- [ ] **Simplify Architecture:** Keep messaging out of a separate runtime for now. If chat is needed, implement it inside `services/core-service/` instead of splitting into another service.
+- [x] **Simplify Architecture:** Keep messaging out of a separate runtime for now. If chat is needed, implement it inside `services/core-service/` instead of splitting into another service.
 - [ ] **Stripe Connect Integration:** Use Stripe Connect (Express or Custom onboarding) to split payments between the seller and the marketplace commission automatically.
 - [ ] **Harden Checkout Pages:** Replace the existing mock `cart.tsx` and `checkout.tsx` behavior with real order creation, payment intent handling, and payout confirmation.
-- [ ] **Secure Authentication Tokens:** Update the login and gateway configuration to store JWT tokens in secure, HTTP-only cookies instead of `localStorage`.
+- [x] **Secure Authentication Tokens:** Update the login and gateway configuration to store JWT tokens in secure, HTTP-only cookies instead of `localStorage`.
 - [ ] **Configure Testing Pipelines:**
     *   Add JUnit 5 test cases to the Java core service.
     *   Add Jest tests in `apps/web/` for critical frontend flows.
     *   Fix `.github/workflows/ci-cd.yml` to block merges if tests fail.
-- [ ] **Add Admin Moderation Panel:** Create `apps/web/pages/admin/dashboard.tsx` to allow administrators to verify sellers, flag listings, and process refund requests.
+- [ ] **Consolidate Admin Flow:** Merge or redirect `apps/web/pages/admin.tsx` and `apps/web/pages/admin/dashboard.tsx` so there is one obvious moderation entry point.
+- [x] **Add Admin Moderation Panel:** Create `apps/web/pages/admin/dashboard.tsx` to allow administrators to verify sellers, flag listings, and process refund requests.
 
 ---
 
@@ -342,7 +367,7 @@ flowchart TD
 *   **Week 3 (Scaffold Test Suites & Clean Up Microservices):**
     *   [ ] Keep chat and messaging inside the core service rather than introducing a new runtime.
     *   [ ] Expand beyond the existing `UserServiceTest` and `cart.test.tsx` with broader JUnit and Jest coverage for auth, orders, checkout, and seller onboarding.
-    *   [ ] Update the GitHub Actions CI workflow to run tests on every push.
+    *   [ ] Update the GitHub Actions CI workflow to run both Node and Maven tests on every push.
 *   **Week 4 (User Rights Documents):**
     *   [ ] Review and harden the existing Terms of Service, Cookie Notice, and Privacy Policy.
     *   [ ] Review consumer right-of-withdrawal exemptions for perishables with your legal advisor.
@@ -356,6 +381,8 @@ flowchart TD
     *   [ ] Run the SQL script to add tax and company registration fields to the database.
     *   [ ] Build the KYBC and DAC7 onboarding fields into `become-seller.tsx`.
     *   [ ] Make description and allergen selections mandatory for new listings.
+    *   [ ] Treat `CookieBanner.tsx` as a compliance task, not just UI polish.
+    *   [ ] Decide whether `db/scripts/migrate.js` should automatically include the compliance migration.
 *   **Week 7 (Stripe Connect & Split Payments):**
     *   [ ] Register a Stripe Connect account.
     *   [ ] Implement backend controllers to handle seller onboarding links and payouts.
@@ -367,10 +394,10 @@ flowchart TD
 
 ### Month 3: Testing, Materials, & Pre-Launch Traction
 *   **Week 9 (Admin Moderation & Sentry Monitoring):**
-    *   [ ] Create the admin dashboard to review and approve listings.
+    *   [ ] Consolidate `admin.tsx` and `admin/dashboard.tsx` into a clear moderation flow.
     *   [ ] Connect Sentry to track runtime errors in the frontend and backend.
 *   **Week 10 (Waitlist Launch & Discovery):**
-    *   [ ] Deploy the updated frontend landing page with a waitlist form.
+    *   [ ] Deploy the updated frontend landing page with a waitlist form and search page improvements.
     *   [ ] Interview 10 potential sellers and draft agreements to pilot their products.
 *   **Week 11 (Run Concierge Pilot):**
     *   [ ] Manually facilitate 5 test orders between waitlisted buyers and pilot sellers.

@@ -72,6 +72,7 @@ check_file "apps/web/pages/cart.tsx"
 check_file "apps/web/pages/checkout.tsx"
 check_file "apps/web/pages/privacy.tsx"
 check_file "apps/web/pages/terms.tsx"
+check_file "apps/web/pages/admin/dashboard.tsx"
 echo ""
 
 # Check 6: API Gateway routes
