@@ -33,6 +33,16 @@
 - A small but legitimate automated test suite that is enforced in CI.
 - A credible legal surface for privacy, terms, seller verification, and cookie consent.
 
+### Raise-Readiness Gate
+
+Do not describe the company as raise-ready until these are true:
+
+- The documentation matches the codebase without major caveats.
+- The compliance migration runs by default and seller onboarding persists usable data.
+- Checkout, auth, and payment handling work without mock-only shortcuts.
+- Java and web tests run in CI and cover the core transaction path.
+- Privacy, terms, and cookie consent are present and materially accurate.
+
 ---
 
 ## Table of Contents
@@ -47,8 +57,8 @@
 - [Part B — Cross-Referenced Gap Analysis](#part-b--cross-referenced-gap-analysis)
 - [Part C — The Master Implementation Plan (11 Tracks)](#part-c--the-master-implementation-plan)
 - [Part D — Sequenced Weekly Roadmap](#part-d--sequenced-weekly-roadmap)
-- [Part E — Ready-to-Fill Templates & Financial Outlines](#part-e--ready-to-fill-templates)
-- [Part F — Actionable Repo Punch-List](#part-f--actionable-repo-punch-list)
+- [Appendix A — Ready-to-Fill Templates & Financial Outlines](#appendix-a--ready-to-fill-templates--financial-outlines)
+- [Appendix B — Actionable Repo Punch-List](#appendix-b--actionable-repo-punch-list)
 - [Closing Note](#closing-note)
 
 ---
@@ -371,6 +381,8 @@ These are useful, but they should not distract from P0/P1 execution:
 - [ ] **Investor Updates:** Draft and send brief monthly updates to keep prospective investors and advisors informed of your progress.
 - [ ] **KPI Tracking:** Maintain a weekly metrics dashboard tracking waitlist signups, seller inquiries, and early transaction data.
 
+Everything below this point is supporting material. It is useful for fundraising and execution, but it should not displace the diligence core above.
+
 ---
 
 ## Part D — Sequenced Weekly Roadmap
@@ -435,9 +447,167 @@ These are useful, but they should not distract from P0/P1 execution:
     *   [ ] Build your investor target list and reach out to warm contacts.
     *   [ ] Launch the public beta of the platform.
 
+### Month 4: Launch Hardening & Early Operations
+*   **Week 14 (Production Readiness):**
+    *   [ ] Replace remaining mock auth and payment branches with production paths only.
+    *   [ ] Add explicit release checks for login, seller onboarding, checkout, and admin moderation.
+    *   [ ] Verify the default seed/migration path works from a clean database.
+*   **Week 15 (Monitoring & Recovery):**
+    *   [ ] Add error tracking for frontend and backend runtime exceptions.
+    *   [ ] Add basic request logging and audit trails for seller verification and moderation actions.
+    *   [ ] Define a rollback plan for failed deploys or payment processor outages.
+*   **Week 16 (Operational Controls):**
+    *   [ ] Create a simple ops checklist for onboarding, support, refund handling, and listing takedowns.
+    *   [ ] Add a weekly review of compliance exceptions, abandoned checkouts, and seller verification backlog.
+    *   [ ] Establish a manual fallback process for checkout and seller verification if integrations fail.
+
+### Month 5: Post-Launch Calibration
+*   **Week 17 (Conversion Tuning):**
+    *   [ ] Review search-to-product-page-to-checkout drop-off.
+    *   [ ] Simplify the seller onboarding flow where it creates avoidable friction.
+    *   [ ] Tighten the product detail page so allergen and origin information is impossible to miss.
+*   **Week 18 (Retention & Trust):**
+    *   [ ] Add buyer and seller follow-up flows for order confirmation, delivery, and review capture.
+    *   [ ] Add visible trust signals for verified sellers and compliant listings.
+    *   [ ] Review complaints, disputes, and refund reasons to identify the most common friction points.
+*   **Week 19 (Growth Loop Validation):**
+    *   [ ] Measure whether seller verification, product quality, and shipping reliability support repeat purchase behavior.
+    *   [ ] Test one additional acquisition channel only if the checkout loop is stable.
+    *   [ ] Document the growth loop that appears to be working and drop channels that do not convert.
+*   **Week 20 (Board / Investor Review):**
+    *   [ ] Prepare a concise board or advisor update on runway, compliance status, and launch metrics.
+    *   [ ] Decide whether to raise more capital, deepen the pilot, or narrow the product scope.
+    *   [ ] Re-rank the roadmap based on actual transaction data rather than assumptions.
+
+### Month 6: Automation & Operating Leverage
+*   **Week 21 (Workflow Automation):**
+    *   [ ] Automate seller verification reminders and incomplete onboarding follow-ups.
+    *   [ ] Automate compliance exception tracking for missing allergens, missing tax details, and unresolved moderation cases.
+    *   [ ] Reduce manual handoffs in support, refunds, and listing review.
+*   **Week 22 (Documentation Hardening):**
+    *   [ ] Finalize the README, STATUS, and launch notes so they match the current product state.
+    *   [ ] Add an internal runbook for deploys, rollbacks, onboarding, and moderation.
+    *   [ ] Document ownership of the core setup path, auth flow, and compliance schema.
+*   **Week 23 (Metrics and Reporting):**
+    *   [ ] Build a weekly report that combines traffic, conversion, order quality, seller approval, and support load.
+    *   [ ] Track the ratio of verified sellers to active sellers and the ratio of compliant listings to total listings.
+    *   [ ] Review which metrics are actually predictive before adding more dashboards.
+*   **Week 24 (Process Simplification):**
+    *   [ ] Remove duplicate steps from seller onboarding and admin moderation.
+    *   [ ] Simplify the checkout and post-order process where it creates friction without adding trust.
+    *   [ ] Decide which manual processes are acceptable to keep and which must be automated next.
+
+### Month 7: Scale Decisions & Expansion Readiness
+*   **Week 25 (Scope Decision):**
+    *   [ ] Decide whether the business should stay focused on specialty foods or expand to adjacent EU artisan categories.
+    *   [ ] Validate that the current supply concentration is healthy enough to support growth.
+    *   [ ] Confirm that the legal/compliance setup can support any new category without redesign.
+*   **Week 26 (Operational Resilience):**
+    *   [ ] Add contingency plans for payment outages, seller non-compliance, and shipping disruptions.
+    *   [ ] Define escalation paths for high-risk orders and disputed deliveries.
+    *   [ ] Document the minimum viable support model for a higher-volume marketplace.
+*   **Week 27 (Finance Recheck):**
+    *   [ ] Refresh runway, burn, and take-rate assumptions using actual launch numbers.
+    *   [ ] Compare the observed unit economics against the original 15% commission model.
+    *   [ ] Decide whether pricing, shipping fees, or support costs need to change.
+*   **Week 28 (Investor / Operator Reset):**
+    *   [ ] Rewrite the investor update template using real operating data.
+    *   [ ] Reset the roadmap around the highest-value bottleneck, not the most visible feature.
+    *   [ ] Prepare the next funding or hiring decision with the current metrics and compliance status.
+
+### Month 8: Auditability & Repeatability
+*   **Week 29 (Compliance Review):**
+    *   [ ] Run a formal review of seller verification, allergen disclosure, and cookie consent behavior.
+    *   [ ] Check that the legal pages, onboarding flow, and checkout flow tell the same story.
+    *   [ ] Resolve any mismatches between documentation, product behavior, and actual operational practice.
+*   **Week 30 (Accounting and Reconciliation):**
+    *   [ ] Reconcile orders, payouts, commissions, refunds, and fees against the financial model.
+    *   [ ] Define a simple process for monthly bookkeeping and tax reporting.
+    *   [ ] Validate that the commission model can still cover support, payment, and compliance costs.
+*   **Week 31 (Support Operations):**
+    *   [ ] Create support macros or canned responses for onboarding, shipping issues, refund requests, and moderation decisions.
+    *   [ ] Track top support categories and resolve the most frequent ones with product changes.
+    *   [ ] Decide which support paths can be automated safely.
+*   **Week 32 (Reliability Check):**
+    *   [ ] Test deploy, rollback, and recovery steps under realistic failure conditions.
+    *   [ ] Verify that backups, logs, and critical configs are actually restorable.
+    *   [ ] Confirm that the team can recover from a bad release without guessing.
+
+### Month 9: Operational Scale & Next Raise Prep
+*   **Week 33 (Repeat Purchase Focus):**
+    *   [ ] Identify which sellers, products, and routes produce repeat orders.
+    *   [ ] Improve the post-purchase flow for buyers who are likely to return.
+    *   [ ] Reduce friction in the second-order experience more than the first-order experience.
+*   **Week 34 (Supply Quality Control):**
+    *   [ ] Add a lightweight review process for seller quality and listing quality.
+    *   [ ] Measure whether compliance, shipping, and presentation are keeping the best sellers active.
+    *   [ ] Drop supply that creates support load without creating repeat demand.
+*   **Week 35 (Hiring and Ownership):**
+    *   [ ] Decide which workstreams justify a dedicated owner or contractor.
+    *   [ ] Document who owns product, compliance, finance, support, and growth decisions.
+    *   [ ] Avoid hiring until the current bottleneck is clear and measurable.
+*   **Week 36 (Next Raise Preparation):**
+    *   [ ] Refresh the investor narrative with operating metrics, not aspirational language.
+    *   [ ] Prepare a data room that includes actual transaction data, compliance status, and financial reconciliation.
+    *   [ ] Decide whether the next step is a seed raise, a narrower pilot, or more self-funded execution.
+
+### Month 10: Multi-Country Readiness
+*   **Week 37 (Country Expansion Check):**
+    *   [ ] Decide which EU country is the next best fit for expansion based on current seller density and buyer demand.
+    *   [ ] Verify whether the current compliance and logistics setup can support that country without new legal work.
+    *   [ ] Document what must stay the same and what must change for a new country launch.
+*   **Week 38 (Localization Basics):**
+    *   [ ] Review country-specific copy, shipping assumptions, and tax expectations before launch.
+    *   [ ] Ensure product pages and seller onboarding can handle regional variations without breaking the core flow.
+    *   [ ] Confirm the legal pages still read correctly for the new target country.
+*   **Week 39 (Cross-Border Operations):**
+    *   [ ] Test at least one full order flow involving a new shipping lane or region.
+    *   [ ] Compare support load and shipping reliability against the original market.
+    *   [ ] Decide whether the new lane is worth keeping.
+*   **Week 40 (Expansion Review):**
+    *   [ ] Reconcile the expansion test with the financial model and the support burden.
+    *   [ ] Keep or drop the new region based on repeatability, not novelty.
+    *   [ ] Update the roadmap and investor narrative with the expansion result.
+
+### Month 11: Automation and Delegation
+*   **Week 41 (Automation Priorities):**
+    *   [ ] Identify the three most repetitive manual tasks across operations, compliance, and support.
+    *   [ ] Automate the highest-value one first.
+    *   [ ] Keep a manual fallback until the automation proves reliable.
+*   **Week 42 (Delegation Model):**
+    *   [ ] Document which activities can be delegated to contractors or part-time support.
+    *   [ ] Set clear ownership for product, compliance, support, and analytics.
+    *   [ ] Avoid adding heads until the delegation model is stable.
+*   **Week 43 (Control Reviews):**
+    *   [ ] Review access, permissions, and moderation controls.
+    *   [ ] Confirm that sensitive seller and buyer data is only available to the right people.
+    *   [ ] Check whether any process creates avoidable risk when the team is busy.
+*   **Week 44 (Efficiency Pass):**
+    *   [ ] Remove one or two recurring steps from the business that do not improve trust or revenue.
+    *   [ ] Recalculate whether the remaining workflow is simpler to run at twice the volume.
+    *   [ ] Freeze any new work that does not improve throughput or compliance.
+
+### Month 12: Annual Reset & Next Strategy
+*   **Week 45 (Annual Performance Review):**
+    *   [ ] Review the year’s transaction count, revenue, compliance status, and seller retention.
+    *   [ ] Compare real outcomes against the original roadmap assumptions.
+    *   [ ] Record which assumptions were wrong and why.
+*   **Week 46 (Strategy Reset):**
+    *   [ ] Decide whether the next 12 months should focus on scale, profitability, or narrower category dominance.
+    *   [ ] Reframe the product and GTM strategy around what has actually worked.
+    *   [ ] Remove roadmap items that are no longer justified by the data.
+*   **Week 47 (Capital Plan):**
+    *   [ ] Decide whether to raise again, stay self-funded, or pause expansion.
+    *   [ ] Refresh the data room and funding materials with current evidence.
+    *   [ ] Make sure the legal, compliance, and accounting posture can support the chosen plan.
+*   **Week 48 (Operating Plan for Next Year):**
+    *   [ ] Publish a simple operating plan for the next year.
+    *   [ ] Set the top three objectives and the top three risks.
+    *   [ ] Turn the roadmap into a smaller set of measurable commitments.
+
 ---
 
-## Part E — Ready-to-Fill Templates
+## Appendix A — Ready-to-Fill Templates & Financial Outlines
 
 These templates are appendix material. They are useful once the core diligence items above are credible, but they should not distract from P0/P1 execution.
 
@@ -556,7 +726,7 @@ The EUshop Team
 
 ---
 
-## Part F — Actionable Repo Punch-List
+## Appendix B — Actionable Repo Punch-List
 
 Copy these issues directly into GitHub to coordinate development tasks:
 

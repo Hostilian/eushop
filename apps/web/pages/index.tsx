@@ -3,11 +3,17 @@ import Link from 'next/link';
 import { useEffect, useState } from 'react';
 import { foodAPI } from '../lib/services';
 
+const fallbackTrendingFoods = [
+  { id: '1', name: 'Belgian Chocolates', country: 'Belgium', price: 24.99 },
+  { id: '2', name: 'Italian Balsamic', country: 'Italy', price: 34.99 },
+  { id: '3', name: 'Spanish Manchego Cheese', country: 'Spain', price: 44.99 },
+];
+
 export default function Home() {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [userName, setUserName] = useState('');
-  const [trendingFoods, setTrendingFoods] = useState<any[]>([]);
-  const [loading, setLoading] = useState(true);
+  const [trendingFoods, setTrendingFoods] = useState<any[]>(fallbackTrendingFoods);
+  const [loading, setLoading] = useState(false);
 
   useEffect(() => {
     // Check if user is logged in
@@ -24,17 +30,14 @@ export default function Home() {
 
     // Fetch trending foods
     const fetchTrending = async () => {
+      setLoading(true);
       try {
         const foods = await foodAPI.getTrending();
         setTrendingFoods(Array.isArray(foods) ? foods : (foods?.data || foods?.foods || []));
       } catch (error) {
         console.error('Failed to fetch trending foods:', error);
         // Use mock data as fallback
-        setTrendingFoods([
-          { id: '1', name: 'Belgian Chocolates', country: 'Belgium', price: 24.99 },
-          { id: '2', name: 'Italian Balsamic', country: 'Italy', price: 34.99 },
-          { id: '3', name: 'Spanish Manchego Cheese', country: 'Spain', price: 44.99 },
-        ]);
+        setTrendingFoods(fallbackTrendingFoods);
       } finally {
         setLoading(false);
       }

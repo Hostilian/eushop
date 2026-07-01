@@ -85,31 +85,18 @@ eushop/
 
 ## Project Status & Roadmap
 
-### Phase 1: Discovery & Auth (Current Focus)
-- [x] Solid relational database schema setup (Users, Foods, Food Requests, Orders, Reviews, Notifications)
-- [x] Basic Spring Boot Core API REST endpoints (CRUD for foods, users, orders)
-- [/] User login/signup (using Next.js frontend, currently wired to mock token gateway)
-- [ ] Map view with seller locations (Future)
+The project is currently in active development. We maintain a canonical status tracking document that records exactly which features are implemented, in progress, or planned, along with direct evidence links to the codebase.
 
-### Phase 2: Seller Listings & Compliance (In Progress)
-- [x] Create/edit/delete listings in core database
-- [x] Allergen disclosure fields (14 EU allergens)
-- [ ] KYBC (Know-Your-Business-Customer) & DAC7 tax registration forms (In progress)
-- [ ] Photo upload with Cloudinary or S3 integration (Planned)
+For the latest detailed status matrix and evidence links, please refer to [STATUS.md](file:///d:/CODING/eushop/STATUS.md).
 
-### Phase 3: Messaging & Requests (Planned)
-- [ ] Messaging/Conversation schema defined in database
-- [ ] REST API message retrieval and polling (Consolidated into Core Service)
-- [ ] Direct buyer-seller chat interface
+### High-Level Roadmap
 
-### Phase 4: Payments & Orders (Planned)
-- [x] Database model for order processing
-- [ ] Shopping cart & Checkout flow UI (In progress)
-- [ ] Stripe Connect B2C split-payment integration
-
-### Phase 5: Reviews & Reputation (Planned)
-- [x] Review/rating schema and average-rating calculation in core services
-- [ ] Verified purchase badge checks
+- **Phase 0: Foundation** (Active) - Establish linting, testing, security scans, and API standardizations in CI/CD.
+- **Phase 1: Discovery & Auth** (In Progress) - Replace mock token authentication with production-ready OAuth/JWT session management.
+- **Phase 2: Seller Listings & Compliance** (In Progress) - Build listing CRUD validation, allergen controls, and KYBC/DAC7 intake.
+- **Phase 3: Messaging & Requests** (Planned) - Integrate direct buyer-seller chat interface with polling.
+- **Phase 4: Payments & Orders** (Planned) - Connect shopping cart checkout loop with Stripe Connect split payouts.
+- **Phase 5: Reviews & Reputation** (Planned) - Add buyer-seller review verifications and aggregates.
 
 ---
 
