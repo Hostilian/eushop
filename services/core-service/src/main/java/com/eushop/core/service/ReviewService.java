@@ -32,7 +32,7 @@ public class ReviewService {
     }
 
     public List<Review> getReviewsByBuyer(String buyerId) {
-        return reviewRepository.findByBuyerId(buyerId);
+        return reviewRepository.findByReviewerId(buyerId);
     }
 
     public Double getAverageRatingByFood(String foodId) {

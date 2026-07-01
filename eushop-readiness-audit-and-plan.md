@@ -1,4 +1,4 @@
-# EUshop — Full Readiness Audit & Master Implementation Plan (Enhanced Edition)
+# EUshop — Investor Diligence Memo & Master Implementation Plan
 
 **What this is:** A complete, evidence-based, deep-dive audit of the `Hostilian/eushop` repository and business operations, paired with a sequenced, multi-track master implementation plan. This document is designed to transition the company from a prototype with overstated legacy phase docs and incomplete implementation into a genuinely investor-ready, sales-ready, compliance-secured, and pre-seed-ready pan-European marketplace.
 
@@ -18,6 +18,20 @@
 - **What is not real yet:** Payments, broad automated testing, production auth/session handling, and end-to-end compliance workflows are still incomplete.
 - **What matters most for diligence:** Align the docs with the current code, wire the default migration/seed path to the compliance schema, and replace mock checkout/auth behavior with production flows.
 - **What to do next:** Treat the current repository as a credible MVP foundation, not a finished platform, and sequence work around compliance, transaction plumbing, and investor materials.
+
+### Priority Stack
+
+- **Do now:** fix documentation drift, make the compliance migration part of the default setup path, wire production checkout/auth flows, and bring Java tests into CI.
+- **Do next:** harden legal pages, finish seller verification persistence, and make the admin and search surfaces trustworthy.
+- **Defer until credibility improves:** brand polish, deeper financial modeling, pitch-deck refinement, and broader GTM content.
+
+### Core Deliverables For Diligence
+
+- A truthful README and status narrative that matches the code.
+- A default setup path that applies the compliance schema, not just the base schema.
+- A real checkout and auth flow that does not rely on mock tokens or mock payment behavior.
+- A small but legitimate automated test suite that is enforced in CI.
+- A credible legal surface for privacy, terms, seller verification, and cookie consent.
 
 ---
 
@@ -168,7 +182,7 @@ flowchart TD
     *   *Resolution:* Limit the MVP strictly to EU member states. Update all copy to refer to "Pan-EU Specialty Foods."
 *   **Visual Assets & Placeholders:**
     *   *Issue:* The logo is a chocolate emoji, and the UI uses default unbranded layouts.
-    *   *Resolution:* Define a minimal color palette (warm earth tones, cream backgrounds, forest green accents) and choose clean typography (e.g., Inter, Outfit) to build trust.
+    *   *Resolution:* Define a minimal color palette (warm earth tones, cream backgrounds, forest green accents) and choose clean typography (e.g., Inter, Outfit) to build trust. Treat this as secondary to compliance and transaction integrity.
 
 ---
 
@@ -176,6 +190,7 @@ flowchart TD
 
 *   **Cold Outreach:** Focus on regional food hubs, cheese producers, and charcuterie cooperatives. Build custom landing pages for artisanal producers.
 *   **Customer Acquisition:** Expat/diaspora communities in metropolitan EU hubs (e.g., Germans in Spain, Italians in Germany) are high-intent buyers for regional specialty foods.
+*   **Go-to-market order:** Do not overinvest in broad acquisition until the compliance and checkout loops are credible enough to convert early traffic.
 
 ### A6. Additional High-Value Suggestions
 
@@ -185,6 +200,8 @@ flowchart TD
 *   **Default Setup Path:** `db/scripts/migrate.js` and `db/scripts/seed.js` should either include the compliance migration and extended seed data by default or explicitly document why they are excluded from normal onboarding.
 *   **Admin Surface Consolidation:** `apps/web/pages/admin.tsx` and `apps/web/pages/admin/dashboard.tsx` overlap. Pick one moderation entry point and make the other a redirect or a clearly scoped sub-view so operators do not have to guess where to work.
 *   **CI Coverage Gap:** Add Maven to CI so the existing Java test coverage is part of the merge gate, not a local-only signal.
+*   **Operator Dashboard:** Add a simple metrics dashboard for orders, seller verification, and compliance exceptions before building richer analytics.
+*   **Analytics Discipline:** If analytics are added, gate them behind the cookie consent system so the legal story stays coherent.
 
 ---
 
@@ -311,6 +328,15 @@ flowchart TD
 - [ ] **Draft Pitch Deck:** Build a 12-slide presentation covering the problem, solution, market size, product, business model, and financing goals.
 - [ ] **Set Up Data Room:** Create a secure, structured folder containing incorporation certificates, financial forecasts, IP assignments, API schemas, and customer research notes.
 
+### Defer-Friendly Items
+
+These are useful, but they should not distract from P0/P1 execution:
+
+- Brand polish and custom design tokens.
+- Pitch-deck perfection and broad market-sizing polish.
+- Expansion into new markets or channel experiments before the compliance and payment loop is stable.
+- Anything that improves presentation more than it improves diligence credibility or transaction integrity.
+
 ---
 
 ### Track 7: Traction Generation
@@ -412,6 +438,8 @@ flowchart TD
 ---
 
 ## Part E — Ready-to-Fill Templates
+
+These templates are appendix material. They are useful once the core diligence items above are credible, but they should not distract from P0/P1 execution.
 
 ### 1. Pitch Presentation Structure
 
