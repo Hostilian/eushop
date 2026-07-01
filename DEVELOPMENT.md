@@ -41,15 +41,14 @@ pnpm install
 
 This installs:
 - `apps/web` - Next.js web application
-- `apps/mobile` - React Native/Expo mobile app
+- `apps/mobile` - React Native/Expo mobile app (Frozen for MVP)
 - `services/api-gateway` - Node.js Express API Gateway
-- `services/core-service` - Spring Boot microservice
-- `services/messaging-service` - Spring WebFlux WebSocket service
+- `services/core-service` - Spring Boot core service
 
 ### Step 3: Start Infrastructure
 
 ```bash
-# Start Docker containers (PostgreSQL, Redis, Elasticsearch, pgAdmin)
+# Start Docker containers (PostgreSQL, Redis, pgAdmin)
 docker-compose up -d
 
 # Verify containers are running
@@ -59,8 +58,7 @@ docker-compose ps
 Verify all containers are healthy:
 - **postgres:5432** - Main database
 - **redis:6379** - Caching and sessions
-- **elasticsearch:9200** - Search engine
-- **pgadmin:5050** - Database management UI (http://localhost:5050, admin@pgadmin.com)
+- **pgadmin:5050** - Database management UI (http://localhost:5050, default email: admin@eushop.local, password: admin)
 
 ### Step 4: Initialize Database
 
@@ -203,8 +201,7 @@ eushop/
 │   └── mobile/           # React Native/Expo app
 ├── services/
 │   ├── api-gateway/      # Express.js REST/GraphQL API
-│   ├── core-service/     # Spring Boot business logic
-│   └── messaging-service/# Spring WebFlux WebSockets
+│   └── core-service/     # Spring Boot business logic
 ├── db/
 │   ├── migrations/       # SQL migration files
 │   ├── seed/             # Test data

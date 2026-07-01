@@ -17,21 +17,30 @@ async function seed() {
   console.log('🌱 Seeding database with initial data...');
   
   try {
-    const seedFile = fs.readFileSync(
-      path.join(__dirname, '../seed/001_initial_data.sql'),
-      'utf8'
-    );
+    const seedFiles = [
+      '001_initial_data.sql',
+      '002_extended_data.sql'
+    ];
 
-    const statements = seedFile.split(';').filter(s => s.trim());
+    for (const file of seedFiles) {
+      const filePath = path.join(__dirname, '../seed', file);
+      if (fs.existsSync(filePath)) {
+        console.log(`▸ Applying seed: ${file}`);
+        const seedContent = fs.readFileSync(filePath, 'utf8');
+        const statements = seedContent.split(';').filter(s => s.trim());
 
-    for (const statement of statements) {
-      if (statement.trim()) {
-        console.log(`Executing: ${statement.substring(0, 50)}...`);
-        await pool.query(statement);
+        for (const statement of statements) {
+          if (statement.trim()) {
+            console.log(`  Executing: ${statement.substring(0, 50).replace(/\s+/g, ' ')}...`);
+            await pool.query(statement);
+          }
+        }
+      } else {
+        console.log(`⚠️ Seed file not found: ${file}`);
       }
     }
 
-    console.log('✅ Seed completed successfully!');
+    console.log('✅ Seeds completed successfully!');
     process.exit(0);
   } catch (error) {
     console.error('❌ Seed failed:', error);

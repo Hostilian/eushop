@@ -1,0 +1,10 @@
+{
+  "name": "@eushop/core-service",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "test": "node ../../scripts/run-mvn.js test",
+    "build": "node ../../scripts/run-mvn.js clean package -DskipTests",
+    "lint": "echo 'No linter configured for Java core-service'"
+  }
+}
