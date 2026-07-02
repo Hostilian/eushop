@@ -97,6 +97,42 @@ public class UserController {
         return ResponseEntity.ok(ApiResponse.success(toDTO(user), "Now a seller"));
     }
 
+    @GetMapping
+    public ResponseEntity<ApiResponse<List<UserDTO>>> getAllUsers(
+            @RequestHeader(value = "X-User-Role", required = false) String userRole,
+            @RequestParam(required = false) String role) {
+        
+        if (!"ADMIN".equalsIgnoreCase(userRole)) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN)
+                    .body(ApiResponse.error("Only admins can list users"));
+        }
+
+        List<User> users;
+        if (role != null) {
+            users = userService.getUsersByRole(User.UserRole.valueOf(role.toUpperCase()));
+        } else {
+            users = userService.getAllUsers();
+        }
+
+        List<UserDTO> dtos = users.stream().map(this::toDTO).collect(Collectors.toList());
+        return ResponseEntity.ok(ApiResponse.success(dtos));
+    }
+
+    @PostMapping("/{id}/verify")
+    public ResponseEntity<ApiResponse<UserDTO>> verifySeller(
+            @PathVariable String id,
+            @RequestHeader(value = "X-User-Role", required = false) String userRole,
+            @RequestParam boolean verified) {
+        
+        if (!"ADMIN".equalsIgnoreCase(userRole)) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN)
+                    .body(ApiResponse.error("Only admins can verify sellers"));
+        }
+
+        User user = userService.verifySeller(id, verified);
+        return ResponseEntity.ok(ApiResponse.success(toDTO(user), "Seller verification status updated"));
+    }
+
     private UserDTO toDTO(User user) {
         UserDTO dto = new UserDTO();
         dto.setId(user.getId());

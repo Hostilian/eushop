@@ -46,6 +46,11 @@ public class OrderService {
         return orderRepository.findByStatus(status, pageable);
     }
 
+    public Page<Order> getAllOrders(int page, int size) {
+        Pageable pageable = PageRequest.of(page, size);
+        return orderRepository.findAll(pageable);
+    }
+
     public Order updateOrderStatus(String orderId, Order.OrderStatus status) {
         Order order = orderRepository.findById(orderId)
                 .orElseThrow(() -> new IllegalArgumentException("Order not found"));

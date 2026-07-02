@@ -145,6 +145,29 @@ public class FoodController {
         return ResponseEntity.ok(ApiResponse.success(null, "Food deleted successfully"));
     }
 
+    @PostMapping("/{id}/toggle-availability")
+    public ResponseEntity<ApiResponse<FoodDTO>> toggleAvailability(
+            @PathVariable String id,
+            @RequestParam boolean available,
+            @RequestHeader(value = "X-User-Role", required = false) String userRole,
+            @RequestHeader("X-User-Id") String userId) {
+        
+        Food food = foodService.getFoodById(id)
+                .orElseThrow(() -> new IllegalArgumentException("Food not found"));
+        
+        if (!food.getSellerId().equals(userId) && !"ADMIN".equalsIgnoreCase(userRole)) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN)
+                    .body(ApiResponse.error("Only seller or admin can modify this food"));
+        }
+
+        foodService.toggleAvailability(id, available);
+        
+        Food updated = foodService.getFoodById(id)
+                .orElseThrow(() -> new IllegalArgumentException("Food not found"));
+        
+        return ResponseEntity.ok(ApiResponse.success(toDTO(updated), "Food availability updated"));
+    }
+
     private FoodDTO toDTO(Food food) {
         FoodDTO dto = new FoodDTO();
         dto.setId(food.getId());

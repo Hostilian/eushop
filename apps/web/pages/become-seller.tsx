@@ -1,5 +1,7 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
+import { useRouter } from 'next/router';
+import { authAPI } from '../lib/services';
 
 export default function BecomeSeller() {
   const [formData, setFormData] = useState({
@@ -10,14 +12,53 @@ export default function BecomeSeller() {
     businessRegistrationNumber: '',
     taxId: '',
     vatNumber: '',
+    addressStreet: '',
+    addressCity: '',
+    addressPostalCode: '',
     selfCertification: false,
     acceptTerms: false,
   });
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState('');
+  const router = useRouter();
+
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    // TODO: Submit to API endpoint
-    console.log('Form submitted:', formData);
+    setLoading(true);
+    setError('');
+
+    try {
+      const userStr = localStorage.getItem('user');
+      if (!userStr) {
+        throw new Error('User not logged in');
+      }
+      const user = JSON.parse(userStr);
+      const userId = user.id;
+
+      // Submit becomeSeller call
+      await authAPI.becomeSeller(userId, {
+        taxId: formData.taxId,
+        vatNumber: formData.vatNumber,
+        tradeRegisterNumber: formData.businessRegistrationNumber,
+        addressStreet: formData.addressStreet,
+        addressCity: formData.addressCity,
+        addressPostalCode: formData.addressPostalCode,
+        selfCertifiedCompliant: formData.selfCertification
+      });
+
+      // Update role locally
+      const updatedUser = { ...user, role: 'SELLER' };
+      localStorage.setItem('user', JSON.stringify(updatedUser));
+
+      alert('Application submitted! Your merchant profile is created.');
+      router.push('/dashboard');
+    } catch (err: any) {
+      console.error('Failed to become seller:', err);
+      setError(err.response?.data?.message || err.message || 'An error occurred during submission.');
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -36,6 +77,12 @@ export default function BecomeSeller() {
           </p>
 
           <form onSubmit={handleSubmit} className="space-y-6">
+            {error && (
+              <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg text-sm">
+                {error}
+              </div>
+            )}
+
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-2">
@@ -140,6 +187,47 @@ export default function BecomeSeller() {
                   </div>
                 </div>
 
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                  <div className="md:col-span-2">
+                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                      Street Address
+                    </label>
+                    <input
+                      type="text"
+                      required
+                      placeholder="e.g., Václavské náměstí 1"
+                      className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500"
+                      onChange={(e) => setFormData({ ...formData, addressStreet: e.target.value })}
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                      City
+                    </label>
+                    <input
+                      type="text"
+                      required
+                      placeholder="e.g., Prague"
+                      className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500"
+                      onChange={(e) => setFormData({ ...formData, addressCity: e.target.value })}
+                    />
+                  </div>
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Postal Code
+                  </label>
+                  <input
+                    type="text"
+                    required
+                    placeholder="e.g., 11000"
+                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500"
+                    onChange={(e) => setFormData({ ...formData, addressPostalCode: e.target.value })}
+                  />
+                </div>
+
                 <div className="pt-2">
                   <label className="flex items-start">
                     <input
@@ -172,9 +260,10 @@ export default function BecomeSeller() {
 
             <button
               type="submit"
-              className="w-full bg-indigo-600 text-white py-3 rounded-lg font-semibold hover:bg-indigo-700"
+              disabled={loading}
+              className="w-full bg-indigo-600 text-white py-3 rounded-lg font-semibold hover:bg-indigo-700 disabled:opacity-50"
             >
-              Apply to Become a Seller
+              {loading ? 'Submitting...' : 'Apply to Become a Seller'}
             </button>
           </form>
         </div>
