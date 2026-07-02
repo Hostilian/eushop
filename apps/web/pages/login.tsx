@@ -28,21 +28,28 @@ export default function LoginPage() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-indigo-50 to-blue-100 flex items-center justify-center">
-      <div className="bg-white rounded-lg shadow-lg p-8 w-full max-w-md">
-        <h1 className="text-3xl font-bold text-center text-indigo-600 mb-8">🍫 EUshop</h1>
-        
-        <h2 className="text-2xl font-bold mb-6 text-gray-900">Sign In</h2>
+    <div className="min-h-screen bg-gradient-to-br from-brand-cream via-white to-brand-sand flex items-center justify-center px-4 py-12">
+      <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-8 w-full max-w-md">
+        <div className="text-center mb-8">
+          <Link href="/" className="text-3xl font-extrabold text-primary tracking-tight inline-flex items-center gap-2">
+            <span className="text-secondary">🌿</span> EUshop
+          </Link>
+        </div>
+
+        <h2 className="text-3xl font-extrabold mb-2 text-brand-dark font-display">Sign In</h2>
+        <p className="text-gray-600 mb-6">
+          Access your marketplace dashboard to browse listings, manage onboarding, and continue checkout.
+        </p>
 
         {error && (
-          <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded mb-4">
+          <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-xl mb-4 text-sm">
             {error}
           </div>
         )}
 
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
+            <label className="block text-sm font-semibold text-gray-700 mb-2">
               Email
             </label>
             <input
@@ -50,13 +57,13 @@ export default function LoginPage() {
               required
               value={email}
               onChange={(e) => setEmail(e.target.value)}
-              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
+              className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-primary focus:border-transparent"
               placeholder="you@example.com"
             />
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
+            <label className="block text-sm font-semibold text-gray-700 mb-2">
               Password
             </label>
             <input
@@ -64,7 +71,7 @@ export default function LoginPage() {
               required
               value={password}
               onChange={(e) => setPassword(e.target.value)}
-              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
+              className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-primary focus:border-transparent"
               placeholder="••••••••"
             />
           </div>
@@ -72,7 +79,7 @@ export default function LoginPage() {
           <button
             type="submit"
             disabled={loading}
-            className="w-full bg-indigo-600 text-white py-2 rounded-lg font-semibold hover:bg-indigo-700 disabled:opacity-50"
+            className="w-full bg-primary text-white py-3 rounded-xl font-semibold hover:opacity-90 disabled:opacity-50 transition"
           >
             {loading ? 'Signing in...' : 'Sign In'}
           </button>
@@ -80,13 +87,13 @@ export default function LoginPage() {
 
         <p className="text-center text-gray-600 mt-6">
           Don't have an account?{' '}
-          <Link href="/signup" className="text-indigo-600 hover:underline font-semibold">
+          <Link href="/signup" className="text-primary hover:underline font-semibold">
             Sign up
           </Link>
         </p>
 
         <p className="text-center text-gray-600 mt-2">
-          <Link href="/become-seller" className="text-indigo-600 hover:underline">
+          <Link href="/become-seller" className="text-primary hover:underline">
             Become a seller
           </Link>
         </p>

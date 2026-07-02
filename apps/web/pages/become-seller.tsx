@@ -63,17 +63,22 @@ export default function BecomeSeller() {
 
   return (
     <div className="min-h-screen bg-gray-50">
-      <nav className="bg-white shadow">
-        <div className="max-w-4xl mx-auto px-4 py-4">
-          <a href="/" className="text-2xl font-bold text-indigo-600">🍫 EUshop</a>
+      <nav className="sticky top-0 z-50 bg-white border-b border-gray-100 shadow-sm">
+        <div className="max-w-4xl mx-auto px-4 py-4 flex justify-between items-center">
+          <Link href="/" className="text-3xl font-extrabold text-primary tracking-tight flex items-center gap-2">
+            <span className="text-secondary">🌿</span> EUshop
+          </Link>
+          <Link href="/dashboard" className="text-gray-700 hover:text-primary font-semibold transition">
+            Dashboard
+          </Link>
         </div>
       </nav>
 
       <main className="max-w-4xl mx-auto px-4 py-12">
-        <div className="bg-white rounded-lg shadow p-8">
-          <h1 className="text-3xl font-bold mb-4">Become a Seller</h1>
+        <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-8">
+          <h1 className="text-3xl font-extrabold mb-4 text-brand-dark font-display">Become a Seller</h1>
           <p className="text-gray-600 mb-8">
-            Join thousands of food producers and start selling your specialty products across Europe.
+            Submit your business details to begin seller onboarding for the EU marketplace. This form captures the KYBC and DAC7 information needed for review.
           </p>
 
           <form onSubmit={handleSubmit} className="space-y-6">
@@ -85,24 +90,24 @@ export default function BecomeSeller() {
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
+                <label className="block text-sm font-semibold text-gray-700 mb-2">
                   Business Name
                 </label>
                 <input
                   type="text"
                   required
-                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500"
+                  className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-primary"
                   onChange={(e) => setFormData({ ...formData, businessName: e.target.value })}
                 />
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
+                <label className="block text-sm font-semibold text-gray-700 mb-2">
                   Country
                 </label>
                 <select
                   required
-                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500"
+                  className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-primary"
                   onChange={(e) => setFormData({ ...formData, country: e.target.value })}
                 >
                   <option value="">Select your country</option>
@@ -119,69 +124,69 @@ export default function BecomeSeller() {
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
+                <label className="block text-sm font-semibold text-gray-700 mb-2">
                   Business Email
                 </label>
                 <input
                   type="email"
                   required
-                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500"
+                  className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-primary"
                   onChange={(e) => setFormData({ ...formData, email: e.target.value })}
                 />
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
+                <label className="block text-sm font-semibold text-gray-700 mb-2">
                   Phone Number
                 </label>
                 <input
                   type="tel"
                   required
-                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500"
+                  className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-primary"
                   onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
                 />
               </div>
             </div>
 
             <div className="border-t border-gray-200 pt-6">
-              <h3 className="text-lg font-semibold text-gray-900 mb-4">KYB & Tax Verification (DSA / DAC7 Compliance)</h3>
+              <h3 className="text-lg font-semibold text-brand-dark mb-4">KYB & Tax Verification (DSA / DAC7 Compliance)</h3>
               
               <div className="space-y-4">
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                  <label className="block text-sm font-semibold text-gray-700 mb-2">
                     Business Registration / Trade Register Number
                   </label>
                   <input
                     type="text"
                     required
                     placeholder="e.g., HRB 12345 (Germany), or equivalent"
-                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500"
+                    className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-primary"
                     onChange={(e) => setFormData({ ...formData, businessRegistrationNumber: e.target.value })}
                   />
                 </div>
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                    <label className="block text-sm font-semibold text-gray-700 mb-2">
                       Tax Identification Number (TIN)
                     </label>
                     <input
                       type="text"
                       required
                       placeholder="e.g., DE123456789"
-                      className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500"
+                      className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-primary"
                       onChange={(e) => setFormData({ ...formData, taxId: e.target.value })}
                     />
                   </div>
 
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                    <label className="block text-sm font-semibold text-gray-700 mb-2">
                       VAT Identification Number (Optional)
                     </label>
                     <input
                       type="text"
                       placeholder="e.g., EU VAT Number"
-                      className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500"
+                      className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-primary"
                       onChange={(e) => setFormData({ ...formData, vatNumber: e.target.value })}
                     />
                   </div>
@@ -189,41 +194,41 @@ export default function BecomeSeller() {
 
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                   <div className="md:col-span-2">
-                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                    <label className="block text-sm font-semibold text-gray-700 mb-2">
                       Street Address
                     </label>
                     <input
                       type="text"
                       required
                       placeholder="e.g., Václavské náměstí 1"
-                      className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500"
+                      className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-primary"
                       onChange={(e) => setFormData({ ...formData, addressStreet: e.target.value })}
                     />
                   </div>
 
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                    <label className="block text-sm font-semibold text-gray-700 mb-2">
                       City
                     </label>
                     <input
                       type="text"
                       required
                       placeholder="e.g., Prague"
-                      className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500"
+                      className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-primary"
                       onChange={(e) => setFormData({ ...formData, addressCity: e.target.value })}
                     />
                   </div>
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                  <label className="block text-sm font-semibold text-gray-700 mb-2">
                     Postal Code
                   </label>
                   <input
                     type="text"
                     required
                     placeholder="e.g., 11000"
-                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500"
+                    className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-primary"
                     onChange={(e) => setFormData({ ...formData, addressPostalCode: e.target.value })}
                   />
                 </div>
@@ -233,7 +238,7 @@ export default function BecomeSeller() {
                     <input
                       type="checkbox"
                       required
-                      className="mt-1 rounded border-gray-300 text-indigo-600 focus:ring-indigo-500"
+                      className="mt-1 rounded border-gray-300 text-primary focus:ring-primary"
                       onChange={(e) => setFormData({ ...formData, selfCertification: e.target.checked })}
                     />
                     <span className="ml-2 text-sm text-gray-700">
@@ -249,11 +254,11 @@ export default function BecomeSeller() {
                 <input
                   type="checkbox"
                   required
-                  className="rounded border-gray-300 text-indigo-600 focus:ring-indigo-500"
+                  className="rounded border-gray-300 text-primary focus:ring-primary"
                   onChange={(e) => setFormData({ ...formData, acceptTerms: e.target.checked })}
                 />
                 <span className="ml-2 text-sm text-gray-700">
-                  I agree to the <Link href="/terms" className="text-indigo-600 hover:underline">Terms of Service</Link> and <Link href="/privacy" className="text-indigo-600 hover:underline">Privacy Policy</Link>
+                  I agree to the <Link href="/terms" className="text-primary hover:underline">Terms of Service</Link> and <Link href="/privacy" className="text-primary hover:underline">Privacy Policy</Link>
                 </span>
               </label>
             </div>
@@ -261,7 +266,7 @@ export default function BecomeSeller() {
             <button
               type="submit"
               disabled={loading}
-              className="w-full bg-indigo-600 text-white py-3 rounded-lg font-semibold hover:bg-indigo-700 disabled:opacity-50"
+              className="w-full bg-primary text-white py-3 rounded-xl font-semibold hover:opacity-90 disabled:opacity-50 transition"
             >
               {loading ? 'Submitting...' : 'Apply to Become a Seller'}
             </button>

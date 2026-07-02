@@ -13,6 +13,7 @@
   "dependencies": {
     "@auth0/nextjs-auth0": "^3.2.0",
     "axios": "^1.6.0",
+    "axios-retry": "^4.5.0",
     "clsx": "^2.1.0",
     "lodash": "^4.17.21",
     "mapbox-gl": "^3.0.0",
