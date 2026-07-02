@@ -84,7 +84,22 @@ public class UserService {
         user.setAddressCity(request.getAddressCity());
         user.setAddressPostalCode(request.getAddressPostalCode());
         user.setSelfCertifiedCompliant(request.getSelfCertifiedCompliant());
-        user.setKycVerified(true);
+        user.setKycVerified(false); // Admin must verify seller KYC
         return userRepository.save(user);
+    }
+
+    public User verifySeller(String userId, boolean verified) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new IllegalArgumentException("User not found"));
+        user.setKycVerified(verified);
+        return userRepository.save(user);
+    }
+
+    public List<User> getAllUsers() {
+        return userRepository.findAll();
+    }
+
+    public List<User> getUsersByRole(User.UserRole role) {
+        return userRepository.findByRoleOrderByCreatedAtDesc(role);
     }
 }

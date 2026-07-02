@@ -53,8 +53,7 @@ export const foodAPI = {
 export const authAPI = {
   login: async (email: string, password: string): Promise<LoginResponse> => {
     const response = await apiClient.post('/auth/login', { email, password });
-    if (response.data.token) {
-      localStorage.setItem('token', response.data.token);
+    if (response.data.user) {
       localStorage.setItem('user', JSON.stringify(response.data.user));
     }
     return response.data;
@@ -62,8 +61,7 @@ export const authAPI = {
 
   signup: async (email: string, password: string, name: string, country?: string): Promise<SignupResponse> => {
     const response = await apiClient.post('/auth/signup', { email, password, name, country });
-    if (response.data.token) {
-      localStorage.setItem('token', response.data.token);
+    if (response.data.user) {
       localStorage.setItem('user', JSON.stringify(response.data.user));
     }
     return response.data;
@@ -71,7 +69,6 @@ export const authAPI = {
 
   logout: async () => {
     await apiClient.post('/auth/logout');
-    localStorage.removeItem('token');
     localStorage.removeItem('user');
   },
 
@@ -88,4 +85,56 @@ export const authAPI = {
     const response = await apiClient.post('/auth/verify', { token });
     return response.data;
   },
+
+  becomeSeller: async (userId: string, data: any) => {
+    const response = await apiClient.post(`/users/${userId}/become-seller`, data);
+    return response.data;
+  },
 };
+
+export const paymentAPI = {
+  createConnectAccount: async (email: string, country: string) => {
+    const response = await apiClient.post('/payments/connect/account', { email, country });
+    return response.data;
+  },
+
+  createAccountLink: async (accountId: string, returnUrl: string, refreshUrl: string) => {
+    const response = await apiClient.post('/payments/connect/link', { accountId, returnUrl, refreshUrl });
+    return response.data;
+  },
+
+  createPaymentIntent: async (amount: number, currency: string = 'eur', sellerAccountId?: string) => {
+    const response = await apiClient.post('/payments/create-payment-intent', { amount, currency, sellerAccountId });
+    return response.data;
+  },
+};
+
+export const orderAPI = {
+  create: async (order: any) => {
+    const response = await apiClient.post('/orders', order);
+    return response.data;
+  },
+
+  getById: async (id: string) => {
+    const response = await apiClient.get(`/orders/${id}`);
+    return response.data;
+  },
+
+  getBuyerOrders: async () => {
+    const response = await apiClient.get('/orders');
+    return response.data;
+  },
+
+  getSellerOrders: async () => {
+    const response = await apiClient.get('/orders/seller');
+    return response.data;
+  },
+
+  updateStatus: async (orderId: string, status: string) => {
+    const response = await apiClient.put(`/orders/${orderId}/status`, null, {
+      params: { status }
+    });
+    return response.data;
+  }
+};
+

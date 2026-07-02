@@ -20,18 +20,33 @@ export interface AuthenticatedRequest extends Request {
   userRole?: string;
 }
 
+function parseCookies(cookieHeader: string | undefined): Record<string, string> {
+  const list: Record<string, string> = {};
+  if (!cookieHeader) return list;
+  cookieHeader.split(';').forEach((cookie) => {
+    const parts = cookie.split('=');
+    list[parts.shift()!.trim()] = decodeURI(parts.join('='));
+  });
+  return list;
+}
+
 export async function authMiddleware(
   req: AuthenticatedRequest,
   res: Response,
   next: NextFunction
 ) {
+  let token = '';
   const authHeader = req.headers.authorization;
-
-  if (!authHeader || !authHeader.startsWith('Bearer ')) {
-    return res.status(401).json({ error: 'Unauthorized', message: 'Missing or invalid Authorization header' });
+  if (authHeader && authHeader.startsWith('Bearer ')) {
+    token = authHeader.split(' ')[1];
+  } else {
+    const cookies = parseCookies(req.headers.cookie);
+    token = cookies['token'] || '';
   }
 
-  const token = authHeader.split(' ')[1];
+  if (!token) {
+    return res.status(401).json({ error: 'Unauthorized', message: 'Missing or invalid Authorization token' });
+  }
 
   // Fallback for Mock Auth (development mode)
   if (process.env.USE_MOCK_AUTH === 'true' || !process.env.AUTH0_DOMAIN) {

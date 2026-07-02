@@ -40,6 +40,13 @@ router.post('/login', async (req: Request, res: Response) => {
     // Generate mock JWT (in production, Auth0 handles this)
     const mockToken = Buffer.from(JSON.stringify({ sub: mockUser.id, email: mockUser.email })).toString('base64');
 
+    res.cookie('token', mockToken, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === 'production',
+      sameSite: 'lax',
+      path: '/'
+    });
+
     res.json({
       success: true,
       token: mockToken,
@@ -72,6 +79,13 @@ router.post('/signup', async (req: Request, res: Response) => {
     };
 
     const mockToken = Buffer.from(JSON.stringify({ sub: newUser.id, email: newUser.email })).toString('base64');
+
+    res.cookie('token', mockToken, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === 'production',
+      sameSite: 'lax',
+      path: '/'
+    });
 
     res.status(201).json({
       success: true,
@@ -120,6 +134,7 @@ router.post('/verify', async (req: Request, res: Response) => {
  */
 router.post('/logout', authMiddleware, (_req: Request, res: Response) => {
   // TODO: Add token to Redis blacklist
+  res.clearCookie('token', { path: '/' });
   res.json({ success: true, message: 'Logged out successfully' });
 });
 

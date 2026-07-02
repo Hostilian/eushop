@@ -102,6 +102,20 @@ public class UserServiceTest {
         assertEquals("Prague", updatedUser.getAddressCity());
         assertEquals("11000", updatedUser.getAddressPostalCode());
         assertTrue(updatedUser.getSelfCertifiedCompliant());
+        assertFalse(updatedUser.getKycVerified()); // Check it is false initially
+        verify(userRepository, times(1)).findById("test-uuid");
+        verify(userRepository, times(1)).save(any(User.class));
+    }
+
+    @Test
+    void testVerifySeller_Success() {
+        when(userRepository.findById("test-uuid")).thenReturn(Optional.of(mockUser));
+        when(userRepository.save(any(User.class))).thenAnswer(invocation -> invocation.getArgument(0));
+
+        User updatedUser = userService.verifySeller("test-uuid", true);
+
+        assertNotNull(updatedUser);
+        assertTrue(updatedUser.getKycVerified());
         verify(userRepository, times(1)).findById("test-uuid");
         verify(userRepository, times(1)).save(any(User.class));
     }

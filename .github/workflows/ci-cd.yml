@@ -64,6 +64,10 @@ jobs:
         env:
           DATABASE_URL: postgresql://eushop_dev:dev_password_123@localhost:5432/eushop_db
 
+      - name: Run backend Maven tests
+        run: mvn test
+        working-directory: services/core-service
+
   build:
     needs: test
     runs-on: ubuntu-latest

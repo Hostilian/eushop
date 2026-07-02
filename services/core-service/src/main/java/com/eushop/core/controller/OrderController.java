@@ -47,6 +47,21 @@ public class OrderController {
         return ResponseEntity.ok(ApiResponse.success(orders));
     }
 
+    @GetMapping("/admin")
+    public ResponseEntity<ApiResponse<Page<Order>>> getAllOrders(
+            @RequestHeader(value = "X-User-Role", required = false) String userRole,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size) {
+        
+        if (!"ADMIN".equalsIgnoreCase(userRole)) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN)
+                    .body(ApiResponse.error("Only admins can view all orders"));
+        }
+
+        Page<Order> orders = orderService.getAllOrders(page, size);
+        return ResponseEntity.ok(ApiResponse.success(orders));
+    }
+
     @GetMapping("/seller")
     public ResponseEntity<ApiResponse<Page<Order>>> getSellerOrders(
             @RequestHeader("X-User-Id") String userId,
