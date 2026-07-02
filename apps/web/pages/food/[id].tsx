@@ -17,6 +17,7 @@ interface FoodDetail {
     verified: boolean;
   };
   dietary_restrictions?: string[];
+  allergens?: string[];
   images?: string[];
   finder_fee?: number;
 }
@@ -80,7 +81,7 @@ export default function FoodDetailPage() {
     return (
       <div className="min-h-screen bg-gray-50 flex items-center justify-center">
         <div className="text-center">
-          <div className="inline-block animate-spin rounded-full h-8 w-8 border-b-2 border-indigo-600 mb-4"></div>
+          <div className="inline-block animate-spin rounded-full h-8 w-8 border-b-2 border-primary mb-4"></div>
           <p className="text-gray-600">Loading food details...</p>
         </div>
       </div>
@@ -91,10 +92,10 @@ export default function FoodDetailPage() {
     return (
       <div className="min-h-screen bg-gray-50">
         <div className="max-w-7xl mx-auto px-4 py-12">
-          <Link href="/search" className="text-indigo-600 hover:underline mb-8 inline-block">
+          <Link href="/search" className="text-primary hover:underline mb-8 inline-block">
             ← Back to Search
           </Link>
-          <div className="bg-red-50 border border-red-200 text-red-700 px-6 py-4 rounded">
+          <div className="bg-red-50 border border-red-200 text-red-700 px-6 py-4 rounded-xl">
             <p className="font-semibold">{error || 'Food not found'}</p>
           </div>
         </div>
@@ -104,68 +105,62 @@ export default function FoodDetailPage() {
 
   return (
     <div className="min-h-screen bg-gray-50">
-      {/* Header */}
-      <div className="bg-white border-b">
+      <nav className="sticky top-0 z-50 bg-white border-b border-gray-100 shadow-sm">
         <div className="max-w-7xl mx-auto px-4 py-4">
-          <Link href="/" className="text-2xl font-bold text-indigo-600">🍫 EUshop</Link>
+          <Link href="/" className="text-3xl font-extrabold text-primary tracking-tight flex items-center gap-2">
+            <span className="text-secondary">🌿</span> EUshop
+          </Link>
         </div>
-      </div>
+      </nav>
 
-      {/* Content */}
       <div className="max-w-7xl mx-auto px-4 py-12">
-        <Link href="/search" className="text-indigo-600 hover:underline mb-6 inline-block">
+        <Link href="/search" className="text-primary hover:underline mb-6 inline-block font-semibold">
           ← Back to Search
         </Link>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-12">
-          {/* Image Section */}
-          <div className="bg-white rounded-lg shadow p-8">
-            <div className="bg-gradient-to-br from-indigo-100 to-blue-100 h-96 rounded-lg flex items-center justify-center text-8xl">
-              🍫
+          <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-8">
+            <div className="bg-gradient-to-br from-brand-sand to-white h-96 rounded-2xl flex items-center justify-center text-8xl">
+              🌿
             </div>
             <p className="text-gray-500 text-sm mt-4 text-center">Product image placeholder</p>
           </div>
 
-          {/* Details Section */}
           <div>
-            {/* Title & Price */}
             <div className="mb-8">
-              <h1 className="text-4xl font-bold text-gray-900 mb-2">{food.name}</h1>
+              <h1 className="text-4xl font-extrabold text-brand-dark mb-2 font-display">{food.name}</h1>
               <div className="flex items-baseline gap-4">
-                <span className="text-3xl font-bold text-indigo-600">€{food.price.toFixed(2)}</span>
+                <span className="text-3xl font-extrabold text-primary">€{food.price.toFixed(2)}</span>
                 {food.finder_fee && (
                   <span className="text-gray-600">+€{food.finder_fee.toFixed(2)} finder's fee</span>
                 )}
               </div>
             </div>
 
-            {/* Location & Category */}
-            <div className="bg-white rounded-lg shadow p-6 mb-6">
+            <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-6 mb-6">
               <div className="grid grid-cols-2 gap-4">
                 <div>
                   <p className="text-gray-600 text-sm font-semibold">Location</p>
-                  <p className="text-lg font-bold">📍 {food.country}</p>
+                  <p className="text-lg font-bold text-brand-dark">📍 {food.country}</p>
                 </div>
                 <div>
                   <p className="text-gray-600 text-sm font-semibold">Category</p>
-                  <p className="text-lg font-bold">{food.category}</p>
+                  <p className="text-lg font-bold text-brand-dark">{food.category}</p>
                 </div>
               </div>
             </div>
 
-            {/* Description */}
-            <div className="bg-white rounded-lg shadow p-6 mb-6">
-              <h3 className="text-lg font-bold mb-3">Description</h3>
+            <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-6 mb-6">
+              <h3 className="text-lg font-bold mb-3 text-brand-dark">Description</h3>
               <p className="text-gray-700 leading-relaxed">{food.description}</p>
             </div>
 
-            {/* Dietary Info */}
             {food.dietary_restrictions && food.dietary_restrictions.length > 0 && (
-              <div className="bg-white rounded-lg shadow p-6 mb-6">
-                <h3 className="text-lg font-bold mb-3">Dietary Info</h3>
+              <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-6 mb-6">
+                <h3 className="text-lg font-bold mb-3 text-brand-dark">Dietary Info</h3>
                 <div className="flex flex-wrap gap-2">
                   {food.dietary_restrictions.map((diet, idx) => (
-                    <span key={idx} className="bg-green-100 text-green-800 px-3 py-1 rounded-full text-sm">
+                    <span key={idx} className="bg-green-100 text-green-800 px-3 py-1 rounded-full text-sm font-medium">
                       ✓ {diet}
                     </span>
                   ))}
@@ -173,16 +168,38 @@ export default function FoodDetailPage() {
               </div>
             )}
 
-            {/* Seller Info */}
-            <div className="bg-white rounded-lg shadow p-6 mb-6">
-              <h3 className="text-lg font-bold mb-4">Seller</h3>
+            <div className="bg-white rounded-2xl shadow-sm border border-red-100 p-6 mb-6">
+              <h3 className="text-lg font-bold mb-3 flex items-center gap-2 text-brand-dark">
+                <span className="text-red-500">⚠️</span> Allergen Information
+              </h3>
+              <p className="text-gray-600 text-sm mb-4">
+                In accordance with EU Regulation 1169/2011, food information must disclose the presence of major allergens:
+              </p>
+              {food.allergens && food.allergens.length > 0 ? (
+                <div className="flex flex-wrap gap-2">
+                  {food.allergens.map((allergen, idx) => (
+                    <span key={idx} className="bg-red-50 border border-red-200 text-red-800 px-4 py-1.5 rounded-full text-sm font-semibold">
+                      {allergen}
+                    </span>
+                  ))}
+                </div>
+              ) : (
+                <p className="text-gray-500 text-sm">
+                  <span className="font-medium">No major allergens declared by the seller.
+                  </span>
+                </p>
+              )}
+            </div>
+
+            <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-6 mb-6">
+              <h3 className="text-lg font-bold mb-4 text-brand-dark">Seller</h3>
               <div className="flex items-start justify-between">
                 <div>
-                  <p className="font-bold text-lg">{food.seller.name}</p>
+                  <p className="font-bold text-lg text-brand-dark">{food.seller.name}</p>
                   <div className="flex items-center gap-2 mt-1">
                     <span className="text-yellow-500">⭐ {food.seller.rating}</span>
                     {food.seller.verified && (
-                      <span className="bg-blue-100 text-blue-800 px-2 py-1 rounded text-xs font-semibold">
+                      <span className="bg-green-100 text-green-800 px-2 py-1 rounded text-xs font-semibold">
                         ✓ Verified
                       </span>
                     )}
@@ -191,14 +208,13 @@ export default function FoodDetailPage() {
               </div>
             </div>
 
-            {/* Quantity & Action Buttons */}
-            <div className="bg-white rounded-lg shadow p-6">
+            <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-6">
               <div className="mb-6">
                 <label className="block text-sm font-semibold text-gray-700 mb-2">Quantity</label>
                 <div className="flex items-center gap-4">
                   <button
                     onClick={() => setQuantity(Math.max(1, quantity - 1))}
-                    className="w-10 h-10 border border-gray-300 rounded hover:bg-gray-100"
+                    className="w-10 h-10 border border-gray-300 rounded-lg hover:bg-gray-100 transition"
                   >
                     −
                   </button>
@@ -207,11 +223,11 @@ export default function FoodDetailPage() {
                     min="1"
                     value={quantity}
                     onChange={(e) => setQuantity(Math.max(1, parseInt(e.target.value) || 1))}
-                    className="w-16 text-center border border-gray-300 rounded px-2 py-1"
+                    className="w-16 text-center border border-gray-300 rounded-lg px-2 py-2"
                   />
                   <button
                     onClick={() => setQuantity(quantity + 1)}
-                    className="w-10 h-10 border border-gray-300 rounded hover:bg-gray-100"
+                    className="w-10 h-10 border border-gray-300 rounded-lg hover:bg-gray-100 transition"
                   >
                     +
                   </button>
@@ -225,13 +241,13 @@ export default function FoodDetailPage() {
                 <button
                   onClick={handleAddToCart}
                   disabled={addingToCart}
-                  className="flex-1 bg-indigo-600 text-white py-3 rounded-lg font-semibold hover:bg-indigo-700 disabled:opacity-50"
+                  className="flex-1 bg-primary text-white py-3 rounded-xl font-semibold hover:opacity-90 disabled:opacity-50 transition"
                 >
                   {addingToCart ? 'Adding...' : '🛒 Add to Cart'}
                 </button>
                 <button
                   onClick={handleContactSeller}
-                  className="flex-1 border-2 border-indigo-600 text-indigo-600 py-3 rounded-lg font-semibold hover:bg-indigo-50"
+                  className="flex-1 border-2 border-primary text-primary py-3 rounded-xl font-semibold hover:bg-gray-50 transition"
                 >
                   💬 Message Seller
                 </button>

@@ -67,52 +67,59 @@ export default function SignupPage() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-indigo-50 to-blue-100 py-12 px-4">
-      <div className="bg-white rounded-lg shadow-lg p-8 max-w-md mx-auto">
-        <h1 className="text-3xl font-bold text-center text-indigo-600 mb-8">🍫 EUshop</h1>
-        
-        <h2 className="text-2xl font-bold mb-6 text-gray-900">Create Account</h2>
+    <div className="min-h-screen bg-gradient-to-br from-brand-cream via-white to-brand-sand py-12 px-4">
+      <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-8 max-w-md mx-auto">
+        <div className="text-center mb-8">
+          <Link href="/" className="text-3xl font-extrabold text-primary tracking-tight inline-flex items-center gap-2">
+            <span className="text-secondary">🌿</span> EUshop
+          </Link>
+        </div>
+
+        <h2 className="text-3xl font-extrabold mb-2 text-brand-dark font-display">Create Account</h2>
+        <p className="text-gray-600 mb-6">
+          Join the marketplace to browse regional foods, save your profile, and apply as a seller later.
+        </p>
 
         {error && (
-          <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded mb-4">
+          <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-xl mb-4 text-sm">
             {error}
           </div>
         )}
 
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Name</label>
+            <label className="block text-sm font-semibold text-gray-700 mb-2">Name</label>
             <input
               type="text"
               name="name"
               required
               value={formData.name}
               onChange={handleChange}
-              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500"
+              className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-primary"
               placeholder="Your name"
             />
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Email</label>
+            <label className="block text-sm font-semibold text-gray-700 mb-2">Email</label>
             <input
               type="email"
               name="email"
               required
               value={formData.email}
               onChange={handleChange}
-              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500"
+              className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-primary"
               placeholder="you@example.com"
             />
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Country</label>
+            <label className="block text-sm font-semibold text-gray-700 mb-2">Country</label>
             <select
               name="country"
               value={formData.country}
               onChange={handleChange}
-              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500"
+              className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-primary"
             >
               <option value="">Select your country</option>
               {countries.map((c) => (
@@ -124,28 +131,28 @@ export default function SignupPage() {
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Password</label>
+            <label className="block text-sm font-semibold text-gray-700 mb-2">Password</label>
             <input
               type="password"
               name="password"
               required
               value={formData.password}
               onChange={handleChange}
-              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500"
+              className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-primary"
               placeholder="••••••••"
               minLength={6}
             />
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Confirm Password</label>
+            <label className="block text-sm font-semibold text-gray-700 mb-2">Confirm Password</label>
             <input
               type="password"
               name="confirmPassword"
               required
               value={formData.confirmPassword}
               onChange={handleChange}
-              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500"
+              className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-primary"
               placeholder="••••••••"
               minLength={6}
             />
@@ -158,10 +165,10 @@ export default function SignupPage() {
                 name="acceptTerms"
                 checked={formData.acceptTerms}
                 onChange={handleChange}
-                className="rounded border-gray-300"
+                className="rounded border-gray-300 text-primary focus:ring-primary"
               />
               <span className="ml-2 text-sm text-gray-700">
-                I agree to the Terms of Service and Privacy Policy
+                I agree to the <Link href="/terms" className="text-primary hover:underline">Terms of Service</Link> and <Link href="/privacy" className="text-primary hover:underline">Privacy Policy</Link>
               </span>
             </label>
           </div>
@@ -169,7 +176,7 @@ export default function SignupPage() {
           <button
             type="submit"
             disabled={loading}
-            className="w-full bg-indigo-600 text-white py-2 rounded-lg font-semibold hover:bg-indigo-700 disabled:opacity-50"
+            className="w-full bg-primary text-white py-3 rounded-xl font-semibold hover:opacity-90 disabled:opacity-50 transition"
           >
             {loading ? 'Creating account...' : 'Sign Up'}
           </button>
@@ -177,7 +184,7 @@ export default function SignupPage() {
 
         <p className="text-center text-gray-600 mt-6">
           Already have an account?{' '}
-          <Link href="/login" className="text-indigo-600 hover:underline font-semibold">
+          <Link href="/login" className="text-primary hover:underline font-semibold">
             Sign in
           </Link>
         </p>
