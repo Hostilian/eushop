@@ -43,3 +43,4 @@ target/
 # Mobile
 ios/Pods/
 android/build/
+.aider*
