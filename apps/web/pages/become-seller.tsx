@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/router';
-import { authAPI } from '../lib/services';
+import { authAPI } from '../lib/services'; // Updated import
 
 export default function BecomeSeller() {
   const [formData, setFormData] = useState({
@@ -238,7 +238,7 @@ export default function BecomeSeller() {
                     <input
                       type="checkbox"
                       required
-                      className="mt-1 rounded border-gray-300 text-primary focus:ring-primary"
+                      className="mt-1 rounded border-gray-300 text-primary focus:ring-2 focus:ring-primary"
                       onChange={(e) => setFormData({ ...formData, selfCertification: e.target.checked })}
                     />
                     <span className="ml-2 text-sm text-gray-700">
@@ -254,7 +254,7 @@ export default function BecomeSeller() {
                 <input
                   type="checkbox"
                   required
-                  className="rounded border-gray-300 text-primary focus:ring-primary"
+                  className="rounded border-gray-300 text-primary focus:ring-2 focus:ring-primary"
                   onChange={(e) => setFormData({ ...formData, acceptTerms: e.target.checked })}
                 />
                 <span className="ml-2 text-sm text-gray-700">

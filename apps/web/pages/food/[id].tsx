@@ -1,7 +1,7 @@
 import Link from 'next/link';
 import { useRouter } from 'next/router';
 import { useEffect, useState } from 'react';
-import { foodAPI } from '../../lib/services';
+import { foodAPI } from '../../lib/services'; // Updated import
 
 interface FoodDetail {
   id: string;
@@ -16,10 +16,10 @@ interface FoodDetail {
     rating: number;
     verified: boolean;
   };
-  dietary_restrictions?: string[];
+  dietaryRestrictions?: string[]; // Changed from dietary_restrictions
   allergens?: string[];
   images?: string[];
-  finder_fee?: number;
+  finderFee?: number; // Changed from finder_fee
 }
 
 export default function FoodDetailPage() {
@@ -40,7 +40,7 @@ export default function FoodDetailPage() {
         const result = await foodAPI.getById(id as string);
         setFood(result);
       } catch (err: any) {
-        setError(err.response?.data?.error || 'Failed to load food details');
+        setError(err.response?.data?.error || err.message || 'Failed to load food details'); // Added err.message
         console.error('Error fetching food:', err);
       } finally {
         setLoading(false);
@@ -56,13 +56,29 @@ export default function FoodDetailPage() {
     setAddingToCart(true);
     try {
       // TODO: Implement cart functionality
+      // This part is client-side only for now, no API call here
       const cartItem = {
-        foodId: food.id,
-        quantity,
+        id: food.id, // Use food.id for cart item
+        name: food.name,
+        country: food.country,
         price: food.price,
+        quantity,
       };
-      console.log('Adding to cart:', cartItem);
-      // Show success message
+      
+      // Example: Add to localStorage cart
+      const existingCart = JSON.parse(localStorage.getItem('cart') || '[]');
+      const itemIndex = existingCart.findIndex((item: any) => item.id === food.id);
+
+      let updatedCart;
+      if (itemIndex > -1) {
+        updatedCart = existingCart.map((item: any, idx: number) => 
+          idx === itemIndex ? { ...item, quantity: item.quantity + quantity } : item
+        );
+      } else {
+        updatedCart = [...existingCart, cartItem];
+      }
+      localStorage.setItem('cart', JSON.stringify(updatedCart));
+
       alert(`Added ${quantity} of "${food.name}" to cart`);
     } catch (err) {
       alert('Failed to add to cart');
@@ -131,8 +147,8 @@ export default function FoodDetailPage() {
               <h1 className="text-4xl font-extrabold text-brand-dark mb-2 font-display">{food.name}</h1>
               <div className="flex items-baseline gap-4">
                 <span className="text-3xl font-extrabold text-primary">€{food.price.toFixed(2)}</span>
-                {food.finder_fee && (
-                  <span className="text-gray-600">+€{food.finder_fee.toFixed(2)} finder's fee</span>
+                {food.finderFee && (
+                  <span className="text-gray-600">+€{food.finderFee.toFixed(2)} finder's fee</span>
                 )}
               </div>
             </div>
@@ -155,11 +171,11 @@ export default function FoodDetailPage() {
               <p className="text-gray-700 leading-relaxed">{food.description}</p>
             </div>
 
-            {food.dietary_restrictions && food.dietary_restrictions.length > 0 && (
+            {food.dietaryRestrictions && food.dietaryRestrictions.length > 0 && (
               <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-6 mb-6">
                 <h3 className="text-lg font-bold mb-3 text-brand-dark">Dietary Info</h3>
                 <div className="flex flex-wrap gap-2">
-                  {food.dietary_restrictions.map((diet, idx) => (
+                  {food.dietaryRestrictions.map((diet, idx) => (
                     <span key={idx} className="bg-green-100 text-green-800 px-3 py-1 rounded-full text-sm font-medium">
                       ✓ {diet}
                     </span>

@@ -1,6 +1,6 @@
 import Link from 'next/link';
 import { useCallback, useEffect, useState } from 'react';
-import { foodAPI } from '../lib/services';
+import { foodAPI } from '../lib/services'; // Updated import
 
 interface Food {
   id: string;

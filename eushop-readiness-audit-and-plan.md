@@ -14,7 +14,7 @@
 
 ## Executive Summary
 
-- **What is real today:** The repo has a solid core schema, Spring Boot service layer, API-gateway auth scaffolding, several live commerce pages, and draft legal/compliance pages.
+- **What is real today:** The repo has a solid core schema, Spring Boot service layer, Spring Boot auth scaffolding, several live commerce pages, and draft legal/compliance pages.
 - **What is not real yet:** Payments, broad automated testing, production auth/session handling, and end-to-end compliance workflows are still incomplete.
 - **What matters most for diligence:** Align the docs with the current code, wire the default migration/seed path to the compliance schema, and replace mock checkout/auth behavior with production flows.
 - **What to do next:** Treat the current repository as a credible MVP foundation, not a finished platform, and sequence work around compliance, transaction plumbing, and investor materials.
@@ -84,7 +84,7 @@ A technical investor conducting basic diligence on this codebase would spot a si
 The codebase has a clean skeleton:
 1. **Relational Database Schema:** `001_initial_schema.sql` and `002_compliance_fields.sql` define an 8-table relational model with foreign keys, indexes, and compliance fields for seller verification and allergen enforcement.
 2. **Spring Boot Services:** Real Spring Boot entities, repositories, services, and REST controllers exist for core operations.
-3. **Gateway JWT Verification:** The API gateway includes a structurally correct RS256 JWT validation flow with Auth0 JWKS caching, but the browser-side login flow still stores session data in `localStorage`.
+3. **Spring Boot JWT Verification:** The Spring Boot Core Service includes a structurally correct RS256 JWT validation flow with Auth0 JWKS caching, but the browser-side login flow still stores session data in `localStorage`.
 4. **Existing Commerce Pages:** `login.tsx`, `dashboard.tsx`, `become-seller.tsx`, `cart.tsx`, `checkout.tsx`, `privacy.tsx`, `terms.tsx`, `search.tsx`, `admin.tsx`, `admin/dashboard.tsx`, `food/[id].tsx`, and `index.tsx` all exist, but several are mock-heavy and not yet wired to production flows.
 5. **Compliance Surfaces:** A cookie banner exists in `apps/web/components/CookieBanner.tsx`, and draft privacy/terms pages already contain substantive GDPR/DSA/DAC7 language.
 6. **Monorepo Architecture:** The pnpm workspace and Docker Compose setup provide a clean local development environment.
@@ -110,12 +110,12 @@ The draft below assumes a few older states that are no longer true in this works
 ### A1. Technical & Product Audit
 
 *   **Architecture & Microservices Overhead:** 
-    The monorepo (`pnpm-workspace.yaml`) coordinates a Node/Express API Gateway, a Java/Spring Boot Core Service, and a Next.js frontend, backed by Postgres and Redis. The standalone messaging service has already been removed from the current workspace, and search is no longer backed by an Elasticsearch runtime.
-    *   *Issue:* The product is still split across multiple runtimes, but the larger risk today is not raw runtime count; it is that the implemented user flows stop at UI and mock layers.
+    The monorepo (`pnpm-workspace.yaml`) coordinates a Spring Boot Core Service and a Next.js frontend, backed by Postgres and Redis.
+    *   *Issue:* The product still has incomplete user flows that stop at UI and mock layers.
     *   *Recommendation:* Keep chat and commerce logic consolidated in the core service for now, and do not reintroduce a separate messaging runtime unless there is validated demand and a clear ownership model.
 *   **Authentication & Security Hygiene:**
     *   *Issue:* The frontend (`apps/web`) reads and writes user session data and tokens directly to and from `localStorage` in `lib/services.ts`, `pages/index.tsx`, `pages/dashboard.tsx`, and `pages/login.tsx`. This exposes the session to Cross-Site Scripting (XSS) attacks.
-    *   *Recommendation:* Reconfigure the API gateway and Auth0 integration to use the Authorization Code Flow with PKCE, returning tokens via `httpOnly`, `Secure`, and `SameSite=Strict` cookies.
+    *   *Recommendation:* Reconfigure the Spring Boot Core Service and Auth0 integration to use the Authorization Code Flow with PKCE, returning tokens via `httpOnly`, `Secure`, and `SameSite=Strict` cookies.
 *   **The Core Transaction Loop:**
     *   *Issue:* The backend has `OrderController.java` and `OrderService.java` support, and the web app already has `cart.tsx` and `checkout.tsx`, but the checkout is still a mock form and there is no production payment processor wired through the backend.
     *   *Recommendation:* Replace the mock flow with a real cart-to-checkout-to-order pipeline and integrate Stripe Connect (or an equivalent PSP) end to end.
@@ -228,7 +228,7 @@ flowchart TD
 | 7 | **DSA KYBC Seller Onboarding** | Regulatory | Fines for unverified commercial sellers | **P1** | `apps/web/pages/become-seller.tsx`, `User.java` |
 | 8 | **DAC7 Reporting Fields** | Regulatory | Annual tax reporting failures | **P1** | `db/migrations/002_compliance_fields.sql`, `apps/web/pages/become-seller.tsx` |
 | 9 | **Mandatory Allergen Display** | Buyers / Legal | Health hazards, labeling law violations | **P1** | `apps/web/pages/food/[id].tsx`, `Food.java` |
-| 10 | **Auth0 Token Security** | Engineering | Session hijacking / XSS vulnerabilities | **P1** | `services/api-gateway/...`, `apps/web/` |
+| 10 | **Auth0 Token Security** | Engineering | Session hijacking / XSS vulnerabilities | **P1** | `services/core-service/...`, `apps/web/` |
 | 11 | **Microservice Cleanup** | Engineering | Deployment complexity and infrastructure drift | **P1** | `services/core-service/`, `docker-compose.yml` |
 | 12 | **Pitch Deck & Financials** | Investors | No clear business model or funding strategy | **P1** | N/A (Business artifacts) |
 | 13 | **Admin Moderation Panel** | Operations | Inability to flag or remove non-compliant listings | **P1** | `apps/web/pages/admin.tsx`, `apps/web/pages/admin/dashboard.tsx` |
@@ -293,7 +293,7 @@ flowchart TD
 - [x] **Simplify Architecture:** Keep messaging out of a separate runtime for now. If chat is needed, implement it inside `services/core-service/` instead of splitting into another service.
 - [ ] **Stripe Connect Integration:** Use Stripe Connect (Express or Custom onboarding) to split payments between the seller and the marketplace commission automatically.
 - [ ] **Harden Checkout Pages:** Replace the existing mock `cart.tsx` and `checkout.tsx` behavior with real order creation, payment intent handling, and payout confirmation.
-- [x] **Secure Authentication Tokens:** Update the login and gateway configuration to store JWT tokens in secure, HTTP-only cookies instead of `localStorage`.
+- [x] **Secure Authentication Tokens:** Update the login and Spring Boot Core Service configuration to store JWT tokens in secure, HTTP-only cookies instead of `localStorage`.
 - [ ] **Configure Testing Pipelines:**
     *   Add JUnit 5 test cases to the Java core service.
     *   Add Jest tests in `apps/web/` for critical frontend flows.
@@ -401,9 +401,10 @@ Everything below this point is supporting material. It is useful for fundraising
 *   **Week 2 (Legal Setup & IP):**
     *   [ ] Choose a corporate structure and submit incorporation documents.
     *   [ ] Execute IP assignment agreements with all contributors.
-    *   [ ] Set up your corporate bank account and secure your core domains.
+    *   [ ] Draft a Founder Collaboration Agreement with a standard 4-year vesting schedule and 1-year cliff.
+    *   [x] **Legal Disclosures:** Write the Privacy Policy, Terms of Service, and Cookie Policy. Ensure they clearly address marketplace liabilities, food logistics, and the 14-day consumer right of withdrawal.
 *   **Week 3 (Scaffold Test Suites & Clean Up Microservices):**
-    *   [ ] Keep chat and messaging inside the core service rather than introducing a new runtime.
+    *   [x] **Simplify Architecture:** Keep chat and messaging inside the core service rather than introducing a new runtime.
     *   [ ] Expand beyond the existing `UserServiceTest` and `cart.test.tsx` with broader JUnit and Jest coverage for auth, orders, checkout, and seller onboarding.
     *   [ ] Update the GitHub Actions CI workflow to run both Node and Maven tests on every push.
 *   **Week 4 (User Rights Documents):**
@@ -414,7 +415,7 @@ Everything below this point is supporting material. It is useful for fundraising
 *   **Week 5 (Auth0 and Token Security):**
     *   [ ] Configure a secure Auth0 tenant.
     *   [ ] Move JWT tokens from the browser's `localStorage` into secure HTTP-only cookies.
-    *   [ ] Add security middleware to the Node API Gateway to enforce token validation.
+    *   [ ] Add security middleware to the Spring Boot Core Service to enforce token validation.
 *   **Week 6 (Compliance Integration & Onboarding):**
     *   [ ] Run the SQL script to add tax and company registration fields to the database.
     *   [ ] Build the KYBC and DAC7 onboarding fields into `become-seller.tsx`.
@@ -493,9 +494,9 @@ Everything below this point is supporting material. It is useful for fundraising
     *   [ ] Track the ratio of verified sellers to active sellers and the ratio of compliant listings to total listings.
     *   [ ] Review which metrics are actually predictive before adding more dashboards.
 *   **Week 24 (Process Simplification):**
-    *   [ ] Remove duplicate steps from seller onboarding and admin moderation.
-    *   [ ] Simplify the checkout and post-order process where it creates friction without adding trust.
-    *   [ ] Decide which manual processes are acceptable to keep and which must be automated next.
+    *   [ ] Remove one or two recurring steps from the business that do not improve trust or revenue.
+    *   [ ] Recalculate whether the remaining workflow is simpler to run at twice the volume.
+    *   [ ] Freeze any new work that does not improve throughput or compliance.
 
 ### Month 7: Scale Decisions & Expansion Readiness
 *   **Week 25 (Scope Decision):**
@@ -768,7 +769,7 @@ Copy these issues directly into GitHub to coordinate development tasks:
 - [ ] **Update Database Schema (`Track 2`):**
     *   Run the migration script to add verification and tax fields to the `users` table.
 - [ ] **Secure Authentication Tokens (`Track 3`):**
-    *   Update `services/api-gateway/` and `apps/web/` to store JWT tokens in secure, HTTP-only cookies instead of `localStorage`.
+    *   Update `services/core-service/` and `apps/web/` to store JWT tokens in secure, HTTP-only cookies instead of `localStorage`.
 - [ ] **Configure Testing Suites (`Track 3`):**
     *   Configure JUnit 5 and mock servers in `services/core-service/`.
     *   Configure Jest and write component tests in `apps/web/`.
