@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { loadStripe } from '@stripe/stripe-js';
 import { Elements, CardElement, useStripe, useElements } from '@stripe/react-stripe-js';
-import { paymentAPI, orderAPI, foodAPI } from '../lib/services'; // Updated import
+import { paymentAPI, orderAPI, foodAPI, authAPI, User } from '../lib/services'; // Updated import
 
 const stripePromise = loadStripe(process.env.NEXT_PUBLIC_STRIPE_PUBLIC_KEY || 'pk_test_51MockPublicKeyForCheckoutCompilationOnly');
 
@@ -20,6 +20,7 @@ function CheckoutForm() {
   const stripe = useStripe();
   const elements = useElements();
 
+  const [user, setUser] = useState<User | null>(null);
   const [cartItems, setCartItems] = useState<CartItem[]>([]);
   const [formData, setFormData] = useState({
     firstName: '',
@@ -37,6 +38,24 @@ function CheckoutForm() {
   const [orderPlaced, setOrderPlaced] = useState(false);
 
   useEffect(() => {
+    // Fetch user details
+    const fetchUser = async () => {
+      try {
+        const currentUser = await authAPI.getCurrentUser();
+        if (currentUser) {
+          setUser(currentUser);
+          setFormData(prev => ({
+            ...prev,
+            email: currentUser.email,
+            // Potentially pre-fill name/address if available on user object
+          }));
+        }
+      } catch (error) {
+        console.error('Failed to fetch user for checkout:', error);
+      }
+    };
+    fetchUser();
+
     const savedCart = localStorage.getItem('cart');
     if (savedCart) {
       try {
@@ -94,7 +113,7 @@ function CheckoutForm() {
       // We pass the sellerAccountId of the first item for simplicity or empty for multi-seller platform collections
       const sellerId = cartItems.length > 0 ? cartItems[0].sellerId : undefined;
       const res = await paymentAPI.createPaymentIntent(grandTotal, 'eur', sellerId);
-      const clientSecret = res.data?.clientSecret || res.clientSecret;
+      const clientSecret = res.clientSecret; // Access directly from response.data
 
       if (!clientSecret) {
         throw new Error('Failed to retrieve client secret from payment provider');
@@ -207,6 +226,7 @@ function CheckoutForm() {
                     required
                     className="w-full px-4 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary text-sm"
                     onChange={e => setFormData({ ...formData, firstName: e.target.value })}
+                    value={formData.firstName}
                   />
                 </div>
                 <div>
@@ -216,6 +236,7 @@ function CheckoutForm() {
                     required
                     className="w-full px-4 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary text-sm"
                     onChange={e => setFormData({ ...formData, lastName: e.target.value })}
+                    value={formData.lastName}
                   />
                 </div>
               </div>
@@ -227,6 +248,7 @@ function CheckoutForm() {
                   required
                   className="w-full px-4 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary text-sm"
                   onChange={e => setFormData({ ...formData, email: e.target.value })}
+                  value={formData.email}
                 />
               </div>
 
@@ -237,6 +259,7 @@ function CheckoutForm() {
                   required
                   className="w-full px-4 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary text-sm"
                   onChange={e => setFormData({ ...formData, address: e.target.value })}
+                  value={formData.address}
                 />
               </div>
 
@@ -248,6 +271,7 @@ function CheckoutForm() {
                     required
                     className="w-full px-4 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary text-sm"
                     onChange={e => setFormData({ ...formData, city: e.target.value })}
+                    value={formData.city}
                   />
                 </div>
                 <div>
@@ -257,6 +281,7 @@ function CheckoutForm() {
                     required
                     className="w-full px-4 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary text-sm"
                     onChange={e => setFormData({ ...formData, postalCode: e.target.value })}
+                    value={formData.postalCode}
                   />
                 </div>
               </div>

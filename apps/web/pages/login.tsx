@@ -18,7 +18,7 @@ export default function LoginPage() {
     try {
       const result = await authAPI.login(email, password);
       console.log('Login successful:', result);
-      router.push('/dashboard');
+      router.push('/dashboard'); // Redirect to dashboard after successful login
     } catch (err: any) {
       setError(err.response?.data?.error || err.message || 'Login failed. Please try again.'); // Added err.message
       console.error('Login error:', err);

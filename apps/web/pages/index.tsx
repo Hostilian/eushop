@@ -1,7 +1,7 @@
 
 import Link from 'next/link';
 import { useEffect, useState } from 'react';
-import { foodAPI } from '../lib/services'; // Updated import
+import { authAPI, foodAPI, User } from '../lib/services'; // Updated import
 
 const fallbackTrendingFoods = [
   { id: '1', name: 'Belgian Chocolates', country: 'Belgium', price: 24.99 },
@@ -27,27 +27,31 @@ const getFoodImage = (foodName: string) => {
 };
 
 export default function Home() {
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
-  const [userName, setUserName] = useState('');
+  const [user, setUser] = useState<User | null>(null);
   const [trendingFoods, setTrendingFoods] = useState<any[]>(fallbackTrendingFoods);
-  const [loading, setLoading] = useState(false);
+  const [loadingFoods, setLoadingFoods] = useState(false);
+  const [loadingUser, setLoadingUser] = useState(true);
 
   useEffect(() => {
-    // Check if user is logged in
-    const user = localStorage.getItem('user');
-    if (user) {
+    // Fetch user status
+    const fetchUserStatus = async () => {
+      setLoadingUser(true);
       try {
-        const userData = JSON.parse(user);
-        setIsLoggedIn(true);
-        setUserName(userData.name);
+        const currentUser = await authAPI.getCurrentUser();
+        setUser(currentUser);
       } catch (error) {
-        console.error('Failed to parse user:', error);
+        console.error('Failed to fetch user status:', error);
+        setUser(null);
+      } finally {
+        setLoadingUser(false);
       }
-    }
+    };
+
+    fetchUserStatus();
 
     // Fetch trending foods
     const fetchTrending = async () => {
-      setLoading(true);
+      setLoadingFoods(true);
       try {
         const foods = await foodAPI.getTrending();
         setTrendingFoods(Array.isArray(foods) ? foods : (foods?.data || foods?.foods || []));
@@ -56,18 +60,25 @@ export default function Home() {
         // Use mock data as fallback
         setTrendingFoods(fallbackTrendingFoods);
       } finally {
-        setLoading(false);
+        setLoadingFoods(false);
       }
     };
 
     fetchTrending();
   }, []);
 
-  const handleLogout = () => {
-    localStorage.removeItem('token');
-    localStorage.removeItem('user');
-    setIsLoggedIn(false);
-    window.location.href = '/';
+  const handleLogout = async () => {
+    try {
+      await authAPI.logout();
+      setUser(null);
+      window.location.href = '/'; // Redirect to homepage after logout
+    } catch (error) {
+      console.error('Logout failed:', error);
+      // Even if API logout fails, clear local state and redirect
+      localStorage.removeItem('user');
+      setUser(null);
+      window.location.href = '/';
+    }
   };
 
   return (
@@ -84,9 +95,11 @@ export default function Home() {
               Browse
             </Link>
             
-            {isLoggedIn ? (
+            {loadingUser ? (
+              <div className="h-5 w-20 bg-gray-200 rounded animate-pulse"></div> // Skeleton loader for user status
+            ) : user ? (
               <>
-                <span className="text-gray-600 text-sm">Welcome, <strong className="text-primary">{userName}</strong></span>
+                <span className="text-gray-600 text-sm">Welcome, <strong className="text-primary">{user.name}</strong></span>
                 <Link href="/dashboard" className="bg-primary text-white px-4 py-2 rounded-lg hover:opacity-90 font-medium transition text-sm">
                   Dashboard
                 </Link>
@@ -170,7 +183,7 @@ export default function Home() {
         <div className="max-w-7xl mx-auto px-4">
           <h2 className="text-3xl font-extrabold mb-12 text-brand-dark">🔥 Trending Now</h2>
           
-          {loading ? (
+          {loadingFoods ? (
             <div className="flex justify-center text-gray-500 font-medium">Loading trending foods...</div>
           ) : (
             <div className="grid grid-cols-1 md:grid-cols-3 gap-8">

@@ -13,7 +13,7 @@ const apiClient: AxiosInstance = axios.create({
   headers: {
     'Content-Type': 'application/json',
   },
-  withCredentials: true,
+  withCredentials: true, // IMPORTANT: This sends cookies with cross-origin requests
 });
 
 // Configure retry logic
@@ -32,12 +32,13 @@ axiosRetry(apiClient, {
   },
 });
 
-// Add token and correlation ID to requests
+// Add correlation ID to requests
 apiClient.interceptors.request.use((config: InternalAxiosRequestConfig) => {
-  const token = typeof window !== 'undefined' ? localStorage.getItem('token') : null;
-  if (token) {
-    config.headers.Authorization = `Bearer ${token}`;
-  }
+  // Remove Authorization header if it was set from localStorage, as we now rely on httpOnly cookies
+  // If you have other clients (e.g., mobile app) that still use Authorization header,
+  // you might need a separate axios instance for them.
+  delete config.headers.Authorization; 
+  
   // Add correlation ID
   if (!config.headers['X-Correlation-ID']) {
     config.headers['X-Correlation-ID'] = generateCorrelationId();
@@ -50,7 +51,7 @@ apiClient.interceptors.response.use(
   (response) => response,
   (error) => {
     if (error.response?.status === 401) {
-      typeof window !== 'undefined' && localStorage.removeItem('token');
+      // Clear any remaining local storage user data (token should not be there anyway)
       typeof window !== 'undefined' && localStorage.removeItem('user');
       if (typeof window !== 'undefined' && window.location.pathname !== '/login') {
         window.location.href = '/login';

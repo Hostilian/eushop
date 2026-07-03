@@ -1,13 +1,7 @@
 import Link from 'next/link';
 import { useRouter } from 'next/router';
 import { useEffect, useState } from 'react';
-
-interface User {
-  id: string;
-  email: string;
-  name: string;
-  role: string;
-}
+import { authAPI, User } from '../lib/services'; // Import User interface
 
 export default function DashboardPage() {
   const router = useRouter();
@@ -15,18 +9,24 @@ export default function DashboardPage() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const userStr = localStorage.getItem('user');
-    if (userStr) {
+    const fetchUser = async () => {
+      setLoading(true);
       try {
-        setUser(JSON.parse(userStr));
+        const currentUser = await authAPI.getCurrentUser();
+        if (currentUser) {
+          setUser(currentUser);
+        } else {
+          router.push('/login'); // Redirect to login if not authenticated
+        }
       } catch (error) {
-        console.error('Failed to parse user:', error);
-        router.push('/login');
+        console.error('Failed to fetch user:', error);
+        router.push('/login'); // Redirect on error
+      } finally {
+        setLoading(false);
       }
-    } else {
-      router.push('/login');
-    }
-    setLoading(false);
+    };
+
+    fetchUser();
   }, [router]);
 
   if (loading) {
@@ -34,13 +34,19 @@ export default function DashboardPage() {
   }
 
   if (!user) {
-    return null;
+    return null; // Should redirect to login, but good to have a fallback
   }
 
-  const handleLogout = () => {
-    localStorage.removeItem('token');
-    localStorage.removeItem('user');
-    router.push('/');
+  const handleLogout = async () => {
+    try {
+      await authAPI.logout();
+      router.push('/');
+    } catch (error) {
+      console.error('Logout failed:', error);
+      // Even if API logout fails, clear local state and redirect
+      localStorage.removeItem('user');
+      router.push('/');
+    }
   };
 
   return (
