@@ -1,7 +1,7 @@
 import Link from 'next/link';
 import { useRouter } from 'next/router';
 import React, { useState } from 'react';
-import { authAPI } from '../lib/services';
+import { authAPI } from '../lib/services'; // Updated import
 
 export default function LoginPage() {
   const router = useRouter();
@@ -20,7 +20,7 @@ export default function LoginPage() {
       console.log('Login successful:', result);
       router.push('/dashboard');
     } catch (err: any) {
-      setError(err.response?.data?.error || 'Login failed. Please try again.');
+      setError(err.response?.data?.error || err.message || 'Login failed. Please try again.'); // Added err.message
       console.error('Login error:', err);
     } finally {
       setLoading(false);

@@ -7,6 +7,7 @@
 - Docker and Docker Compose installed
 - pnpm installed globally (`npm install -g pnpm`)
 - Git installed
+- Java 17+ and Maven installed (for Spring Boot Core Service)
 
 ### Step 1: Environment Setup
 
@@ -24,9 +25,8 @@ POSTGRES_DB=eushop
 POSTGRES_USER=postgres
 POSTGRES_PASSWORD=postgres
 
-# API Gateway
-API_GATEWAY_PORT=3000
-API_GATEWAY_URL=http://localhost:3000
+# Backend API (Spring Boot Core Service)
+BACKEND_API_URL=http://localhost:3001
 
 # Optional: Auth0, Stripe, AWS, Cloudinary (for Phase 2+)
 ```
@@ -42,7 +42,6 @@ pnpm install
 This installs:
 - `apps/web` - Next.js web application
 - `apps/mobile` - React Native/Expo mobile app (Frozen for MVP)
-- `services/api-gateway` - Node.js Express API Gateway
 - `services/core-service` - Spring Boot core service
 
 ### Step 3: Start Infrastructure
@@ -75,36 +74,22 @@ pnpm run db:seed
 
 ### Step 5: Start Development Environment
 
-**Option A: Start all services together (recommended)**
+**Option A: Start web and mobile apps (recommended)**
 ```bash
 pnpm dev
 ```
 
 This starts:
 - Next.js web app on **http://localhost:3000**
-- API Gateway on **http://localhost:3001** (via root dev script)
 - React Native Expo dev server
-- Spring Boot services (if configured)
 
-**Option B: Start individual services**
-
+**You must start the Spring Boot Core Service separately:**
 ```bash
-# Terminal 1: Web app
-cd apps/web
-pnpm dev
-
-# Terminal 2: API Gateway
-cd services/api-gateway
-pnpm dev
-
-# Terminal 3: Mobile (Expo)
-cd apps/mobile
-pnpm start
-
-# Terminal 4: Spring Boot services (requires Java/Maven)
+# Terminal 2: Spring Boot Core Service
 cd services/core-service
 mvn spring-boot:run
 ```
+The Spring Boot Core Service will typically run on **http://localhost:3001**.
 
 ### Step 6: Access the Application
 
@@ -116,7 +101,7 @@ Once everything is running:
    - Browse specialty foods
    - View seller onboarding
 
-2. **API Gateway**: http://localhost:3001/api
+2. **Spring Boot Core Service API**: http://localhost:3001/api
    - Health check: `http://localhost:3001/api/health`
    - Login: `POST http://localhost:3001/api/auth/login`
    - Signup: `POST http://localhost:3001/api/auth/signup`
@@ -200,7 +185,6 @@ eushop/
 │   │   └── public/       # Static assets
 │   └── mobile/           # React Native/Expo app
 ├── services/
-│   ├── api-gateway/      # Express.js REST/GraphQL API
 │   └── core-service/     # Spring Boot business logic
 ├── db/
 │   ├── migrations/       # SQL migration files
@@ -216,13 +200,14 @@ eushop/
 ### Current (Phase 1 - Mock)
 - Mock JWT token (Base64 encoded JSON)
 - Token stored in localStorage (web) / device storage (mobile)
-- authMiddleware validates token by Base64 decoding
+- Frontend directly calls Spring Boot Core Service.
 
 ### Next Steps (Phase 2)
-- Integrate Auth0 OAuth 2.0 with jose library
-- Real JWT verification
-- Refresh token rotation
-- Session management with Redis
+- Integrate Auth0 OAuth 2.0 with Spring Security.
+- Real JWT verification within Spring Boot.
+- Refresh token rotation.
+- Session management with Redis.
+- Tokens stored in secure, HTTP-only cookies.
 
 ## Troubleshooting
 
@@ -254,19 +239,19 @@ kill -9 <PID>  # macOS/Linux
 taskkill /PID <PID> /F  # Windows
 ```
 
-### API Gateway connection refused
+### Spring Boot Core Service connection refused
 ```bash
-# Ensure API Gateway is running
-cd services/api-gateway && pnpm dev
+# Ensure Spring Boot Core Service is running
+cd services/core-service && mvn spring-boot:run
 
 # Check logs for errors
-# Default API Gateway port is 3001 or 3000 (check services/api-gateway/src/index.ts)
+# Default Spring Boot port is 3001 (check services/core-service/src/main/resources/application.properties)
 ```
 
 ## Next Steps (Phase 2)
 
-- [ ] Implement Spring Boot controllers for Core Service
-- [ ] Add Auth0 integration with jose library
+- [ ] Implement Spring Boot controllers for Core Service (if not already done)
+- [ ] Add Auth0 integration with Spring Security
 - [ ] Create WebSocket message handlers (Messaging Service)
 - [ ] Add email verification system
 - [ ] Implement Elasticsearch integration for advanced search
@@ -286,7 +271,6 @@ For issues or questions:
 
 - [Next.js Documentation](https://nextjs.org/docs)
 - [React Native / Expo](https://docs.expo.dev)
-- [Express.js Guide](https://expressjs.com/en/guide/routing.html)
 - [Spring Boot Docs](https://spring.io/projects/spring-boot)
 - [PostgreSQL Docs](https://www.postgresql.org/docs/)
 - [Docker Compose Reference](https://docs.docker.com/compose/)

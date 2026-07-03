@@ -26,8 +26,7 @@ eushop/
 - **Web**: Next.js 16 + React 19 + TypeScript + Tailwind CSS
 
 ### Backend
-- **Core Service**: Spring Boot / Java 17 + JPA + Hibernate + REST endpoints (running on port `3001` or routed via gateway)
-- **API Gateway**: Node.js + Express (JWT token validation skeleton, running on port `3000`)
+- **Core Service**: Spring Boot / Java 17 + JPA + Hibernate + REST endpoints (running on port `3001`)
 
 ### Database & Cache
 - **PostgreSQL 18+**: Primary data store with 8-table relational schema
@@ -42,6 +41,7 @@ eushop/
 - pnpm 8+
 - Docker & Docker Compose
 - Java 17+
+- Maven
 
 ### Installation & Local Setup
 
@@ -74,11 +74,12 @@ eushop/
 5. **Start development servers**
    ```bash
    pnpm dev
+   # In a separate terminal, start the Spring Boot Core Service:
+   # cd services/core-service && mvn spring-boot:run
    ```
 
    This starts:
    - Web application: http://localhost:3000
-   - API Gateway: http://localhost:3000/api
    - Core Service: http://localhost:3001
 
 ---
@@ -92,9 +93,9 @@ For the latest detailed status matrix and evidence links, please refer to [STATU
 ### High-Level Roadmap
 
 - **Phase 0: Foundation** (Active) - Establish linting, testing, security scans, and API standardizations in CI/CD.
-- **Phase 1: Discovery & Auth** (In Progress) - Replace mock token authentication with production-ready OAuth/JWT session management.
+- **Phase 1: Discovery & Auth** (In Progress) - Replace mock token authentication with production-ready OAuth/JWT session management directly within the Spring Boot Core Service.
 - **Phase 2: Seller Listings & Compliance** (In Progress) - Build listing CRUD validation, allergen controls, and KYBC/DAC7 intake.
-- **Phase 3: Messaging & Requests** (Planned) - Integrate direct buyer-seller chat interface with polling.
+- **Phase 3: Messaging & Requests** (Planned) - Integrate direct buyer-seller chat interface with polling (within Core Service).
 - **Phase 4: Payments & Orders** (Planned) - Connect shopping cart checkout loop with Stripe Connect split payouts.
 - **Phase 5: Reviews & Reputation** (Planned) - Add buyer-seller review verifications and aggregates.
 

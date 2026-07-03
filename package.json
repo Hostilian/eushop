@@ -4,7 +4,7 @@
   "description": "EU Specialty Food Marketplace Platform",
   "private": true,
   "scripts": {
-    "dev": "pnpm -r --parallel run dev",
+    "dev": "pnpm --filter apps/web --filter apps/mobile --parallel run dev",
     "build": "pnpm -r run build",
     "test": "pnpm -r run test",
     "lint": "pnpm -r run lint",

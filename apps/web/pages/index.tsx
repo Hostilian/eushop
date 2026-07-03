@@ -1,7 +1,7 @@
 
 import Link from 'next/link';
 import { useEffect, useState } from 'react';
-import { foodAPI } from '../lib/services';
+import { foodAPI } from '../lib/services'; // Updated import
 
 const fallbackTrendingFoods = [
   { id: '1', name: 'Belgian Chocolates', country: 'Belgium', price: 24.99 },

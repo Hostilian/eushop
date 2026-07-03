@@ -4,7 +4,7 @@
 
 set -e
 
-API_URL="http://localhost:3001/api"
+API_URL="http://localhost:3001/api" # Unified to Spring Boot Core Service
 TOKEN="eyJzdWIiOiJ1c2VyLTEyMyIsImVtYWlsIjoic2VsbGVyMUBleGFtcGxlLmNvbSIsImV4cCI6OTk5OTk5OTk5OX0="
 PASS=0
 FAIL=0
@@ -79,7 +79,7 @@ echo ""
 echo "Checking API connectivity..."
 if ! curl -s "$API_URL/foods" > /dev/null 2>&1; then
     echo -e "${RED}✗ API is not responding on $API_URL${NC}"
-    echo "Make sure you've run: ./demo-setup.sh"
+    echo "Make sure you've run: cd services/core-service && mvn spring-boot:run"
     exit 1
 fi
 echo -e "${GREEN}✓ API is responding${NC}"
@@ -106,7 +106,7 @@ echo ""
 # ===== AUTHENTICATED REQUESTS =====
 echo -e "${YELLOW}=== AUTHENTICATED REQUESTS ===${NC}"
 test_endpoint "Create Food (POST /foods)" "POST" "/foods" "201" \
-    '{"name":"Test Food","description":"Test","price":10.99,"country":"BE","category":"test","quantity":100}'
+    '{"name":"Test Food","description":"Test","price":10.99,"country":"BE","category":"test","quantity":100, "allergens": "[]"}' # Added allergens
 test_endpoint "Get Current User (GET /users)" "GET" "/users" "200"
 echo ""
 
@@ -212,17 +212,8 @@ else
     ((FAIL++))
 fi
 
-echo -n "API Gateway... "
-if curl -s "$API_URL/foods" > /dev/null 2>&1; then
-    echo -e "${GREEN}✓ Running${NC}"
-    ((PASS++))
-else
-    echo -e "${RED}✗ Not responding${NC}"
-    ((FAIL++))
-fi
-
 echo -n "Spring Boot Service... "
-if curl -s "http://localhost:8080/api/foods" > /dev/null 2>&1; then
+if curl -s "$API_URL/foods" > /dev/null 2>&1; then # Check Spring Boot directly
     echo -e "${GREEN}✓ Running${NC}"
     ((PASS++))
 else
