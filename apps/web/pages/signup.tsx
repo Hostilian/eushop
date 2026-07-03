@@ -57,7 +57,7 @@ export default function SignupPage() {
         formData.country
       );
       console.log('Signup successful:', result);
-      router.push('/dashboard');
+      router.push('/dashboard'); // Redirect to dashboard after successful signup and auto-login
     } catch (err: any) {
       setError(err.response?.data?.error || 'Signup failed. Please try again.');
       console.error('Signup error:', err);

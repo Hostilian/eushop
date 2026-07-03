@@ -1,9 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/router';
-import { authAPI } from '../lib/services'; // Updated import
+import { authAPI, User } from '../lib/services'; // Updated import
 
 export default function BecomeSeller() {
+  const [user, setUser] = useState<User | null>(null);
   const [formData, setFormData] = useState({
     businessName: '',
     country: '',
@@ -19,25 +20,51 @@ export default function BecomeSeller() {
     acceptTerms: false,
   });
 
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(true); // Initial loading for user fetch
+  const [submitting, setSubmitting] = useState(false); // Separate loading for form submission
   const [error, setError] = useState('');
   const router = useRouter();
 
+  useEffect(() => {
+    const fetchUser = async () => {
+      setLoading(true);
+      try {
+        const currentUser = await authAPI.getCurrentUser();
+        if (currentUser) {
+          setUser(currentUser);
+          setFormData(prev => ({
+            ...prev,
+            email: currentUser.email,
+            country: currentUser.country,
+            // Pre-fill other fields if available on user object
+          }));
+        } else {
+          router.push('/login'); // Redirect to login if not authenticated
+        }
+      } catch (error) {
+        console.error('Failed to fetch user for seller application:', error);
+        router.push('/login'); // Redirect on error
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchUser();
+  }, [router]);
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setLoading(true);
+    setSubmitting(true);
     setError('');
 
-    try {
-      const userStr = localStorage.getItem('user');
-      if (!userStr) {
-        throw new Error('User not logged in');
-      }
-      const user = JSON.parse(userStr);
-      const userId = user.id;
+    if (!user) {
+      setError('User not authenticated.');
+      setSubmitting(false);
+      return;
+    }
 
-      // Submit becomeSeller call
-      await authAPI.becomeSeller(userId, {
+    try {
+      await authAPI.becomeSeller(user.id, {
         taxId: formData.taxId,
         vatNumber: formData.vatNumber,
         tradeRegisterNumber: formData.businessRegistrationNumber,
@@ -47,19 +74,35 @@ export default function BecomeSeller() {
         selfCertifiedCompliant: formData.selfCertification
       });
 
-      // Update role locally
+      // Update local user state and localStorage after successful submission
       const updatedUser = { ...user, role: 'SELLER' };
-      localStorage.setItem('user', JSON.stringify(updatedUser));
+      setUser(updatedUser);
+      localStorage.setItem('user', JSON.stringify(updatedUser)); // Update local storage for immediate reflection
 
-      alert('Application submitted! Your merchant profile is created.');
+      alert('Application submitted! Your merchant profile is created and pending admin review.');
       router.push('/dashboard');
     } catch (err: any) {
       console.error('Failed to become seller:', err);
       setError(err.response?.data?.message || err.message || 'An error occurred during submission.');
     } finally {
-      setLoading(false);
+      setSubmitting(false);
     }
   };
+
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+        <div className="text-center">
+          <div className="inline-block animate-spin rounded-full h-8 w-8 border-b-2 border-primary mb-4"></div>
+          <p className="text-gray-600">Loading user data...</p>
+        </div>
+      </div>
+    );
+  }
+
+  if (!user) {
+    return null; // Should have redirected to login
+  }
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -98,6 +141,7 @@ export default function BecomeSeller() {
                   required
                   className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-primary"
                   onChange={(e) => setFormData({ ...formData, businessName: e.target.value })}
+                  value={formData.businessName}
                 />
               </div>
 
@@ -109,6 +153,7 @@ export default function BecomeSeller() {
                   required
                   className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-primary"
                   onChange={(e) => setFormData({ ...formData, country: e.target.value })}
+                  value={formData.country}
                 >
                   <option value="">Select your country</option>
                   <option value="AT">Austria</option>
@@ -132,6 +177,8 @@ export default function BecomeSeller() {
                   required
                   className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-primary"
                   onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+                  value={formData.email}
+                  disabled // Email should be pre-filled from user's account
                 />
               </div>
 
@@ -265,10 +312,10 @@ export default function BecomeSeller() {
 
             <button
               type="submit"
-              disabled={loading}
+              disabled={submitting}
               className="w-full bg-primary text-white py-3 rounded-xl font-semibold hover:opacity-90 disabled:opacity-50 transition"
             >
-              {loading ? 'Submitting...' : 'Apply to Become a Seller'}
+              {submitting ? 'Submitting...' : 'Apply to Become a Seller'}
             </button>
           </form>
         </div>
