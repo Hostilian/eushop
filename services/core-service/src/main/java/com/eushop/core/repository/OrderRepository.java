@@ -38,4 +38,9 @@ public interface OrderRepository extends JpaRepository<Order, String> {
     Long countByBuyerId(String buyerId);
 
     Long countBySellerId(String sellerId);
+
+    /**
+     * Used by the Stripe webhook handler to find the order for a given PaymentIntent.
+     */
+    java.util.Optional<Order> findByStripePaymentIntentId(String stripePaymentIntentId);
 }

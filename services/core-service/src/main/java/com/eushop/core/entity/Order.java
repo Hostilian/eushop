@@ -14,7 +14,8 @@ import java.time.LocalDateTime;
     @Index(name = "idx_buyer_id", columnList = "buyer_id"),
     @Index(name = "idx_seller_id", columnList = "seller_id"),
     @Index(name = "idx_status", columnList = "status"),
-    @Index(name = "idx_created_at", columnList = "created_at")
+    @Index(name = "idx_created_at", columnList = "created_at"),
+    @Index(name = "idx_payment_intent_id", columnList = "stripe_payment_intent_id")
 })
 @Data
 @NoArgsConstructor
@@ -72,6 +73,13 @@ public class Order {
 
     @Column(name = "tracking_number")
     private String trackingNumber;
+
+    /**
+     * Stripe PaymentIntent ID — set when the order is created at checkout.
+     * Used by the webhook handler to confirm/cancel the order asynchronously.
+     */
+    @Column(name = "stripe_payment_intent_id", unique = true)
+    private String stripePaymentIntentId;
 
     @Column(columnDefinition = "JSONB")
     private String metadata; // Additional data as JSON

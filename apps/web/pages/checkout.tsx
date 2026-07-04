@@ -150,7 +150,8 @@ function CheckoutForm() {
           totalPrice: item.price * item.quantity,
           finderFee: (item.finderFee || 5.00) * item.quantity,
           shippingAddress: shippingAddressStr,
-          message: 'Order placed securely via web portal'
+          message: 'Order placed securely via web portal',
+          stripePaymentIntentId: res.id
         };
         await orderAPI.create(orderPayload);
       }));

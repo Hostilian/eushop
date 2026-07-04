@@ -8,11 +8,13 @@ on:
 
 permissions:
   contents: read
+  security-events: write  # Required for CodeQL to upload SARIF results
 
 jobs:
   test:
+    name: Lint & Test
     runs-on: ubuntu-latest
-    
+
     services:
       postgres:
         image: postgres:16-alpine
@@ -31,7 +33,13 @@ jobs:
     steps:
       # actions/checkout@v4.1.7
       - uses: actions/checkout@692973e3d937129bcbf40652eb9f2f61becf3332
-      
+
+      # pnpm/action-setup@v4 — correct way to install pnpm with caching
+      - name: Setup pnpm
+        uses: pnpm/action-setup@a3252b7e1b38d6a97ba7e02b19b75fcbf8ef3e52
+        with:
+          version: 9
+
       # actions/setup-node@v4.0.3
       - name: Setup Node.js
         uses: actions/setup-node@6012dfb466de543a19a3538f5e09e41c0ad3cf09
@@ -46,33 +54,72 @@ jobs:
           java-version: '17'
           distribution: 'temurin'
           cache: 'maven'
-      
-      - name: Install pnpm
-        run: npm install -g pnpm
-      
-      - name: Install dependencies
-        run: pnpm install
-      
-      - name: Run linter
-        run: pnpm lint
-        
-      - name: Run frontend tests
-        run: pnpm --filter apps/web --filter apps/mobile run test
-        # DATABASE_URL removed as it's not typically needed for frontend tests
-      
-      - name: Run backend Maven tests
-        run: mvn test
-        working-directory: services/core-service
 
-  build:
-    needs: test
+      - name: Install Node dependencies
+        run: pnpm install
+
+      - name: Run ESLint
+        run: pnpm lint
+
+      - name: Run frontend tests (web only — mobile is frozen for MVP)
+        run: pnpm --filter apps/web run test
+
+      - name: Run backend Maven tests
+        run: mvn test --no-transfer-progress
+        working-directory: services/core-service
+        env:
+          SPRING_DATASOURCE_URL: jdbc:postgresql://localhost:5432/eushop_db
+          SPRING_DATASOURCE_USERNAME: eushop_dev
+          SPRING_DATASOURCE_PASSWORD: dev_password_123
+
+  sast:
+    name: CodeQL Security Scan (Java)
     runs-on: ubuntu-latest
-    if: github.event_name == 'push'
-    
+    needs: []  # Run in parallel with tests — don't gate on it, but report results
+
     steps:
       # actions/checkout@v4.1.7
       - uses: actions/checkout@692973e3d937129bcbf40652eb9f2f61becf3332
-      
+
+      # actions/setup-java@v4.2.1
+      - name: Setup JDK 17
+        uses: actions/setup-java@3a4f611cd72b75a7fcd4e29002d242447d1b2299
+        with:
+          java-version: '17'
+          distribution: 'temurin'
+          cache: 'maven'
+
+      # github/codeql-action — initialize
+      - name: Initialize CodeQL
+        uses: github/codeql-action/init@v3
+        with:
+          languages: java
+          queries: security-and-quality
+
+      - name: Build for CodeQL analysis
+        run: mvn compile --no-transfer-progress -DskipTests
+        working-directory: services/core-service
+
+      # github/codeql-action — analyze
+      - name: Perform CodeQL Analysis
+        uses: github/codeql-action/analyze@v3
+
+  build:
+    name: Build Artifacts
+    needs: test
+    runs-on: ubuntu-latest
+    if: github.event_name == 'push'
+
+    steps:
+      # actions/checkout@v4.1.7
+      - uses: actions/checkout@692973e3d937129bcbf40652eb9f2f61becf3332
+
+      # pnpm/action-setup@v4
+      - name: Setup pnpm
+        uses: pnpm/action-setup@a3252b7e1b38d6a97ba7e02b19b75fcbf8ef3e52
+        with:
+          version: 9
+
       # actions/setup-node@v4.0.3
       - name: Setup Node.js
         uses: actions/setup-node@6012dfb466de543a19a3538f5e09e41c0ad3cf09
@@ -87,12 +134,15 @@ jobs:
           java-version: '17'
           distribution: 'temurin'
           cache: 'maven'
-      
-      - name: Install pnpm
-        run: npm install -g pnpm
-      
-      - name: Install dependencies
+
+      - name: Install Node dependencies
         run: pnpm install
-      
-      - name: Build frontend apps
-        run: pnpm --filter apps/web --filter apps/mobile run build
+
+      - name: Build web frontend
+        run: pnpm --filter apps/web run build
+        env:
+          NEXT_PUBLIC_STRIPE_PUBLIC_KEY: ${{ secrets.NEXT_PUBLIC_STRIPE_PUBLIC_KEY }}
+
+      - name: Build Spring Boot JAR
+        run: mvn package --no-transfer-progress -DskipTests
+        working-directory: services/core-service

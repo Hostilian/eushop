@@ -1,24 +1,27 @@
 package com.eushop.core.controller;
 
-import java.util.List;
-import java.util.stream.Collectors;
-
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import java.util.Map;
+import java.util.List;
+import java.util.stream.Collectors;
 
 import com.eushop.core.dto.ApiResponse;
 import com.eushop.core.dto.UserDTO;
 import com.eushop.core.dto.BecomeSellerRequest;
 import com.eushop.core.entity.User;
 import com.eushop.core.service.UserService;
-import org.springframework.web.bind.annotation.RequestBody;
 import jakarta.validation.Valid;
 
 @RestController
@@ -131,6 +134,61 @@ public class UserController {
 
         User user = userService.verifySeller(id, verified);
         return ResponseEntity.ok(ApiResponse.success(toDTO(user), "Seller verification status updated"));
+    }
+
+    @DeleteMapping("/{id}/account")
+    public ResponseEntity<ApiResponse<Void>> deleteAccount(
+            @PathVariable String id,
+            @RequestHeader("X-User-Id") String userId) {
+        
+        if (!id.equals(userId)) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN)
+                    .body(ApiResponse.error("Cannot delete other user's account"));
+        }
+        
+        userService.anonymiseUser(id);
+        return ResponseEntity.ok(ApiResponse.success(null, "Account successfully anonymised (GDPR erasure completed)"));
+    }
+
+    @GetMapping("/{id}/export")
+    public ResponseEntity<ApiResponse<Map<String, Object>>> exportAccount(
+            @PathVariable String id,
+            @RequestHeader("X-User-Id") String userId) {
+        
+        if (!id.equals(userId)) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN)
+                    .body(ApiResponse.error("Cannot export other user's data"));
+        }
+        
+        Map<String, Object> data = userService.exportUserData(id);
+        return ResponseEntity.ok(ApiResponse.success(data, "User data exported successfully (GDPR portability)"));
+    }
+
+    @PostMapping("/{id}/consent")
+    public ResponseEntity<ApiResponse<Void>> recordConsent(
+            @PathVariable String id,
+            @RequestHeader("X-User-Id") String userId,
+            @RequestBody Map<String, Object> requestBody,
+            jakarta.servlet.http.HttpServletRequest request) {
+        
+        if (!id.equals(userId)) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN)
+                    .body(ApiResponse.error("Cannot record consent for other user"));
+        }
+        
+        String consentType = (String) requestBody.get("consentType");
+        String consentVersion = (String) requestBody.get("consentVersion");
+        Boolean granted = (Boolean) requestBody.get("granted");
+        
+        if (consentType == null || consentVersion == null || granted == null) {
+            return ResponseEntity.badRequest().body(ApiResponse.error("Missing required consent fields"));
+        }
+        
+        String ip = request.getRemoteAddr();
+        String userAgent = request.getHeader("User-Agent");
+        
+        userService.recordConsent(id, consentType, consentVersion, granted, ip, userAgent);
+        return ResponseEntity.ok(ApiResponse.success(null, "Consent logged successfully"));
     }
 
     private UserDTO toDTO(User user) {

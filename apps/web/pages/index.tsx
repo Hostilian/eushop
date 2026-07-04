@@ -1,12 +1,14 @@
-
+import React, { useEffect, useState } from 'react';
 import Link from 'next/link';
-import { useEffect, useState } from 'react';
-import { authAPI, foodAPI, User } from '../lib/services'; // Updated import
+import { PageWrapper } from '../components/layout/PageWrapper';
+import { ProductCard } from '../components/ui/ProductCard';
+import { Button } from '../components/ui/Button';
+import { foodAPI, FoodItem } from '../lib/services';
 
-const fallbackTrendingFoods = [
-  { id: '1', name: 'Belgian Chocolates', country: 'Belgium', price: 24.99 },
-  { id: '2', name: 'Italian Balsamic', country: 'Italy', price: 34.99 },
-  { id: '3', name: 'Spanish Manchego Cheese', country: 'Spain', price: 44.99 },
+const fallbackTrendingFoods: FoodItem[] = [
+  { id: '1', name: 'Belgian Chocolates', country: 'Belgium', price: 24.99, description: 'Fine artisanal chocolates with creamy hazelnut fillings.', sellerId: 'seller-be' },
+  { id: '2', name: 'Italian Balsamic', country: 'Italy', price: 34.99, description: 'Aged balsamic vinegar of Modena, rich and complex flavor.', sellerId: 'seller-it' },
+  { id: '3', name: 'Spanish Manchego Cheese', country: 'Spain', price: 44.99, description: 'Cured sheep milk cheese from La Mancha region.', sellerId: 'seller-es' },
 ];
 
 const getFoodImage = (foodName: string) => {
@@ -23,32 +25,14 @@ const getFoodImage = (foodName: string) => {
   if (name.includes('sausage') || name.includes('speck') || name.includes('deli') || name.includes('marzipan')) {
     return '/images/german_delicatessen.png';
   }
-  return null;
+  return undefined;
 };
 
 export default function Home() {
-  const [user, setUser] = useState<User | null>(null);
-  const [trendingFoods, setTrendingFoods] = useState<any[]>(fallbackTrendingFoods);
+  const [trendingFoods, setTrendingFoods] = useState<FoodItem[]>(fallbackTrendingFoods);
   const [loadingFoods, setLoadingFoods] = useState(false);
-  const [loadingUser, setLoadingUser] = useState(true);
 
   useEffect(() => {
-    // Fetch user status
-    const fetchUserStatus = async () => {
-      setLoadingUser(true);
-      try {
-        const currentUser = await authAPI.getCurrentUser();
-        setUser(currentUser);
-      } catch (error) {
-        console.error('Failed to fetch user status:', error);
-        setUser(null);
-      } finally {
-        setLoadingUser(false);
-      }
-    };
-
-    fetchUserStatus();
-
     // Fetch trending foods
     const fetchTrending = async () => {
       setLoadingFoods(true);
@@ -57,7 +41,6 @@ export default function Home() {
         setTrendingFoods(Array.isArray(foods) ? foods : (foods?.data || foods?.foods || []));
       } catch (error) {
         console.error('Failed to fetch trending foods:', error);
-        // Use mock data as fallback
         setTrendingFoods(fallbackTrendingFoods);
       } finally {
         setLoadingFoods(false);
@@ -67,185 +50,167 @@ export default function Home() {
     fetchTrending();
   }, []);
 
-  const handleLogout = async () => {
+  const handleAddToCart = (id: string) => {
     try {
-      await authAPI.logout();
-      setUser(null);
-      window.location.href = '/'; // Redirect to homepage after logout
-    } catch (error) {
-      console.error('Logout failed:', error);
-      // Even if API logout fails, clear local state and redirect
-      localStorage.removeItem('user');
-      setUser(null);
-      window.location.href = '/';
+      const cart = JSON.parse(localStorage.getItem('cart') || '[]');
+      const existing = cart.find((item: any) => item.id === id);
+      if (existing) {
+        existing.quantity += 1;
+      } else {
+        const item = trendingFoods.find((f) => f.id === id);
+        if (item) {
+          cart.push({
+            id: item.id,
+            name: item.name,
+            price: item.price,
+            country: item.country,
+            quantity: 1,
+            sellerId: item.sellerId,
+            finderFee: item.finderFee || 5.00
+          });
+        }
+      }
+      localStorage.setItem('cart', JSON.stringify(cart));
+      window.dispatchEvent(new Event('cart-updated'));
+    } catch (e) {
+      console.error('Failed to add to cart:', e);
     }
   };
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      {/* Navigation */}
-      <nav className="sticky top-0 z-50 bg-white border-b border-gray-100 shadow-sm">
-        <div className="max-w-7xl mx-auto px-4 py-4 flex justify-between items-center">
-          <Link href="/" className="text-3xl font-extrabold text-primary tracking-tight flex items-center gap-2">
-            <span className="text-secondary">🌿</span> EUshop
-          </Link>
-          
-          <div className="flex gap-6 items-center">
-            <Link href="/search" className="text-gray-700 hover:text-primary font-semibold transition">
-              Browse
-            </Link>
-            
-            {loadingUser ? (
-              <div className="h-5 w-20 bg-gray-200 rounded animate-pulse"></div> // Skeleton loader for user status
-            ) : user ? (
-              <>
-                <span className="text-gray-600 text-sm">Welcome, <strong className="text-primary">{user.name}</strong></span>
-                <Link href="/dashboard" className="bg-primary text-white px-4 py-2 rounded-lg hover:opacity-90 font-medium transition text-sm">
-                  Dashboard
-                </Link>
-                <button
-                  onClick={handleLogout}
-                  className="text-gray-500 hover:text-danger text-sm transition"
-                >
-                  Logout
-                </button>
-              </>
-            ) : (
-              <>
-                <Link href="/login" className="text-gray-700 hover:text-primary font-semibold transition text-sm">
-                  Sign In
-                </Link>
-                <Link href="/signup" className="bg-primary text-white px-4 py-2 rounded-lg hover:opacity-90 font-medium transition text-sm">
-                  Sign Up
-                </Link>
-              </>
-            )}
-          </div>
-        </div>
-      </nav>
-
+    <PageWrapper>
       {/* Hero Section */}
-      <section className="bg-gradient-to-br from-brand-cream via-white to-brand-sand py-24 border-b border-gray-100">
-        <div className="max-w-7xl mx-auto px-4 text-center">
-          <h1 className="text-5xl md:text-6xl font-extrabold text-brand-dark mb-6 tracking-tight leading-tight">
-            Discover Europe's Finest <span className="text-primary font-display font-medium">Artisanal</span> Foods
+      <section className="relative overflow-hidden py-20 px-4 text-center rounded-3xl bg-gradient-to-br from-brand-cream/80 via-white to-brand-sand/40 dark:from-gray-900 dark:via-gray-955 dark:to-gray-900 border border-gray-100 dark:border-gray-800 shadow-sm mb-16 animate-slide-up">
+        <div className="max-w-3xl mx-auto">
+          <h1 className="text-4xl sm:text-5xl md:text-6xl font-extrabold text-brand-dark dark:text-white mb-6 tracking-tight leading-tight font-display">
+            Discover Europe's Finest <span className="text-primary dark:text-blue-400 font-semibold">Artisanal</span> Foods
           </h1>
-          <p className="text-xl text-gray-700 mb-10 max-w-2xl mx-auto leading-relaxed">
-            Connect with verified sellers across the European Union. Find rare, organic specialty foods and support small-batch producers.
+          <p className="text-base sm:text-lg text-gray-600 dark:text-gray-400 mb-10 max-w-2xl mx-auto leading-relaxed">
+            Connect directly with verified sellers across the EU Single Market. Discover rare delicacies, organic pantry staples, and regional specialties.
           </p>
           
-          <div className="flex justify-center gap-4">
-            <Link href="/search" className="bg-primary text-white px-8 py-4 rounded-xl font-bold hover:opacity-95 shadow-md shadow-primary/10 transition">
-              Start Exploring
+          <div className="flex flex-wrap justify-center gap-4">
+            <Link href="/search">
+              <Button size="lg" variant="primary">
+                Start Exploring
+              </Button>
             </Link>
-            <Link href="/become-seller" className="bg-white text-primary px-8 py-4 rounded-xl font-bold border-2 border-primary hover:bg-gray-50 transition">
-              Become a Seller
+            <Link href="/become-seller">
+              <Button size="lg" variant="secondary">
+                Become a Seller
+              </Button>
             </Link>
           </div>
         </div>
       </section>
 
       {/* Features */}
-      <section className="py-20 bg-white">
-        <div className="max-w-7xl mx-auto px-4">
-          <h2 className="text-3xl font-extrabold text-center mb-16 text-brand-dark">Why Choose EUshop?</h2>
+      <section className="py-12 mb-16">
+        <div className="text-center max-w-xl mx-auto mb-16">
+          <h2 className="text-2xl sm:text-3xl font-extrabold text-brand-dark dark:text-white font-display">
+            Why Choose EUshop?
+          </h2>
+          <p className="text-sm text-gray-500 dark:text-gray-400 mt-2">
+            A secure, regulated marketplace designed strictly for European commerce.
+          </p>
+        </div>
+        
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+          <div className="bg-white dark:bg-gray-900 border border-gray-100 dark:border-gray-800 rounded-3xl p-8 hover:shadow-md transition duration-200">
+            <div className="text-4xl mb-4" aria-hidden="true">🇪🇺</div>
+            <h3 className="text-lg font-bold mb-2 text-brand-dark dark:text-white font-display">Pan-European Shipping</h3>
+            <p className="text-xs text-gray-600 dark:text-gray-400 leading-relaxed">
+              We operate exclusively within the EU Single Market. No custom tariff delays, simple veterinary controls, and fast domestic transport.
+            </p>
+          </div>
           
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-10">
-            <div className="bg-gray-50 rounded-2xl p-8 border border-gray-100 hover:shadow-md transition">
-              <div className="text-4xl mb-6 text-primary">🇪🇺</div>
-              <h3 className="text-xl font-bold mb-3 text-brand-dark">Pan-European</h3>
-              <p className="text-gray-600 leading-relaxed">
-                Access specialty foods sourced strictly from EU member states. Simple cross-border compliance.
-              </p>
-            </div>
-            
-            <div className="bg-gray-50 rounded-2xl p-8 border border-gray-100 hover:shadow-md transition">
-              <div className="text-4xl mb-6 text-secondary">🤝</div>
-              <h3 className="text-xl font-bold mb-3 text-brand-dark">Direct Connection</h3>
-              <p className="text-gray-600 leading-relaxed">
-                Connect directly with sellers. Real-time messaging lets you discuss batches, freshness, and shipping.
-              </p>
-            </div>
-            
-            <div className="bg-gray-50 rounded-2xl p-8 border border-gray-100 hover:shadow-md transition">
-              <div className="text-4xl mb-6 text-success">🛡️</div>
-              <h3 className="text-xl font-bold mb-3 text-brand-dark">Verified Compliance</h3>
-              <p className="text-gray-600 leading-relaxed">
-                All sellers are KYBC and DAC7 verified. Allergen details and food safety compliance are fully audited.
-              </p>
-            </div>
+          <div className="bg-white dark:bg-gray-900 border border-gray-100 dark:border-gray-800 rounded-3xl p-8 hover:shadow-md transition duration-200">
+            <div className="text-4xl mb-4" aria-hidden="true">🤝</div>
+            <h3 className="text-lg font-bold mb-2 text-brand-dark dark:text-white font-display">Verified EU Merchants</h3>
+            <p className="text-xs text-gray-600 dark:text-gray-400 leading-relaxed">
+              Every listing is published by traders fully verified under the Digital Services Act (DSA) and registered for DAC7 annual tax reporting.
+            </p>
+          </div>
+          
+          <div className="bg-white dark:bg-gray-900 border border-gray-100 dark:border-gray-800 rounded-3xl p-8 hover:shadow-md transition duration-200">
+            <div className="text-4xl mb-4" aria-hidden="true">🛡️</div>
+            <h3 className="text-lg font-bold mb-2 text-brand-dark dark:text-white font-display">Regulatory Assurance</h3>
+            <p className="text-xs text-gray-600 dark:text-gray-400 leading-relaxed">
+              All listings mandate disclosure of allergens (Regulation EU 1169/2011). Shop securely with full transparency on ingredients.
+            </p>
           </div>
         </div>
       </section>
 
       {/* Trending Foods */}
-      <section className="py-20 bg-gray-50">
-        <div className="max-w-7xl mx-auto px-4">
-          <h2 className="text-3xl font-extrabold mb-12 text-brand-dark">🔥 Trending Now</h2>
-          
-          {loadingFoods ? (
-            <div className="flex justify-center text-gray-500 font-medium">Loading trending foods...</div>
-          ) : (
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-              {trendingFoods.slice(0, 3).map((food) => {
-                const img = getFoodImage(food.name);
-                return (
-                  <Link key={food.id} href={`/food/${food.id}`}>
-                    <div className="bg-white rounded-2xl shadow-sm hover:shadow-lg hover:-translate-y-1 border border-gray-100 transition duration-300 overflow-hidden cursor-pointer flex flex-col h-full">
-                      <div className="h-48 relative overflow-hidden bg-brand-sand flex items-center justify-center">
-                        {img ? (
-                          <img 
-                            src={img} 
-                            alt={food.name}
-                            className="w-full h-full object-cover transition duration-300 hover:scale-105"
-                          />
-                        ) : (
-                          <span className="text-5xl">🧀</span>
-                        )}
-                      </div>
-                      <div className="p-6 flex-1 flex flex-col justify-between">
-                        <div>
-                          <h3 className="font-bold text-lg mb-1 text-brand-dark">{food.name}</h3>
-                          <p className="text-gray-500 text-sm mb-4">📍 {food.country}</p>
-                        </div>
-                        <p className="text-2xl font-extrabold text-primary">€{food.price?.toFixed(2) || 'N/A'}</p>
-                      </div>
-                    </div>
-                  </Link>
-                );
-              })}
-            </div>
-          )}
+      <section className="py-12 mb-16">
+        <div className="flex justify-between items-end mb-8">
+          <div>
+            <h2 className="text-2xl sm:text-3xl font-extrabold text-brand-dark dark:text-white font-display">
+              🔥 Trending Now
+            </h2>
+            <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
+              Top requested regional items across the continent.
+            </p>
+          </div>
+          <Link href="/search" className="text-sm font-semibold text-primary dark:text-blue-400 hover:underline">
+            View All Listings &rarr;
+          </Link>
         </div>
+        
+        {loadingFoods ? (
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+            <div className="h-[360px] bg-gray-200 dark:bg-gray-800 rounded-2xl animate-pulse" />
+            <div className="h-[360px] bg-gray-200 dark:bg-gray-800 rounded-2xl animate-pulse" />
+            <div className="h-[360px] bg-gray-200 dark:bg-gray-800 rounded-2xl animate-pulse" />
+          </div>
+        ) : (
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+            {trendingFoods.slice(0, 3).map((food) => (
+              <ProductCard
+                key={food.id}
+                id={food.id}
+                name={food.name}
+                description={food.description || ''}
+                price={food.price}
+                country={food.country}
+                imageUrl={getFoodImage(food.name)}
+                allergens={food.allergens || []}
+                seller={{
+                  name: 'Producer',
+                  rating: 5.0,
+                  verified: true,
+                }}
+                onAddToCart={handleAddToCart}
+              />
+            ))}
+          </div>
+        )}
       </section>
 
       {/* CTA Section */}
-      <section className="bg-primary text-white py-20">
-        <div className="max-w-7xl mx-auto px-4 text-center">
-          <h2 className="text-3xl font-extrabold mb-4 font-display">Ready to Join the Marketplace?</h2>
-          <p className="text-lg mb-10 text-gray-100 max-w-xl mx-auto">Start discovering specialty foods or register your business to sell with us today.</p>
-          
-          <div className="flex justify-center gap-4">
-            <Link href="/search" className="bg-white text-primary px-8 py-3.5 rounded-xl font-bold hover:bg-gray-50 transition shadow-md">
-              Browse Foods
-            </Link>
-            <Link href="/become-seller" className="border-2 border-white text-white px-8 py-3.5 rounded-xl font-bold hover:bg-white/10 transition">
+      <section className="bg-primary text-white rounded-3xl p-8 sm:p-12 text-center shadow-lg relative overflow-hidden">
+        <div className="absolute inset-0 bg-white/5 opacity-10 bg-[radial-gradient(ellipse_at_center,_var(--tw-gradient-stops))] from-white via-transparent to-transparent pointer-events-none" />
+        <h2 className="text-2xl sm:text-4xl font-extrabold mb-4 font-display">
+          Ready to Trade Across Borders?
+        </h2>
+        <p className="text-sm sm:text-base mb-8 text-gray-100 max-w-xl mx-auto leading-relaxed">
+          Create a customer profile to order specialty delicacies, or register your commercial business to sell within the EU Single Market today.
+        </p>
+        
+        <div className="flex flex-wrap justify-center gap-4">
+          <Link href="/search">
+            <button className="bg-white text-primary px-6 py-3 rounded-xl font-bold hover:bg-gray-50 transition text-sm">
+              Browse Listings
+            </button>
+          </Link>
+          <Link href="/become-seller">
+            <button className="border border-white/40 text-white px-6 py-3 rounded-xl font-bold hover:bg-white/10 transition text-sm">
               Sell with Us
-            </Link>
-          </div>
+            </button>
+          </Link>
         </div>
       </section>
-
-      {/* Footer */}
-      <footer className="bg-brand-dark text-gray-400 py-12 border-t border-gray-800">
-        <div className="max-w-7xl mx-auto px-4 text-center">
-          <p className="text-sm">
-            &copy; {new Date().getFullYear()} EUshop. All rights reserved. |{' '}
-            <Link href="/privacy" className="hover:text-white transition underline">Privacy Policy</Link> |{' '}
-            <Link href="/terms" className="hover:text-white transition underline">Terms of Service</Link>
-          </p>
-        </div>
-      </footer>
-    </div>
+    </PageWrapper>
   );
 }

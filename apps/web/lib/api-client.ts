@@ -46,13 +46,13 @@ apiClient.interceptors.request.use((config: InternalAxiosRequestConfig) => {
   return config;
 });
 
-// Handle 401 errors (unauthorized)
+// Handle 401 errors (unauthorized) — session cookie has expired or is invalid
 apiClient.interceptors.response.use(
   (response) => response,
   (error) => {
     if (error.response?.status === 401) {
-      // Clear any remaining local storage user data (token should not be there anyway)
-      typeof window !== 'undefined' && localStorage.removeItem('user');
+      // Clear the cached display profile (cookie is cleared server-side)
+      typeof window !== 'undefined' && sessionStorage.removeItem('userProfile');
       if (typeof window !== 'undefined' && window.location.pathname !== '/login') {
         window.location.href = '/login';
       }
