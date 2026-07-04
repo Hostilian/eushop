@@ -334,27 +334,83 @@ def start_local_proxy_server(all_keys, default_model, port=48123):
             if not keys_pool:
                 keys_pool = self.all_keys
 
-            # Candidates: valid keys for the requested model
-            candidates = [
-                k for k in keys_pool 
-                if k.get("valid", True) and (target_model.lower() in k.get("model", "").lower())
-            ]
+            # 1. Build a prioritized order of models to try (graceful degradation)
+            models_to_try = [target_model]
+            
+            MODEL_FALLBACKS = {
+                "deepseek-chat": ["gemini-2.5-flash", "kimi-k2.5", "gpt-4o"],
+                "claude-3-5-sonnet": ["gemini-2.5-flash", "gpt-4o", "kimi-k2.5"],
+                "claude-3-5-haiku": ["gemini-2.5-flash", "gpt-4o", "kimi-k2.5"],
+                "gpt-4o": ["gemini-2.5-flash", "kimi-k2.5", "deepseek-chat"],
+                "gemini-2.5-flash": ["gpt-4o", "kimi-k2.5", "deepseek-chat"],
+            }
+            
+            normalized_target = target_model.lower()
+            found_mapping = False
+            for k, fallbacks in MODEL_FALLBACKS.items():
+                if k in normalized_target or normalized_target in k:
+                    models_to_try.extend(fallbacks)
+                    found_mapping = True
+                    break
+            if not found_mapping:
+                models_to_try.extend(["gemini-2.5-flash", "gpt-4o", "deepseek-chat"])
 
-            # Fallback: if no keys match this model, try any valid keys (model fallback)
-            if not candidates:
-                candidates = [k for k in keys_pool if k.get("valid", True)]
+            # Deduplicate models to try
+            seen_models = set()
+            ordered_models = []
+            for m in models_to_try:
+                if m not in seen_models:
+                    seen_models.add(m)
+                    ordered_models.append(m)
 
-            if not candidates:
+            # 2. Match model attempts to valid keys
+            candidates = []
+            for model_attempt in ordered_models:
+                # Normal keys for this model attempt
+                model_keys = [
+                    k for k in keys_pool 
+                    if k.get("valid", True) and (model_attempt.lower() in k.get("model", "").lower())
+                ]
+                
+                # Proxy Premium keys can support any premium model ID
+                premium_list = ["claude-3-5-sonnet", "claude-3-5-haiku", "gpt-4o", "o1-mini", "deepseek-r1"]
+                if model_attempt.lower() in premium_list:
+                    proxy_keys = [
+                        k for k in keys_pool 
+                        if k.get("valid", True) and ("pekpik" in k.get("base_url", "") or "pawan" in k.get("base_url", "") or "pekpik" in k.get("group", "").lower())
+                    ]
+                    model_keys.extend(proxy_keys)
+
+                # Deduplicate keys for this attempt
+                seen_keys = set()
+                for mk in model_keys:
+                    k_val = mk["key"]
+                    if k_val not in seen_keys:
+                        seen_keys.add(k_val)
+                        candidates.append((mk, model_attempt))
+
+            # Deduplicate candidates across all attempts while preserving order
+            final_candidates = []
+            seen_cand = set()
+            for mk, m_name in candidates:
+                cand_id = (mk["key"], m_name)
+                if cand_id not in seen_cand:
+                    seen_cand.add(cand_id)
+                    final_candidates.append((mk, m_name))
+
+            # 3. Safe fallback if candidates is empty
+            if not final_candidates:
+                any_valid = [k for k in keys_pool if k.get("valid", True)]
+                for k in any_valid:
+                    final_candidates.append((k, k.get("model", "gpt-3.5-turbo")))
+
+            if not final_candidates:
                 console.print("[red][ERROR] Proxy: No valid keys found in pool.[/red]")
                 return False
 
-            for item in candidates:
+            # 4. Try each candidate (key + model configuration)
+            for item, model_name in final_candidates:
                 key = item["key"]
-                premium_list = ["claude-3-5-sonnet", "claude-3-5-haiku", "gpt-4o", "o1-mini", "deepseek-r1"]
-                if target_model.lower() in premium_list:
-                    model_name = target_model
-                else:
-                    model_name = item.get("model", target_model)
                 base_url = item.get("working_base_url") or item.get("base_url") or DEFAULT_API_BASE
                 
                 payload = original_payload.copy()
@@ -392,7 +448,11 @@ def start_local_proxy_server(all_keys, default_model, port=48123):
 
                     elif resp.status_code in (401, 403, 429):
                         report_key_failure(key)
-                        console.print(f"[red][WARN] Key {key[:8]}... returned {resp.status_code} on {base_url}. Rotating...[/red]")
+                        console.print(f"[red][WARN] Key {key[:8]}... returned status {resp.status_code} for {model_name}. Rotating...[/red]")
+                        continue
+                    elif resp.status_code == 400:
+                        # Context length or bad request — could be model-specific
+                        console.print(f"[red][WARN] Model {model_name} returned 400 Bad Request (likely context limit). Rotating model/key...[/red]")
                         continue
                     else:
                         console.print(f"[yellow][WARN] Upstream returned status {resp.status_code} on {base_url}. Rotating...[/yellow]")
