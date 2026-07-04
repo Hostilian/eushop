@@ -7,6 +7,9 @@ import subprocess
 import urllib.request
 import json
 import requests
+import http.server
+import socketserver
+import threading
 from concurrent.futures import ThreadPoolExecutor, as_completed
 
 # Reconfigure stdout/stderr to UTF-8 on Windows to prevent UnicodeEncodeError
@@ -260,6 +263,151 @@ def parse_keys_from_readme(readme_content: str) -> list[dict]:
                 })
     return keys
 
+# ─────────────────────────────────────────────────────────────────────────────
+# Local Key-Rotation API Proxy Server (Background Thread)
+# ─────────────────────────────────────────────────────────────────────────────
+
+class ThreadedHTTPServer(socketserver.ThreadingMixIn, http.server.HTTPServer):
+    daemon_threads = True
+
+def start_local_proxy_server(all_keys, default_model, port=48123):
+    """
+    Spins up a lightweight local OpenAI-compatible API proxy server.
+    Interceptors requests from Aider / Chat, automatically rotates keys on
+    failure/429, and handles streaming SSE back to the client transparently.
+    """
+    class LocalProxyHandler(http.server.BaseHTTPRequestHandler):
+        def log_message(self, format, *args):
+            # Silence default HTTP request logger to keep console clean
+            pass
+
+        def do_GET(self):
+            if self.path.rstrip('/') in ('/v1/models', '/models'):
+                self.send_response(200)
+                self.send_header('Content-Type', 'application/json')
+                self.end_headers()
+                mock_models = {
+                    "object": "list",
+                    "data": [
+                        {"id": "gemini-2.5-flash", "object": "model", "created": 1677610602, "owned_by": "openai"},
+                        {"id": "deepseek-chat", "object": "model", "created": 1677610602, "owned_by": "openai"},
+                        {"id": "kimi-k2.5", "object": "model", "created": 1677610602, "owned_by": "openai"},
+                    ]
+                }
+                self.wfile.write(json.dumps(mock_models).encode('utf-8'))
+                return
+            self.send_error(404, "Not Found")
+
+        def do_POST(self):
+            if self.path.rstrip('/') in ('/v1/chat/completions', '/chat/completions'):
+                content_length = int(self.headers.get('Content-Length', 0))
+                body_bytes = self.rfile.read(content_length) if content_length > 0 else b''
+                try:
+                    body = json.loads(body_bytes.decode('utf-8'))
+                except Exception as e:
+                    self.send_error(400, f"Invalid JSON: {e}")
+                    return
+
+                req_model = body.get("model", "")
+                target_model = req_model.split("/")[-1] if "/" in req_model else req_model
+
+                success = self.forward_request_with_retry(target_model, body)
+                if not success:
+                    self.send_error(502, "All upstream LLM keys and fallbacks exhausted.")
+            else:
+                self.send_error(404, "Not Found")
+
+        def forward_request_with_retry(self, target_model, original_payload) -> bool:
+            keys_pool = []
+            if os.path.exists(HOT_CACHE_PATH):
+                try:
+                    with open(HOT_CACHE_PATH, "r", encoding="utf-8") as f:
+                        keys_pool = json.load(f).get("keys", [])
+                except Exception:
+                    pass
+
+            if not keys_pool:
+                keys_pool = self.all_keys
+
+            # Candidates: valid keys for the requested model
+            candidates = [
+                k for k in keys_pool 
+                if k.get("valid", True) and (target_model.lower() in k.get("model", "").lower())
+            ]
+
+            # Fallback: if no keys match this model, try any valid keys (model fallback)
+            if not candidates:
+                candidates = [k for k in keys_pool if k.get("valid", True)]
+
+            if not candidates:
+                console.print("[red][ERROR] Proxy: No valid keys found in pool.[/red]")
+                return False
+
+            for item in candidates:
+                key = item["key"]
+                model_name = item.get("model", target_model)
+                base_url = item.get("working_base_url") or item.get("base_url") or DEFAULT_API_BASE
+                
+                payload = original_payload.copy()
+                payload["model"] = model_name
+
+                headers = {
+                    "Authorization": f"Bearer {key}",
+                    "Content-Type": "application/json"
+                }
+                for h in ["Accept", "X-Stainless-Lang", "User-Agent"]:
+                    if h in self.headers:
+                        headers[h] = self.headers[h]
+
+                url = f"{base_url.rstrip('/')}/chat/completions"
+                is_stream = payload.get("stream", False)
+
+                try:
+                    console.print(f"[yellow]Proxy: Forwarding to {base_url} (model: {model_name})...[/yellow]")
+                    resp = requests.post(url, json=payload, headers=headers, stream=is_stream, timeout=40)
+
+                    if resp.status_code == 200:
+                        self.send_response(200)
+                        for h, v in resp.headers.items():
+                            if h.lower() not in ("content-length", "connection", "transfer-encoding", "content-encoding"):
+                                self.send_header(h, v)
+                        self.end_headers()
+
+                        if is_stream:
+                            for chunk in resp.iter_content(chunk_size=1024):
+                                self.wfile.write(chunk)
+                                self.wfile.flush()
+                        else:
+                            self.wfile.write(resp.content)
+                        return True
+
+                    elif resp.status_code in (401, 403, 429):
+                        report_key_failure(key)
+                        console.print(f"[red][WARN] Key {key[:8]}... returned {resp.status_code} on {base_url}. Rotating...[/red]")
+                        continue
+                    else:
+                        console.print(f"[yellow][WARN] Upstream returned status {resp.status_code} on {base_url}. Rotating...[/yellow]")
+                        continue
+
+                except Exception as e:
+                    console.print(f"[yellow][WARN] Connection error to {base_url}: {e}. Rotating...[/yellow]")
+                    continue
+
+            return False
+
+    LocalProxyHandler.all_keys = all_keys
+    LocalProxyHandler.default_model = default_model
+
+    for p in range(port, port + 10):
+        try:
+            server = ThreadedHTTPServer(('127.0.0.1', p), LocalProxyHandler)
+            thread = threading.Thread(target=server.serve_forever, daemon=True)
+            thread.start()
+            return p, server
+        except Exception:
+            continue
+    raise RuntimeError("Could not find a free port for local API proxy")
+
 def verify_key(key: str, model: str, base_url: str = None) -> bool:
     """
     Lightweight key validation with multi-URL waterfall.
@@ -371,12 +519,12 @@ def show_dashboard(keys: list[dict]):
     console.print(table)
     return sorted_models
 
-def run_chat_session(key: str, model: str, initial_file: str = None, sorted_models: list = None, all_keys: list = None):
-    """Start an interactive CLI chat session with the selected model."""
+def run_chat_session(proxy_port: int, model: str, initial_file: str = None):
+    """Start an interactive CLI chat session, sending all requests through the local proxy."""
     console.print(Panel.fit(
         f"[bold green]Starting Chat Session[/bold green]\n"
         f"Model: [cyan]{model}[/cyan]\n"
-        f"Base URL: [cyan]{DEFAULT_API_BASE}[/cyan]\n"
+        f"Local API Proxy: [cyan]http://127.0.0.1:{proxy_port}/v1[/cyan] (Auto-Rotated Pool)\n"
         f"Type [yellow]/help[/yellow] for list of commands, [yellow]/exit[/yellow] to quit.",
         border_style="green"
     ))
@@ -458,83 +606,47 @@ def run_chat_session(key: str, model: str, initial_file: str = None, sorted_mode
             # Standard user message
             messages.append({"role": "user", "content": user_input})
             
-            # Find all keys for the current model to size the retry loop
-            same_model_keys = [k["key"] for k in all_keys if k["model"] == model]
+            # Clean messages (filter out empty inputs)
+            api_messages = [m for m in messages if m.get("content") and m["content"].strip()]
             
-            # Loop for self-healing: try current model keys first, then fallback models
+            headers = {
+                "Authorization": "Bearer local-key-rotation-pool-key",
+                "Content-Type": "application/json"
+            }
+            payload = {
+                "model": model,
+                "messages": api_messages
+            }
+            
+            console.print(f"[bold yellow]Thinking ({model})...[/bold yellow]")
             response = None
-            retries = len(same_model_keys) + 3  # Try all keys for model + 3 fallbacks
-            while retries > 0:
-                # Clean messages (filter out empty inputs) to prevent Cohere 400 Bad Request
-                api_messages = [m for m in messages if m.get("content") and m["content"].strip()]
-                
-                headers = {
-                    "Authorization": f"Bearer {key}",
-                    "Content-Type": "application/json"
-                }
-                payload = {
-                    "model": model,
-                    "messages": api_messages
-                }
-                
-                console.print(f"[bold yellow]Thinking ({model})...[/bold yellow]")
-                # Determine base URL for this key (use per-key base_url if available)
-                current_key_info = next((k for k in (all_keys or []) if k.get("key") == key), {})
-                key_base_url = current_key_info.get("base_url", DEFAULT_API_BASE)
-                api_urls_to_try = [key_base_url] + [u for u in PROXY_BASE_URLS if u != key_base_url]
-
-                response = None
-                for api_base in api_urls_to_try[:3]:
-                    try:
-                        response = requests.post(f"{api_base}/chat/completions", json=payload, headers=headers, timeout=25)
-                        if response.status_code == 200:
-                            break
-                        elif response.status_code in (401, 403):
-                            report_key_failure(key)
-                            console.print(f"[yellow][WARN] Key rejected ({response.status_code}). Rotating...[/yellow]")
-                            break  # No point trying other base URLs with a bad key
-                        else:
-                            console.print(f"[yellow][WARN] Status {response.status_code} on {api_base}. Trying next URL...[/yellow]")
-                    except Exception as e:
-                        console.print(f"[yellow][WARN] Timeout/error on {api_base}: {e}[/yellow]")
-                        continue
-
-                if response and response.status_code == 200:
-                    break
-                
-                # Select next key for the same model
-                next_keys = [k for k in same_model_keys if k != key]
-                if next_keys:
-                    key = next_keys[0]
-                    # Shift keys list so we don't pick the same one again
-                    same_model_keys.remove(key)
-                    same_model_keys.append(key)
-                else:
-                    # Swapping to fallback model
-                    fallback = get_any_working_key(exclude_model=model, sorted_models=sorted_models)
-                    if fallback:
-                        key = fallback["key"]
-                        old_model = model
-                        model = fallback["model"]
-                        # Re-calculate keys for new model
-                        same_model_keys = [k["key"] for k in all_keys if k["model"] == model]
-                        console.print(f"\n[bold green][OK] Switched to working fallback model: {model}[/bold green]\n")
-                    else:
-                        console.print("[red][ERROR] Critical: No active fallback keys found.[/red]")
-                        break
-                retries -= 1
+            try:
+                response = requests.post(
+                    f"http://127.0.0.1:{proxy_port}/v1/chat/completions",
+                    json=payload,
+                    headers=headers,
+                    timeout=50
+                )
+            except Exception as e:
+                console.print(f"[red][ERROR] Proxy communication failed: {e}[/red]")
+                messages.pop()
+                continue
 
             if response and response.status_code == 200:
-                result = response.json()
-                assistant_msg = result["choices"][0]["message"].get("content") or ""
-                messages.append({"role": "assistant", "content": assistant_msg})
-                
-                console.print("\n[bold green]AI Assistant:[/bold green]")
-                console.print(Markdown(assistant_msg))
-                console.print("")
+                try:
+                    result = response.json()
+                    assistant_msg = result["choices"][0]["message"].get("content") or ""
+                    messages.append({"role": "assistant", "content": assistant_msg})
+                    
+                    console.print("\n[bold green]AI Assistant:[/bold green]")
+                    console.print(Markdown(clean_text(assistant_msg)))
+                    console.print("")
+                except Exception as e:
+                    console.print(f"[red][ERROR] Failed to parse proxy response: {e}[/red]")
+                    messages.pop()
             else:
-                err_text = response.text if response else "Connection timeout"
-                console.print(f"[red][ERROR] API request failed: {err_text}[/red]")
+                err_text = response.text if response else "Proxy timeout"
+                console.print(f"[red][ERROR] Request failed: {err_text}[/red]")
                 messages.pop()
 
         except KeyboardInterrupt:
@@ -542,11 +654,11 @@ def run_chat_session(key: str, model: str, initial_file: str = None, sorted_mode
         except Exception as e:
             console.print(f"[red][ERROR] An error occurred: {e}[/red]")
 
-def run_aider_session(key: str, model: str, initial_file: str = None):
-    """Launch Aider with the selected API key and model configurations."""
+def run_aider_session(proxy_port: int, model: str, initial_file: str = None):
+    """Launch Aider configured to route all API calls through the local proxy server."""
     env = os.environ.copy()
-    env["OPENAI_API_BASE"] = DEFAULT_API_BASE
-    env["OPENAI_API_KEY"] = key
+    env["OPENAI_API_BASE"] = f"http://127.0.0.1:{proxy_port}/v1"
+    env["OPENAI_API_KEY"] = "local-key-rotation-pool-key"
 
     model_name = f"openai/{model}"
     project_root = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -567,8 +679,7 @@ def run_aider_session(key: str, model: str, initial_file: str = None):
     console.print(Panel.fit(
         f"[bold green]Launching Aider Code-Editing Session[/bold green]\n"
         f"Model: [cyan]{model_name}[/cyan]\n"
-        f"API Base: [cyan]{DEFAULT_API_BASE}[/cyan]\n"
-        f"API Key: [cyan]{key[:8]}...{key[-8:]}[/cyan]\n\n"
+        f"Local API Proxy Base: [cyan]http://127.0.0.1:{proxy_port}/v1[/cyan] (Auto-Rotated Pool)\n\n"
         f"Aider will open in your terminal. Use it to chat and edit files directly.\n"
         f"Type /exit inside Aider to quit.",
         border_style="green"
@@ -576,8 +687,6 @@ def run_aider_session(key: str, model: str, initial_file: str = None):
 
     try:
         subprocess.run(cmd, env=env, shell=True)
-    except KeyboardInterrupt:
-        console.print("\n[yellow]Aider session terminated by user.[/yellow]")
     except Exception as e:
         console.print(f"[red][ERROR] Failed to run Aider: {e}[/red]")
 
@@ -687,65 +796,14 @@ def main():
         console.print("[red][ERROR] Invalid model selection. Exiting.[/red]")
         sys.exit(1)
 
-    # 5. Verify the key(s) for the selected model
-    console.print(f"\n[yellow]Verifying active keys for {selected_model_name} in parallel...[/yellow]")
-    valid_key = None
-    active_keys = []
-    
-    items_to_test = selected_model_info["items"]
-    with ThreadPoolExecutor(max_workers=min(len(items_to_test), 10)) as executor:
-        futures = {executor.submit(verify_key, item["key"], selected_model_name): item for item in items_to_test}
-        for future in as_completed(futures):
-            item = futures[future]
-            try:
-                is_active = future.result()
-                if is_active:
-                    active_keys.append(item)
-                    console.print(f" Key [dim]{item['key'][:8]}...{item['key'][-8:]}[/dim]: [green]Active[/green]")
-                else:
-                    console.print(f" Key [dim]{item['key'][:8]}...{item['key'][-8:]}[/dim]: [red]Expired/Exhausted[/red]")
-            except Exception:
-                console.print(f" Key [dim]{item['key'][:8]}...{item['key'][-8:]}[/dim]: [red]Error[/red]")
-
-    if active_keys:
-        valid_key = active_keys[0]["key"]
-        console.print(f"[green][OK] Found active key(s) for {selected_model_name}.[/green]")
-    else:
-        # Global fallback scanner
-        console.print(f"[yellow][WARN] All keys for {selected_model_name} failed verification.[/yellow]")
-        console.print("[yellow]Scanning other models for a working fallback key in parallel...[/yellow]")
-        
-        fallback_candidates = []
-        for other_model_name, other_info in sorted_models:
-            if other_model_name != selected_model_name:
-                fallback_candidates.append(other_info["items"][0])
-                
-        working_fallback_items = []
-        with ThreadPoolExecutor(max_workers=min(len(fallback_candidates), 15)) as executor:
-            futures = {executor.submit(verify_key, item["key"], item["model"]): item for item in fallback_candidates}
-            for future in as_completed(futures):
-                item = futures[future]
-                try:
-                    is_active = future.result()
-                    if is_active:
-                        working_fallback_items.append(item)
-                except Exception:
-                    pass
-
-        if working_fallback_items:
-            fallback_item = working_fallback_items[0]
-            valid_key = fallback_item["key"]
-            old_model_name = selected_model_name
-            selected_model_name = fallback_item["model"]
-            console.print(f"\n[bold green][OK] Found working fallback model: {selected_model_name}![/bold green]")
-            console.print(f"[yellow]Automatically switched model from '{old_model_name}' to '{selected_model_name}' to prevent failure.[/yellow]\n")
-        else:
-            console.print("\n[red][ERROR] Critical: Absolutely all keys for all models failed verification.[/red]")
-            if Confirm.ask("Would you like to try using the first key of your selected model anyway?"):
-                valid_key = selected_model_info["items"][0]["key"]
-            else:
-                console.print("[red][ERROR] Exiting.[/red]")
-                sys.exit(1)
+    # 5. Start the local API proxy server
+    console.print(f"\n[yellow]Starting local API proxy server on background thread...[/yellow]")
+    try:
+        proxy_port, server = start_local_proxy_server(keys, selected_model_name)
+        console.print(f"[green][OK] Local key-rotation proxy server is active on http://127.0.0.1:{proxy_port}/v1[/green]")
+    except Exception as e:
+        console.print(f"[red][ERROR] Could not start proxy server: {e}[/red]")
+        sys.exit(1)
 
     # 6. Mode selection
     mode = None
@@ -761,9 +819,9 @@ def main():
 
     # 7. Run session
     if mode == "1":
-        run_chat_session(valid_key, selected_model_name, args.file, sorted_models, keys)
+        run_chat_session(proxy_port, selected_model_name, args.file)
     elif mode == "2":
-        run_aider_session(valid_key, selected_model_name, args.file)
+        run_aider_session(proxy_port, selected_model_name, args.file)
 
 if __name__ == "__main__":
     main()
