@@ -57,42 +57,80 @@ export default function FoodDetailPage() {
       return;
     }
 
+    // Security: Add timeout and abort controller for API call
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), 10000); // 10 second timeout
+
     const fetchFood = async () => {
       try {
-        const result = await foodAPI.getById(idStr);
+        const result = await foodAPI.getById(idStr, { 
+          signal: controller.signal,
+          headers: {
+            'X-Request-ID': Math.random().toString(36).substring(2, 15)
+          }
+        });
+        
         if (result) {
+          // Security: Validate API response structure
+          if (!result.id || !result.name || typeof result.price !== 'number') {
+            throw new Error('Invalid food data structure received');
+          }
+          
+          // Security: Additional price validation
+          if (result.price < 0 || result.price > 1000000) {
+            throw new Error('Invalid price range');
+          }
+          
           // Security: Sanitize all string fields from API to prevent XSS
           const sanitized: FoodDetail = {
             id: sanitizeHTML(result.id),
             name: sanitizeHTML(result.name),
-            description: sanitizeHTML(result.description),
-            country: sanitizeHTML(result.country),
+            description: sanitizeHTML(result.description || ''),
+            country: sanitizeHTML(result.country || ''),
             price: Number(result.price) || 0,
-            category: sanitizeHTML(result.category),
+            category: sanitizeHTML(result.category || ''),
             seller: {
               id: sanitizeHTML(result.seller?.id || ''),
               name: sanitizeHTML(result.seller?.name || ''),
-              rating: Number(result.seller?.rating) || 0,
+              rating: Math.min(5, Math.max(0, Number(result.seller?.rating) || 0)),
               verified: Boolean(result.seller?.verified)
             },
-            dietaryRestrictions: result.dietaryRestrictions?.map((r: string) => sanitizeHTML(r)),
-            allergens: result.allergens?.map((a: string) => sanitizeHTML(a)),
-            images: result.images?.map((img: string) => sanitizeHTML(img)),
-            finderFee: result.finderFee ? Number(result.finderFee) : undefined
+            dietaryRestrictions: result.dietaryRestrictions?.map((r: string) => sanitizeHTML(r)).slice(0, 20) || [],
+            allergens: result.allergens?.map((a: string) => sanitizeHTML(a)).slice(0, 20) || [],
+            images: result.images?.map((img: string) => {
+              // Security: Validate image URLs
+              const sanitized = sanitizeHTML(img);
+              if (sanitized.startsWith('http://') || sanitized.startsWith('https://')) {
+                return sanitized;
+              }
+              return '';
+            }).filter(img => img !== '').slice(0, 10) || [],
+            finderFee: result.finderFee ? Math.max(0, Math.min(1000, Number(result.finderFee))) : undefined
           };
           setFood(sanitized);
         } else {
           setError('Food details not found');
         }
       } catch (err: any) {
-        setError('Failed to load food details');
+        if (err.name === 'AbortError') {
+          setError('Request timed out. Please try again.');
+        } else {
+          setError('Failed to load food details');
+        }
         console.error('Error fetching food:', err);
       } finally {
         setLoading(false);
+        clearTimeout(timeoutId);
       }
     };
 
     fetchFood();
+    
+    // Cleanup function
+    return () => {
+      controller.abort();
+      clearTimeout(timeoutId);
+    };
   }, [id]);
 
   const handleAddToCart = async () => {
