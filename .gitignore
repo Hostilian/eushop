@@ -59,7 +59,16 @@ parallel-chat-results.txt
 # Key Daemon local hot cache (generated, not committed)
 .api_keys_pool.json
 
+# Emergency fallback key store (local, never committed)
+.api_keys_emergency.json
+
+# Endpoint circuit breaker state (local)
+.endpoint_health.json
+
 # Daemon logs (verbose, not committed)
 logs/key_daemon.log
+
+# Auto-generated watchdog script (from install_daemon.ps1)
+scripts/watchdog_daemon.ps1
 
 # NOTE: data/validated_keys.json IS committed (public pool from GitHub Actions)
