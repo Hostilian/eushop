@@ -191,6 +191,7 @@ export default function BecomeSeller() {
                   required
                   className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-primary"
                   onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
+                  value={formData.phone}
                 />
               </div>
             </div>
@@ -209,6 +210,7 @@ export default function BecomeSeller() {
                     placeholder="e.g., HRB 12345 (Germany), or equivalent"
                     className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-primary"
                     onChange={(e) => setFormData({ ...formData, businessRegistrationNumber: e.target.value })}
+                    value={formData.businessRegistrationNumber}
                   />
                 </div>
 
@@ -223,6 +225,7 @@ export default function BecomeSeller() {
                       placeholder="e.g., DE123456789"
                       className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-primary"
                       onChange={(e) => setFormData({ ...formData, taxId: e.target.value })}
+                      value={formData.taxId}
                     />
                   </div>
 
@@ -235,6 +238,7 @@ export default function BecomeSeller() {
                       placeholder="e.g., EU VAT Number"
                       className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-primary"
                       onChange={(e) => setFormData({ ...formData, vatNumber: e.target.value })}
+                      value={formData.vatNumber}
                     />
                   </div>
                 </div>
@@ -250,6 +254,7 @@ export default function BecomeSeller() {
                       placeholder="e.g., Václavské náměstí 1"
                       className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-primary"
                       onChange={(e) => setFormData({ ...formData, addressStreet: e.target.value })}
+                      value={formData.addressStreet}
                     />
                   </div>
 
@@ -263,6 +268,7 @@ export default function BecomeSeller() {
                       placeholder="e.g., Prague"
                       className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-primary"
                       onChange={(e) => setFormData({ ...formData, addressCity: e.target.value })}
+                      value={formData.addressCity}
                     />
                   </div>
                 </div>
@@ -277,6 +283,7 @@ export default function BecomeSeller() {
                     placeholder="e.g., 11000"
                     className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-primary"
                     onChange={(e) => setFormData({ ...formData, addressPostalCode: e.target.value })}
+                    value={formData.addressPostalCode}
                   />
                 </div>
 
@@ -287,6 +294,7 @@ export default function BecomeSeller() {
                       required
                       className="mt-1 rounded border-gray-300 text-primary focus:ring-2 focus:ring-primary"
                       onChange={(e) => setFormData({ ...formData, selfCertification: e.target.checked })}
+                      checked={formData.selfCertification}
                     />
                     <span className="ml-2 text-sm text-gray-700">
                       I self-certify that all products listed on this platform will comply with applicable rules of Union law, including allergen labeling (Regulation EU 1169/2011) and national food safety standards.
@@ -303,6 +311,7 @@ export default function BecomeSeller() {
                   required
                   className="rounded border-gray-300 text-primary focus:ring-2 focus:ring-primary"
                   onChange={(e) => setFormData({ ...formData, acceptTerms: e.target.checked })}
+                  checked={formData.acceptTerms}
                 />
                 <span className="ml-2 text-sm text-gray-700">
                   I agree to the <Link href="/terms" className="text-primary hover:underline">Terms of Service</Link> and <Link href="/privacy" className="text-primary hover:underline">Privacy Policy</Link>
