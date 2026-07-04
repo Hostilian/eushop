@@ -55,3 +55,11 @@ android/build/
 .claude/
 chat-parallel.js
 parallel-chat-results.txt
+
+# Key Daemon local hot cache (generated, not committed)
+.api_keys_pool.json
+
+# Daemon logs (verbose, not committed)
+logs/key_daemon.log
+
+# NOTE: data/validated_keys.json IS committed (public pool from GitHub Actions)
