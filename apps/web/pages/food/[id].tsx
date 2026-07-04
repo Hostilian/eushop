@@ -22,6 +22,20 @@ interface FoodDetail {
   finderFee?: number; // Changed from finder_fee
 }
 
+function sanitizeHTML(str: string): string {
+  if (!str) return '';
+  return str.replace(/[&<>"']/g, (m) => {
+    const map: Record<string, string> = {
+      '&': '&amp;',
+      '<': '&lt;',
+      '>': '&gt;',
+      '"': '&quot;',
+      "'": '&#x27;'
+    };
+    return map[m] || m;
+  });
+}
+
 export default function FoodDetailPage() {
   const router = useRouter();
   const { id } = router.query;
@@ -35,12 +49,42 @@ export default function FoodDetailPage() {
   useEffect(() => {
     if (!id) return;
 
+    const idStr = id as string;
+    if (!/^[a-zA-Z0-9-]+$/.test(idStr)) {
+      setError('Invalid food ID format');
+      setLoading(false);
+      return;
+    }
+
     const fetchFood = async () => {
       try {
-        const result = await foodAPI.getById(id as string);
-        setFood(result);
+        const result = await foodAPI.getById(idStr);
+        if (result) {
+          // Security: Sanitize all string fields from API to prevent XSS
+          const sanitized: FoodDetail = {
+            id: sanitizeHTML(result.id),
+            name: sanitizeHTML(result.name),
+            description: sanitizeHTML(result.description),
+            country: sanitizeHTML(result.country),
+            price: Number(result.price) || 0,
+            category: sanitizeHTML(result.category),
+            seller: {
+              id: sanitizeHTML(result.seller?.id || ''),
+              name: sanitizeHTML(result.seller?.name || ''),
+              rating: Number(result.seller?.rating) || 0,
+              verified: Boolean(result.seller?.verified)
+            },
+            dietaryRestrictions: result.dietaryRestrictions?.map((r: string) => sanitizeHTML(r)),
+            allergens: result.allergens?.map((a: string) => sanitizeHTML(a)),
+            images: result.images?.map((img: string) => sanitizeHTML(img)),
+            finderFee: result.finderFee ? Number(result.finderFee) : undefined
+          };
+          setFood(sanitized);
+        } else {
+          setError('Food details not found');
+        }
       } catch (err: any) {
-        setError(err.response?.data?.error || err.message || 'Failed to load food details'); // Added err.message
+        setError('Failed to load food details');
         console.error('Error fetching food:', err);
       } finally {
         setLoading(false);
@@ -52,33 +96,52 @@ export default function FoodDetailPage() {
 
   const handleAddToCart = async () => {
     if (!food) return;
+
+    // Security: Validate quantity constraints
+    if (!Number.isInteger(quantity) || quantity < 1 || quantity > 100) {
+      alert('Quantity must be an integer between 1 and 100');
+      return;
+    }
     
     setAddingToCart(true);
     try {
-      // TODO: Implement cart functionality
-      // This part is client-side only for now, no API call here
       const cartItem = {
-        id: food.id, // Use food.id for cart item
+        id: food.id,
         name: food.name,
         country: food.country,
         price: food.price,
         quantity,
       };
       
-      // Example: Add to localStorage cart
-      const existingCart = JSON.parse(localStorage.getItem('cart') || '[]');
-      const itemIndex = existingCart.findIndex((item: any) => item.id === food.id);
+      // Example: Add to localStorage cart with limits and parsing validation
+      let existingCart: any[] = [];
+      try {
+        existingCart = JSON.parse(localStorage.getItem('cart') || '[]');
+        if (!Array.isArray(existingCart)) {
+          existingCart = [];
+        }
+      } catch {
+        existingCart = [];
+      }
+
+      const itemIndex = existingCart.findIndex((item: any) => item && item.id === food.id);
 
       let updatedCart;
       if (itemIndex > -1) {
         updatedCart = existingCart.map((item: any, idx: number) => 
-          idx === itemIndex ? { ...item, quantity: item.quantity + quantity } : item
+          idx === itemIndex ? { ...item, quantity: Math.min(100, (item.quantity || 0) + quantity) } : item
         );
       } else {
         updatedCart = [...existingCart, cartItem];
       }
-      localStorage.setItem('cart', JSON.stringify(updatedCart));
 
+      // Security: Cap maximum unique cart items to prevent client-side denial of service/storage exhaustion
+      if (updatedCart.length > 50) {
+        updatedCart = updatedCart.slice(0, 50);
+        alert('Cart size limit reached (max 50 unique items)');
+      }
+
+      localStorage.setItem('cart', JSON.stringify(updatedCart));
       alert(`Added ${quantity} of "${food.name}" to cart`);
     } catch (err) {
       alert('Failed to add to cart');
@@ -88,8 +151,13 @@ export default function FoodDetailPage() {
   };
 
   const handleContactSeller = () => {
-    if (food) {
-      router.push(`/messages?seller=${food.seller.id}`);
+    if (food && food.seller && food.seller.id) {
+      // Security: Validate seller ID format
+      if (!/^[a-zA-Z0-9-]+$/.test(food.seller.id)) {
+        alert('Invalid seller format');
+        return;
+      }
+      router.push(`/messages?seller=${encodeURIComponent(food.seller.id)}`);
     }
   };
 

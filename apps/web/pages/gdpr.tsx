@@ -107,7 +107,8 @@ export default function GDPRPage() {
 
     if (user) {
       try {
-        await authAPI.recordConsent(user.id, `cookie_${type}`, '2026-07-04', updated[type]);
+        const currentDate = new Date().toISOString().split('T')[0];
+        await authAPI.recordConsent(user.id, `cookie_${type}`, currentDate, updated[type]);
       } catch (err) {
         console.error('Failed to log consent change on server:', err);
       }
