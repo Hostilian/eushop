@@ -79,7 +79,35 @@ already fetches fresh keys online and updates the cache automatically
 whenever you start it!
 
 ------------------------------------------------------------------------
-5. Direct API Integrations
+5. How to run Claude Code & Codex CLI (Free Claude Code Proxy)
+------------------------------------------------------------------------
+We have integrated the `free-claude-code` proxy in your workspace. This allows
+you to run official CLI agents like `claude` (Claude Code) or `codex` (Codex CLI)
+for free using the active parsed keys in the background!
+
+* To run:
+  1. Synchronize/Update proxy keys:
+     python scripts/sync_fcc.py
+     (Note: This is automatically run by the background task refresher too!)
+
+  2. Start the local proxy server (runs on port 8082):
+     - PowerShell/Git Bash:  ./fcc-server.sh
+     - Windows CMD:          .\fcc-server.bat
+
+  3. In a new terminal window, launch your CLI agent:
+     - To run Claude Code CLI:
+       PowerShell/Git Bash:  ./fcc-claude.sh
+       Windows CMD:          .\fcc-claude.bat
+     - To run Codex CLI:
+       PowerShell/Git Bash:  ./fcc-codex.sh
+       Windows CMD:          .\fcc-codex.bat
+
+Make sure you have installed the official packages globally via npm beforehand:
+  npm install -g @anthropic-ai/claude-code
+  npm install -g @openai/codex
+
+------------------------------------------------------------------------
+6. Direct API Integrations
 ------------------------------------------------------------------------
 
 --- cURL Example ---
