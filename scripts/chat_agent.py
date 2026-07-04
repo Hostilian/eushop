@@ -292,6 +292,11 @@ def start_local_proxy_server(all_keys, default_model, port=48123):
                         {"id": "gemini-2.5-flash", "object": "model", "created": 1677610602, "owned_by": "openai"},
                         {"id": "deepseek-chat", "object": "model", "created": 1677610602, "owned_by": "openai"},
                         {"id": "kimi-k2.5", "object": "model", "created": 1677610602, "owned_by": "openai"},
+                        {"id": "claude-3-5-sonnet", "object": "model", "created": 1677610602, "owned_by": "openai"},
+                        {"id": "claude-3-5-haiku", "object": "model", "created": 1677610602, "owned_by": "openai"},
+                        {"id": "gpt-4o", "object": "model", "created": 1677610602, "owned_by": "openai"},
+                        {"id": "o1-mini", "object": "model", "created": 1677610602, "owned_by": "openai"},
+                        {"id": "deepseek-r1", "object": "model", "created": 1677610602, "owned_by": "openai"},
                     ]
                 }
                 self.wfile.write(json.dumps(mock_models).encode('utf-8'))
@@ -345,7 +350,11 @@ def start_local_proxy_server(all_keys, default_model, port=48123):
 
             for item in candidates:
                 key = item["key"]
-                model_name = item.get("model", target_model)
+                premium_list = ["claude-3-5-sonnet", "claude-3-5-haiku", "gpt-4o", "o1-mini", "deepseek-r1"]
+                if target_model.lower() in premium_list:
+                    model_name = target_model
+                else:
+                    model_name = item.get("model", target_model)
                 base_url = item.get("working_base_url") or item.get("base_url") or DEFAULT_API_BASE
                 
                 payload = original_payload.copy()
@@ -478,13 +487,44 @@ def show_dashboard(keys: list[dict]):
         models_summary[model]["keys_count"] += 1
         models_summary[model]["items"].append(item)
 
+    # Inject virtual premium models supported by proxies
+    proxy_keys = [k for k in keys if "pekpik" in k.get("base_url", "") or "pawan" in k.get("base_url", "") or "pekpik" in k.get("group", "").lower() or "pool" in k.get("group", "").lower()]
+    if not proxy_keys and keys:
+        proxy_keys = keys
+
+    premium_models = [
+        ("claude-3-5-sonnet", "Anthropic Claude 3.5 Sonnet (Premium)"),
+        ("claude-3-5-haiku", "Anthropic Claude 3.5 Haiku (Premium)"),
+        ("gpt-4o", "OpenAI GPT-4o (Premium)"),
+        ("o1-mini", "OpenAI o1-mini reasoning model"),
+        ("deepseek-r1", "DeepSeek R1 reasoning model")
+    ]
+    for model_id, desc in premium_models:
+        if model_id not in models_summary:
+            vm_items = []
+            for pk in proxy_keys:
+                item_copy = pk.copy()
+                item_copy["model"] = model_id
+                item_copy["original_model"] = pk.get("original_model", pk["model"])
+                vm_items.append(item_copy)
+            
+            models_summary[model_id] = {
+                "group": "Proxy Premium",
+                "keys_count": len(vm_items),
+                "expires": "",
+                "rate_limit": "",
+                "budget": "",
+                "desc": desc,
+                "items": vm_items
+            }
+
     sorted_models = sorted(models_summary.items(), key=lambda x: x[0])
     
     # Live verify one key from each model in parallel
     console.print("[yellow]Checking live status of all models in parallel...[/yellow]")
     live_statuses = {}
     with ThreadPoolExecutor(max_workers=min(len(sorted_models), 20)) as executor:
-        futures = {executor.submit(verify_key, info["items"][0]["key"], model_name): model_name for model_name, info in sorted_models}
+        futures = {executor.submit(verify_key, info["items"][0]["key"], info["items"][0].get("original_model", model_name)): model_name for model_name, info in sorted_models}
         for future in as_completed(futures):
             model_name = futures[future]
             try:
