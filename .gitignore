@@ -44,3 +44,7 @@ target/
 ios/Pods/
 android/build/
 .aider*
+
+# Free LLM API Keys repository
+/free-llm-api-keys-main/
+

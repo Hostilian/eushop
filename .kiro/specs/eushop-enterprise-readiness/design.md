@@ -417,50 +417,169 @@ CREATE INDEX idx_food_batches_traceability ON food_batches(batch_identifier, pro
 
 *A property is a characteristic or behavior that should hold true across all valid executions of a system-essentially, a formal statement about what the system should do. Properties serve as the bridge between human-readable specifications and machine-verifiable correctness guarantees.*
 
-**PBT Applicability Assessment**: Given the mixed nature of this enterprise transformation (infrastructure, external integrations, compliance workflows), property-based testing is appropriate for specific pure-function components but not for the entire system. The following areas are suitable for PBT:
+### PBT Applicability Assessment
 
-1. **VAT Calculation Logic** - Pure functions determining VAT rates based on location and product type
-2. **Allergen Validation** - Validation logic for EU-regulated allergen combinations
-3. **Data Transformation** - Compliance report format generation
-4. **Input Validation** - Business rule validation for compliance data
+After analyzing all 115 acceptance criteria across 21 requirements, property-based testing is appropriate for specific pure-function components but not for the entire enterprise transformation. The following categorization guides testing strategy:
 
-**Note**: Infrastructure components, external service integrations, and legal workflows will use example-based tests, integration tests, and snapshot tests instead of property-based testing.
+**Property-Based Testing (PBT) Areas** (24 criteria):
+- Business logic with meaningful input variation (calculations, validations, transformations)
+- Core algorithms that benefit from randomized input testing
+- Data transformation logic with consistent format requirements
 
-### Property 1: VAT Rate Determination Consistency
+**Example-Based Testing Areas** (25 criteria):
+- Specific scenarios with concrete expected outcomes
+- Configuration validation that is binary (works/doesn't work)
+- Integration points with external services
 
-*For any* valid EU member state code and food product category, the VAT rate determination function shall return a rate that is consistent with EU VAT directives for that member state and category.
+**Integration Testing Areas** (8 criteria):
+- External service interactions (Stripe, Auth0, tax services)
+- Cross-system workflows requiring end-to-end validation
+- Message queue and event processing
 
-**Validates: Requirements 7.1, 7.2**
+**Smoke/Configuration Testing Areas** (58 criteria):
+- Infrastructure as Code (Terraform) validation
+- Security and compliance configuration
+- Monitoring, alerting, and observability setup
+- Deployment pipeline configuration
 
-### Property 2: Allergen Disclosure Completeness
+### Property Reflection and Consolidation
 
-*For any* food listing with specified ingredients, the allergen detection function shall identify all EU-regulated allergens present in the ingredients list, and no allergens that are not present.
+After analyzing all testable criteria, the following core properties have been identified and consolidated to eliminate redundancy:
 
-**Validates: Requirements 14.1, 14.5**
+#### Core Business Logic Properties
 
-### Property 3: DAC7 Threshold Calculation
+##### Property 1: Authorization and Access Control Consistency
+*For any* user with a specific role and any protected resource or action, the authorization system shall grant or deny access consistently based on the user's verified role permissions, without regard to other user attributes.
 
-*For any* set of seller transactions within a calendar year, the DAC7 threshold detection function shall correctly identify when the seller exceeds €2,000 in revenue or 30+ transactions.
+**Validates: Requirements 1.4** (Role-based access control enforcement)
 
-**Validates: Requirements 4.2**
+##### Property 2: Rate Limiting and Abuse Detection
+*For any* sequence of API requests from a given IP address or user ID, the rate limiting system shall consistently apply configured limits, and the abuse detection system shall trigger circuit breakers when patterns indicate potential abuse.
 
-### Property 4: Platform Commission Calculation
+**Validates: Requirements 2.2, 2.3** (Rate limiting per IP/user, abuse pattern detection)
 
-*For any* valid transaction amount, the commission calculation function shall always compute platform commission as 15% of (item price + shipping), and the remaining amount to the seller shall equal the original amount minus commission.
+##### Property 3: Business Rule Enforcement Based on Verification Status
+*For any* seller with a given verification status (pending, approved, rejected), the platform shall consistently enforce business rules regarding product listing, payment receipt, and other restricted actions based solely on that status.
 
-**Validates: Requirements 6.2**
+**Validates: Requirements 3.2, 3.3** (Prevent actions while pending, reject incomplete applications)
 
-### Property 5: Food Batch Traceability Integrity
+##### Property 4: Audit Trail Completeness and Consistency
+*For any* system action that modifies sensitive data (user info, compliance status, financial transactions) or accesses protected resources, a complete audit trail shall be generated containing actor identity, timestamp, action type, and before/after state where applicable.
 
-*For any* sequence of batch transfers in the traceability system, the "one step back, one step forward" property shall hold: each batch record shall reference its immediate previous holder and immediate next holder (when known), creating a continuous chain.
+**Validates: Requirements 3.5, 5.4** (Verification audit trail, data access audit trail)
 
-**Validates: Requirements 15.2**
+#### Compliance and Regulatory Properties
 
-### Property 6: GDPR Data Portability Format
+##### Property 5: DAC7 Threshold Detection and Reporting
+*For any* seller and any set of their transactions within a calendar year, the system shall correctly detect when the seller exceeds €2,000 in revenue or 30+ transactions, and shall consistently include such sellers in DAC7 report preparations with all required transaction details.
 
-*For any* user's personal data stored in the system, the data portability export function shall produce a structured, machine-readable format (JSON) containing all required GDPR Article 20 fields without alteration or omission.
+**Validates: Requirements 4.2, 4.3, 4.4** (Threshold detection, report inclusion, CSV format)
 
-**Validates: Requirements 5.5**
+##### Property 6: Tax ID Validation by Country
+*For any* tax identification number and associated country code, the validation function shall correctly determine whether the format matches the expected pattern for that country's tax ID system.
+
+**Validates: Requirements 4.5** (Tax ID format validation)
+
+##### Property 7: GDPR Data Portability Export Completeness
+*For any* user's personal data stored across all system tables, the data portability export function shall produce a structured, machine-readable JSON document containing all data subject to GDPR Article 20 rights, without omission, alteration, or inclusion of non-personal data.
+
+**Validates: Requirements 5.5** (Data portability exports)
+
+##### Property 8: Platform Commission and Fund Distribution
+*For any* valid transaction amount (item price + shipping), the commission calculation shall always compute platform commission as exactly 15%, and the resulting fund distribution shall satisfy: seller_amount + platform_commission = original_amount, with seller_amount = 85% of original_amount.
+
+**Validates: Requirements 6.2, 6.3** (15% commission calculation, 85/15 fund distribution)
+
+##### Property 9: VAT Rate Determination and Liability Calculation
+*For any* combination of buyer location (EU member state), product category, and platform supplier status, the VAT calculation shall: (1) determine the correct VAT rate per EU directives, (2) calculate VAT amount correctly, and (3) when platform is deemed supplier, correctly compute and record VAT liability.
+
+**Validates: Requirements 7.1, 7.2, 7.3** (Location determination, rate application, liability calculation)
+
+##### Property 10: VAT OSS Report Generation Consistency
+*For any* set of cross-border EU transactions within a quarterly period, the VAT OSS report generation function shall produce data in the format required by EU OSS regulations, with all required fields populated and transaction-level detail preserved.
+
+**Validates: Requirements 7.4** (OSS report generation)
+
+##### Property 11: EU Allergen Regulation Compliance
+*For any* food listing with specified ingredients, the system shall: (1) correctly identify all EU-regulated allergens from Regulation 1169/2011 Annex II present in the ingredients, (2) prevent publication if allergen disclosure is incomplete, and (3) display ingredients with allergen highlighting where provided.
+
+**Validates: Requirements 14.3, 14.4, 14.5** (Allergen validation, publication prevention, display formatting)
+
+##### Property 12: Food Traceability Chain Integrity
+*For any* sequence of food batch transfers through the supply chain, the traceability system shall maintain the "one step back, one step forward" property: each batch record correctly references its immediate previous holder and immediate next holder (when known), creating an unbroken chain from producer to consumer.
+
+**Validates: Requirements 15.2** (Transfer tracking in supply chain)
+
+#### Business and Operational Properties
+
+##### Property 13: Business Metrics Calculation Accuracy
+*For any* set of platform activity data within a given time period, the metrics calculation shall correctly compute: Gross Merchandise Value (sum of transaction amounts), active user count (distinct users with activity), seller count (verified sellers with listings), and conversion funnel metrics (visit-to-purchase ratios).
+
+**Validates: Requirements 19.1, 19.2** (Daily metrics, conversion funnel tracking)
+
+##### Property 14: Cohort Analysis Segmentation
+*For any* set of users with acquisition dates, geographic regions, and behavior patterns, the cohort analysis function shall correctly segment users by: acquisition cohort (e.g., monthly cohorts), geographic region, and behavior-based segments (e.g., high-value, occasional, inactive).
+
+**Validates: Requirements 19.6** (User segmentation for cohort analysis)
+
+##### Property 15: Cost Optimization Analysis
+*For any* set of resource utilization metrics over time, the cost optimization analysis shall correctly identify underutilized resources and provide right-sizing recommendations that maintain performance requirements while reducing costs.
+
+**Validates: Requirements 18.1** (Resource utilization analysis)
+
+##### Property 16: Cost Allocation Reporting Consistency
+*For any* set of infrastructure and operational costs, the cost allocation reporting shall consistently assign costs to the correct teams, features, and environments based on configured allocation rules, producing reports with consistent formatting and granularity.
+
+**Validates: Requirements 18.5** (Granular cost allocation)
+
+#### Infrastructure and API Properties
+
+##### Property 17: OpenAPI Specification Generation
+*For any* set of REST API endpoints with their request/response schemas, authentication requirements, and documentation, the OpenAPI specification generation shall produce a valid OpenAPI 3.0 document that accurately describes all endpoints, parameters, responses, and security schemes.
+
+**Validates: Requirements 17.1** (Comprehensive REST API with OpenAPI spec)
+
+##### Property 18: Investor Documentation Package Completeness
+*For any* current state of the business (team composition, traction metrics, technology stack, market position, financials, compliance status), the investor documentation generation shall produce a complete package containing all required components with consistent formatting and organization.
+
+**Validates: Requirements 20.4, 20.5** (Financial model generation, data room organization)
+
+### Property Implementation Strategy
+
+Each property shall be implemented as a jqwik property test in the corresponding service module:
+
+1. **Test Configuration**: Minimum 100 iterations per property test
+2. **Generator Design**: Custom generators for domain-specific data (EU countries, food categories, tax IDs, etc.)
+3. **Assertion Strategy**: Combination of direct assertions and metamorphic testing
+4. **Shrinking Support**: Custom shrinkers for domain types to produce minimal failing examples
+5. **Tagging**: Each test tagged with `@Feature("eushop-enterprise-readiness")` and `@Property("X")` where X is the property number
+
+**Example Property Test Structure**:
+```java
+@Property
+@Feature("eushop-enterprise-readiness")
+@Property("8") // Platform commission calculation
+void platformCommissionCalculation(
+    @ForAll @Positive BigDecimal itemPrice,
+    @ForAll @NonNegative BigDecimal shippingCost) {
+    
+    BigDecimal total = itemPrice.add(shippingCost);
+    BigDecimal commission = paymentService.calculateCommission(total);
+    BigDecimal sellerAmount = paymentService.calculateSellerAmount(total);
+    
+    // Property: commission is exactly 15%
+    assertThat(commission)
+        .isEqualByComparingTo(total.multiply(new BigDecimal("0.15")));
+    
+    // Property: total = commission + seller amount
+    assertThat(total)
+        .isEqualByComparingTo(commission.add(sellerAmount));
+    
+    // Property: seller gets exactly 85%
+    assertThat(sellerAmount)
+        .isEqualByComparingTo(total.multiply(new BigDecimal("0.85")));
+}
+```
 
 ## Error Handling
 
@@ -541,109 +660,290 @@ All errors are logged with:
 
 ## Testing Strategy
 
-### Dual Testing Approach
+### Quadruple Testing Approach
 
-#### 1. Unit Tests with Property-Based Testing (where applicable)
+Based on the prework analysis of 115 acceptance criteria across 21 requirements, a four-pronged testing strategy is required:
+
+#### 1. Property-Based Tests for Core Business Logic (24 criteria)
 - **Framework**: jqwik for Java property-based testing
-- **Coverage Target**: >80% for critical path services
-- **Property Tests**: Minimum 100 iterations per property
+- **Coverage Target**: 100% of identified property-testable criteria
+- **Property Tests**: Minimum 100 iterations per property test
 - **Focus Areas**: 
-  - VAT calculation logic (Property 1)
-  - Allergen validation (Property 2)
-  - DAC7 threshold detection (Property 3)
-  - Commission calculations (Property 4)
-  - Traceability integrity (Property 5)
-  - Data portability (Property 6)
+  - Authorization and access control (Property 1)
+  - Rate limiting and abuse detection (Property 2)
+  - Business rule enforcement (Property 3)
+  - Audit trail generation (Property 4)
+  - DAC7 threshold detection and reporting (Property 5)
+  - Tax ID validation (Property 6)
+  - GDPR data portability (Property 7)
+  - Platform commission calculations (Property 8)
+  - VAT rate determination (Property 9)
+  - VAT OSS reporting (Property 10)
+  - Allergen regulation compliance (Property 11)
+  - Food traceability chain integrity (Property 12)
+  - Business metrics calculation (Property 13)
+  - Cohort analysis segmentation (Property 14)
+  - Cost optimization analysis (Property 15)
+  - Cost allocation reporting (Property 16)
+  - OpenAPI specification generation (Property 17)
+  - Investor documentation generation (Property 18)
 
-#### 2. Integration Tests
-- **Framework**: Spring Boot Test with Testcontainers
-- **Scope**: Service interactions, database operations, cache behavior
-- **External Mocks**: WireMock for Auth0, Stripe, tax services
+#### 2. Example-Based Unit Tests (25 criteria)
+- **Framework**: JUnit 5 with Mockito
+- **Coverage Target**: 100% of example-testable criteria
+- **Focus Areas**:
+  - Specific authentication scenarios (JWT validation, cookie configuration)
+  - Error response formats (401 Unauthorized, validation errors)
+  - Configuration validation (required fields, format checks)
+  - Legal document presentation (ToS, Privacy Policy acceptance)
+  - Specific business scenarios (admin bypass rejection, cache invalidation timing)
+
+#### 3. Integration Tests for External Services (8 criteria)
+- **Framework**: Spring Boot Test with Testcontainers and WireMock
+- **Scope**: External service interactions and cross-system workflows
+- **External Service Mocks**:
+  - WireMock for Auth0 authentication flows
+  - WireMock for Stripe Connect payment processing
+  - WireMock for tax calculation services (TaxJar/Stripe Tax)
+  - Testcontainers for message queue testing
+  - Mock services for cross-cloud database replication
+  - Mock services for CDN analytics integration
 - **Database**: Testcontainers PostgreSQL with Flyway migrations
+- **Cache**: Testcontainers Redis for session and cache testing
 
-#### 3. Infrastructure Tests
-- **Terraform Validation**: `terraform validate` and `terraform plan`
-- **Security Scans**: OWASP Dependency Check, Snyk, Trivy
-- **Compliance Checks**: Policy-as-Code with Open Policy Agent
+#### 4. Smoke and Configuration Tests (58 criteria)
+- **Infrastructure Tests**:
+  - Terraform validation (`terraform validate`, `terraform plan`)
+  - Cloud-specific configuration validation
+  - Security configuration checks (TLS termination, mTLS, network isolation)
+  - Monitoring and observability setup (APM, distributed tracing, alerting)
+- **Security Scans**:
+  - OWASP Dependency Check for vulnerability scanning
+  - Snyk/Trivy for container image scanning
+  - SAST tools for static code analysis
+- **Compliance Checks**:
+  - Policy-as-Code with Open Policy Agent (OPA)
+  - GDPR compliance configuration validation
+  - Data retention policy enforcement checks
+- **Deployment Pipeline Tests**:
+  - CI/CD configuration validation
+  - Canary deployment configuration testing
+  - Blue-green deployment rollback testing
+  - Post-deployment verification test execution
 
-#### 4. End-to-End Tests
+#### 5. End-to-End Tests
 - **Framework**: Playwright for web application testing
-- **Scope**: Critical user journeys (signup, listing, purchase)
+- **Scope**: Critical user journeys spanning multiple services
+- **Test Scenarios**:
+  - Complete seller onboarding with DSA Article 30 verification
+  - End-to-end purchase flow with Stripe payment and VAT calculation
+  - Food listing creation with allergen disclosure and traceability
+  - Compliance report generation and download
+  - GDPR data portability request and export
 - **Environment**: Staging environment with production-like configuration
+- **Data**: Test data generation covering edge cases and compliance scenarios
 
 ### Test Environment Strategy
 
-#### Local Development
-- Docker Compose with PostgreSQL, Redis
-- Mock external services (Stripe, Auth0 test modes)
-- Property-based tests for core logic
+#### Local Development Environment
+- **Containers**: Docker Compose with PostgreSQL 16, Redis 8, WireMock
+- **External Service Mocks**: WireMock instances configured for Auth0, Stripe Connect, TaxJar/Stripe Tax
+- **Property Tests**: jqwik property tests for all 18 core business logic properties
+- **Database Testing**: Testcontainers PostgreSQL for integration tests with Flyway migrations
+- **Cache Testing**: Testcontainers Redis for session management and cache behavior validation
+- **Message Queue**: Testcontainers for event-driven architecture testing
+- **Monitoring**: Local Prometheus, Grafana, and OpenTelemetry Collector for observability testing
 
-#### CI/CD Pipeline
-1. **Unit Test Stage**: Fast feedback (<5 minutes)
-   - Property-based tests for core logic
-   - Unit tests with mocks
-   - Code coverage reporting
+#### CI/CD Pipeline Testing Stages
 
-2. **Integration Test Stage**: Service integration (<15 minutes)
-   - Testcontainers with real database
-   - WireMock for external services
-   - Cache behavior validation
+1. **Property Test Stage**: Core business logic validation (<10 minutes)
+   - jqwik property tests for all 18 identified properties
+   - Minimum 100 iterations per property with custom generators
+   - Shrinking support for minimal counterexamples
+   - Code coverage reporting focused on property-tested code paths
+   - Test tagging: `@Feature("eushop-enterprise-readiness") @Property("X")`
 
-3. **Security Scan Stage**: Vulnerability detection
-   - OWASP Dependency Check
-   - Secret detection
-   - SAST tools
+2. **Unit Test Stage**: Example-based scenario validation (<10 minutes)
+   - JUnit 5 tests for 25 example-testable criteria
+   - Mockito for external dependency isolation
+   - Configuration validation tests (security, compliance, business rules)
+   - Error scenario and edge case testing
+   - Integration with JaCoCo for code coverage reporting
 
-4. **Infrastructure Test Stage**: IaC validation
-   - Terraform plan validation
-   - Policy compliance checks
-   - Cost estimation
+3. **Integration Test Stage**: External service validation (<20 minutes)
+   - Testcontainers with production-like PostgreSQL configuration
+   - WireMock for all 8 external service integration criteria
+   - Redis cache behavior and session management testing
+   - Message queue integration testing for event-driven patterns
+   - Database migration testing with Flyway
+   - Cross-service communication validation
 
-5. **E2E Test Stage**: User journey validation
-   - Playwright tests against staging
-   - Critical path validation
-   - Performance baseline checks
+4. **Security Scan Stage**: Comprehensive security validation (<15 minutes)
+   - OWASP Dependency Check for Java dependencies
+   - Trivy for container image vulnerability scanning
+   - Secret detection scanning for credentials in code
+   - SAST (Static Application Security Testing) tools
+   - Infrastructure security configuration validation
+   - Compliance with security best practices and standards
 
-### Property-Based Test Implementation
+5. **Infrastructure Test Stage**: IaC and configuration validation (<15 minutes)
+   - Terraform validation (`terraform validate`, `terraform fmt`)
+   - Terraform plan review for infrastructure changes
+   - Open Policy Agent (OPA) for policy-as-code compliance checks
+   - Cost estimation validation for infrastructure changes
+   - Security configuration validation (TLS, mTLS, network policies)
+   - Multi-cloud deployment configuration testing
 
+6. **Smoke Test Stage**: Production configuration validation (<10 minutes)
+   - Deployment configuration validation across environments
+   - Monitoring and observability setup verification
+   - Alerting configuration and notification channel testing
+   - Compliance configuration checks (GDPR, DSA, DAC7)
+   - Data retention policy configuration validation
+   - Backup and disaster recovery configuration testing
+
+7. **E2E Test Stage**: User journey and compliance workflow validation (<30 minutes)
+   - Playwright tests against staging environment
+   - Critical user journey testing (signup → verification → listing → purchase)
+   - Compliance workflow testing (DSA Article 30 verification, DAC7 reporting)
+   - GDPR compliance testing (data portability, right to erasure)
+   - Food safety regulation testing (allergen disclosure, traceability)
+   - Performance baseline testing for critical paths
+   - Cross-browser and cross-device compatibility testing
+
+#### Test Data Management Strategy
+
+1. **Property Test Data Generation**:
+   - Custom jqwik generators for domain types (EU countries, tax IDs, food categories)
+   - Edge case generation for boundary conditions
+   - Realistic data generation based on production patterns
+   - Anonymized production data sampling for realistic test scenarios
+
+2. **Integration Test Data**:
+   - Testcontainers database with pre-seeded compliance data
+   - WireMock scenarios for external service responses
+   - Compliance test data covering GDPR, DSA, DAC7 requirements
+   - Food safety test data with allergen combinations and traceability chains
+
+3. **E2E Test Data**:
+   - Staging environment with production-like data volume
+   - Anonymized customer data for realistic testing
+   - Compliance scenario test data (threshold cases, edge conditions)
+   - Performance test data simulating peak traffic patterns
+
+### Property Test Implementation Examples
+
+#### Example 1: Platform Commission Calculation (Property 8)
 ```java
 @Property
-void vatRateConsistency(
+@Feature("eushop-enterprise-readiness")
+@Property("8")
+void platformCommissionCalculation(
+    @ForAll @Positive BigDecimal itemPrice,
+    @ForAll @NonNegative BigDecimal shippingCost) {
+    
+    BigDecimal total = itemPrice.add(shippingCost);
+    BigDecimal commission = paymentService.calculateCommission(total);
+    BigDecimal sellerAmount = paymentService.calculateSellerAmount(total);
+    
+    // Property: commission is exactly 15%
+    assertThat(commission)
+        .isEqualByComparingTo(total.multiply(new BigDecimal("0.15")));
+    
+    // Property: total = commission + seller amount
+    assertThat(total)
+        .isEqualByComparingTo(commission.add(sellerAmount));
+    
+    // Property: seller gets exactly 85%
+    assertThat(sellerAmount)
+        .isEqualByComparingTo(total.multiply(new BigDecimal("0.85")));
+}
+```
+
+#### Example 2: DAC7 Threshold Detection (Property 5)
+```java
+@Property
+@Feature("eushop-enterprise-readiness")
+@Property("5")
+void dac7ThresholdDetection(
+    @ForAll List<@Size(min=1, max=50) Transaction> transactions,
+    @ForAll Year year) {
+    
+    List<Transaction> yearTransactions = transactions.stream()
+        .filter(t -> t.getYear() == year.getValue())
+        .collect(Collectors.toList());
+    
+    BigDecimal totalRevenue = yearTransactions.stream()
+        .map(Transaction::getAmount)
+        .reduce(BigDecimal.ZERO, BigDecimal::add);
+    
+    boolean exceedsRevenueThreshold = totalRevenue.compareTo(new BigDecimal("2000")) > 0;
+    boolean exceedsTransactionThreshold = yearTransactions.size() > 30;
+    boolean shouldReport = exceedsRevenueThreshold || exceedsTransactionThreshold;
+    
+    boolean systemDetects = complianceService.shouldIncludeInDac7Report(
+        yearTransactions, year.getValue());
+    
+    // Property: system detection matches manual calculation
+    assertThat(systemDetects).isEqualTo(shouldReport);
+}
+```
+
+#### Example 3: VAT Rate Determination (Property 9)
+```java
+@Property
+@Feature("eushop-enterprise-readiness")
+@Property("9")
+void vatRateDetermination(
     @ForAll("euCountryCodes") String countryCode,
-    @ForAll("foodCategories") String category) {
+    @ForAll("foodCategories") String category,
+    @ForAll boolean platformIsSupplier) {
     
-    BigDecimal rate = vatService.calculateRate(countryCode, category);
+    VatCalculationResult result = vatService.calculateVat(
+        countryCode, category, platformIsSupplier);
     
-    // Property: Rate must be between 0% and 27% (EU VAT range)
-    Assertions.assertThat(rate)
+    // Property: rate is within EU VAT range (0-27%)
+    assertThat(result.getRate())
         .isBetween(BigDecimal.ZERO, new BigDecimal("0.27"));
     
-    // Property: Standard rate for standard category in given country
-    if (category.equals("standard")) {
-        BigDecimal expected = getStandardRateForCountry(countryCode);
-        Assertions.assertThat(rate).isEqualTo(expected);
+    // Property: liability is correctly calculated when platform is supplier
+    if (platformIsSupplier) {
+        assertThat(result.getLiability()).isNotNull();
+        assertThat(result.getLiability())
+            .isEqualByComparingTo(result.getAmount().multiply(result.getRate()));
+    } else {
+        assertThat(result.getLiability()).isNull();
     }
 }
 
 @Provide
 Arbitrary<String> euCountryCodes() {
-    return Arbitraries.of("DE", "FR", "IT", "ES", "NL", "BE", "AT", "IE");
+    return Arbitraries.of("AT", "BE", "BG", "CY", "CZ", "DE", "DK", "EE", 
+                         "ES", "FI", "FR", "GR", "HR", "HU", "IE", "IT", 
+                         "LT", "LU", "LV", "MT", "NL", "PL", "PT", "RO", 
+                         "SE", "SI", "SK");
 }
 
 @Provide
 Arbitrary<String> foodCategories() {
-    return Arbitratures.of("standard", "reduced", "zero", "exempt");
+    return Arbitraries.of("standard", "reduced", "zero", "exempt", 
+                         "special_rate", "super_reduced");
 }
 ```
 
 ### Testing SLOs and Metrics
 
-1. **Test Execution Time**: <30 minutes for full test suite
-2. **Test Reliability**: <1% flaky test rate
-3. **Code Coverage**: >80% for critical services
-4. **Property Test Iterations**: 100+ per property
-5. **Integration Test Coverage**: All external service interactions
-6. **Security Scan Coverage**: 100% of dependencies
+1. **Test Execution Time**: <90 minutes for full test suite across all test types
+2. **Test Reliability**: <1% flaky test rate across property, unit, integration, and smoke tests
+3. **Code Coverage Targets**:
+   - Property-tested business logic: >95% line coverage
+   - Example-tested scenarios: >90% line coverage  
+   - Integration-tested services: >85% line coverage
+   - Overall critical path services: >80% line coverage
+4. **Property Test Configuration**: 100+ iterations per property with shrinking support
+5. **Integration Test Coverage**: All 8 external service interaction criteria mocked and tested
+6. **Security Scan Coverage**: 100% of dependencies, container images, and infrastructure code
+7. **Compliance Test Coverage**: All GDPR, DSA Article 30, DAC7, and food safety regulation requirements
 
 ### Compliance Testing
 
@@ -885,6 +1185,6 @@ This design provides a comprehensive roadmap for transforming EUshop from protot
 
 The design balances immediate business needs with long-term scalability, regulatory requirements with developer productivity, and technical excellence with cost consciousness. By following this phased implementation strategy, EUshop can achieve YC readiness within 6 months while building a foundation capable of scaling to 100M customers.
 
-Each phase delivers incremental value while maintaining backward compatibility, allowing the platform to continue serving existing customers throughout the transformation. The dual testing approach (property-based for core logic, integration for external services) ensures both correctness and reliability as the system evolves.
+Each phase delivers incremental value while maintaining backward compatibility, allowing the platform to continue serving existing customers throughout the transformation. The quadruple testing approach (property-based for 18 core business logic properties, example-based for 25 specific scenarios, integration for 8 external services, and smoke/configuration tests for 58 infrastructure criteria) ensures comprehensive correctness, reliability, and compliance as the system evolves.
 
 This design represents not just a technical transformation, but a strategic repositioning of EUshop as a compliant, scalable, and investment-ready platform ready to capture the European artisanal food market.
