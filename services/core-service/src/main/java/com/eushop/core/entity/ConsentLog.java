@@ -55,6 +55,27 @@ public class ConsentLog {
     @Column(name = "user_agent_hash", length = 64)
     private String userAgentHash;
 
+    @Size(max = 512, message = "User agent must not exceed 512 characters")
+    @Column(name = "user_agent", length = 512)
+    private String userAgent;
+
+    @Size(max = 45, message = "IP address must not exceed 45 characters")
+    @Pattern(regexp = "^([0-9a-fA-F.:]{1,45}|\\d{1,3}\\.\\d{1,3}\\.\\d{1,3}\\.\\d{1,3})$", 
+             message = "IP address must be a valid IPv4 or IPv6 address")
+    @Column(name = "ip_address", length = 45)
+    private String ipAddress;
+
+    @Size(max = 50, message = "Consent source must not exceed 50 characters")
+    @Column(name = "consent_source", length = 50)
+    private String consentSource; // e.g., "web_gdpr_page", "mobile_app", "api"
+
+    @Version
+    @Column(name = "version")
+    private Long version;
+
+    @Column(name = "audit_notes", length = 1000)
+    private String auditNotes;
+
     @Column(name = "created_at", nullable = false, updatable = false)
     private LocalDateTime createdAt;
 
