@@ -124,6 +124,8 @@ def _normalize_pool_keys(keys: list[dict]) -> list[dict]:
             "model": k.get("model", "gpt-3.5-turbo"),
             "group": k.get("group", k.get("source_repo", "Pool")),
             "status": "Active" if k.get("valid", True) else "Expired",
+            "valid": k.get("valid", True),
+            "rate_limited": k.get("rate_limited", False),
             "budget": k.get("budget", ""),
             "rate_limit": "",
             "expires": k.get("expires", ""),
@@ -338,11 +340,17 @@ def start_local_proxy_server(all_keys, default_model, port=48123):
             models_to_try = [target_model]
             
             MODEL_FALLBACKS = {
-                "deepseek-chat": ["gemini-2.5-flash", "kimi-k2.5", "gpt-4o"],
-                "claude-3-5-sonnet": ["gemini-2.5-flash", "gpt-4o", "kimi-k2.5"],
-                "claude-3-5-haiku": ["gemini-2.5-flash", "gpt-4o", "kimi-k2.5"],
-                "gpt-4o": ["gemini-2.5-flash", "kimi-k2.5", "deepseek-chat"],
-                "gemini-2.5-flash": ["gpt-4o", "kimi-k2.5", "deepseek-chat"],
+                "deepseek-chat": ["gemini-2.5-flash", "kimi-k2.5", "gpt-4o", "claude-3-5-haiku"],
+                "claude-3-5-sonnet": ["claude-3-5-haiku", "gpt-4o", "gemini-2.5-flash", "deepseek-chat", "kimi-k2.5"],
+                "claude-3-5-haiku": ["claude-3-5-sonnet", "gemini-2.5-flash", "gpt-4o", "deepseek-chat", "kimi-k2.5"],
+                "gpt-4o": ["gemini-2.5-flash", "claude-3-5-haiku", "deepseek-chat", "kimi-k2.5"],
+                "gemini-2.5-flash": ["gpt-4o", "claude-3-5-haiku", "deepseek-chat", "kimi-k2.5"],
+                "o1-mini": ["deepseek-r1", "gpt-4o", "claude-3-5-sonnet", "gemini-2.5-flash"],
+                "deepseek-r1": ["o1-mini", "claude-3-5-sonnet", "gpt-4o", "gemini-2.5-flash"],
+                "cohere/north-mini-code:free": ["poolside/laguna-m.1:free", "poolside/laguna-xs.2:free", "gemini-2.5-flash", "deepseek-chat"],
+                "poolside/laguna-m.1:free": ["poolside/laguna-xs.2:free", "cohere/north-mini-code:free", "gemini-2.5-flash", "deepseek-chat"],
+                "poolside/laguna-xs.2:free": ["poolside/laguna-m.1:free", "cohere/north-mini-code:free", "gemini-2.5-flash", "deepseek-chat"],
+                "nvidia/nemotron-3-nano": ["gemini-2.5-flash", "deepseek-chat"]
             }
             
             normalized_target = target_model.lower()
@@ -381,13 +389,23 @@ def start_local_proxy_server(all_keys, default_model, port=48123):
                     ]
                     model_keys.extend(proxy_keys)
 
-                # Deduplicate keys for this attempt
+                # Prioritize: clean (non-rate-limited) keys first
+                model_keys = sorted(
+                    model_keys,
+                    key=lambda k: (k.get("rate_limited", False), k.get("failed_at", ""))
+                )
+
+                # Deduplicate keys for this attempt, limiting to at most 4 keys to fail fast
                 seen_keys = set()
+                count = 0
                 for mk in model_keys:
                     k_val = mk["key"]
                     if k_val not in seen_keys:
                         seen_keys.add(k_val)
                         candidates.append((mk, model_attempt))
+                        count += 1
+                        if count >= 4:
+                            break
 
             # Deduplicate candidates across all attempts while preserving order
             final_candidates = []
@@ -429,7 +447,7 @@ def start_local_proxy_server(all_keys, default_model, port=48123):
 
                 try:
                     console.print(f"[yellow]Proxy: Forwarding to {base_url} (model: {model_name})...[/yellow]")
-                    resp = requests.post(url, json=payload, headers=headers, stream=is_stream, timeout=40)
+                    resp = requests.post(url, json=payload, headers=headers, stream=is_stream, timeout=15)
 
                     if resp.status_code == 200:
                         self.send_response(200)
@@ -725,7 +743,7 @@ def run_chat_session(proxy_port: int, model: str, initial_file: str = None):
                     f"http://127.0.0.1:{proxy_port}/v1/chat/completions",
                     json=payload,
                     headers=headers,
-                    timeout=50
+                    timeout=120
                 )
             except Exception as e:
                 console.print(f"[red][ERROR] Proxy communication failed: {e}[/red]")
