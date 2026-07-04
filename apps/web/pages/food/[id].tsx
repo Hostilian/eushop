@@ -50,7 +50,8 @@ export default function FoodDetailPage() {
     if (!id) return;
 
     const idStr = id as string;
-    if (!/^[a-zA-Z0-9-]+$/.test(idStr)) {
+    // Security: Enhanced ID validation to prevent injection attacks
+    if (!/^[a-fA-F0-9-]{1,36}$/.test(idStr)) {
       setError('Invalid food ID format');
       setLoading(false);
       return;

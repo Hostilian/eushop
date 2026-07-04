@@ -32,10 +32,12 @@ public class ConsentLog {
     private User user;
 
     @NotBlank(message = "Consent type is required")
+    @Size(max = 60, message = "Consent type must not exceed 60 characters")
     @Column(name = "consent_type", nullable = false, length = 60)
     private String consentType;
 
     @NotBlank(message = "Consent version is required")
+    @Size(max = 20, message = "Consent version must not exceed 20 characters")
     @Column(name = "consent_version", nullable = false, length = 20)
     private String consentVersion;
 
@@ -43,9 +45,13 @@ public class ConsentLog {
     @Column(nullable = false)
     private Boolean granted;
 
+    @Size(max = 64, message = "IP hash must not exceed 64 characters")
+    @Pattern(regexp = "^[a-fA-F0-9]{0,64}$", message = "IP hash must be a valid hexadecimal string")
     @Column(name = "ip_hash", length = 64)
     private String ipHash;
 
+    @Size(max = 64, message = "User agent hash must not exceed 64 characters")
+    @Pattern(regexp = "^[a-fA-F0-9]{0,64}$", message = "User agent hash must be a valid hexadecimal string")
     @Column(name = "user_agent_hash", length = 64)
     private String userAgentHash;
 

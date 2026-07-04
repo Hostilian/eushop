@@ -38,6 +38,10 @@ export async function authMiddleware(
   res: Response,
   next: NextFunction
 ) {
+  // Security: Set security headers for authentication endpoints
+  res.setHeader('X-Content-Type-Options', 'nosniff');
+  res.setHeader('X-Frame-Options', 'DENY');
+
   let token = '';
   const authHeader = req.headers.authorization;
   if (authHeader) {
@@ -48,6 +52,11 @@ export async function authMiddleware(
   } else {
     const cookies = parseCookies(req.headers.cookie);
     token = cookies['token'] || '';
+  }
+
+  // Security: Validate token length to prevent DoS with very long tokens
+  if (token.length > 8192) {
+    return res.status(401).json({ error: 'Unauthorized', message: 'Token too long' });
   }
 
   if (!token) {
@@ -62,15 +71,20 @@ export async function authMiddleware(
     }
 
     try {
-      // Decode mock base64 token
+      // Security: Validate base64 encoding before parsing
+      if (!/^[A-Za-z0-9+/=]+$/.test(token)) {
+        return res.status(401).json({ error: 'Unauthorized', message: 'Invalid token encoding' });
+      }
+      
       const decoded = JSON.parse(Buffer.from(token, 'base64').toString());
       if (!decoded || typeof decoded !== 'object') {
         return res.status(401).json({ error: 'Unauthorized', message: 'Invalid token structure' });
       }
 
-      req.userId = decoded.sub || decoded.userId || 'mock-user-id';
-      req.userEmail = decoded.email || 'mock-user@eushop.eu';
-      req.userRole = decoded.role || 'buyer';
+      // Security: Validate and sanitize user inputs
+      req.userId = String(decoded.sub || decoded.userId || 'mock-user-id').substring(0, 128);
+      req.userEmail = String(decoded.email || 'mock-user@eushop.eu').substring(0, 255);
+      req.userRole = String(decoded.role || 'buyer').substring(0, 20);
       req.authMethod = 'mock';
 
       // Security: Validate role is one of the expected application roles
@@ -96,20 +110,26 @@ export async function authMiddleware(
       ? process.env.AUTH0_DOMAIN
       : `https://${process.env.AUTH0_DOMAIN}`;
 
-    // Security: Enforce RS256 algorithm and validate domain and audience
+    // Security: Enforce RS256 algorithm and validate domain and audience with strict validation
     const { payload } = await jwtVerify(token, JWKS, {
       audience: process.env.AUTH0_AUDIENCE,
       issuer: `${domain}/`,
       algorithms: ['RS256'],
+      clockTolerance: 30, // Allow 30 seconds clock skew
     });
 
     if (!payload.sub) {
       return res.status(401).json({ error: 'Unauthorized', message: 'Token missing subject claim' });
     }
 
-    req.userId = payload.sub;
-    req.userEmail = (payload.email as string) || '';
-    req.userRole = (payload['https://eushop.eu/role'] as string) || 'buyer';
+    // Security: Validate token expiration
+    if (payload.exp && Date.now() >= payload.exp * 1000) {
+      return res.status(401).json({ error: 'Unauthorized', message: 'Token has expired' });
+    }
+
+    req.userId = String(payload.sub).substring(0, 128);
+    req.userEmail = (payload.email ? String(payload.email).substring(0, 255) : '');
+    req.userRole = (payload['https://eushop.eu/role'] ? String(payload['https://eushop.eu/role']).substring(0, 20) : 'buyer');
     req.authMethod = 'jwt';
 
     // Security: Validate role is one of the expected application roles
