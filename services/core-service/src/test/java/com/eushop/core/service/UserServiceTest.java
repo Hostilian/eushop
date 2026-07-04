@@ -13,13 +13,18 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import com.eushop.core.entity.User;
+import com.eushop.core.entity.ConsentLog;
 import com.eushop.core.repository.UserRepository;
+import com.eushop.core.repository.ConsentLogRepository;
 
 @ExtendWith(MockitoExtension.class)
 public class UserServiceTest {
 
     @Mock
     private UserRepository userRepository;
+
+    @Mock
+    private ConsentLogRepository consentLogRepository;
 
     @InjectMocks
     private UserService userService;
@@ -118,5 +123,55 @@ public class UserServiceTest {
         assertTrue(updatedUser.getKycVerified());
         verify(userRepository, times(1)).findById("test-uuid");
         verify(userRepository, times(1)).save(any(User.class));
+    }
+
+    @Test
+    void testAnonymiseUser_Success() {
+        when(userRepository.findById("test-uuid")).thenReturn(Optional.of(mockUser));
+        when(userRepository.save(any(User.class))).thenAnswer(invocation -> invocation.getArgument(0));
+
+        userService.anonymiseUser("test-uuid");
+
+        assertTrue(mockUser.getEmail().startsWith("deleted_"));
+        assertEquals("[Deleted User]", mockUser.getName());
+        assertNull(mockUser.getAuth0Sub());
+        assertNull(mockUser.getTaxId());
+        
+        verify(userRepository, times(1)).findById("test-uuid");
+        verify(userRepository, times(1)).save(mockUser);
+    }
+
+    @Test
+    void testExportUserData_Success() {
+        when(userRepository.findById("test-uuid")).thenReturn(Optional.of(mockUser));
+
+        java.util.Map<String, Object> data = userService.exportUserData("test-uuid");
+
+        assertNotNull(data);
+        assertEquals("test-uuid", data.get("id"));
+        assertEquals("buyer@eushop.eu", data.get("email"));
+        assertEquals("Jean Dupont", data.get("name"));
+        assertEquals("BUYER", data.get("role"));
+        
+        verify(userRepository, times(1)).findById("test-uuid");
+    }
+
+    @Test
+    void testRecordConsent_Success() {
+        when(consentLogRepository.save(any(ConsentLog.class))).thenAnswer(invocation -> invocation.getArgument(0));
+
+        ConsentLog logged = userService.recordConsent("test-uuid", "cookie_analytics", "2026-07-04", true, "192.168.1.1", "Mozilla/5.0");
+
+        assertNotNull(logged);
+        assertEquals("test-uuid", logged.getUserId());
+        assertEquals("cookie_analytics", logged.getConsentType());
+        assertEquals("2026-07-04", logged.getConsentVersion());
+        assertTrue(logged.getGranted());
+        assertNotNull(logged.getIpHash());
+        assertEquals(64, logged.getIpHash().length());
+        assertNotNull(logged.getUserAgentHash());
+        assertEquals(64, logged.getUserAgentHash().length());
+
+        verify(consentLogRepository, times(1)).save(any(ConsentLog.class));
     }
 }

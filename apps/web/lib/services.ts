@@ -60,10 +60,12 @@ export interface CreateOrderRequest {
   finderFee: number;
   shippingAddress: string;
   message: string;
+  stripePaymentIntentId?: string;
 }
 
 export interface PaymentIntentResponse {
   clientSecret: string;
+  id: string;
 }
 
 export const foodAPI = {
@@ -92,45 +94,90 @@ export const foodAPI = {
 export const authAPI = {
   login: async (email: string, password: string): Promise<LoginResponse> => {
     const response = await apiClient.post('/auth/login', { email, password });
-    // On successful login, the server sets an httpOnly cookie.
-    // The response body contains user details, but no token.
-    localStorage.setItem('user', JSON.stringify(response.data.user)); // Store user details (non-sensitive)
+    // The server sets an httpOnly; Secure; SameSite=Strict cookie — no token stored here.
+    // We cache only non-sensitive display info (name, email, role) for UI purposes.
+    if (response.data.user) {
+      sessionStorage.setItem('userProfile', JSON.stringify(response.data.user));
+    }
     return response.data;
   },
 
   signup: async (email: string, password: string, name: string, country: string): Promise<SignupResponse> => {
     const response = await apiClient.post('/auth/signup', { email, password, name, country });
-    // On successful signup (and auto-login), the server sets an httpOnly cookie.
-    // The response body contains user details, but no token.
-    localStorage.setItem('user', JSON.stringify(response.data.user)); // Store user details (non-sensitive)
+    // Server sets httpOnly cookie. Cache display-only profile.
+    if (response.data.user) {
+      sessionStorage.setItem('userProfile', JSON.stringify(response.data.user));
+    }
     return response.data;
   },
 
   logout: async (): Promise<void> => {
     await apiClient.post('/auth/logout');
-    localStorage.removeItem('user'); // Clear local user details
-    // The server will clear the httpOnly cookie
+    // Clear cached display profile. The server clears the httpOnly session cookie.
+    sessionStorage.removeItem('userProfile');
+    localStorage.removeItem('cart');
   },
 
   getCurrentUser: async (): Promise<User | null> => {
     try {
+      // Always validate via the server — the cookie is the source of truth.
       const response = await apiClient.get('/auth/me');
-      localStorage.setItem('user', JSON.stringify(response.data.data)); // Update local user details
-      return response.data.data; // Spring ApiResponse wraps the user object
-    } catch (error) {
-      localStorage.removeItem('user'); // Clear local user details if session is invalid
+      const user = response.data.data; // Spring ApiResponse<UserDTO> wrapper
+      if (user) {
+        sessionStorage.setItem('userProfile', JSON.stringify(user));
+      }
+      return user ?? null;
+    } catch {
+      sessionStorage.removeItem('userProfile');
+      return null;
+    }
+  },
+
+  /**
+   * Returns the cached display profile from sessionStorage without a network call.
+   * Use only for non-auth UI decisions (e.g. showing the user's name in the navbar).
+   * Never use this for authorization checks — always rely on server-side cookie auth.
+   */
+  getCachedProfile: (): User | null => {
+    if (typeof window === 'undefined') return null;
+    try {
+      const raw = sessionStorage.getItem('userProfile');
+      return raw ? (JSON.parse(raw) as User) : null;
+    } catch {
       return null;
     }
   },
 
   becomeSeller: async (userId: string, data: BecomeSellerRequest): Promise<any> => {
     const response = await apiClient.put(`/users/${userId}/become-seller`, data);
-    // After becoming a seller, update local user role
-    const userStr = localStorage.getItem('user');
-    if (userStr) {
-      const user = JSON.parse(userStr);
-      localStorage.setItem('user', JSON.stringify({ ...user, role: 'SELLER' }));
-    }
+    // Invalidate cached profile so next call refreshes from server.
+    sessionStorage.removeItem('userProfile');
+    return response.data;
+  },
+
+  exportUserData: async (userId: string): Promise<any> => {
+    const response = await apiClient.get(`/users/${userId}/export`, {
+      headers: { 'X-User-Id': userId }
+    });
+    return response.data.data;
+  },
+
+  deleteAccount: async (userId: string): Promise<any> => {
+    const response = await apiClient.delete(`/users/${userId}/account`, {
+      headers: { 'X-User-Id': userId }
+    });
+    sessionStorage.removeItem('userProfile');
+    return response.data;
+  },
+
+  recordConsent: async (userId: string, consentType: string, consentVersion: string, granted: boolean): Promise<any> => {
+    const response = await apiClient.post(`/users/${userId}/consent`, {
+      consentType,
+      consentVersion,
+      granted
+    }, {
+      headers: { 'X-User-Id': userId }
+    });
     return response.data;
   },
 };
@@ -144,14 +191,10 @@ export const paymentAPI = {
 
 export const orderAPI = {
   create: async (order: CreateOrderRequest): Promise<any> => {
-    const userStr = localStorage.getItem('user');
-    if (!userStr) throw new Error('User not logged in');
-    const user = JSON.parse(userStr);
-
+    const profile = authAPI.getCachedProfile();
+    if (!profile) throw new Error('Not authenticated');
     const response = await apiClient.post('/orders', order, {
-      headers: {
-        'X-User-Id': user.id, // Spring Boot controller expects X-User-Id header
-      },
+      headers: { 'X-User-Id': profile.id },
     });
     return response.data;
   },
@@ -162,39 +205,31 @@ export const orderAPI = {
   },
 
   getBuyerOrders: async (): Promise<any[]> => {
-    const userStr = localStorage.getItem('user');
-    if (!userStr) throw new Error('User not logged in');
-    const user = JSON.parse(userStr);
+    const profile = authAPI.getCachedProfile();
+    if (!profile) throw new Error('Not authenticated');
     const response = await apiClient.get('/orders', {
-      headers: {
-        'X-User-Id': user.id,
-      },
+      headers: { 'X-User-Id': profile.id },
     });
     return response.data.content || response.data;
   },
 
   getSellerOrders: async (): Promise<any[]> => {
-    const userStr = localStorage.getItem('user');
-    if (!userStr) throw new Error('User not logged in');
-    const user = JSON.parse(userStr);
+    const profile = authAPI.getCachedProfile();
+    if (!profile) throw new Error('Not authenticated');
     const response = await apiClient.get('/orders/seller', {
-      headers: {
-        'X-User-Id': user.id,
-      },
+      headers: { 'X-User-Id': profile.id },
     });
     return response.data.content || response.data;
   },
 
   updateStatus: async (orderId: string, status: string): Promise<any> => {
-    const userStr = localStorage.getItem('user');
-    if (!userStr) throw new Error('User not logged in');
-    const user = JSON.parse(userStr);
+    const profile = authAPI.getCachedProfile();
+    if (!profile) throw new Error('Not authenticated');
     const response = await apiClient.put(`/orders/${orderId}/status`, null, {
       params: { status },
-      headers: {
-        'X-User-Id': user.id,
-      },
+      headers: { 'X-User-Id': profile.id },
     });
     return response.data;
-  }
+  },
 };
+

@@ -79,4 +79,12 @@ public class OrderService {
         Double revenue = orderRepository.calculateSellerRevenue(sellerId);
         return revenue != null ? revenue : 0.0;
     }
+
+    /**
+     * Looks up an order by its Stripe PaymentIntent ID.
+     * Used by the webhook handler to confirm/cancel payment asynchronously.
+     */
+    public Optional<Order> getOrderByPaymentIntentId(String stripePaymentIntentId) {
+        return orderRepository.findByStripePaymentIntentId(stripePaymentIntentId);
+    }
 }

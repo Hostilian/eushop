@@ -77,7 +77,23 @@ public class FoodController {
     public ResponseEntity<ApiResponse<FoodDTO>> createFood(
             @RequestBody CreateFoodRequest request,
             @RequestHeader("X-User-Id") String userId) {
-        
+
+        // DSA Article 31 — "trader" verification gate.
+        // Only KYC-verified sellers may publish listings on the platform.
+        var seller = userService.getUserById(userId).orElse(null);
+        if (seller == null) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+                    .body(ApiResponse.error("User not found"));
+        }
+        if (seller.getRole() != com.eushop.core.entity.User.UserRole.SELLER) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN)
+                    .body(ApiResponse.error("Only sellers may create listings. Please complete seller registration."));
+        }
+        if (!Boolean.TRUE.equals(seller.getKycVerified())) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN)
+                    .body(ApiResponse.error("DSA_VERIFICATION_REQUIRED: Your seller account is pending admin verification. You will be notified when your KYC check is complete."));
+        }
+
         Food food = new Food();
         food.setName(request.getName());
         food.setDescription(request.getDescription());
@@ -91,7 +107,7 @@ public class FoodController {
         food.setImages(request.getImages());
 
         Food created = foodService.createFood(food, userId);
-        
+
         return ResponseEntity.status(HttpStatus.CREATED)
                 .body(ApiResponse.success(toDTO(created), "Food created successfully"));
     }

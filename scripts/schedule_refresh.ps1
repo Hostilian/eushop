@@ -15,21 +15,19 @@ if (-not (Test-Path $pythonPath)) {
 # Define the action
 $action = New-ScheduledTaskAction -Execute $pythonPath -Argument $scriptPath -WorkingDirectory $projectRoot
 
-# Define the trigger (runs daily, repeat every 8 hours indefinitely)
-$trigger = New-ScheduledTaskTrigger -Daily -At "12:00 AM"
-$trigger.RepetitionInterval = (New-TimeSpan -Hours 8)
-$trigger.RepetitionDuration = (New-TimeSpan -Days 1)
+# Define the trigger (runs repeat every 3 hours indefinitely)
+$trigger = New-ScheduledTaskTrigger -Once -At (Get-Date) -RepetitionInterval (New-TimeSpan -Hours 3) -RepetitionDuration ([TimeSpan]::MaxValue)
 
 # Define settings
 $settings = New-ScheduledTaskSettingsSet -AllowStartIfOnBatteries -DontStopIfGoingOnBatteries -StartWhenAvailable
 
 # Register the task
 $taskName = "EUshopKeysRefresher"
-Write-Host "Registering Windows Scheduled Task '$taskName' to run every 8 hours..."
+Write-Host "Registering Windows Scheduled Task '$taskName' to run every 3 hours..."
 
 try {
     Register-ScheduledTask -TaskName $taskName -Action $action -Trigger $trigger -Settings $settings -Force -ErrorAction Stop
-    Write-Host "[OK] Successfully registered scheduled task. Cache will update 3 times a day in the background."
+    Write-Host "[OK] Successfully registered scheduled task. Cache and proxy code will update 8 times a day in the background."
 } catch {
     Write-Warning "Failed to register scheduled task. This usually requires Administrator privileges."
     Write-Warning "To run it, open PowerShell as Administrator and run: .\scripts\schedule_refresh.ps1"
