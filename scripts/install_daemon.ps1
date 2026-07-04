@@ -138,7 +138,7 @@ $TriggerBoot = New-ScheduledTaskTrigger -AtStartup
 $startTime = (Get-Date).AddMinutes(2)
 $TriggerRepeat = New-ScheduledTaskTrigger -Once -At $startTime `
     -RepetitionInterval (New-TimeSpan -Hours 1) `
-    -RepetitionDuration ([TimeSpan]::MaxValue)
+    -RepetitionDuration (New-TimeSpan -Days 3650)
 
 $Settings = New-ScheduledTaskSettingsSet `
     -ExecutionTimeLimit (New-TimeSpan -Minutes 50) `
@@ -209,7 +209,7 @@ $WatchdogAction = New-ScheduledTaskAction `
 $WatchdogStart = (Get-Date).AddMinutes(15)
 $TriggerWatchdog = New-ScheduledTaskTrigger -Once -At $WatchdogStart `
     -RepetitionInterval (New-TimeSpan -Minutes 15) `
-    -RepetitionDuration ([TimeSpan]::MaxValue)
+    -RepetitionDuration (New-TimeSpan -Days 3650)
 
 $WatchdogSettings = New-ScheduledTaskSettingsSet `
     -ExecutionTimeLimit (New-TimeSpan -Minutes 10) `
