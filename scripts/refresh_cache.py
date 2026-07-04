@@ -35,6 +35,16 @@ def main():
             f.write(content)
             
         print(f"Successfully refreshed local keys cache at: {LOCAL_README_PATH}")
+        
+        # Trigger FCC keys synchronization
+        try:
+            print("Triggering Free Claude Code keys synchronization...")
+            sys.path.append(os.path.dirname(os.path.abspath(__file__)))
+            import sync_fcc
+            sync_fcc.main()
+        except Exception as se:
+            print(f"Warning: Failed to sync Free Claude Code keys: {se}")
+            
         sys.exit(0)
     except Exception as e:
         print(f"Error refreshing keys: {e}")
