@@ -25,9 +25,126 @@ from rich.prompt import Prompt, Confirm
 
 console = Console()
 
-DEFAULT_API_BASE = "https://aiapiv2.pekpik.com/v1"
+# ─────────────────────────────────────────────
+# Config
+# ─────────────────────────────────────────────
+PROJECT_ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+
+# Primary default (first in waterfall)
+DEFAULT_API_BASE = os.environ.get("ACTIVE_API_BASE_URL", "https://aiapiv2.pekpik.com/v1")
+
+# Multi-base-URL waterfall — tried in order on failure
+PROXY_BASE_URLS = [
+    "https://aiapiv2.pekpik.com/v1",
+    "https://api.pawan.krd/v1",
+    "https://aurora.chatie.io/api/v1",
+    "https://chatgpt-api.shn.hk/v1",
+    "https://api.freegpt35.eu.org/v1",
+    "https://openai.api2d.net/v1",
+]
+
 GITHUB_README_URL = "https://raw.githubusercontent.com/alistaitsacle/free-llm-api-keys/main/README.md"
-HISTORY_FILE = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), ".chat_agent_history")
+REMOTE_VALIDATED_KEYS_URL = "https://raw.githubusercontent.com/Hostilian/eushop/main/data/validated_keys.json"
+
+HOT_CACHE_PATH = os.path.join(PROJECT_ROOT, ".api_keys_pool.json")
+VALIDATED_KEYS_PATH = os.path.join(PROJECT_ROOT, "data", "validated_keys.json")
+HISTORY_FILE = os.path.join(PROJECT_ROOT, ".chat_agent_history")
+
+# ─────────────────────────────────────────────
+# Key Pool Loader — NEW multi-source cascade
+# ─────────────────────────────────────────────
+
+def load_key_pool() -> list[dict]:
+    """
+    Load validated keys from sources in priority order:
+    1. .api_keys_pool.json (local hot cache, freshest)
+    2. data/validated_keys.json (committed, refreshed by GitHub Actions)
+    3. Remote validated_keys.json from Hostilian/eushop repo
+    4. Existing README scrape (original fallback)
+    Returns list of key dicts compatible with the original format.
+    """
+    # Source 1: hot cache
+    if os.path.exists(HOT_CACHE_PATH):
+        try:
+            with open(HOT_CACHE_PATH, "r", encoding="utf-8") as f:
+                data = json.load(f)
+            keys = data.get("keys", [])
+            if keys:
+                updated = data.get("updated_at", "?")
+                console.print(f"[green][OK] Loaded {len(keys)} keys from hot cache (updated {updated})[/green]")
+                return _normalize_pool_keys(keys)
+        except Exception as e:
+            console.print(f"[yellow][WARN] Hot cache read failed: {e}[/yellow]")
+
+    # Source 2: committed validated_keys.json
+    if os.path.exists(VALIDATED_KEYS_PATH):
+        try:
+            with open(VALIDATED_KEYS_PATH, "r", encoding="utf-8") as f:
+                data = json.load(f)
+            keys = data.get("keys", [])
+            if keys:
+                console.print(f"[green][OK] Loaded {len(keys)} keys from data/validated_keys.json[/green]")
+                return _normalize_pool_keys(keys)
+        except Exception as e:
+            console.print(f"[yellow][WARN] validated_keys.json read failed: {e}[/yellow]")
+
+    # Source 3: remote validated_keys.json
+    console.print("[yellow]Fetching validated keys from remote repo...[/yellow]")
+    try:
+        req = urllib.request.Request(
+            REMOTE_VALIDATED_KEYS_URL,
+            headers={"User-Agent": "EushopAgent/2.0"}
+        )
+        with urllib.request.urlopen(req, timeout=6) as resp:
+            data = json.loads(resp.read().decode("utf-8"))
+        keys = data.get("keys", [])
+        if keys:
+            console.print(f"[green][OK] Loaded {len(keys)} keys from remote repo[/green]")
+            return _normalize_pool_keys(keys)
+    except Exception as e:
+        console.print(f"[yellow][WARN] Remote pool fetch failed: {e}[/yellow]")
+
+    # Source 4: original README scrape fallback
+    console.print("[yellow]Falling back to README scrape...[/yellow]")
+    return []  # Caller will handle README path
+
+
+def _normalize_pool_keys(keys: list[dict]) -> list[dict]:
+    """
+    Normalise pool keys to the format expected by parse_keys_from_readme(),
+    adding required fields if missing.
+    """
+    normalized = []
+    for k in keys:
+        normalized.append({
+            "key": k.get("key", ""),
+            "model": k.get("model", "gpt-3.5-turbo"),
+            "group": k.get("group", k.get("source_repo", "Pool")),
+            "status": "Active" if k.get("valid", True) else "Expired",
+            "budget": k.get("budget", ""),
+            "rate_limit": "",
+            "expires": k.get("expires", ""),
+            "desc": k.get("desc", ""),
+            "base_url": k.get("working_base_url", k.get("base_url", DEFAULT_API_BASE)),
+        })
+    return [n for n in normalized if n["key"]]
+
+
+def report_key_failure(key: str):
+    """Mark a key as invalid in the hot cache for daemon feedback loop."""
+    if not os.path.exists(HOT_CACHE_PATH):
+        return
+    try:
+        with open(HOT_CACHE_PATH, "r", encoding="utf-8") as f:
+            data = json.load(f)
+        for k in data.get("keys", []):
+            if k.get("key") == key:
+                k["valid"] = False
+                k["failed_at"] = __import__("datetime").datetime.utcnow().isoformat() + "Z"
+        with open(HOT_CACHE_PATH, "w", encoding="utf-8") as f:
+            json.dump(data, f, indent=2)
+    except Exception:
+        pass  # Best-effort, don't crash agent
 
 SYSTEM_PROMPT = """You are a helpful AI coding assistant integrated into the terminal for the EUshop project.
 EUshop is an EU Specialty Food Marketplace Platform.
@@ -143,9 +260,16 @@ def parse_keys_from_readme(readme_content: str) -> list[dict]:
                 })
     return keys
 
-def verify_key(key: str, model: str) -> bool:
-    """Perform a lightweight chat completion call to verify key validity with 3s timeout."""
-    url = f"{DEFAULT_API_BASE}/chat/completions"
+def verify_key(key: str, model: str, base_url: str = None) -> bool:
+    """
+    Lightweight key validation with multi-URL waterfall.
+    Tries base_url first, then each PROXY_BASE_URLS entry.
+    """
+    urls_to_try = []
+    if base_url and base_url not in PROXY_BASE_URLS:
+        urls_to_try.append(base_url)
+    urls_to_try.extend(PROXY_BASE_URLS)
+
     headers = {
         "Authorization": f"Bearer {key}",
         "Content-Type": "application/json"
@@ -155,11 +279,18 @@ def verify_key(key: str, model: str) -> bool:
         "messages": [{"role": "user", "content": "Ping"}],
         "max_tokens": 1
     }
-    try:
-        response = requests.post(url, json=payload, headers=headers, timeout=3)
-        return response.status_code == 200
-    except Exception:
-        return False
+    for url_base in urls_to_try[:3]:  # Max 3 attempts
+        try:
+            response = requests.post(f"{url_base}/chat/completions", json=payload, headers=headers, timeout=4)
+            if response.status_code == 200:
+                return True
+            elif response.status_code in (401, 403):
+                return False  # Definitively bad key
+            elif response.status_code == 429:
+                return True   # Rate-limited but key is real
+        except Exception:
+            continue
+    return False
 
 def get_any_working_key(exclude_model: str, sorted_models: list) -> dict:
     """Scan other models in parallel for any working key."""
@@ -347,15 +478,29 @@ def run_chat_session(key: str, model: str, initial_file: str = None, sorted_mode
                 }
                 
                 console.print(f"[bold yellow]Thinking ({model})...[/bold yellow]")
-                try:
-                    # Request timeout reduced to 25s for faster rotation
-                    response = requests.post(f"{DEFAULT_API_BASE}/chat/completions", json=payload, headers=headers, timeout=25)
-                    if response.status_code == 200:
-                        break
-                    else:
-                        console.print(f"[yellow][WARN] Key failed with status {response.status_code}. Rotating...[/yellow]")
-                except Exception as e:
-                    console.print(f"[yellow][WARN] Connection/Timeout error: {e}. Rotating...[/yellow]")
+                # Determine base URL for this key (use per-key base_url if available)
+                current_key_info = next((k for k in (all_keys or []) if k.get("key") == key), {})
+                key_base_url = current_key_info.get("base_url", DEFAULT_API_BASE)
+                api_urls_to_try = [key_base_url] + [u for u in PROXY_BASE_URLS if u != key_base_url]
+
+                response = None
+                for api_base in api_urls_to_try[:3]:
+                    try:
+                        response = requests.post(f"{api_base}/chat/completions", json=payload, headers=headers, timeout=25)
+                        if response.status_code == 200:
+                            break
+                        elif response.status_code in (401, 403):
+                            report_key_failure(key)
+                            console.print(f"[yellow][WARN] Key rejected ({response.status_code}). Rotating...[/yellow]")
+                            break  # No point trying other base URLs with a bad key
+                        else:
+                            console.print(f"[yellow][WARN] Status {response.status_code} on {api_base}. Trying next URL...[/yellow]")
+                    except Exception as e:
+                        console.print(f"[yellow][WARN] Timeout/error on {api_base}: {e}[/yellow]")
+                        continue
+
+                if response and response.status_code == 200:
+                    break
                 
                 # Select next key for the same model
                 next_keys = [k for k in same_model_keys if k != key]
@@ -448,26 +593,52 @@ def main():
     console.print("[bold cyan]       EUshop Terminal AI Chat Agent        [/bold cyan]")
     console.print("[bold cyan]==============================================[/bold cyan]")
 
-    # 1. Fetch README
-    console.print("[yellow]Fetching fresh API keys...[/yellow]")
-    readme = fetch_readme_remote()
-    if readme:
-        refresh_local_readme(readme)
+    # 1. Try key pool first (hot cache → validated_keys.json → remote repo)
+    # Then fall back to original README scrape if pool is empty
+    console.print("[yellow]Loading API key pool...[/yellow]")
+
+    # Check for ACTIVE_API_KEY env var (set by key_daemon.py)
+    env_key = os.environ.get("ACTIVE_API_KEY", "")
+    env_model = os.environ.get("ACTIVE_API_MODEL", "")
+    env_base = os.environ.get("ACTIVE_API_BASE_URL", DEFAULT_API_BASE)
+
+    pool_keys = load_key_pool()
+
+    if not pool_keys:
+        # Fallback: README scrape (original path)
+        console.print("[yellow]Key pool empty — falling back to README scrape...[/yellow]")
+        readme = fetch_readme_remote()
+        if readme:
+            refresh_local_readme(readme)
+        else:
+            console.print("[yellow]Using local README cache...[/yellow]")
+            readme = fetch_readme_local()
+
+        if not readme:
+            console.print("[red][ERROR] Critical error: Could not load any key source.[/red]")
+            sys.exit(1)
+
+        keys = parse_keys_from_readme(readme)
+        if not keys:
+            console.print("[red][ERROR] Critical error: No keys parsed from README.md.[/red]")
+            sys.exit(1)
+        console.print(f"[green][OK] Parsed {len(keys)} keys from README fallback.[/green]\n")
     else:
-        console.print("[yellow]Using local README cache...[/yellow]")
-        readme = fetch_readme_local()
-
-    if not readme:
-        console.print("[red][ERROR] Critical error: Could not load README.md containing keys.[/red]")
-        sys.exit(1)
-
-    # 2. Parse Keys
-    keys = parse_keys_from_readme(readme)
-    if not keys:
-        console.print("[red][ERROR] Critical error: No keys parsed from README.md.[/red]")
-        sys.exit(1)
-
-    console.print(f"[green][OK] Successfully parsed {len(keys)} active keys from repository.[/green]\n")
+        keys = pool_keys
+        # Prepend the env-var key if set and not already in pool
+        if env_key and not any(k["key"] == env_key for k in keys):
+            keys.insert(0, {
+                "key": env_key,
+                "model": env_model or "gpt-4o",
+                "group": "env:ACTIVE_API_KEY",
+                "status": "Active",
+                "budget": "",
+                "rate_limit": "",
+                "expires": "",
+                "desc": "From .env.local (daemon-managed)",
+                "base_url": env_base,
+            })
+        console.print(f"[green][OK] Pool loaded: {len(keys)} keys available.[/green]\n")
 
     if args.test_scrape:
         console.print(f"[green]Scrape test passed. Found groups:[/green]")
