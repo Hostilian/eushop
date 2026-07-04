@@ -54,14 +54,20 @@ export default function BecomeSeller() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setSubmitting(true);
     setError('');
 
     if (!user) {
       setError('User not authenticated.');
-      setSubmitting(false);
       return;
     }
+
+    // Manual validation for the two mandatory checkboxes
+    if (!formData.selfCertification || !formData.acceptTerms) {
+      setError('You must self-certify your compliance and accept the Terms of Service before applying.');
+      return;
+    }
+
+    setSubmitting(true);
 
     try {
       await authAPI.becomeSeller(user.id, {
@@ -71,7 +77,10 @@ export default function BecomeSeller() {
         addressStreet: formData.addressStreet,
         addressCity: formData.addressCity,
         addressPostalCode: formData.addressPostalCode,
-        selfCertifiedCompliant: formData.selfCertification
+        selfCertifiedCompliant: formData.selfCertification,
+        businessName: formData.businessName,
+        country: formData.country,
+        phone: formData.phone,
       });
 
       // Update local user state and localStorage after successful submission
@@ -291,7 +300,6 @@ export default function BecomeSeller() {
                   <label className="flex items-start">
                     <input
                       type="checkbox"
-                      required
                       className="mt-1 rounded border-gray-300 text-primary focus:ring-2 focus:ring-primary"
                       onChange={(e) => setFormData({ ...formData, selfCertification: e.target.checked })}
                       checked={formData.selfCertification}
@@ -308,7 +316,6 @@ export default function BecomeSeller() {
               <label className="flex items-center">
                 <input
                   type="checkbox"
-                  required
                   className="rounded border-gray-300 text-primary focus:ring-2 focus:ring-primary"
                   onChange={(e) => setFormData({ ...formData, acceptTerms: e.target.checked })}
                   checked={formData.acceptTerms}

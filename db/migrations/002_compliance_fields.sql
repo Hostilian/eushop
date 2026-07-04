@@ -11,6 +11,11 @@ ALTER TABLE users ADD COLUMN IF NOT EXISTS address_city VARCHAR(100);
 ALTER TABLE users ADD COLUMN IF NOT EXISTS address_postal_code VARCHAR(20);
 ALTER TABLE users ADD COLUMN IF NOT EXISTS self_certified_compliant BOOLEAN DEFAULT FALSE;
 
+-- Ensure allergens column exists before enforcing not‑null constraint
+ALTER TABLE foods ADD COLUMN IF NOT EXISTS allergens TEXT;
+-- Replace any remaining NULL allergens with a fallback value so the NOT NULL constraint can be applied
+UPDATE foods SET allergens = '' WHERE allergens IS NULL;
+
 -- Enforce description and allergens to be mandatory in foods for EU consumer labeling
 ALTER TABLE foods ALTER COLUMN allergens SET NOT NULL;
 ALTER TABLE foods ALTER COLUMN description SET NOT NULL;
