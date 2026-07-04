@@ -11,6 +11,9 @@ ALTER TABLE users ADD COLUMN IF NOT EXISTS address_city VARCHAR(100);
 ALTER TABLE users ADD COLUMN IF NOT EXISTS address_postal_code VARCHAR(20);
 ALTER TABLE users ADD COLUMN IF NOT EXISTS self_certified_compliant BOOLEAN DEFAULT FALSE;
 
+-- Ensure a unique constraint exists on email so that ON CONFLICT seed operations work correctly
+ALTER TABLE users ADD CONSTRAINT IF NOT EXISTS unique_users_email UNIQUE (email);
+
 -- Ensure allergens column exists before enforcing not‑null constraint
 ALTER TABLE foods ADD COLUMN IF NOT EXISTS allergens TEXT;
 -- Replace any remaining NULL allergens with a fallback value so the NOT NULL constraint can be applied
