@@ -92,25 +92,44 @@ export default function GDPRPage() {
   };
 
   const handleCookieChange = async (type: 'analytics' | 'marketing') => {
+    // Security: Validate input
+    if (type !== 'analytics' && type !== 'marketing') {
+      console.error('Invalid cookie consent type');
+      return;
+    }
+
     const updated = {
       ...cookieConsent,
       [type]: !cookieConsent[type],
     };
     setCookieConsent(updated);
 
-    const fullPrefs = {
-      essential: true,
-      analytics: updated.analytics,
-      marketing: updated.marketing,
-    };
-    localStorage.setItem('cookieConsent', JSON.stringify(fullPrefs));
+    // Security: Use try-catch for localStorage operations
+    try {
+      const fullPrefs = {
+        essential: true,
+        analytics: updated.analytics,
+        marketing: updated.marketing,
+        timestamp: Date.now(), // Add timestamp for versioning
+      };
+      localStorage.setItem('cookieConsent', JSON.stringify(fullPrefs));
+    } catch (error) {
+      console.error('Failed to save cookie consent to localStorage:', error);
+      setError('Failed to save your preferences. Please try again.');
+      return;
+    }
 
     if (user) {
       try {
         const currentDate = new Date().toISOString().split('T')[0];
+        // Security: Validate user.id before sending to API
+        if (!/^[a-zA-Z0-9-]+$/.test(user.id)) {
+          throw new Error('Invalid user ID format');
+        }
         await authAPI.recordConsent(user.id, `cookie_${type}`, currentDate, updated[type]);
       } catch (err) {
         console.error('Failed to log consent change on server:', err);
+        // Don't show error to user for background logging failures
       }
     }
   };
