@@ -51,3 +51,7 @@ android/build/
 # Free Claude Code repository
 /free-claude-code-main/
 
+# Claude Code Agent
+.claude/
+chat-parallel.js
+parallel-chat-results.txt

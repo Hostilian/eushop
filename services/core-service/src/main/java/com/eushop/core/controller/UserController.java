@@ -100,7 +100,7 @@ public class UserController {
         return ResponseEntity.ok(ApiResponse.success(toDTO(user), "Now a seller"));
     }
 
-    @GetMapping
+    @GetMapping("/all")
     public ResponseEntity<ApiResponse<List<UserDTO>>> getAllUsers(
             @RequestHeader(value = "X-User-Role", required = false) String userRole,
             @RequestParam(required = false) String role) {
