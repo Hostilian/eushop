@@ -1,0 +1,242 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>EUshop — Select Demo Version</title>
+  <meta name="description" content="EUshop multi-version demo portal. Access V1-V5 interactive demonstrations." />
+  <link rel="icon" href="/eushop/favicon.ico" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --primary: #2563eb;
+      --rose: #e11d48;
+      --emerald: #10b981;
+      --amber: #f59e0b;
+      --purple: #7c3aed;
+      --cyan: #06b6d4;
+      --bg: #fafaf9;
+      --card: #ffffff;
+      --text: #1a1a2e;
+      --muted: #6b7280;
+      --border: #e5e7eb;
+    }
+    @media (prefers-color-scheme: dark) {
+      :root {
+        --bg: #0a0a0f;
+        --card: #111116;
+        --text: #f0f0f8;
+        --muted: #9ca3af;
+        --border: #1f2937;
+      }
+    }
+    body {
+      font-family: 'Inter', system-ui, -apple-system, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 2rem 1rem;
+    }
+    .logo {
+      font-size: 1.75rem;
+      font-weight: 900;
+      letter-spacing: -0.02em;
+      color: var(--primary);
+      margin-bottom: 0.25rem;
+      text-decoration: none;
+    }
+    .logo span { color: var(--emerald); }
+    .tagline {
+      font-size: 0.75rem;
+      color: var(--muted);
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      font-weight: 600;
+      margin-bottom: 3rem;
+    }
+    h1 {
+      font-size: 2rem;
+      font-weight: 900;
+      text-align: center;
+      margin-bottom: 0.5rem;
+      letter-spacing: -0.02em;
+    }
+    .subtitle {
+      font-size: 0.875rem;
+      color: var(--muted);
+      text-align: center;
+      margin-bottom: 2.5rem;
+      max-width: 400px;
+    }
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 1rem;
+      width: 100%;
+      max-width: 900px;
+      margin-bottom: 2rem;
+    }
+    .card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 1.25rem;
+      padding: 1.5rem;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      text-decoration: none;
+      color: inherit;
+      display: flex;
+      align-items: flex-start;
+      gap: 1rem;
+    }
+    .card:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 24px rgba(0,0,0,0.08);
+      border-color: transparent;
+    }
+    .badge {
+      font-size: 0.6rem;
+      font-weight: 900;
+      padding: 0.25rem 0.5rem;
+      border-radius: 0.4rem;
+      text-transform: uppercase;
+      letter-spacing: 0.07em;
+      white-space: nowrap;
+      flex-shrink: 0;
+    }
+    .card-content h3 {
+      font-size: 0.875rem;
+      font-weight: 800;
+      margin-bottom: 0.25rem;
+    }
+    .card-content p {
+      font-size: 0.75rem;
+      color: var(--muted);
+      line-height: 1.5;
+    }
+    .live-chip {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.35rem;
+      font-size: 0.65rem;
+      font-weight: 700;
+      color: #059669;
+      background: #ecfdf5;
+      border-radius: 9999px;
+      padding: 0.15rem 0.6rem;
+      margin-top: 0.5rem;
+    }
+    .dot {
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: #059669;
+      animation: pulse 2s infinite;
+    }
+    @keyframes pulse {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.5; }
+    }
+    footer {
+      font-size: 0.7rem;
+      color: var(--muted);
+      text-align: center;
+    }
+    footer a { color: var(--primary); text-decoration: none; }
+    footer a:hover { text-decoration: underline; }
+  </style>
+</head>
+<body>
+  <a href="/eushop/" class="logo"><span>🌿</span> EUshop</a>
+  <p class="tagline">Pan-European Artisanal Food Marketplace</p>
+
+  <h1>Choose a Version</h1>
+  <p class="subtitle">5 interactive demos — each showcasing a different system face</p>
+
+  <div class="grid">
+
+    <a href="/eushop/?v=v1" class="card" onclick="setVersion('v1')" id="v1-card">
+      <span class="badge" style="background:#fee2e2;color:#be123c;">INVESTOR</span>
+      <div class="card-content">
+        <h3>V1 — Pitch &amp; ARR Calculator</h3>
+        <p>Investor-grade landing page with the €45B TAM story, interactive ARR/GMV projector, and pre-seed waitlist capture.</p>
+        <span class="live-chip"><span class="dot"></span> Live Demo</span>
+      </div>
+    </a>
+
+    <a href="/eushop/?v=v2" class="card" onclick="setVersion('v2')" id="v2-card">
+      <span class="badge" style="background:#dcfce7;color:#15803d;">BUYER</span>
+      <div class="card-content">
+        <h3>V2 — Buyer Marketplace</h3>
+        <p>Full artisanal food explorer with search, product pages, cart, and mock Stripe checkout — fully offline capable.</p>
+        <span class="live-chip"><span class="dot"></span> Live Demo</span>
+      </div>
+    </a>
+
+    <a href="/eushop/become-seller/?v=v3" class="card" onclick="setVersion('v3')" id="v3-card">
+      <span class="badge" style="background:#fef3c7;color:#b45309;">SELLER</span>
+      <div class="card-content">
+        <h3>V3 — Seller Compliance Hub</h3>
+        <p>KYBC onboarding, DAC7 tax self-certification, VAT/TIN inputs, and product listing manager under DSA Article 30.</p>
+        <span class="live-chip"><span class="dot"></span> Live Demo</span>
+      </div>
+    </a>
+
+    <a href="/eushop/admin/dashboard/?v=v4" class="card" onclick="setVersion('v4')" id="v4-card">
+      <span class="badge" style="background:#ede9fe;color:#6d28d9;">OPERATOR</span>
+      <div class="card-content">
+        <h3>V4 — Admin Console</h3>
+        <p>Moderation desk to approve seller applications, audit tax details, and review order histories and compliance logs.</p>
+        <span class="live-chip"><span class="dot"></span> Live Demo</span>
+      </div>
+    </a>
+
+    <a href="/eushop/docs/?v=v5" class="card" onclick="setVersion('v5')" id="v5-card">
+      <span class="badge" style="background:#dbeafe;color:#1d4ed8;">DEVELOPER</span>
+      <div class="card-content">
+        <h3>V5 — Developer Portal &amp; Docs</h3>
+        <p>Interactive documentation viewer: system status, development guide, compliance audit, and full REST API reference.</p>
+        <span class="live-chip"><span class="dot"></span> Live Demo</span>
+      </div>
+    </a>
+
+  </div>
+
+  <footer>
+    <p>All versions run fully in your browser — no backend required. &nbsp;|&nbsp;
+      <a href="https://github.com/Hostilian/eushop" target="_blank" rel="noopener">GitHub Repo</a>
+      &nbsp;|&nbsp;
+      <a href="/eushop/">Enter Marketplace →</a>
+    </p>
+  </footer>
+
+  <script>
+    function setVersion(v) {
+      try {
+        localStorage.setItem('eushop-demo-version', v);
+      } catch(e) {}
+    }
+
+    // Read current version and highlight active card
+    try {
+      var active = localStorage.getItem('eushop-demo-version') || 'v2';
+      var card = document.getElementById(active + '-card');
+      if (card) {
+        card.style.boxShadow = '0 0 0 2px #2563eb, 0 8px 24px rgba(37,99,235,0.15)';
+        card.style.borderColor = '#2563eb';
+      }
+    } catch(e) {}
+
+    // Handle ?v= query param on load
+    var params = new URLSearchParams(location.search);
+    var v = params.get('v');
+    if (v) {
+      setVersion(v);
+    }
+  </script>
+</body>
+</html>

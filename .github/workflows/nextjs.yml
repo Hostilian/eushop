@@ -1,57 +1,78 @@
-# Sample workflow for building and deploying a Next.js site to GitHub Pages
+# Deploy EUshop Next.js site to GitHub Pages
+# Live URL: https://hostilian.github.io/eushop
 #
-# To get started with Next.js see: https://nextjs.org/docs/getting-started
+# 5 Versions are served from a single build with client-side localStorage switching:
+#   V1 - Pitch & Calculator (Investor)
+#   V2 - Buyer Marketplace
+#   V3 - Seller Compliance Hub
+#   V4 - Admin Console
+#   V5 - Developer Portal & Docs
 #
-name: Deploy Next.js site to Pages
+name: Deploy EUshop to GitHub Pages
 
 on:
-  # Runs on pushes targeting the default branch
   push:
     branches: ["main"]
-
-  # Allows you to run this workflow manually from the Actions tab
   workflow_dispatch:
 
-# Sets permissions of the GITHUB_TOKEN to allow deployment to GitHub Pages
+# Required permissions for GitHub Pages deployment
 permissions:
   contents: read
   pages: write
   id-token: write
 
-# Allow only one concurrent deployment, skipping runs queued between the run in-progress and latest queued.
-# However, do NOT cancel in-progress runs as we want to allow these production deployments to complete.
+# Allow only one concurrent deployment; do NOT cancel in-progress runs.
 concurrency:
   group: "pages"
   cancel-in-progress: false
 
 jobs:
-  # Build job
   build:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout
+      - name: Checkout repository
         uses: actions/checkout@v4
+
       - name: Setup pnpm
         uses: pnpm/action-setup@v4
         with:
           version: 9
-      - name: Setup Node
+
+      - name: Setup Node.js 20
         uses: actions/setup-node@v4
         with:
           node-version: "20"
           cache: "pnpm"
-      - name: Setup Pages
+
+      - name: Setup GitHub Pages
         uses: actions/configure-pages@v5
-      - name: Install dependencies
-        run: pnpm install
-      - name: Build with Next.js
-        run: pnpm --filter apps/web run build
-      - name: Upload artifact
+
+      - name: Cache Next.js build
+        uses: actions/cache@v4
+        with:
+          path: |
+            apps/web/.next/cache
+          key: ${{ runner.os }}-nextjs-${{ hashFiles('**/pnpm-lock.yaml') }}-${{ hashFiles('apps/web/**.[jt]s', 'apps/web/**.[jt]sx') }}
+          restore-keys: |
+            ${{ runner.os }}-nextjs-${{ hashFiles('**/pnpm-lock.yaml') }}-
+
+      - name: Install all dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Build Next.js static export
+        # basePath='/eushop' matches the GitHub Pages URL: https://hostilian.github.io/eushop
+        # trailingSlash=true ensures /page -> /page/index.html for static hosting
+        # NEXT_PUBLIC_BASE_PATH is NOT set here, so it defaults to '/eushop' in next.config.js
+        run: pnpm --filter "@eushop/web" run build
+        env:
+          NODE_ENV: production
+
+      - name: Upload Pages artifact
         uses: actions/upload-pages-artifact@v3
         with:
+          # The static export is output to apps/web/out/
           path: ./apps/web/out
 
-  # Deployment job
   deploy:
     environment:
       name: github-pages

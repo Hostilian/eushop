@@ -23,9 +23,39 @@ export default class MyDocument extends Document {
         </Head>
         <body className="bg-white dark:bg-gray-950 text-gray-900 dark:text-gray-100 antialiased transition-colors duration-200">
           {/*
+            SPA routing for GitHub Pages: reads ?p=/path set by 404.html and replaces
+            the URL in history so Next.js client router handles the correct route.
+            See: https://github.com/rafgraph/spa-github-pages
+          */}
+          <script
+            dangerouslySetInnerHTML={{
+              __html: `
+(function() {
+  try {
+    var redirect = sessionStorage.redirect;
+    delete sessionStorage.redirect;
+    if (redirect && redirect !== location.href) {
+      history.replaceState(null, null, redirect);
+    } else {
+      // Handle ?p= style redirect from 404.html
+      var params = new URLSearchParams(location.search.slice(1));
+      var p = params.get('p');
+      if (p) {
+        params.delete('p');
+        var search = params.toString() ? '?' + params.toString().replace(/~and~/g, '&') : '';
+        history.replaceState(null, null, p + search + location.hash);
+      }
+    }
+  } catch(e) {}
+})();
+`,
+            }}
+          />
+          {/*
             Dark mode initialisation: runs before hydration to read localStorage preference.
             Prevents flash of wrong theme (FOUT) without a server round-trip.
           */}
+
           <script
             dangerouslySetInnerHTML={{
               __html: `

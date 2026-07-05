@@ -490,10 +490,28 @@ export default function DeveloperDocs({ statusContent, devContent, auditContent,
 }
 
 export async function getStaticProps() {
-  let root = process.cwd();
-  // Monorepo subfolder check: if process.cwd() is apps/web, the target markdown files are at '../../'
-  if (!fs.existsSync(path.join(root, 'STATUS.md'))) {
-    root = path.resolve(root, '../../');
+  // Path resolution strategy for monorepo:
+  // __dirname in Turbopack SSR context = apps/web/pages
+  // monorepo root = apps/web/pages/../../.. = 3 levels up? No:
+  //   __dirname/../  = apps/web
+  //   __dirname/../../ = apps
+  //   __dirname/../../../ = eushop (monorepo root) ← correct for pages dir
+  //
+  // But process.cwd() when running `pnpm --filter @eushop/web build` = d:/CODING/eushop
+  // So we try process.cwd() first, then __dirname-based fallbacks
+  const tryRoots = [
+    process.cwd(),
+    path.resolve(/* turbopackIgnore: true */ __dirname, '../../../'),
+    path.resolve(/* turbopackIgnore: true */ __dirname, '../../'),
+    path.resolve(/* turbopackIgnore: true */ __dirname, '../'),
+  ];
+
+  let root = tryRoots[0];
+  for (const candidate of tryRoots) {
+    if (fs.existsSync(path.join(candidate, 'STATUS.md'))) {
+      root = candidate;
+      break;
+    }
   }
 
   const readDoc = (filename: string) => {
@@ -501,8 +519,8 @@ export async function getStaticProps() {
       const fullPath = path.join(root, filename);
       return fs.readFileSync(fullPath, 'utf8');
     } catch (e) {
-      console.warn(`Could not read ${filename}:`, e);
-      return `# Error\nFailed to load ${filename} at build time.`;
+      console.warn(`Could not read ${filename} from ${root}:`, e);
+      return `# ${filename.replace(/.*\//, '').replace('.md', '')}\n\n> Documentation file not found at build time. This is a static demo — actual documentation is available in the repository.`;
     }
   };
 
