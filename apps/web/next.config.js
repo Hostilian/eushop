@@ -1,7 +1,13 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   output: 'export',
-  basePath: process.env.NEXT_PUBLIC_BASE_PATH !== undefined ? process.env.NEXT_PUBLIC_BASE_PATH : '/v2',
+  // basePath must match the GitHub repository name for GitHub Pages to work correctly.
+  // Override with NEXT_PUBLIC_BASE_PATH env var for local development (set to '' for localhost).
+  basePath: process.env.NEXT_PUBLIC_BASE_PATH !== undefined
+    ? process.env.NEXT_PUBLIC_BASE_PATH
+    : '/eushop',
+  // trailingSlash ensures /page -> /page/index.html, required for GitHub Pages static hosting
+  trailingSlash: true,
   reactStrictMode: true,
   images: {
     unoptimized: true,
