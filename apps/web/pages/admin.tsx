@@ -91,18 +91,23 @@ export default function AdminPage() {
         } else {
           // Security: Log unauthorized access attempt
           console.warn(`Unauthorized admin access attempt by user: ${currentUser?.id || 'unknown'}`);
-          setError('You do not have permission to access the admin panel.');
+          setError('You do not have permission to access the admin panel. Please contact an administrator if you believe this is an error.');
           setTimeout(() => {
             router.replace('/');
           }, 3000);
         }
       } catch (error: any) {
+        // Graceful degradation: Provide user-friendly error messages
         if (error.name === 'AbortError') {
-          setError('Request timed out. Please check your connection.');
+          setError('Request timed out. Please check your connection and try again.');
+        } else if (error.message?.includes('Network') || !navigator.onLine) {
+          setError('Network error. Please check your internet connection and try again.');
+        } else if (error.message?.includes('Session expired')) {
+          setError('Your session has expired. Please log in again.');
         } else {
-          console.error('Failed to verify admin access:', error);
-          setError('Authentication failed. Please log in again.');
+          setError('Authentication failed. Please log in again or contact support if the problem persists.');
         }
+        console.error('Admin access check failed:', error);
         setTimeout(() => {
           router.replace('/login?redirect=/admin');
         }, 3000);
