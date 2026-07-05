@@ -183,7 +183,15 @@ export default function FoodDetailPage() {
       localStorage.setItem('cart', JSON.stringify(updatedCart));
       alert(`Added ${quantity} of "${food.name}" to cart`);
     } catch (err) {
-      alert('Failed to add to cart');
+      // Graceful degradation: Provide user-friendly error messages
+      if (err instanceof DOMException && err.name === 'QuotaExceededError') {
+        alert('Your cart is full. Please remove some items before adding more.');
+      } else if (!navigator.onLine) {
+        alert('You are offline. Please check your internet connection and try again.');
+      } else {
+        alert('Failed to add to cart. Please try again or contact support if the problem persists.');
+      }
+      console.error('Add to cart error:', err);
     } finally {
       setAddingToCart(false);
     }

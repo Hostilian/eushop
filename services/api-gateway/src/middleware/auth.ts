@@ -140,15 +140,41 @@ export async function authMiddleware(
 
     return next();
   } catch (error: any) {
+    // Graceful degradation: Provide appropriate error messages based on error type
+    let errorMessage = 'Invalid JWT signature or expired token';
+    let statusCode = 401;
+    
+    // Differentiate between different types of errors for better user experience
+    if (error.code === 'ERR_JWT_EXPIRED') {
+      errorMessage = 'Your session has expired. Please log in again.';
+    } else if (error.code === 'ERR_JWT_CLAIM_VALIDATION_FAILED') {
+      errorMessage = 'Invalid token claims. Please log in again.';
+    } else if (error.message?.includes('network') || error.code === 'ENOTFOUND') {
+      // Graceful fallback for network issues
+      errorMessage = 'Authentication service is temporarily unavailable. Please try again later.';
+      statusCode = 503; // Service Unavailable
+    } else if (error.message?.includes('clock')) {
+      errorMessage = 'System clock mismatch. Please check your device time and try again.';
+    }
+    
     // Security: Do not expose raw internal error details to client in production
-    const errorMessage = process.env.NODE_ENV === 'production'
-      ? 'Invalid JWT signature or expired token'
-      : error.message;
+    const safeDetails = process.env.NODE_ENV === 'production'
+      ? errorMessage
+      : error.message || 'Authentication failed';
 
-    return res.status(401).json({
+    // Log the error for server-side monitoring
+    console.error('Authentication error:', {
+      message: error.message,
+      code: error.code,
+      stack: process.env.NODE_ENV === 'development' ? error.stack : undefined
+    });
+
+    return res.status(statusCode).json({
       error: 'Unauthorized',
-      message: 'Invalid JWT signature or expired token',
-      details: errorMessage,
+      message: errorMessage,
+      details: safeDetails,
+      // Graceful degradation suggestion for clients
+      ...(statusCode === 503 && { retryAfter: 60 })
     });
   }
 }

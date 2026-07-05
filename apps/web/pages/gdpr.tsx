@@ -79,15 +79,45 @@ export default function GDPRPage() {
     setDeleting(true);
     setError('');
     try {
+      // Graceful degradation: Check if we can make API calls
+      if (!navigator.onLine) {
+        throw new Error('Network error. Please check your internet connection and try again.');
+      }
+      
       await authAPI.deleteAccount(user.id);
-      // Clean up local storage/session storage
-      localStorage.removeItem('cart');
-      sessionStorage.removeItem('userProfile');
-      router.push('/');
+      
+      // Graceful degradation: Try to clean up local storage, but don't fail if it's not available
+      try {
+        localStorage.removeItem('cart');
+        localStorage.removeItem('cookieConsent');
+        localStorage.removeItem('userSession');
+      } catch (storageErr) {
+        console.warn('Failed to clean up local storage:', storageErr);
+      }
+      
+      try {
+        sessionStorage.clear();
+      } catch (sessionErr) {
+        console.warn('Failed to clear session storage:', sessionErr);
+      }
+      
+      // Redirect to home page with a success message
+      router.push('/?message=account_deleted');
     } catch (err: any) {
-      setError(err.response?.data?.message || 'Erasure request failed. Please try again.');
+      // Graceful degradation: Provide user-friendly error messages
+      if (err.message?.includes('Network') || !navigator.onLine) {
+        setError('Network error. Please check your internet connection and try again.');
+      } else if (err.response?.status === 429) {
+        setError('Too many requests. Please wait a few minutes before trying again.');
+      } else if (err.response?.status === 423) {
+        setError('Account deletion is temporarily locked. Please contact support.');
+      } else {
+        setError(err.response?.data?.message || 'We couldn\'t process your erasure request at this time. Please try again later or contact support.');
+      }
+      
       setDeleting(false);
       setShowDeleteConfirm(false);
+      console.error('Account deletion error:', err);
     }
   };
 
