@@ -1,12 +1,14 @@
 # Deploy EUshop Next.js site to GitHub Pages
 # Live URL: https://hostilian.github.io/eushop
 #
-# 5 Versions are served from a single build with client-side localStorage switching:
-#   V1 - Pitch & Calculator (Investor)
-#   V2 - Buyer Marketplace
-#   V3 - Seller Compliance Hub
-#   V4 - Admin Console
-#   V5 - Developer Portal & Docs
+# 5 Versions served from a single build via client-side localStorage version switching:
+#   V1 — Pitch & ARR Calculator  (/?v=v1)
+#   V2 — Buyer Marketplace       (/?v=v2)
+#   V3 — Seller Compliance Hub   (/become-seller/?v=v3)
+#   V4 — Admin Console           (/admin/dashboard/?v=v4)
+#   V5 — Developer Portal & Docs (/docs/?v=v5)
+#
+# Version Portal: https://hostilian.github.io/eushop/versions/
 #
 name: Deploy EUshop to GitHub Pages
 
@@ -31,7 +33,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
 
       - name: Setup pnpm
         uses: pnpm/action-setup@v4
@@ -45,7 +47,7 @@ jobs:
           cache: "pnpm"
 
       - name: Setup GitHub Pages
-        uses: actions/configure-pages@v5
+        uses: actions/configure-pages@v6
 
       - name: Cache Next.js build
         uses: actions/cache@v4
@@ -60,9 +62,8 @@ jobs:
         run: pnpm install --frozen-lockfile
 
       - name: Build Next.js static export
-        # basePath='/eushop' matches the GitHub Pages URL: https://hostilian.github.io/eushop
-        # trailingSlash=true ensures /page -> /page/index.html for static hosting
-        # NEXT_PUBLIC_BASE_PATH is NOT set here, so it defaults to '/eushop' in next.config.js
+        # basePath='/eushop' (default in next.config.js) matches GitHub Pages URL
+        # NEXT_PUBLIC_BASE_PATH is intentionally NOT set here — it defaults to '/eushop'
         run: pnpm --filter "@eushop/web" run build
         env:
           NODE_ENV: production
@@ -82,4 +83,4 @@ jobs:
     steps:
       - name: Deploy to GitHub Pages
         id: deployment
-        uses: actions/deploy-pages@v5
+        uses: actions/deploy-pages@v4
