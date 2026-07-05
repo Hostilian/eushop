@@ -1,4 +1,3 @@
-import React from 'react';
 
 interface BadgeProps {
   children: React.ReactNode;
@@ -77,3 +76,4 @@ export function AllergenBadge({ allergen }: { allergen: string }) {
     </Badge>
   );
 }
+

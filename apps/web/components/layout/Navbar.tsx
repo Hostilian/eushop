@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/router';
 import { authAPI, User } from '../../lib/services';
@@ -233,3 +233,4 @@ export function Navbar() {
     </header>
   );
 }
+

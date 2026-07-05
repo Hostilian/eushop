@@ -1,4 +1,3 @@
-import React from 'react';
 import '@testing-library/jest-dom';
 import { render, screen, waitFor } from '@testing-library/react';
 import BecomeSeller from '../pages/become-seller';
@@ -85,4 +84,5 @@ describe('BecomeSeller Page', () => {
     expect(screen.getByText(/KYB & Tax Verification/)).toBeInTheDocument();
   });
 });
+
 

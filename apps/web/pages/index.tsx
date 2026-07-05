@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { PageWrapper } from '../components/layout/PageWrapper';
 import { ProductCard } from '../components/ui/ProductCard';
@@ -214,3 +214,4 @@ export default function Home() {
     </PageWrapper>
   );
 }
+
