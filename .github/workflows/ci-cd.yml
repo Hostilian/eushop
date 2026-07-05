@@ -37,8 +37,6 @@ jobs:
       # pnpm/action-setup@v4 — correct way to install pnpm with caching
       - name: Setup pnpm
         uses: pnpm/action-setup@a3252b7e1b38d6a97ba7e02b19b75fcbf8ef3e52
-        with:
-          version: 9
 
       # actions/setup-node@v4.0.3
       - name: Setup Node.js
@@ -117,8 +115,6 @@ jobs:
       # pnpm/action-setup@v4
       - name: Setup pnpm
         uses: pnpm/action-setup@a3252b7e1b38d6a97ba7e02b19b75fcbf8ef3e52
-        with:
-          version: 9
 
       # actions/setup-node@v4.0.3
       - name: Setup Node.js
