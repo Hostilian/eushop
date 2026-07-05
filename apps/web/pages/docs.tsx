@@ -468,6 +468,20 @@ export default function DeveloperDocs({ statusContent, devContent, auditContent,
           {/* Markdown Content */}
           <article className="bg-white rounded-3xl border border-gray-150 p-6 sm:p-8 shadow-sm">
             <MarkdownRenderer content={getDocContent()} />
+            <div className="mt-8 pt-4 border-t border-gray-100 flex flex-wrap justify-between items-center text-[10px] sm:text-xs text-gray-400 gap-2">
+              <span>
+                This site is open source.{' '}
+                <a
+                  href="https://github.com"
+                  target="_blank"
+                  rel="noreferrer"
+                  className="text-primary hover:underline font-bold"
+                >
+                  Improve this page.
+                </a>
+              </span>
+              <span>Last updated: July 2026</span>
+            </div>
           </article>
         </main>
       </div>
