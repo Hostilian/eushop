@@ -81,6 +81,23 @@ public class ConsentLog {
 
     @PrePersist
     protected void onCreate() {
-        createdAt = LocalDateTime.now();
+        LocalDateTime now = LocalDateTime.now();
+        createdAt = now;
+        
+        // Graceful degradation: Set default values for required fields if they're null
+        if (consentType == null) {
+            consentType = "unknown";
+        }
+        if (consentVersion == null) {
+            consentVersion = "1.0";
+        }
+        if (granted == null) {
+            granted = false;
+        }
+        
+        // Set default consent source if not provided
+        if (consentSource == null) {
+            consentSource = "web_unknown";
+        }
     }
 }
