@@ -34,10 +34,18 @@ export function PageWrapper({ children, className = '' }: PageWrapperProps) {
     <div className="min-h-screen bg-gray-50 text-gray-900 flex flex-col font-sans transition-colors duration-200 dark:bg-gray-950 dark:text-gray-100">
       <Navbar />
       
-      {/* Offline indicator */}
+      {/* Graceful degradation: Offline indicator with actionable info */}
       {!isOnline && (
-        <div className="bg-yellow-100 text-yellow-800 text-center py-2 px-4 text-sm">
-          ⚠️ You are currently offline. Some features may be limited.
+        <div className="bg-yellow-100 text-yellow-800 text-center py-2 px-4 text-sm flex items-center justify-center gap-2">
+          <span>⚠️</span>
+          <span>You are currently offline. Some features may be limited.</span>
+          <button 
+            onClick={() => window.location.reload()}
+            className="underline font-semibold hover:text-yellow-900 transition"
+            aria-label="Retry connection"
+          >
+            Retry
+          </button>
         </div>
       )}
       
