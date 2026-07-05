@@ -85,19 +85,38 @@ public class ConsentLog {
         createdAt = now;
         
         // Graceful degradation: Set default values for required fields if they're null
-        if (consentType == null) {
+        if (consentType == null || consentType.trim().isEmpty()) {
             consentType = "unknown";
+        } else {
+            // Ensure it doesn't exceed maximum length
+            consentType = consentType.length() > 60 ? consentType.substring(0, 60) : consentType;
         }
-        if (consentVersion == null) {
+        
+        if (consentVersion == null || consentVersion.trim().isEmpty()) {
             consentVersion = "1.0";
+        } else {
+            consentVersion = consentVersion.length() > 20 ? consentVersion.substring(0, 20) : consentVersion;
         }
+        
         if (granted == null) {
             granted = false;
         }
         
         // Set default consent source if not provided
-        if (consentSource == null) {
+        if (consentSource == null || consentSource.trim().isEmpty()) {
             consentSource = "web_unknown";
+        } else {
+            consentSource = consentSource.length() > 50 ? consentSource.substring(0, 50) : consentSource;
+        }
+        
+        // Graceful degradation: Clean up user agent if too long
+        if (userAgent != null && userAgent.length() > 512) {
+            userAgent = userAgent.substring(0, 512);
+        }
+        
+        // Graceful degradation: Validate IP address format
+        if (ipAddress != null && ipAddress.length() > 45) {
+            ipAddress = ipAddress.substring(0, 45);
         }
     }
 }
