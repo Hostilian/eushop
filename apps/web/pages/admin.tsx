@@ -100,6 +100,21 @@ export default function AdminPage() {
         // Graceful degradation: Provide user-friendly error messages with offline detection
         if (!navigator.onLine) {
           setError('You appear to be offline. Please check your internet connection and try again.');
+          // In offline mode, allow viewing cached admin data if available
+          try {
+            const cachedSession = localStorage.getItem('userSession');
+            if (cachedSession) {
+              const parsed = JSON.parse(cachedSession);
+              if (parsed.role === 'admin' && parsed.expires > Date.now()) {
+                setIsAuthorized(true);
+                setLoading(false);
+                router.replace('/admin/dashboard');
+                return;
+              }
+            }
+          } catch (cacheError) {
+            console.warn('Could not use cached session:', cacheError);
+          }
         } else if (error.name === 'AbortError') {
           setError('Request timed out. Please check your connection and try again.');
         } else if (error.message?.includes('Network')) {
@@ -112,12 +127,12 @@ export default function AdminPage() {
         console.error('Admin access check failed:', error);
           
         // Graceful degradation: Don't redirect immediately, give user time to read error
-        setTimeout(() => {
-          // Check if user is still on the page
-          if (!error.message?.includes('offline')) {
+        // Only redirect if not offline (offline users may want to stay on page)
+        if (navigator.onLine && !error.message?.includes('offline')) {
+          setTimeout(() => {
             router.replace('/login?redirect=/admin');
-          }
-        }, 5000);
+          }, 5000);
+        }
       } finally {
         setLoading(false);
       }

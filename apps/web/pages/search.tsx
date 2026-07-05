@@ -39,21 +39,59 @@ export default function SearchPage() {
 
   const performSearch = useCallback(async () => {
     setLoading(true);
+    // Graceful degradation: If offline, immediately use cached results
+    if (!navigator.onLine) {
+      try {
+        const cachedResults = localStorage.getItem('search_fallback');
+        if (cachedResults) {
+          const parsed = JSON.parse(cachedResults);
+          if (Array.isArray(parsed) && parsed.length > 0) {
+            setFoods(parsed);
+            setLoading(false);
+            return;
+          }
+        }
+      } catch (cacheError) {
+        console.warn('Could not read cached search results while offline:', cacheError);
+      }
+      // No cache available offline
+      setFoods([
+        { 
+          id: 'offline-fallback', 
+          name: 'Offline Mode', 
+          country: 'EU', 
+          price: 0.00, 
+          description: 'You are currently offline. Search results are limited to cached data. Please reconnect to see the latest products.', 
+          sellerId: 'system-offline' 
+        },
+      ]);
+      setLoading(false);
+      return;
+    }
+
     try {
-      const result = await foodAPI.search(searchQuery, selectedCountry, page, 20);
-      setFoods(Array.isArray(result) ? result : (result?.data || result?.foods || []));
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), 8000); // 8 second timeout
+      const result = await foodAPI.search(searchQuery, selectedCountry, page, 20, { signal: controller.signal });
+      clearTimeout(timeoutId);
+      const foodsArray = Array.isArray(result) ? result : (result?.data || result?.foods || []);
+      setFoods(foodsArray);
       // Cache successful results for graceful degradation
       try {
-        localStorage.setItem('search_fallback', JSON.stringify(Array.isArray(result) ? result : (result?.data || result?.foods || [])));
+        localStorage.setItem('search_fallback', JSON.stringify(foodsArray));
+        // Also store timestamp for cache freshness
+        localStorage.setItem('search_fallback_timestamp', Date.now().toString());
       } catch (cacheError) {
         console.warn('Could not cache search results:', cacheError);
       }
-    } catch (error) {
+    } catch (error: any) {
       console.error('Search failed:', error);
       // Graceful degradation: Use cached results from localStorage if available
       try {
         const cachedResults = localStorage.getItem('search_fallback');
-        if (cachedResults) {
+        const cachedTimestamp = localStorage.getItem('search_fallback_timestamp');
+        const isCacheFresh = cachedTimestamp && (Date.now() - Number(cachedTimestamp)) < 30 * 60 * 1000; // 30 minutes
+        if (cachedResults && isCacheFresh) {
           const parsed = JSON.parse(cachedResults);
           if (Array.isArray(parsed) && parsed.length > 0) {
             setFoods(parsed);
@@ -71,7 +109,7 @@ export default function SearchPage() {
           name: 'Sample Product', 
           country: 'EU', 
           price: 19.99, 
-          description: 'This is a sample product shown while search services are temporarily unavailable. Please try again later.', 
+          description: 'Search services are temporarily unavailable. Please try again later or check your connection.', 
           sellerId: 'system-fallback' 
         },
       ]);
@@ -181,6 +219,8 @@ export default function SearchPage() {
             <p className="text-sm text-gray-500 dark:text-gray-400 mb-6 font-medium">
               {foods[0]?.id?.startsWith('fallback-') 
                 ? 'Search service is currently limited. Showing sample product.' 
+                : foods[0]?.id?.startsWith('offline-fallback')
+                ? 'You are offline. Showing cached data if available.'
                 : `Showing ${foods.length} delicacies found`}
             </p>
             

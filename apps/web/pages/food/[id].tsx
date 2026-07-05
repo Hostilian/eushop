@@ -131,7 +131,12 @@ export default function FoodDetailPage() {
           } catch (cacheError) {
             console.warn('Cache read failed:', cacheError);
           }
-          setError('Failed to load food details. You can try searching for other products.');
+          // If offline, provide a more specific message
+          if (!navigator.onLine) {
+            setError('You are offline and this item is not cached. Please reconnect to load the details.');
+          } else {
+            setError('Failed to load food details. You can try searching for other products.');
+          }
         }
         console.error('Error fetching food:', err);
       } finally {
@@ -258,6 +263,14 @@ export default function FoodDetailPage() {
               Our service is experiencing temporary issues. You can still browse other products or 
               <Link href="/search" className="text-primary font-semibold ml-1">search for alternatives</Link>.
             </p>
+            {/* Graceful degradation: Provide offline-specific guidance */}
+            {!navigator.onLine && (
+              <div className="mt-4 p-3 bg-yellow-50 border border-yellow-200 rounded-lg">
+                <p className="text-yellow-800 text-sm">
+                  <strong>Offline mode:</strong> You appear to be offline. Some features may be limited until you reconnect.
+                </p>
+              </div>
+            )}
           </div>
         </div>
       </div>
