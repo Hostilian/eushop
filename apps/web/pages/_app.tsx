@@ -152,11 +152,11 @@ function ThemeInitializer() {
       // localStorage unavailable — default to light theme
     }
 
-    // 2. Handle ?v= version selector from URL (e.g. /?v=v1, /?v=v3)
+    // 2. Handle ?v= version selector from URL (e.g. /?v=v1, /?v=v3, /?v=v6)
     try {
       const params = new URLSearchParams(window.location.search);
       const vParam = params.get('v');
-      if (vParam && /^v[1-5]$/.test(vParam)) {
+      if (vParam && /^v[1-9]$/.test(vParam)) {
         localStorage.setItem('eushop-demo-version', vParam);
         // Dispatch event so VersionSelector and index page react instantly
         window.dispatchEvent(new Event('demo-version-changed'));
