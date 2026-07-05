@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { PageWrapper } from '../components/layout/PageWrapper';
 import { ProductCard } from '../components/ui/ProductCard';
 import { ProductCardSkeleton } from '../components/ui/Skeleton';
@@ -221,3 +221,4 @@ export default function SearchPage() {
     </PageWrapper>
   );
 }
+

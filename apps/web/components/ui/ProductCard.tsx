@@ -1,4 +1,3 @@
-import React from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { AllergenBadge, VerifiedSellerBadge } from './Badge';
@@ -154,3 +153,4 @@ const EU_FLAGS: Record<string, string> = {
 function getCountryFlag(isoCode: string): string {
   return EU_FLAGS[isoCode.toUpperCase()] ?? '🇪🇺';
 }
+

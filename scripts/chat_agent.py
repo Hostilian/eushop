@@ -340,17 +340,19 @@ def start_local_proxy_server(all_keys, default_model, port=48123):
             models_to_try = [target_model]
             
             MODEL_FALLBACKS = {
-                "deepseek-chat": ["gemini-2.5-flash", "kimi-k2.5", "gpt-4o", "claude-3-5-haiku"],
-                "claude-3-5-sonnet": ["claude-3-5-haiku", "gpt-4o", "gemini-2.5-flash", "deepseek-chat", "kimi-k2.5"],
-                "claude-3-5-haiku": ["claude-3-5-sonnet", "gemini-2.5-flash", "gpt-4o", "deepseek-chat", "kimi-k2.5"],
-                "gpt-4o": ["gemini-2.5-flash", "claude-3-5-haiku", "deepseek-chat", "kimi-k2.5"],
-                "gemini-2.5-flash": ["gpt-4o", "claude-3-5-haiku", "deepseek-chat", "kimi-k2.5"],
+                "deepseek-chat": ["gemini-2.5-flash", "kimi-k2.5", "gpt-4o", "claude-3-5-haiku", "claude-3-5-sonnet"],
+                # claude-3-5-sonnet has ~200K ctx; when it hits limits try models with larger/different context
+                "claude-3-5-sonnet": ["gemini-2.5-flash", "kimi-k2.5", "deepseek-chat", "claude-3-5-haiku", "gpt-4o", "deepseek-r1"],
+                "claude-3-5-haiku": ["gemini-2.5-flash", "kimi-k2.5", "claude-3-5-sonnet", "gpt-4o", "deepseek-chat"],
+                "gpt-4o": ["gemini-2.5-flash", "kimi-k2.5", "claude-3-5-haiku", "deepseek-chat"],
+                "gemini-2.5-flash": ["kimi-k2.5", "gpt-4o", "claude-3-5-haiku", "deepseek-chat"],
+                "kimi-k2.5": ["gemini-2.5-flash", "deepseek-chat", "gpt-4o", "claude-3-5-haiku"],
                 "o1-mini": ["deepseek-r1", "gpt-4o", "claude-3-5-sonnet", "gemini-2.5-flash"],
                 "deepseek-r1": ["o1-mini", "claude-3-5-sonnet", "gpt-4o", "gemini-2.5-flash"],
                 "cohere/north-mini-code:free": ["poolside/laguna-m.1:free", "poolside/laguna-xs.2:free", "gemini-2.5-flash", "deepseek-chat"],
                 "poolside/laguna-m.1:free": ["poolside/laguna-xs.2:free", "cohere/north-mini-code:free", "gemini-2.5-flash", "deepseek-chat"],
                 "poolside/laguna-xs.2:free": ["poolside/laguna-m.1:free", "cohere/north-mini-code:free", "gemini-2.5-flash", "deepseek-chat"],
-                "nvidia/nemotron-3-nano": ["gemini-2.5-flash", "deepseek-chat"]
+                "nvidia/nemotron-3-nano": ["gemini-2.5-flash", "deepseek-chat"],
             }
             
             normalized_target = target_model.lower()
@@ -450,34 +452,125 @@ def start_local_proxy_server(all_keys, default_model, port=48123):
                     resp = requests.post(url, json=payload, headers=headers, stream=is_stream, timeout=15)
 
                     if resp.status_code == 200:
-                        self.send_response(200)
-                        for h, v in resp.headers.items():
-                            if h.lower() not in ("content-length", "connection", "transfer-encoding", "content-encoding"):
-                                self.send_header(h, v)
-                        self.end_headers()
+                        # ── Graceful degradation: inspect non-stream body for error payloads ──
+                        # Some providers return 200 OK with a JSON error body (e.g. context limit)
+                        if not is_stream:
+                            try:
+                                body_json = resp.json()
+                                err_obj = body_json.get("error") or {}
+                                err_code = str(err_obj.get("code", "") or err_obj.get("type", ""))
+                                TOKEN_LIMIT_CODES = (
+                                    "context_length_exceeded",
+                                    "max_tokens_exceeded",
+                                    "token_limit",
+                                    "invalid_request_error",
+                                )
+                                if err_obj and any(c in err_code.lower() for c in TOKEN_LIMIT_CODES):
+                                    console.print(f"[red][WARN] Model {model_name} hit token/context limit (200 error body). Rotating model...[/red]")
+                                    continue
+                                # Also check finish_reason on the choices array
+                                for choice in body_json.get("choices", []):
+                                    if choice.get("finish_reason") == "length":
+                                        console.print(f"[red][WARN] Model {model_name} finish_reason=length (token limit). Rotating model...[/red]")
+                                        # Don't continue — partial response is still useful; let it through
+                                        break
+                            except Exception:
+                                pass  # Not JSON — forward as-is
 
-                        if is_stream:
-                            for chunk in resp.iter_content(chunk_size=1024):
-                                self.wfile.write(chunk)
-                                self.wfile.flush()
-                        else:
+                            self.send_response(200)
+                            for h, v in resp.headers.items():
+                                if h.lower() not in ("content-length", "connection", "transfer-encoding", "content-encoding"):
+                                    self.send_header(h, v)
+                            self.end_headers()
                             self.wfile.write(resp.content)
-                        return True
+                            return True
 
-                    elif resp.status_code in (401, 403, 429):
+                        else:
+                            # ── Streaming: FULL buffer — detect token limits before Aider sees them ──
+                            # finish_reason="length" appears at the END of the SSE stream.
+                            # We must buffer the COMPLETE response so we can inspect it entirely
+                            # and rotate to the next model if needed — Aider never sees the failure.
+                            console.print(f"[dim]Proxy: Buffering stream from {model_name} for quality check...[/dim]")
+                            full_body = b""
+                            try:
+                                for chunk in resp.iter_content(chunk_size=4096):
+                                    full_body += chunk
+                            except Exception as stream_err:
+                                console.print(f"[yellow][WARN] Stream interrupted from {model_name}: {stream_err}. Rotating...[/yellow]")
+                                continue
+
+                            # ── Inspect the complete body for any token-limit signals ──
+                            token_limit_hit = False
+                            try:
+                                body_str = full_body.decode("utf-8", errors="ignore")
+
+                                # Signal 1: SSE error event with known limit codes
+                                TOKEN_LIMIT_STRINGS = [
+                                    "context_length_exceeded",
+                                    "max_tokens_exceeded",
+                                    "token_limit",
+                                    "content_filter",
+                                    "context window",
+                                    "context_window",
+                                ]
+                                if '"error"' in body_str and any(s in body_str for s in TOKEN_LIMIT_STRINGS):
+                                    token_limit_hit = True
+
+                                # Signal 2: finish_reason="length" in any SSE data line
+                                # This is what Aider itself detects to show the token limit warning
+                                if not token_limit_hit and '"finish_reason":"length"' in body_str.replace(" ", ""):
+                                    token_limit_hit = True
+
+                                # Signal 3: Aider-specific — the body is empty or trivially short
+                                # (model returned nothing useful due to context overflow)
+                                if not token_limit_hit and len(full_body.strip()) < 50:
+                                    token_limit_hit = True
+
+                            except Exception:
+                                pass  # Can't decode — forward as-is
+
+                            if token_limit_hit:
+                                console.print(f"[red bold][WARN] Model {model_name} hit token/context limit (finish_reason=length or error in stream). Auto-rotating to next model...[/red bold]")
+                                continue
+
+                            # ── Clean response — commit and send the buffered body to Aider ──
+                            self.send_response(200)
+                            for h, v in resp.headers.items():
+                                if h.lower() not in ("content-length", "connection", "transfer-encoding", "content-encoding"):
+                                    self.send_header(h, v)
+                            self.end_headers()
+                            self.wfile.write(full_body)
+                            self.wfile.flush()
+                            return True
+
+                    elif resp.status_code in (401, 403):
                         report_key_failure(key)
                         console.print(f"[red][WARN] Key {key[:8]}... returned status {resp.status_code} for {model_name}. Rotating...[/red]")
                         continue
-                    elif resp.status_code == 400:
-                        # Context length or bad request — could be model-specific
-                        console.print(f"[red][WARN] Model {model_name} returned 400 Bad Request (likely context limit). Rotating model/key...[/red]")
+                    elif resp.status_code == 429:
+                        # Rate limit — mark key and immediately try next
+                        report_key_failure(key)
+                        console.print(f"[red][WARN] Key {key[:8]}... rate-limited (429) for {model_name}. Rotating...[/red]")
+                        continue
+                    elif resp.status_code in (400, 413):
+                        # Context length / payload too large — model-specific, try next model
+                        console.print(f"[red][WARN] Model {model_name} returned {resp.status_code} (likely context limit). Rotating model...[/red]")
+                        continue
+                    elif resp.status_code == 503:
+                        console.print(f"[yellow][WARN] {base_url} returned 503 (overloaded). Rotating...[/yellow]")
                         continue
                     else:
                         console.print(f"[yellow][WARN] Upstream returned status {resp.status_code} on {base_url}. Rotating...[/yellow]")
                         continue
 
-                except Exception as e:
+                except requests.exceptions.Timeout:
+                    console.print(f"[yellow][WARN] Timeout connecting to {base_url} for {model_name}. Rotating...[/yellow]")
+                    continue
+                except requests.exceptions.ConnectionError as e:
                     console.print(f"[yellow][WARN] Connection error to {base_url}: {e}. Rotating...[/yellow]")
+                    continue
+                except Exception as e:
+                    console.print(f"[yellow][WARN] Unexpected error on {base_url}: {e}. Rotating...[/yellow]")
                     continue
 
             return False
@@ -785,8 +878,15 @@ def run_aider_session(proxy_port: int, model: str, initial_file: str = None):
     if not os.path.exists(aider_path):
         aider_path = "aider"
 
-    cmd = [aider_path, "--model", model_name]
-    
+    cmd = [aider_path, "--model", model_name,
+           # ── Speed / UX / Autonomy flags ────────────────────────────────────
+           "--no-pretty",               # Skip rich terminal formatting (faster rendering)
+           "--no-show-model-warnings",  # Proxy handles token limits — suppress Aider's own warnings
+           "--map-tokens", "1024",      # Smaller repo-map = faster context building per request
+           "--no-git-commit-verify",    # Skip slow pre-commit hooks; git commits still work
+           "--yes-always",              # Turbo Mode: auto-accept all shell executions & prompts
+           ]
+
     if initial_file:
         if os.path.exists(initial_file):
             cmd.append(initial_file)
