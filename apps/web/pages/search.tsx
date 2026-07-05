@@ -72,7 +72,7 @@ export default function SearchPage() {
     try {
       const controller = new AbortController();
       const timeoutId = setTimeout(() => controller.abort(), 8000); // 8 second timeout
-      const result = await foodAPI.search(searchQuery, selectedCountry, page, 20, { signal: controller.signal });
+      const result: any = await foodAPI.search(searchQuery, selectedCountry, page, 20, { signal: controller.signal });
       clearTimeout(timeoutId);
       const foodsArray = Array.isArray(result) ? result : (result?.data || result?.foods || []);
       setFoods(foodsArray);

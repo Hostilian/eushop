@@ -1,4 +1,5 @@
 import React from 'react';
+import Link from 'next/link';
 import { PageWrapper } from '../components/layout/PageWrapper';
 
 export default function PrivacyPolicy() {

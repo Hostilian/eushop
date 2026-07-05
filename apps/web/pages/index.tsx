@@ -259,7 +259,7 @@ export default function Home() {
     const fetchTrending = async () => {
       setLoadingFoods(true);
       try {
-        const foods = await foodAPI.getTrending();
+        const foods: any = await foodAPI.getTrending();
         setTrendingFoods(Array.isArray(foods) ? foods : (foods?.data || foods?.foods || []));
       } catch (error) {
         console.error('Failed to fetch trending foods:', error);
