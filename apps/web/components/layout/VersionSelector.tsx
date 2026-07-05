@@ -50,6 +50,38 @@ const VERSIONS: VersionOption[] = [
     desc: 'Interactive documentation for audits, schemas, and REST APIs.',
     path: '/docs',
     color: 'from-blue-500 to-cyan-600 border-blue-200 text-blue-700'
+  },
+  {
+    key: 'v6',
+    name: 'V6 - Orig: Core App',
+    badge: 'ORIGINAL',
+    desc: 'Original fully static Single-Page Application mockup.',
+    path: '/v6/',
+    color: 'from-gray-500 to-slate-600 border-slate-200 text-slate-700'
+  },
+  {
+    key: 'v7',
+    name: 'V7 - Orig: Emerald',
+    badge: 'THEME',
+    desc: 'Original static prototype rendered in a clean Emerald design.',
+    path: '/v7/',
+    color: 'from-teal-500 to-emerald-600 border-teal-200 text-teal-700'
+  },
+  {
+    key: 'v8',
+    name: 'V8 - Orig: Midnight',
+    badge: 'THEME',
+    desc: 'Original static prototype rendered in dark Midnight Slate.',
+    path: '/v8/',
+    color: 'from-slate-700 to-slate-900 border-slate-600 text-slate-300'
+  },
+  {
+    key: 'v9',
+    name: 'V9 - Orig: Rose Gold',
+    badge: 'THEME',
+    desc: 'Original static prototype rendered in luxury Rose Gold.',
+    path: '/v9/',
+    color: 'from-rose-400 to-rose-600 border-rose-300 text-rose-800'
   }
 ];
 
@@ -94,7 +126,13 @@ export default function VersionSelector() {
     // Dispatch global event
     window.dispatchEvent(new Event('demo-version-changed'));
 
-    // If option maps to a specific route, push it
+    // Handle static HTML folders (v6, v7, v8, v9)
+    if (['v6', 'v7', 'v8', 'v9'].includes(option.key)) {
+      window.location.href = (router.basePath || '') + option.path;
+      return;
+    }
+
+    // Next.js client-side routing for v1-v5
     const currentPath = router.pathname;
     if (option.path === '/' && currentPath !== '/') {
       router.push('/');
