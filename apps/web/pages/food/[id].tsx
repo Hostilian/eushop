@@ -115,7 +115,23 @@ export default function FoodDetailPage() {
         if (err.name === 'AbortError') {
           setError('Request timed out. Please try again.');
         } else {
-          setError('Failed to load food details');
+          // Graceful degradation: Try to load from cache
+          try {
+            const cachedFoods = localStorage.getItem('cached_foods');
+            if (cachedFoods) {
+              const parsed = JSON.parse(cachedFoods);
+              const cached = parsed.find((f: any) => f.id === idStr);
+              if (cached) {
+                setFood(cached);
+                setLoading(false);
+                clearTimeout(timeoutId);
+                return;
+              }
+            }
+          } catch (cacheError) {
+            console.warn('Cache read failed:', cacheError);
+          }
+          setError('Failed to load food details. You can try searching for other products.');
         }
         console.error('Error fetching food:', err);
       } finally {
@@ -238,6 +254,10 @@ export default function FoodDetailPage() {
           </Link>
           <div className="bg-red-50 border border-red-200 text-red-700 px-6 py-4 rounded-xl">
             <p className="font-semibold">{error || 'Food not found'}</p>
+            <p className="text-sm mt-2">
+              Our service is experiencing temporary issues. You can still browse other products or 
+              <Link href="/search" className="text-primary font-semibold ml-1">search for alternatives</Link>.
+            </p>
           </div>
         </div>
       </div>
