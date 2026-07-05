@@ -1,13 +1,7 @@
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/router';
-
-interface User {
-  id: string;
-  email: string;
-  name: string;
-  role: string;
-}
+import { foodAPI, FoodItem, authAPI, User } from '../../lib/services';
 
 interface SellerApplication {
   id: string;
@@ -20,17 +14,6 @@ interface SellerApplication {
   address: string;
   selfCertified: boolean;
   status: 'PENDING' | 'VERIFIED' | 'REJECTED';
-}
-
-interface FoodListing {
-  id: string;
-  name: string;
-  sellerName: string;
-  country: string;
-  price: number;
-  category: string;
-  allergens: string[];
-  status: 'ACTIVE' | 'FLAGGED' | 'REMOVED';
 }
 
 interface OrderRecord {
@@ -47,493 +30,477 @@ export default function AdminDashboard() {
   const router = useRouter();
   const [adminUser, setAdminUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
-  const [activeTab, setActiveTab] = useState<'sellers' | 'listings' | 'orders'>('sellers');
+  const [activeTab, setActiveTab] = useState<'sellers' | 'listings' | 'orders' | 'waitlist'>('sellers');
 
-  // Local state representing database records for moderation
   const [sellers, setSellers] = useState<SellerApplication[]>([]);
-  const [listings, setListings] = useState<FoodListing[]>([]);
+  const [listings, setListings] = useState<FoodItem[]>([]);
   const [orders, setOrders] = useState<OrderRecord[]>([]);
+  const [waitlist, setWaitlist] = useState<string[]>([]);
 
   useEffect(() => {
-    // 1. Verify user authentication and check role
+    // 1. Verify user role or auto-login default Admin for demo convenience
     const userStr = localStorage.getItem('user');
     if (userStr) {
       try {
         const parsed = JSON.parse(userStr);
-        if (parsed.role === 'admin' || parsed.email.includes('admin') || parsed.email === 'demo@eushop.local') {
-          setAdminUser(parsed);
-        } else {
-          // Redirect if not admin
-          router.push('/dashboard');
-          return;
-        }
+        setAdminUser(parsed);
       } catch (error) {
         console.error('Failed to parse user session:', error);
-        router.push('/login');
-        return;
       }
     } else {
-      router.push('/login');
-      return;
+      // Auto-assign mock Admin role for smooth testing on GitHub Pages
+      const mockAdmin: User = {
+        id: 'admin-1',
+        email: 'admin@eushop.local',
+        name: 'Administrator',
+        country: 'BE',
+        role: 'ADMIN',
+        kycVerified: true,
+        emailVerified: true,
+        selfCertifiedCompliant: true
+      };
+      localStorage.setItem('user', JSON.stringify(mockAdmin));
+      setAdminUser(mockAdmin);
     }
 
-    // 2. Load mock data for moderation management
-    setSellers([
-      {
-        id: 'user_1',
-        name: 'Gourmet Iberico S.L.',
-        email: 'info@gourmetiberico.es',
-        country: 'ES',
-        taxId: 'ES-B12345678',
-        vatNumber: 'ESB12345678',
-        tradeRegisterNumber: 'REG-MADRID-9923',
-        address: 'Calle Mayor 12, Madrid, 28001',
-        selfCertified: true,
-        status: 'PENDING',
-      },
-      {
-        id: 'user_2',
-        name: 'Bavarian Cheese Co.',
-        email: 'sales@bavariancheese.de',
-        country: 'DE',
-        taxId: 'DE-123456789',
-        vatNumber: 'DE123456789',
-        tradeRegisterNumber: 'HRB-MUNICH-4412',
-        address: 'Marienplatz 4, Munich, 80331',
-        selfCertified: true,
-        status: 'VERIFIED',
-      },
-      {
-        id: 'user_3',
-        name: 'Athena Olives Ltd.',
-        email: 'contact@athenaolives.gr',
-        country: 'GR',
-        taxId: 'GR-998877665',
-        vatNumber: 'GR998877665',
-        tradeRegisterNumber: 'ATH-REG-201',
-        address: 'Ermou St 45, Athens, 10563',
-        selfCertified: false,
-        status: 'PENDING',
-      }
-    ]);
+    // 2. Load applications from localStorage
+    const rawSellers = localStorage.getItem('seller_applications');
+    if (rawSellers) {
+      setSellers(JSON.parse(rawSellers));
+    } else {
+      const defaultSellers: SellerApplication[] = [
+        {
+          id: 'app-1',
+          name: 'Gourmet Iberico S.L.',
+          email: 'info@gourmetiberico.es',
+          country: 'ES',
+          taxId: 'ES-B12345678',
+          vatNumber: 'ESB12345678',
+          tradeRegisterNumber: 'REG-MADRID-9923',
+          address: 'Calle Mayor 12, Madrid, 28001',
+          selfCertified: true,
+          status: 'PENDING',
+        },
+        {
+          id: 'app-2',
+          name: 'Bavarian Cheese Co.',
+          email: 'sales@bavariancheese.de',
+          country: 'DE',
+          taxId: 'DE-123456789',
+          vatNumber: 'DE123456789',
+          tradeRegisterNumber: 'MUNICH-2834-HRB',
+          address: 'Marienplatz 4, Munich, 80331',
+          selfCertified: true,
+          status: 'VERIFIED',
+        },
+        {
+          id: 'app-3',
+          name: 'Brussels Praline Co.',
+          email: 'brussels_praline@eushop.local',
+          country: 'BE',
+          taxId: 'BE-098765432',
+          vatNumber: 'BE098765432',
+          tradeRegisterNumber: 'REG-BRUSSELS-7721',
+          address: 'Grand Place 5, Brussels, 1000',
+          selfCertified: true,
+          status: 'VERIFIED',
+        }
+      ];
+      localStorage.setItem('seller_applications', JSON.stringify(defaultSellers));
+      setSellers(defaultSellers);
+    }
 
-    setListings([
-      {
-        id: 'food_1',
-        name: 'Spanish Jamón Ibérico de Bellota',
-        sellerName: 'Gourmet Iberico S.L.',
-        country: 'ES',
-        price: 89.99,
-        category: 'Meats',
-        allergens: [],
-        status: 'ACTIVE',
-      },
-      {
-        id: 'food_2',
-        name: 'Allgäuer Mountain Cheese Wheel',
-        sellerName: 'Bavarian Cheese Co.',
-        country: 'DE',
-        price: 34.99,
-        category: 'Cheese',
-        allergens: ['Dairy/Milk'],
-        status: 'ACTIVE',
-      },
-      {
-        id: 'food_3',
-        name: 'Lübeck Dark Chocolate Marzipan Bar',
-        sellerName: 'Bavarian Cheese Co.',
-        country: 'DE',
-        price: 8.50,
-        category: 'Chocolates',
-        allergens: ['Nuts', 'Soy'],
-        status: 'FLAGGED',
-      }
-    ]);
+    // 3. Load orders from localStorage
+    const rawOrders = localStorage.getItem('orders');
+    if (rawOrders) {
+      setOrders(JSON.parse(rawOrders));
+    } else {
+      const defaultOrders: OrderRecord[] = [
+        {
+          id: 'order-1',
+          buyerEmail: 'buyer_germany@eushop.local',
+          sellerName: 'Brussels Praline Co.',
+          productName: 'Artisanal Belgian Chocolates',
+          totalPrice: 38.97,
+          status: 'DELIVERED',
+          createdAt: new Date(Date.now() - 5 * 24 * 60 * 60 * 1000).toISOString()
+        },
+        {
+          id: 'order-2',
+          buyerEmail: 'buyer_france@eushop.local',
+          sellerName: 'Modena Olive & Vineyards',
+          productName: 'Aceto Balsamico Tradizionale',
+          totalPrice: 59.98,
+          status: 'PROCESSING',
+          createdAt: new Date(Date.now() - 1 * 24 * 60 * 60 * 1000).toISOString()
+        }
+      ];
+      localStorage.setItem('orders', JSON.stringify(defaultOrders));
+      setOrders(defaultOrders);
+    }
 
-    setOrders([
-      {
-        id: 'ord_201',
-        buyerEmail: 'jean.dupont@eushop.fr',
-        sellerName: 'Bavarian Cheese Co.',
-        productName: 'Allgäuer Mountain Cheese Wheel',
-        totalPrice: 44.98,
-        status: 'DELIVERED',
-        createdAt: '2026-06-28 14:32',
-      },
-      {
-        id: 'ord_202',
-        buyerEmail: 'maria.garcia@eushop.es',
-        sellerName: 'Gourmet Iberico S.L.',
-        productName: 'Spanish Jamón Ibérico de Bellota',
-        totalPrice: 104.98,
-        status: 'PENDING',
-        createdAt: '2026-07-01 10:15',
+    // 4. Load listings
+    const fetchListings = async () => {
+      try {
+        const all = await foodAPI.search(undefined, undefined, 1, 100);
+        setListings(all);
+      } catch (err) {
+        console.error(err);
       }
-    ]);
+    };
+    fetchListings();
+
+    // 5. Load investor waitlist
+    const rawWaitlist = localStorage.getItem('waitlist_emails');
+    if (rawWaitlist) {
+      setWaitlist(JSON.parse(rawWaitlist));
+    } else {
+      const defaultEmails = ['investor1@earlystage.vc', 'venture.lead@pan-eu.fund'];
+      localStorage.setItem('waitlist_emails', JSON.stringify(defaultEmails));
+      setWaitlist(defaultEmails);
+    }
 
     setLoading(false);
-  }, [router]);
+  }, []);
 
-  const handleVerifySeller = (id: string, approve: boolean) => {
-    setSellers(prev =>
-      prev.map(seller =>
-        seller.id === id
-          ? { ...seller, status: approve ? 'VERIFIED' : 'REJECTED' }
-          : seller
-      )
-    );
+  const handleApproveSeller = (appId: string) => {
+    const updatedSellers = sellers.map(s => {
+      if (s.id === appId) {
+        // Upgrade role of matching user in user database simulation
+        const usersStr = localStorage.getItem('local_users');
+        if (usersStr) {
+          try {
+            const users: User[] = JSON.parse(usersStr);
+            const userIdx = users.findIndex(u => u.email === s.email);
+            if (userIdx > -1) {
+              users[userIdx].role = 'SELLER';
+              users[userIdx].kycVerified = true;
+              localStorage.setItem('local_users', JSON.stringify(users));
+            }
+          } catch (e) {
+            console.error(e);
+          }
+        }
+        return { ...s, status: 'VERIFIED' as const };
+      }
+      return s;
+    });
+    setSellers(updatedSellers);
+    localStorage.setItem('seller_applications', JSON.stringify(updatedSellers));
+    alert('Merchant application approved and role updated to SELLER.');
   };
 
-  const handleModerateListing = (id: string, action: 'ACTIVE' | 'FLAGGED' | 'REMOVED') => {
-    setListings(prev =>
-      prev.map(listing =>
-        listing.id === id
-          ? { ...listing, status: action }
-          : listing
-      )
-    );
+  const handleRejectSeller = (appId: string) => {
+    const updatedSellers = sellers.map(s => {
+      if (s.id === appId) {
+        return { ...s, status: 'REJECTED' as const };
+      }
+      return s;
+    });
+    setSellers(updatedSellers);
+    localStorage.setItem('seller_applications', JSON.stringify(updatedSellers));
   };
 
-  const handleRefundOrder = (id: string) => {
-    setOrders(prev =>
-      prev.map(order =>
-        order.id === id
-          ? { ...order, status: 'REFUNDED' }
-          : order
-      )
-    );
+  const handleRemoveListing = (foodId: string) => {
+    const localFoodsStr = localStorage.getItem('local_foods');
+    if (localFoodsStr) {
+      try {
+        const localFoods: FoodItem[] = JSON.parse(localFoodsStr);
+        const filtered = localFoods.filter(f => f.id !== foodId);
+        localStorage.setItem('local_foods', JSON.stringify(filtered));
+        // Update local UI state
+        setListings(prev => prev.filter(f => f.id !== foodId));
+        alert('Listing removed from simulated database.');
+      } catch (e) {
+        console.error(e);
+      }
+    } else {
+      // It is a static trending food, remove from local UI only
+      setListings(prev => prev.filter(f => f.id !== foodId));
+      alert('Removed from active dashboard view.');
+    }
+  };
+
+  const handleUpdateOrderStatus = (orderId: string, nextStatus: string) => {
+    const updatedOrders = orders.map(o => {
+      if (o.id === orderId) {
+        return { ...o, status: nextStatus };
+      }
+      return o;
+    });
+    setOrders(updatedOrders);
+    localStorage.setItem('orders', JSON.stringify(updatedOrders));
+    alert(`Order status updated to ${nextStatus}.`);
+  };
+
+  const handleClearWaitlist = () => {
+    if (confirm('Clear waitlist emails?')) {
+      localStorage.setItem('waitlist_emails', '[]');
+      setWaitlist([]);
+    }
   };
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gray-900 flex justify-center items-center text-white">
-        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-indigo-500"></div>
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center font-sans">
+        <div className="text-center">
+          <div className="inline-block animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
+          <p className="text-gray-500 mt-4">Loading system logs...</p>
+        </div>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-gray-950 text-gray-100 font-sans">
-      {/* Header */}
-      <nav className="bg-gray-900 border-b border-gray-800 px-6 py-4">
-        <div className="max-w-7xl mx-auto flex justify-between items-center">
+    <div className="min-h-screen bg-gray-50 text-gray-800 font-sans">
+      {/* Top Header */}
+      <nav className="bg-white border-b border-gray-150 py-4 px-6 shadow-sm">
+        <div className="max-w-6xl mx-auto flex justify-between items-center">
+          <Link href="/" className="text-2xl font-extrabold text-primary flex items-center gap-2">
+            <span className="text-secondary">🌿</span> EUshop
+          </Link>
           <div className="flex items-center gap-3">
-            <span className="text-2xl">🛡️</span>
-            <span className="text-xl font-bold tracking-tight bg-gradient-to-r from-indigo-400 to-purple-400 bg-clip-text text-transparent">
-              EUshop Admin Control Center
+            <span className="text-xs font-bold px-2.5 py-1 bg-indigo-50 border border-indigo-100 text-indigo-700 rounded-full">
+              Operator Panel
             </span>
-            <span className="bg-indigo-900/60 text-indigo-300 text-xs px-2 py-0.5 rounded-full border border-indigo-700/50">
-              DSA Compliance Engine v1.1
-            </span>
-          </div>
-          <div className="flex items-center gap-4">
-            <span className="text-sm text-gray-400">Logged in as: <b className="text-gray-200">{adminUser?.name}</b></span>
-            <Link
-              href="/dashboard"
-              className="bg-gray-800 hover:bg-gray-700 px-4 py-2 rounded-lg text-sm transition font-medium border border-gray-700"
-            >
-              Exit to Dashboard
+            <Link href="/" className="text-xs font-bold text-gray-500 hover:text-primary transition">
+              View Shop
             </Link>
           </div>
         </div>
       </nav>
 
       {/* Main Container */}
-      <main className="max-w-7xl mx-auto px-6 py-10">
-        {/* Navigation Tabs */}
-        <div className="flex border-b border-gray-800 mb-8 gap-4">
+      <main className="max-w-6xl mx-auto px-6 py-12">
+        <div className="mb-8">
+          <h1 className="text-3xl font-black text-brand-dark mb-2 font-display">Moderation Desk</h1>
+          <p className="text-xs text-gray-500">Conduct KYB verifications, review food products, monitor orders, and inspect earlywaitlist signups.</p>
+        </div>
+
+        {/* Tab Buttons */}
+        <div className="flex border-b border-gray-200 mb-8 gap-2">
           <button
             onClick={() => setActiveTab('sellers')}
-            className={`pb-4 px-2 text-sm font-semibold transition ${
-              activeTab === 'sellers'
-                ? 'border-b-2 border-indigo-500 text-indigo-400'
-                : 'text-gray-400 hover:text-gray-200'
+            className={`px-4 py-2.5 font-bold text-xs uppercase tracking-wider transition ${
+              activeTab === 'sellers' ? 'border-b-2 border-primary text-primary' : 'text-gray-400 hover:text-gray-700'
             }`}
           >
-            📋 Merchant Verification (DSA Art. 30)
+            Seller Applications ({sellers.filter(s => s.status === 'PENDING').length} Pending)
           </button>
           <button
             onClick={() => setActiveTab('listings')}
-            className={`pb-4 px-2 text-sm font-semibold transition ${
-              activeTab === 'listings'
-                ? 'border-b-2 border-indigo-500 text-indigo-400'
-                : 'text-gray-400 hover:text-gray-200'
+            className={`px-4 py-2.5 font-bold text-xs uppercase tracking-wider transition ${
+              activeTab === 'listings' ? 'border-b-2 border-primary text-primary' : 'text-gray-400 hover:text-gray-700'
             }`}
           >
-            🍔 Listings Moderation (Allergens)
+            Food Listings ({listings.length})
           </button>
           <button
             onClick={() => setActiveTab('orders')}
-            className={`pb-4 px-2 text-sm font-semibold transition ${
-              activeTab === 'orders'
-                ? 'border-b-2 border-indigo-500 text-indigo-400'
-                : 'text-gray-400 hover:text-gray-200'
+            className={`px-4 py-2.5 font-bold text-xs uppercase tracking-wider transition ${
+              activeTab === 'orders' ? 'border-b-2 border-primary text-primary' : 'text-gray-400 hover:text-gray-700'
             }`}
           >
-            💳 Transaction & Refund Manager
+            System Orders ({orders.length})
+          </button>
+          <button
+            onClick={() => setActiveTab('waitlist')}
+            className={`px-4 py-2.5 font-bold text-xs uppercase tracking-wider transition ${
+              activeTab === 'waitlist' ? 'border-b-2 border-primary text-primary' : 'text-gray-400 hover:text-gray-700'
+            }`}
+          >
+            Investor Waitlist ({waitlist.length})
           </button>
         </div>
 
-        {/* TAB 1: Sellers */}
+        {/* Tab Content */}
         {activeTab === 'sellers' && (
-          <div className="space-y-6">
-            <div className="bg-gray-900 border border-gray-800 rounded-xl p-6">
-              <h2 className="text-lg font-bold mb-2">Pending merchant KYBC verification applications</h2>
-              <p className="text-sm text-gray-400 mb-6">
-                Under the EU Digital Services Act (DSA) Article 30, you must verify the seller’s identity information (trade register ID, VAT, and self-certification compliance declaration) before allowing them to offer foodstuffs on the platform.
-              </p>
-
-              <div className="overflow-x-auto">
-                <table className="w-full text-left border-collapse text-sm">
-                  <thead>
-                    <tr className="border-b border-gray-800 text-gray-400">
-                      <th className="py-3 px-4">Merchant Name & Email</th>
-                      <th className="py-3 px-4">Origin</th>
-                      <th className="py-3 px-4">TIN & VAT IDs</th>
-                      <th className="py-3 px-4">Trade Register Ref</th>
-                      <th className="py-3 px-4">DSA Declaration</th>
-                      <th className="py-3 px-4">Status</th>
-                      <th className="py-3 px-4 text-right">Actions</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {sellers.map((seller) => (
-                      <tr key={seller.id} className="border-b border-gray-800/50 hover:bg-gray-900/50">
-                        <td className="py-4 px-4">
-                          <div className="font-bold text-white">{seller.name}</div>
-                          <div className="text-xs text-gray-500">{seller.email}</div>
-                          <div className="text-xs text-gray-400 mt-1">{seller.address}</div>
-                        </td>
-                        <td className="py-4 px-4 font-semibold text-indigo-400">{seller.country}</td>
-                        <td className="py-4 px-4 font-mono text-xs">
-                          <div>Tax ID: {seller.taxId}</div>
-                          <div>VAT: {seller.vatNumber}</div>
-                        </td>
-                        <td className="py-4 px-4 font-mono text-xs text-gray-300">{seller.tradeRegisterNumber}</td>
-                        <td className="py-4 px-4">
-                          {seller.selfCertified ? (
-                            <span className="bg-green-950/60 text-green-400 text-xs px-2 py-0.5 rounded-full border border-green-800/40">
-                              ✓ Self-Certified
-                            </span>
-                          ) : (
-                            <span className="bg-red-950/60 text-red-400 text-xs px-2 py-0.5 rounded-full border border-red-800/40">
-                              ✗ Missing Certificate
-                            </span>
-                          )}
-                        </td>
-                        <td className="py-4 px-4">
-                          {seller.status === 'PENDING' && (
-                            <span className="bg-yellow-950 text-yellow-400 text-xs px-2.5 py-1 rounded font-semibold border border-yellow-800/50">
-                              Pending Review
-                            </span>
-                          )}
-                          {seller.status === 'VERIFIED' && (
-                            <span className="bg-green-950 text-green-400 text-xs px-2.5 py-1 rounded font-semibold border border-green-800/50">
-                              Verified Merchant
-                            </span>
-                          )}
-                          {seller.status === 'REJECTED' && (
-                            <span className="bg-red-950 text-red-400 text-xs px-2.5 py-1 rounded font-semibold border border-red-800/50">
-                              Application Rejected
-                            </span>
-                          )}
-                        </td>
-                        <td className="py-4 px-4 text-right">
-                          {seller.status === 'PENDING' && (
-                            <div className="flex justify-end gap-2">
-                              <button
-                                onClick={() => handleVerifySeller(seller.id, true)}
-                                className="bg-green-700 hover:bg-green-600 text-white px-3 py-1.5 rounded-md text-xs font-semibold transition"
-                              >
-                                Approve
-                              </button>
-                              <button
-                                onClick={() => handleVerifySeller(seller.id, false)}
-                                className="bg-red-700 hover:bg-red-600 text-white px-3 py-1.5 rounded-md text-xs font-semibold transition"
-                              >
-                                Reject
-                              </button>
-                            </div>
-                          )}
-                        </td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
+          <div className="space-y-4">
+            {sellers.length === 0 ? (
+              <div className="p-12 text-center bg-white border border-gray-150 rounded-2xl text-gray-400 text-xs">
+                No seller registrations found in the simulated database.
               </div>
-            </div>
+            ) : (
+              sellers.map((app) => (
+                <div key={app.id} className="bg-white border border-gray-150 rounded-2xl p-6 shadow-sm flex flex-col md:flex-row justify-between md:items-center gap-6">
+                  <div className="space-y-2">
+                    <div className="flex items-center gap-3">
+                      <h3 className="font-bold text-sm text-brand-dark">{app.name}</h3>
+                      <span className={`text-[9px] font-extrabold px-2 py-0.5 rounded border uppercase tracking-wider ${
+                        app.status === 'PENDING' ? 'bg-amber-50 border-amber-200 text-amber-700' :
+                        app.status === 'VERIFIED' ? 'bg-emerald-50 border-emerald-200 text-emerald-700' :
+                        'bg-red-50 border-red-200 text-red-700'
+                      }`}>
+                        {app.status}
+                      </span>
+                    </div>
+                    
+                    <div className="grid grid-cols-2 md:grid-cols-4 gap-x-6 gap-y-1 text-xs text-gray-500">
+                      <div><strong className="text-gray-700">Email:</strong> {app.email}</div>
+                      <div><strong className="text-gray-700">Country:</strong> {app.country}</div>
+                      <div><strong className="text-gray-700">TIN (Tax ID):</strong> {app.taxId}</div>
+                      <div><strong className="text-gray-700">Reg No:</strong> {app.tradeRegisterNumber}</div>
+                    </div>
+                    <div className="text-xs text-gray-500"><strong className="text-gray-700">Address:</strong> {app.address}</div>
+                    <div className="text-[10px] text-gray-400">DSA Article 30 Compliance Statement: {app.selfCertified ? '✅ Self-Certified' : '❌ Incomplete'}</div>
+                  </div>
+
+                  {app.status === 'PENDING' && (
+                    <div className="flex gap-2">
+                      <button
+                        onClick={() => handleApproveSeller(app.id)}
+                        className="px-4 py-2 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl text-xs font-bold transition"
+                      >
+                        Approve Merchant
+                      </button>
+                      <button
+                        onClick={() => handleRejectSeller(app.id)}
+                        className="px-4 py-2 border border-gray-200 hover:bg-gray-50 rounded-xl text-xs font-bold transition text-gray-600"
+                      >
+                        Reject
+                      </button>
+                    </div>
+                  )}
+                </div>
+              ))
+            )}
           </div>
         )}
 
-        {/* TAB 2: Listings */}
         {activeTab === 'listings' && (
-          <div className="space-y-6">
-            <div className="bg-gray-900 border border-gray-800 rounded-xl p-6">
-              <h2 className="text-lg font-bold mb-2">Food listings moderation & labeling audit</h2>
-              <p className="text-sm text-gray-400 mb-6">
-                All food listings targeting EU buyers must mandate precise allergen disclosures. Use this panel to review description completeness and flag or hide products violating Regulation (EU) No 1169/2011.
-              </p>
-
-              <div className="overflow-x-auto">
-                <table className="w-full text-left border-collapse text-sm">
-                  <thead>
-                    <tr className="border-b border-gray-800 text-gray-400">
-                      <th className="py-3 px-4">Product Name & Category</th>
-                      <th className="py-3 px-4">Seller</th>
-                      <th className="py-3 px-4">Country</th>
-                      <th className="py-3 px-4">Price</th>
-                      <th className="py-3 px-4">Allergen Declarations</th>
-                      <th className="py-3 px-4">Moderation Status</th>
-                      <th className="py-3 px-4 text-right">Actions</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {listings.map((listing) => (
-                      <tr key={listing.id} className="border-b border-gray-800/50 hover:bg-gray-900/50">
-                        <td className="py-4 px-4">
-                          <div className="font-bold text-white">{listing.name}</div>
-                          <div className="text-xs text-indigo-400 font-semibold">{listing.category}</div>
-                        </td>
-                        <td className="py-4 px-4 text-gray-300">{listing.sellerName}</td>
-                        <td className="py-4 px-4 font-semibold text-gray-400">{listing.country}</td>
-                        <td className="py-4 px-4 text-white font-mono">€{listing.price.toFixed(2)}</td>
-                        <td className="py-4 px-4">
-                          {listing.allergens.length > 0 ? (
-                            <div className="flex flex-wrap gap-1">
-                              {listing.allergens.map(a => (
-                                <span key={a} className="bg-amber-950/60 text-amber-400 text-xs px-2 py-0.5 rounded border border-amber-800/40">
-                                  ⚠️ {a}
-                                </span>
-                              ))}
-                            </div>
-                          ) : (
-                            <span className="text-xs text-gray-500">None Declared</span>
-                          )}
-                        </td>
-                        <td className="py-4 px-4">
-                          {listing.status === 'ACTIVE' && (
-                            <span className="bg-green-950/50 text-green-400 text-xs px-2 py-1 rounded border border-green-800/40">
-                              Active / Public
+          <div className="bg-white border border-gray-150 rounded-2xl overflow-hidden shadow-sm">
+            <table className="w-full text-left border-collapse text-xs">
+              <thead>
+                <tr className="bg-gray-50 border-b border-gray-100 font-bold text-gray-600">
+                  <th className="p-4">Food Item</th>
+                  <th className="p-4">Origin Country</th>
+                  <th className="p-4">Category</th>
+                  <th className="p-4">Price</th>
+                  <th className="p-4">Allergen Profile (EU 1169/2011)</th>
+                  <th className="p-4 text-right">Actions</th>
+                </tr>
+              </thead>
+              <tbody>
+                {listings.map((item) => (
+                  <tr key={item.id} className="border-b border-gray-100 hover:bg-gray-50/50 transition">
+                    <td className="p-4">
+                      <div className="font-bold text-brand-dark">{item.name}</div>
+                      <div className="text-[10px] text-gray-400 mt-0.5 line-clamp-1">{item.description}</div>
+                    </td>
+                    <td className="p-4 text-gray-500 font-medium">{item.country}</td>
+                    <td className="p-4"><span className="px-2 py-0.5 bg-gray-100 rounded text-gray-600 font-semibold">{item.category || 'Specialty'}</span></td>
+                    <td className="p-4 font-bold text-gray-800">€{item.price.toFixed(2)}</td>
+                    <td className="p-4">
+                      {item.allergens && item.allergens.length > 0 ? (
+                        <div className="flex flex-wrap gap-1">
+                          {item.allergens.map(a => (
+                            <span key={a} className="text-[9px] font-bold px-1.5 py-0.2 bg-red-50 border border-red-100 text-red-600 rounded">
+                              {a}
                             </span>
-                          )}
-                          {listing.status === 'FLAGGED' && (
-                            <span className="bg-amber-950/50 text-amber-400 text-xs px-2 py-1 rounded border border-amber-800/40 animate-pulse">
-                              Flagged / Review Required
-                            </span>
-                          )}
-                          {listing.status === 'REMOVED' && (
-                            <span className="bg-red-950/50 text-red-400 text-xs px-2 py-1 rounded border border-red-800/40">
-                              Hidden from Storefront
-                            </span>
-                          )}
-                        </td>
-                        <td className="py-4 px-4 text-right">
-                          <div className="flex justify-end gap-2">
-                            {listing.status !== 'ACTIVE' && (
-                              <button
-                                onClick={() => handleModerateListing(listing.id, 'ACTIVE')}
-                                className="bg-gray-800 hover:bg-gray-700 text-white px-2.5 py-1 rounded text-xs font-semibold transition"
-                              >
-                                Restore
-                              </button>
-                            )}
-                            {listing.status !== 'FLAGGED' && (
-                              <button
-                                onClick={() => handleModerateListing(listing.id, 'FLAGGED')}
-                                className="bg-amber-700/80 hover:bg-amber-700 text-white px-2.5 py-1 rounded text-xs font-semibold transition"
-                              >
-                                Flag
-                              </button>
-                            )}
-                            {listing.status !== 'REMOVED' && (
-                              <button
-                                onClick={() => handleModerateListing(listing.id, 'REMOVED')}
-                                className="bg-red-900 hover:bg-red-800 text-white px-2.5 py-1 rounded text-xs font-semibold transition"
-                              >
-                                Hide
-                              </button>
-                            )}
-                          </div>
-                        </td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-              </div>
-            </div>
+                          ))}
+                        </div>
+                      ) : (
+                        <span className="text-[10px] text-emerald-600 font-semibold">✓ Allergen-Free</span>
+                      )}
+                    </td>
+                    <td className="p-4 text-right">
+                      <button
+                        onClick={() => handleRemoveListing(item.id)}
+                        className="text-red-500 hover:text-red-700 font-bold hover:underline"
+                      >
+                        Remove Listing
+                      </button>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
           </div>
         )}
 
-        {/* TAB 3: Orders */}
         {activeTab === 'orders' && (
-          <div className="space-y-6">
-            <div className="bg-gray-900 border border-gray-800 rounded-xl p-6">
-              <h2 className="text-lg font-bold mb-2">Escrow transactions & refund operations</h2>
-              <p className="text-sm text-gray-400 mb-6">
-                View platform invoices and process customer requests or refunds from the secure payment system. Right of withdrawal exemptions on perishable food items must be observed.
-              </p>
-
-              <div className="overflow-x-auto">
-                <table className="w-full text-left border-collapse text-sm">
-                  <thead>
-                    <tr className="border-b border-gray-800 text-gray-400">
-                      <th className="py-3 px-4">Order ID & Date</th>
-                      <th className="py-3 px-4">Buyer Email</th>
-                      <th className="py-3 px-4">Seller</th>
-                      <th className="py-3 px-4">Product Name</th>
-                      <th className="py-3 px-4">Amount</th>
-                      <th className="py-3 px-4">Status</th>
-                      <th className="py-3 px-4 text-right">Actions</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {orders.map((order) => (
-                      <tr key={order.id} className="border-b border-gray-800/50 hover:bg-gray-900/50">
-                        <td className="py-4 px-4">
-                          <div className="font-bold text-white font-mono">{order.id}</div>
-                          <div className="text-xs text-gray-500">{order.createdAt}</div>
-                        </td>
-                        <td className="py-4 px-4 text-gray-300 font-mono text-xs">{order.buyerEmail}</td>
-                        <td className="py-4 px-4 text-gray-400">{order.sellerName}</td>
-                        <td className="py-4 px-4 text-white font-semibold">{order.productName}</td>
-                        <td className="py-4 px-4 text-indigo-400 font-mono font-bold">€{order.totalPrice.toFixed(2)}</td>
-                        <td className="py-4 px-4">
-                          {order.status === 'DELIVERED' && (
-                            <span className="bg-green-950 text-green-400 text-xs px-2.5 py-1 rounded font-semibold border border-green-800/40">
-                              Delivered
-                            </span>
-                          )}
-                          {order.status === 'PENDING' && (
-                            <span className="bg-yellow-950 text-yellow-400 text-xs px-2.5 py-1 rounded font-semibold border border-yellow-800/40">
-                              Escrow / Pending
-                            </span>
-                          )}
-                          {order.status === 'REFUNDED' && (
-                            <span className="bg-gray-800 text-gray-400 text-xs px-2.5 py-1 rounded font-semibold border border-gray-700">
-                              Refunded
-                            </span>
-                          )}
-                        </td>
-                        <td className="py-4 px-4 text-right">
-                          {order.status !== 'REFUNDED' && (
-                            <button
-                              onClick={() => handleRefundOrder(order.id)}
-                              className="bg-red-900/70 hover:bg-red-800 text-white px-3 py-1.5 rounded text-xs font-semibold transition"
-                            >
-                              Refund
-                            </button>
-                          )}
-                        </td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
+          <div className="space-y-4">
+            {orders.length === 0 ? (
+              <div className="p-12 text-center bg-white border border-gray-150 rounded-2xl text-gray-400 text-xs">
+                No orders recorded.
               </div>
+            ) : (
+              orders.map((order) => (
+                <div key={order.id} className="bg-white border border-gray-150 rounded-2xl p-6 shadow-sm flex flex-col md:flex-row justify-between md:items-center gap-6">
+                  <div className="space-y-2">
+                    <div className="flex items-center gap-3">
+                      <h3 className="font-bold text-sm text-brand-dark">{order.productName}</h3>
+                      <span className={`text-[9px] font-extrabold px-2 py-0.5 rounded border uppercase tracking-wider ${
+                        order.status === 'PROCESSING' ? 'bg-amber-50 border-amber-200 text-amber-700' :
+                        order.status === 'DELIVERED' ? 'bg-emerald-50 border-emerald-200 text-emerald-700' :
+                        'bg-blue-50 border-blue-200 text-blue-700'
+                      }`}>
+                        {order.status}
+                      </span>
+                    </div>
+
+                    <div className="grid grid-cols-2 md:grid-cols-4 gap-x-6 gap-y-1 text-xs text-gray-500">
+                      <div><strong className="text-gray-700">Order ID:</strong> {order.id.split('-').slice(0,2).join('-')}</div>
+                      <div><strong className="text-gray-700">Buyer:</strong> {order.buyerEmail}</div>
+                      <div><strong className="text-gray-700">Seller:</strong> {order.sellerName}</div>
+                      <div><strong className="text-gray-700">Total:</strong> €{order.totalPrice.toFixed(2)}</div>
+                    </div>
+                    <div className="text-[10px] text-gray-400">Transaction Date: {new Date(order.createdAt).toLocaleString()}</div>
+                  </div>
+
+                  <div className="flex gap-2">
+                    {order.status === 'PROCESSING' && (
+                      <button
+                        onClick={() => handleUpdateOrderStatus(order.id, 'SHIPPED')}
+                        className="px-3.5 py-1.5 bg-blue-600 hover:bg-blue-700 text-white rounded-xl text-xs font-bold transition"
+                      >
+                        Mark Shipped
+                      </button>
+                    )}
+                    {order.status === 'SHIPPED' && (
+                      <button
+                        onClick={() => handleUpdateOrderStatus(order.id, 'DELIVERED')}
+                        className="px-3.5 py-1.5 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl text-xs font-bold transition"
+                      >
+                        Mark Delivered
+                      </button>
+                    )}
+                  </div>
+                </div>
+              ))
+            )}
+          </div>
+        )}
+
+        {activeTab === 'waitlist' && (
+          <div className="bg-white border border-gray-150 rounded-2xl p-6 shadow-sm">
+            <div className="flex justify-between items-center mb-6">
+              <h3 className="text-sm font-bold text-brand-dark uppercase tracking-wider">Registered Investors</h3>
+              {waitlist.length > 0 && (
+                <button
+                  onClick={handleClearWaitlist}
+                  className="text-xs text-red-500 hover:underline font-bold"
+                >
+                  Clear Waitlist
+                </button>
+              )}
             </div>
+
+            {waitlist.length === 0 ? (
+              <p className="text-xs text-gray-400 py-4 text-center">No emails collected yet.</p>
+            ) : (
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                {waitlist.map((email, idx) => (
+                  <div key={idx} className="p-3 bg-gray-50 border border-gray-100 rounded-xl flex items-center justify-between">
+                    <span className="text-xs font-bold text-gray-700">{email}</span>
+                    <span className="text-[9px] text-gray-400 font-semibold">ID: #{idx + 1}</span>
+                  </div>
+                ))}
+              </div>
+            )}
           </div>
         )}
       </main>
     </div>
   );
 }
-
