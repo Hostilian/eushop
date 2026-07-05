@@ -155,6 +155,8 @@ export async function authMiddleware(
       statusCode = 503; // Service Unavailable
     } else if (error.message?.includes('clock')) {
       errorMessage = 'System clock mismatch. Please check your device time and try again.';
+    } else if (error.message?.includes('jose') || error.message?.includes('JWT')) {
+      errorMessage = 'Invalid authentication token. Please log in again.';
     }
     
     // Security: Do not expose raw internal error details to client in production
@@ -169,12 +171,21 @@ export async function authMiddleware(
       stack: process.env.NODE_ENV === 'development' ? error.stack : undefined
     });
 
+    // Graceful degradation: If we're in development mode and using mock auth, provide helpful hints
+    if (process.env.NODE_ENV === 'development' && (process.env.USE_MOCK_AUTH === 'true' || !process.env.AUTH0_DOMAIN)) {
+      console.warn('Development mode: Consider checking your mock token format or AUTH0 configuration');
+    }
+
     return res.status(statusCode).json({
       error: 'Unauthorized',
       message: errorMessage,
       details: safeDetails,
       // Graceful degradation suggestion for clients
-      ...(statusCode === 503 && { retryAfter: 60 })
+      ...(statusCode === 503 && { retryAfter: 60 }),
+      // Provide a recovery suggestion for common issues
+      ...(process.env.NODE_ENV === 'development' && { 
+        hint: 'Check your token format and ensure AUTH0_DOMAIN is set if not using mock auth' 
+      })
     });
   }
 }

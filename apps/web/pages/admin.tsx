@@ -133,7 +133,22 @@ export default function AdminPage() {
         <div className="text-center">
           <div className="inline-block animate-spin rounded-full h-8 w-8 border-b-2 border-primary mb-4"></div>
           <p className="text-gray-400 text-sm mb-2">Verifying admin privileges...</p>
-          <p className="text-gray-500 text-xs">This may take a few seconds</p>
+          <p className="text-gray-500 text-xs mb-4">This may take a few seconds</p>
+          {/* Graceful degradation: Provide alternative actions if loading is stuck */}
+          <div className="space-y-2">
+            <button 
+              onClick={() => window.location.reload()}
+              className="text-primary hover:underline text-sm block mx-auto"
+            >
+              Refresh page
+            </button>
+            <button 
+              onClick={() => router.push('/')}
+              className="text-gray-400 hover:text-gray-300 text-xs block mx-auto"
+            >
+              Return to home
+            </button>
+          </div>
         </div>
       </div>
     );

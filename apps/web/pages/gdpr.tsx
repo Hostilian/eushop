@@ -55,20 +55,78 @@ export default function GDPRPage() {
     setExporting(true);
     setError('');
     setSuccessMsg('');
+    
+    // Graceful degradation: Check for browser support
+    if (typeof window === 'undefined') {
+      setError('This feature requires a browser environment.');
+      setExporting(false);
+      return;
+    }
+    
+    // Graceful degradation: Check for online status
+    if (!navigator.onLine) {
+      setError('You are offline. Please check your internet connection and try again.');
+      setExporting(false);
+      return;
+    }
+    
     try {
       const data = await authAPI.exportUserData(user.id);
-      const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+      
+      // Graceful degradation: Validate response data
+      if (!data || typeof data !== 'object') {
+        throw new Error('Invalid data format received from server');
+      }
+      
+      const jsonString = JSON.stringify(data, null, 2);
+      
+      // Graceful degradation: Check for large data size
+      if (jsonString.length > 10 * 1024 * 1024) { // 10MB limit
+        console.warn('Large data export detected:', jsonString.length, 'bytes');
+        setError('Your data archive is very large. Please contact support for assistance.');
+        setExporting(false);
+        return;
+      }
+      
+      const blob = new Blob([jsonString], { type: 'application/json' });
+      
+      // Graceful degradation: Fallback for older browsers
+      if (!window.URL || !window.URL.createObjectURL) {
+        setError('Your browser does not support file downloading. Please try with a modern browser.');
+        setExporting(false);
+        return;
+      }
+      
       const url = URL.createObjectURL(blob);
       const a = document.createElement('a');
       a.href = url;
-      a.download = `eushop-data-portability-${user.id}.json`;
+      a.download = `eushop-data-portability-${user.id}-${Date.now()}.json`;
+      a.style.display = 'none';
       document.body.appendChild(a);
-      a.click();
-      document.body.removeChild(a);
-      URL.revokeObjectURL(url);
-      setSuccessMsg('Your personal data archive was successfully compiled and downloaded.');
+      
+      // Graceful degradation: Handle download failure
+      try {
+        a.click();
+        setSuccessMsg('Your personal data archive was successfully compiled and downloaded.');
+      } catch (downloadErr) {
+        setError('Failed to download the file. Please try saving the link manually.');
+        console.error('Download error:', downloadErr);
+      } finally {
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url);
+      }
     } catch (err: any) {
-      setError(err.response?.data?.message || 'Failed to export your data. Please try again.');
+      // Graceful degradation: Provide user-friendly error messages
+      if (err.message?.includes('network') || !navigator.onLine) {
+        setError('Network error. Please check your internet connection and try again.');
+      } else if (err.response?.status === 429) {
+        setError('Too many requests. Please wait a few minutes before trying again.');
+      } else if (err.response?.status === 404) {
+        setError('User data not found. Please contact support.');
+      } else {
+        setError(err.response?.data?.message || 'We couldn\'t export your data at this time. Please try again later or contact support.');
+      }
+      console.error('Export error:', err);
     } finally {
       setExporting(false);
     }

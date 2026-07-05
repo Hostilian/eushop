@@ -214,6 +214,16 @@ export default function FoodDetailPage() {
         <div className="text-center">
           <div className="inline-block animate-spin rounded-full h-8 w-8 border-b-2 border-primary mb-4"></div>
           <p className="text-gray-600">Loading food details...</p>
+          <p className="text-gray-400 text-sm mt-2">This may take a moment</p>
+          {/* Graceful degradation: Show a fallback message if loading takes too long */}
+          <div className="mt-4">
+            <button 
+              onClick={() => router.back()}
+              className="text-primary hover:underline text-sm"
+            >
+              ← Go back
+            </button>
+          </div>
         </div>
       </div>
     );
