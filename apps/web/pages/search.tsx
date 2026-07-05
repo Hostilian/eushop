@@ -42,13 +42,38 @@ export default function SearchPage() {
     try {
       const result = await foodAPI.search(searchQuery, selectedCountry, page, 20);
       setFoods(Array.isArray(result) ? result : (result?.data || result?.foods || []));
+      // Cache successful results for graceful degradation
+      try {
+        localStorage.setItem('search_fallback', JSON.stringify(Array.isArray(result) ? result : (result?.data || result?.foods || [])));
+      } catch (cacheError) {
+        console.warn('Could not cache search results:', cacheError);
+      }
     } catch (error) {
       console.error('Search failed:', error);
-      // Mock data as fallback
+      // Graceful degradation: Use cached results from localStorage if available
+      try {
+        const cachedResults = localStorage.getItem('search_fallback');
+        if (cachedResults) {
+          const parsed = JSON.parse(cachedResults);
+          if (Array.isArray(parsed) && parsed.length > 0) {
+            setFoods(parsed);
+            return;
+          }
+        }
+      } catch (cacheError) {
+        console.warn('Could not read cached search results:', cacheError);
+      }
+      
+      // Ultimate fallback: show user-friendly message and minimal data
       setFoods([
-        { id: '1', name: 'Belgian Chocolates', country: 'Belgium', price: 24.99, description: 'Premium Belgian chocolates', sellerId: 'seller-be' },
-        { id: '2', name: 'Italian Balsamic', country: 'Italy', price: 34.99, description: 'Aged balsamic vinegar', sellerId: 'seller-it' },
-        { id: '3', name: 'French Brie Cheese', country: 'France', price: 19.99, description: 'Soft and creamy traditional French cheese', sellerId: 'seller-fr' },
+        { 
+          id: 'fallback-1', 
+          name: 'Sample Product', 
+          country: 'EU', 
+          price: 19.99, 
+          description: 'This is a sample product shown while search services are temporarily unavailable. Please try again later.', 
+          sellerId: 'system-fallback' 
+        },
       ]);
     } finally {
       setLoading(false);
@@ -154,7 +179,9 @@ export default function SearchPage() {
         ) : foods.length > 0 ? (
           <>
             <p className="text-sm text-gray-500 dark:text-gray-400 mb-6 font-medium">
-              Showing {foods.length} delicacies found
+              {foods[0]?.id?.startsWith('fallback-') 
+                ? 'Search service is currently limited. Showing sample product.' 
+                : `Showing ${foods.length} delicacies found`}
             </p>
             
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">

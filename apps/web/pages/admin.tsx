@@ -97,20 +97,27 @@ export default function AdminPage() {
           }, 3000);
         }
       } catch (error: any) {
-        // Graceful degradation: Provide user-friendly error messages
-        if (error.name === 'AbortError') {
+        // Graceful degradation: Provide user-friendly error messages with offline detection
+        if (!navigator.onLine) {
+          setError('You appear to be offline. Please check your internet connection and try again.');
+        } else if (error.name === 'AbortError') {
           setError('Request timed out. Please check your connection and try again.');
-        } else if (error.message?.includes('Network') || !navigator.onLine) {
+        } else if (error.message?.includes('Network')) {
           setError('Network error. Please check your internet connection and try again.');
         } else if (error.message?.includes('Session expired')) {
           setError('Your session has expired. Please log in again.');
         } else {
-          setError('Authentication failed. Please log in again or contact support if the problem persists.');
+          setError('Authentication failed. You can try refreshing the page or contact support if the problem persists.');
         }
         console.error('Admin access check failed:', error);
+          
+        // Graceful degradation: Don't redirect immediately, give user time to read error
         setTimeout(() => {
-          router.replace('/login?redirect=/admin');
-        }, 3000);
+          // Check if user is still on the page
+          if (!error.message?.includes('offline')) {
+            router.replace('/login?redirect=/admin');
+          }
+        }, 5000);
       } finally {
         setLoading(false);
       }
@@ -161,7 +168,27 @@ export default function AdminPage() {
           <div className="text-red-400 text-4xl mb-4">⚠️</div>
           <h2 className="text-xl font-bold mb-2">Access Denied</h2>
           <p className="text-gray-400 mb-6">{error}</p>
-          <p className="text-gray-500 text-sm">Redirecting to home page...</p>
+          <div className="space-y-4">
+            <p className="text-gray-500 text-sm">
+              {error.includes('offline') 
+                ? 'You can still access cached content while offline.' 
+                : 'Redirecting to login page...'}
+            </p>
+            {error.includes('offline') && (
+              <button
+                onClick={() => window.location.reload()}
+                className="px-4 py-2 bg-primary text-white rounded-lg hover:opacity-90 transition"
+              >
+                Retry Connection
+              </button>
+            )}
+            <button
+              onClick={() => router.push('/')}
+              className="px-4 py-2 border border-gray-600 text-gray-300 rounded-lg hover:bg-gray-800 transition block mx-auto"
+            >
+              Go to Homepage
+            </button>
+          </div>
         </div>
       </div>
     );
