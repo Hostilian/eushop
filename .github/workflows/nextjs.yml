@@ -67,7 +67,7 @@ jobs:
             ${{ runner.os }}-nextjs-${{ hashFiles('**/pnpm-lock.yaml') }}-
 
       - name: Install all dependencies
-        run: pnpm install --frozen-lockfile
+        run: pnpm install --prefer-frozen-lockfile
 
       - name: Build Next.js static export
         # basePath='/eushop' (default in next.config.js) matches GitHub Pages URL
