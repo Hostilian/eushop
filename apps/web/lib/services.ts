@@ -469,9 +469,9 @@ export const authAPI = {
     }
   },
 
-  getCurrentUser: async (): Promise<User | null> => {
+  getCurrentUser: async (config?: any): Promise<User | null> => {
     try {
-      const response = await apiClient.get('/auth/me');
+      const response = await apiClient.get('/auth/me', config);
       const user = response.data.data;
       if (user) {
         sessionStorage.setItem('userProfile', JSON.stringify(user));

@@ -1,4 +1,6 @@
 
+import * as React from 'react';
+
 interface BadgeProps {
   children: React.ReactNode;
   variant?: 'success' | 'warning' | 'error' | 'info' | 'neutral' | 'allergen';

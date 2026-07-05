@@ -28,7 +28,7 @@ axiosRetry(apiClient, {
   retryCondition: (error) => {
     // Retry on network errors or 5xx status codes
     return isNetworkOrIdempotentRequestError(error) || 
-           (error.response && error.response.status >= 500);
+           Boolean(error.response && error.response.status >= 500);
   },
 });
 

@@ -66,7 +66,7 @@ function CheckoutForm() {
           const detailed = await Promise.all(items.map(async (item) => {
             try {
               const detail = await foodAPI.getById(item.id);
-              const data = detail?.data || detail;
+              const data = (detail as any)?.data || detail;
               return {
                 ...item,
                 sellerId: data?.sellerId || data?.seller?.id || 'seller_belgium@eushop.local',

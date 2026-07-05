@@ -64,7 +64,7 @@ export default function AdminPage() {
         
         clearTimeout(timeoutId);
 
-        if (currentUser && currentUser.role === 'admin') {
+        if (currentUser && currentUser.role === 'ADMIN') {
           // Security: Validate user object structure
           if (!currentUser.id || !currentUser.email) {
             throw new Error('Invalid user data received');
