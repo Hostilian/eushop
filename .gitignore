@@ -89,3 +89,13 @@ scripts/watchdog_daemon.ps1
 /fcc-keys-*.json
 /harvest-*.log
 /keys_pool_backup.json
+
+# Python
+__pycache__/
+*.pyc
+.venv/
+
+# Local agent/session artifacts
+.chat_agent_history
+*.session
+
