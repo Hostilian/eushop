@@ -68,7 +68,9 @@ cd services/core-service
 
 ---
 
-## 🛡️ Regulatory & Regulatory Compliance
+## 🛡️ Regulatory Compliance & Security
+
+For details on security architecture and vulnerability disclosure, see [SECURITY.md](file:///d:/CODING/eushop/SECURITY.md). For details on regulatory compliance status and gap analysis, see [COMPLIANCE_GAPS.md](file:///d:/CODING/eushop/COMPLIANCE_GAPS.md).
 
 ### General Data Protection Regulation (GDPR)
 - **Article 17 Erasure ("Right to be Forgotten")**: Anonymises personal profiles and credentials while retaining order histories for tax audit obligations.
