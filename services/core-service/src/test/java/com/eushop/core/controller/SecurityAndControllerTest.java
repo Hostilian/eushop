@@ -19,7 +19,7 @@ import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
-@WebMvcTest
+@WebMvcTest(controllers = {FoodController.class, OrderController.class, WebhookController.class, PaymentController.class})
 @Import({SecurityConfig.class, JwtAuthenticationFilter.class})
 public class SecurityAndControllerTest {
 
@@ -43,6 +43,14 @@ public class SecurityAndControllerTest {
 
     @Test
     public void testPublicEndpoint_Foods_Success() throws Exception {
+        org.springframework.data.domain.Page<com.eushop.core.entity.Food> emptyPage = new org.springframework.data.domain.PageImpl<>(
+                java.util.Collections.emptyList(),
+                org.springframework.data.domain.PageRequest.of(0, 10),
+                0
+        );
+        when(foodService.searchFoods(any(), any(), any(), anyInt(), anyInt()))
+                .thenReturn(emptyPage);
+
         mockMvc.perform(get("/api/foods"))
                 .andExpect(status().isOk());
     }

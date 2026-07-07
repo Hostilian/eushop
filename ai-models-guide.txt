@@ -1,0 +1,164 @@
+========================================================================
+             EUshop AI Terminal Agent & API Integration Guide
+========================================================================
+
+This file details how to access the free, OpenAI-compatible AI models
+provided by the keys in `free-llm-api-keys-main`. All keys connect through
+a unified multi-model API gateway.
+
+------------------------------------------------------------------------
+1. Connection Details
+------------------------------------------------------------------------
+Base URL:    https://aiapiv2.pekpik.com/v1
+API Keys:    Extracted dynamically from free-llm-api-keys-main/README.md
+             (Starting with "sk-...")
+
+------------------------------------------------------------------------
+2. Major Supported Models
+------------------------------------------------------------------------
+* Claude (Anthropic):
+  - claude-opus-4-7             (Flagship reasoning and analysis)
+  - claude-sonnet-4-6           (Excellent general chat & coding)
+  
+* DeepSeek:
+  - deepseek-chat               (Outstanding everyday chat, coding, reasoning)
+  - deepseek-reasoner           (R1 architecture for deep thinking)
+
+* Gemini (Google):
+  - gemini-2.5-flash            (Speedy long-context chat)
+  - gemini-3.1-flash            (Advanced long-context multi-modal)
+
+* GPT (OpenAI):
+  - gpt-5.5 / gpt-5.5-pro        (Latest GPT reasoning model)
+  - gpt-4                       (Standard GPT-4 flagship)
+
+* Grok (xAI):
+  - grok-4.3 / grok-4.20-beta   (Latest Grok models)
+
+* Kimi (Moonshot AI):
+  - kimi-k2.5 / kimi-k2.7-code  (Long-context coding specialist)
+
+------------------------------------------------------------------------
+3. How to Chat via the Workspace Wrappers (eushop CLI)
+------------------------------------------------------------------------
+We have integrated a wrapper script that automatically scrapes fresh keys
+and connects them to your terminal:
+
+* Start Interactive Selector (Select Model and Mode interactively):
+  - PowerShell:  .\chat-agent.ps1
+  - Windows CMD: .\chat-agent.bat
+  - Bash/Linux:  ./chat-agent.sh
+
+* Quick CLI Options (Skip Prompts):
+  - Start Interactive Chat with DeepSeek:
+    .\chat-agent.bat -m deepseek-chat -o 1
+  - Start Aider Code-Editor with Claude:
+    .\chat-agent.bat -m claude-opus-4-7 -o 2
+  - Preload a file (e.g. become-seller.tsx) into Chat room:
+    .\chat-agent.bat -m deepseek-chat -o 1 -f apps/web/pages/become-seller.tsx
+
+* Chat slash commands:
+  - /help             Show help menu
+  - /read <filepath>  Read a workspace file into the conversation context
+  - /clear            Clear history (keeps system prompt)
+  - /exit             Exit chat session
+
+------------------------------------------------------------------------
+4. Automated Background Keys Refresher (3x/day)
+------------------------------------------------------------------------
+To ensure your local keys cache is always fresh in the background:
+- Open PowerShell as Administrator and run:
+  .\scripts\schedule_refresh.ps1
+
+This registers a Windows Scheduled Task named "EUshopKeysRefresher" that
+runs in the background 3 times a day (every 8 hours) to execute:
+  python scripts/refresh_cache.py
+
+Note: Even if you do not schedule this task, the main `chat-agent` script
+already fetches fresh keys online and updates the cache automatically
+whenever you start it!
+
+------------------------------------------------------------------------
+5. How to run Claude Code & Codex CLI (Free Claude Code Proxy)
+------------------------------------------------------------------------
+We have integrated the `free-claude-code` proxy in your workspace. This allows
+you to run official CLI agents like `claude` (Claude Code) or `codex` (Codex CLI)
+for free using the active parsed keys in the background!
+
+* To run:
+  1. Synchronize/Update proxy keys:
+     python scripts/sync_fcc.py
+     (Note: This is automatically run by the background task refresher too!)
+
+  2. Start the local proxy server (runs on port 8082):
+     - PowerShell/Git Bash:  ./fcc-server.sh
+     - Windows CMD:          .\fcc-server.bat
+
+  3. In a new terminal window, launch your CLI agent:
+     - To run Claude Code CLI:
+       PowerShell/Git Bash:  ./fcc-claude.sh
+       Windows CMD:          .\fcc-claude.bat
+     - To run Codex CLI:
+       PowerShell/Git Bash:  ./fcc-codex.sh
+       Windows CMD:          .\fcc-codex.bat
+
+Make sure you have installed the official packages globally via npm beforehand:
+  npm install -g @anthropic-ai/claude-code
+  npm install -g @openai/codex
+
+------------------------------------------------------------------------
+6. Direct API Integrations
+------------------------------------------------------------------------
+
+--- cURL Example ---
+export API_KEY="your-sk-api-key-here"
+curl https://aiapiv2.pekpik.com/v1/chat/completions \
+  -H "Content-Type: application/json" \
+  -H "Authorization: Bearer $API_KEY" \
+  -d '{
+    "model": "deepseek-chat",
+    "messages": [{"role": "user", "content": "How do I define a JPA entity in Spring Boot?"}]
+  }'
+
+--- Python Example ---
+# Install dependency: pip install openai
+import os
+from openai import OpenAI
+
+client = OpenAI(
+    base_url="https://aiapiv2.pekpik.com/v1",
+    api_key="your-sk-api-key-here"
+)
+
+response = client.chat.completions.create(
+    model="deepseek-chat",
+    messages=[{"role": "user", "content": "Hello deepseek!"}]
+)
+print(response.choices[0].message.content)
+
+--- Node.js Example ---
+// Install dependency: npm install openai
+import OpenAI from 'openai';
+
+const client = new OpenAI({
+  baseURL: 'https://aiapiv2.pekpik.com/v1',
+  apiKey: 'your-sk-api-key-here',
+});
+
+const response = await client.chat.completions.create({
+  model: 'claude-opus-4-7',
+  messages: [{ role: 'user', content: 'Explain Next.js routing' }],
+});
+console.log(response.choices[0].message.content);
+
+--- Aider (Manual Launch) ---
+If you prefer running Aider manually without our python selection wrapper:
+1. Open terminal
+2. Set environment variables:
+   cmd:       set OPENAI_API_BASE=https://aiapiv2.pekpik.com/v1
+              set OPENAI_API_KEY=your-sk-key-here
+   PowerShell: $env:OPENAI_API_BASE="https://aiapiv2.pekpik.com/v1"
+              $env:OPENAI_API_KEY="your-sk-key-here"
+3. Run: Aider with `--model openai/deepseek-chat` or `--model openai/claude-opus-4-7`
+   (LiteLLM routes standard custom openai base URLs when prefixing models with "openai/")
+========================================================================

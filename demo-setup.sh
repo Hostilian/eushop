@@ -31,7 +31,6 @@ echo -e "${GREEN}✓ All prerequisites installed${NC}\n"
 # Setup environment
 echo -e "${YELLOW}Setting up environment...${NC}"
 cp .env.example .env.local 2>/dev/null || echo "No .env.example found"
-cp services/api-gateway/.env.example services/api-gateway/.env 2>/dev/null || echo "No API Gateway .env.example found"
 
 # Create necessary directories
 mkdir -p services/core-service/src/main/java/com/eushop/core/{entity,repository,service,controller,dto}
@@ -76,7 +75,7 @@ echo -e "${GREEN}✓ Database seeded${NC}\n"
 # Build Spring Boot
 echo -e "${YELLOW}Building Spring Boot Core Service...${NC}"
 cd services/core-service
-mvn clean package -DskipTests -q
+./mvnw clean package -DskipTests -q
 cd ../..
 echo -e "${GREEN}✓ Spring Boot built${NC}\n"
 
@@ -90,9 +89,8 @@ echo -e "${BLUE}Demo Setup Complete!${NC}"
 echo -e "${BLUE}========================================${NC}\n"
 
 echo -e "${GREEN}Services Starting:${NC}"
-echo -e "  • Frontend:       ${BLUE}http://localhost:3000${NC}"
-echo -e "  • API Gateway:    ${BLUE}http://localhost:3001/api${NC}"
-echo -e "  • Core Service:   ${BLUE}http://localhost:8080/api${NC}"
+echo -e "  • Frontend:       ${BLUE}http://localhost:3002${NC}"
+echo -e "  • Core Service:   ${BLUE}http://localhost:3001${NC}"
 echo -e "  • PostgreSQL:     ${BLUE}localhost:5432${NC}"
 echo -e "  • Redis:          ${BLUE}localhost:6379${NC}\n"
 
