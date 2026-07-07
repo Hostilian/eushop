@@ -1,5 +1,26 @@
 // EuShop — Application Logic
 'use strict';
+// ── Graceful Degradation Storage & XSS Security Helpers ───────────────────
+function safeGetItem(key) {
+  try { return safeGetItem(key); } catch (e) { return null; }
+}
+function safeSetItem(key, value) {
+  try { safeSetItem(key, value); } catch (e) {}
+}
+function escapeHTML(str) {
+  if (str === null || str === undefined) return '';
+  return str.toString().replace(/[&<>"']/g, function(m) {
+    switch (m) {
+      case '&': return '&amp;';
+      case '<': return '&lt;';
+      case '>': return '&gt;';
+      case '"': return '&quot;';
+      case "'": return '&#039;';
+      default: return m;
+    }
+  });
+}
+
 
 // ── State ─────────────────────────────────────────────────────────────────
 let allListings = [];
@@ -9,9 +30,9 @@ let activeCountry = null;
 let activeCategory = 'all';
 let catalogFilter = '';
 let countryFilter = '';
-let SESSION_KEY = 'eushop_session_' + (localStorage.getItem('eushop_uid') || (() => {
+let SESSION_KEY = 'eushop_session_' + (safeGetItem('eushop_uid') || (() => {
   const uid = 'u_' + Date.now();
-  localStorage.setItem('eushop_uid', uid);
+  safeSetItem('eushop_uid', uid);
   return uid;
 })());
 
@@ -44,24 +65,24 @@ document.addEventListener('DOMContentLoaded', () => {
 
 // ── localStorage ──────────────────────────────────────────────────────────
 function loadListings() {
-  const stored = JSON.parse(localStorage.getItem('eushop_listings') || '[]');
+  const stored = JSON.parse(safeGetItem('eushop_listings') || '[]');
   allListings = [...DEMO_LISTINGS, ...stored];
 }
 function saveListings() {
   const userListings = allListings.filter(l => !l.id.startsWith('demo'));
-  localStorage.setItem('eushop_listings', JSON.stringify(userListings));
+  safeSetItem('eushop_listings', JSON.stringify(userListings));
 }
 function loadRequests() {
-  allRequests = JSON.parse(localStorage.getItem('eushop_requests') || '[]');
+  allRequests = JSON.parse(safeGetItem('eushop_requests') || '[]');
 }
 function saveRequests() {
-  localStorage.setItem('eushop_requests', JSON.stringify(allRequests));
+  safeSetItem('eushop_requests', JSON.stringify(allRequests));
 }
 function loadFavorites() {
-  favorites = new Set(JSON.parse(localStorage.getItem('eushop_favs') || '[]'));
+  favorites = new Set(JSON.parse(safeGetItem('eushop_favs') || '[]'));
 }
 function saveFavorites() {
-  localStorage.setItem('eushop_favs', JSON.stringify([...favorites]));
+  safeSetItem('eushop_favs', JSON.stringify([...favorites]));
 }
 
 
@@ -107,7 +128,7 @@ function buildCountryGrid(filter = '') {
     card.className = 'country-card fade-in' + (activeCountry === c.code ? ' active' : '');
     card.id = 'country-' + c.code;
     const flagCode = c.code.toLowerCase();
-    card.innerHTML = `<img class="country-flag-img" src="https://flagcdn.com/w80/${flagCode}.png" alt="${c.name} flag" onerror="this.style.display='none';this.nextSibling.style.display='block'"/><span class="country-flag" style="display:none">${c.flag}</span>
+    card.innerHTML = `<img class="country-flag-img" src="https://flagcdn.com/w80/${flagCode}.png" alt="${c.name} flag" onerror="this.style.display='none';if(this.nextElementSibling) this.nextElementSibling.style.display='block'"/><span class="country-flag" style="display:none">${c.flag}</span>
       <div class="country-card-name">${c.name}</div>
       <div class="country-card-count">${count} listing${count !== 1 ? 's' : ''}</div>`;
     card.onclick = () => setCountryFilter(c.code, c.name, c.flag);
@@ -228,15 +249,15 @@ function renderListings() {
         <button class="fav-btn ${isFav?'active':''}" id="fav-${l.id}" onclick="toggleFav(event,'${l.id}')">${isFav?'❤️':'🤍'}</button>
       </div>
       <div class="listing-card-body">
-        <div class="listing-food-name">${l.food}</div>
-        <div class="listing-location">📍 ${l.location}</div>
-        <div class="listing-description">${l.description || 'No description provided.'}</div>
+        <div class="listing-food-name">${escapeHTML(l.food)}</div>
+        <div class="listing-location">📍 ${escapeHTML(l.location)}</div>
+        <div class="listing-description">${escapeHTML(l.description || 'No description provided.')}</div>
         <div class="listing-footer">
           <div class="listing-fee">€${l.fee} <span>finder's fee</span></div>
           <button class="listing-contact-btn" onclick="openDetailModal('${l.id}')">View Details</button>
         </div>
       </div>
-      <div class="listing-poster">Posted by ${l.name} · ${formatDate(l.date)}</div>`;
+      <div class="listing-poster">Posted by ${escapeHTML(l.name)} · ${formatDate(l.date)}</div>`;
     grid.appendChild(card);
     setTimeout(() => card.classList.add('visible'), i * 60);
   });
@@ -316,18 +337,18 @@ function openDetailModal(id) {
   const alsoFrom = buildAlsoFrom(l.country, l.id);
   content.innerHTML = `
     ${flagImg}
-    <div class="detail-food">${l.emoji ? l.emoji + ' ' : ''}${l.food}</div>
-    <div class="detail-country-name">${country.name || l.country} · ${catLabel(l.category)}</div>
+    <div class="detail-food">${escapeHTML(l.emoji ? l.emoji + ' ' : '')}${escapeHTML(l.food)}</div>
+    <div class="detail-country-name">${escapeHTML(country.name || l.country)} · ${catLabel(l.category)}</div>
     <div class="detail-fee-big">€${l.fee}</div>
     <div class="detail-fee-label">Finder's Fee</div>
-    ${l.description ? `<div class="detail-desc">${l.description}</div>` : ''}
+    ${l.description ? `<div class="detail-desc">${escapeHTML(l.description)}</div>` : ''}
     <div class="detail-grid">
-      <div class="detail-item"><div class="detail-item-label">📍 Location</div><div class="detail-item-value">${l.location}</div></div>
-      <div class="detail-item"><div class="detail-item-label">👤 Listed By</div><div class="detail-item-value">${l.name}</div></div>
+      <div class="detail-item"><div class="detail-item-label">📍 Location</div><div class="detail-item-value">${escapeHTML(l.location)}</div></div>
+      <div class="detail-item"><div class="detail-item-label">👤 Listed By</div><div class="detail-item-value">${escapeHTML(l.name)}</div></div>
       <div class="detail-item"><div class="detail-item-label">📅 Posted</div><div class="detail-item-value">${formatDate(l.date)}</div></div>
       <div class="detail-item"><div class="detail-item-label">🏷️ Category</div><div class="detail-item-value">${catLabel(l.category)}</div></div>
     </div>
-    <button class="detail-contact-btn" onclick="contactLister('${l.contact}','${l.food.replace(/'/g,'\'')}')">📩 Contact ${l.name}</button>
+    <button class="detail-contact-btn" onclick="contactLister('${escapeHTML(l.contact.replace(/'/g, "\\'"))}','${escapeHTML(l.food.replace(/'/g, "\\'"))}')">📩 Contact ${l.name}</button>
     <div class="detail-actions">
       <button class="detail-share-btn" onclick="shareListing('${l.id}')">🔗 Share Listing</button>
       <button class="detail-share-btn ${isFav?'active':''}" style="${isFav?'background:var(--navy);color:#fff;':''}" onclick="toggleFav(event,'${l.id}');openDetailModal('${l.id}')">${isFav?'❤️ Saved':'🤍 Save'}</button>
@@ -506,10 +527,10 @@ function renderRequests() {
   }
   list.innerHTML = allRequests.map(r => `
     <div class="req-card">
-      <div class="req-food-name">🔍 ${r.food}</div>
-      <div class="req-meta">From: ${r.countryName || r.country} &nbsp;·&nbsp; 📍 ${r.location} &nbsp;·&nbsp; ${formatDate(r.date)}</div>
-      ${r.note ? `<div class="req-note">${r.note}</div>` : ''}
-      <button class="req-contact-btn" onclick="contactLister('${r.contact}','${r.food}')">📩 I Have This!</button>
+      <div class="req-food-name">🔍 ${escapeHTML(r.food)}</div>
+      <div class="req-meta">From: ${escapeHTML(r.countryName || r.country)} &nbsp;·&nbsp; 📍 ${escapeHTML(r.location)} &nbsp;·&nbsp; ${formatDate(r.date)}</div>
+      ${r.note ? `<div class="req-note">${escapeHTML(r.note)}</div>` : ''}
+      <button class="req-contact-btn" onclick="contactLister('${escapeHTML(r.contact.replace(/'/g, "\\'"))}','${escapeHTML(r.food.replace(/'/g, "\\'"))}')">📩 I Have This!</button>
     </div>`).join('');
 }
 
@@ -531,11 +552,11 @@ function renderMyListings() {
     card.innerHTML = `
       <div class="my-listing-header">
         <img src="https://flagcdn.com/w80/${fc}.png" style="width:28px;height:20px;border-radius:3px;object-fit:cover" alt="${country.name||''}"/>
-        <span class="my-listing-title">${l.food}</span>
+        <span class="my-listing-title">${escapeHTML(l.food)}</span>
         <span style="color:var(--gold);font-weight:700">€${l.fee}</span>
       </div>
       <div class="my-listing-body">
-        <div class="my-listing-meta">📍 ${l.location} &nbsp;·&nbsp; ${catLabel(l.category)}</div>
+        <div class="my-listing-meta">📍 ${escapeHTML(l.location)} &nbsp;·&nbsp; ${catLabel(l.category)}</div>
         <div class="my-listing-meta">Posted ${formatDate(l.date)}</div>
         <div class="my-listing-actions">
           <button class="my-btn-edit" onclick="openDetailModal('${l.id}')">👁 View</button>
@@ -660,11 +681,11 @@ function initBackToTop() {
 
 // ── Cookie Banner ─────────────────────────────────────────────────────────
 function initCookieBanner() {
-  if (localStorage.getItem('eushop_cookies')) return;
+  if (safeGetItem('eushop_cookies')) return;
   setTimeout(() => document.getElementById('cookie-banner')?.classList.add('show'), 1800);
 }
 function acceptCookies() {
-  localStorage.setItem('eushop_cookies', '1');
+  safeSetItem('eushop_cookies', '1');
   const b = document.getElementById('cookie-banner');
   if (b) { b.style.transform = 'translateY(100%)'; setTimeout(() => b.remove(), 400); }
   showToast('🍪 Cookies accepted — now go find some actual speculoos!');
@@ -937,6 +958,7 @@ function initFloatingSelector(currentKey) {
     { key: 'v3', name: 'V3 - Seller Compliance', badge: 'SELLER', path: '/eushop/become-seller/?v=v3', bg: '#fef3c7', color: '#b45309', desc: 'KYBC DAC7 Registration' },
     { key: 'v4', name: 'V4 - Admin Console', badge: 'OPERATOR', path: '/eushop/admin/dashboard/?v=v4', bg: '#ede9fe', color: '#6d28d9', desc: 'Moderation, Audits, Logs' },
     { key: 'v5', name: 'V5 - Developer Portal', badge: 'DEVELOPER', path: '/eushop/docs/?v=v5', bg: '#dbeafe', color: '#1d4ed8', desc: 'Audits & REST API Docs' },
+    { key: 'v3_static', name: 'V3 - Legacy Static', badge: 'LEGACY', path: '/eushop/v3/', bg: '#e2e8f0', color: '#475569', desc: 'Original Static Prototype' },
     { key: 'v6', name: 'V6 - Orig: Core App', badge: 'ORIGINAL', path: '/eushop/v6/', bg: '#e2e8f0', color: '#475569', desc: 'Original Static Prototype' },
     { key: 'v7', name: 'V7 - Orig: Emerald', badge: 'THEME', path: '/eushop/v7/', bg: '#ccfbf1', color: '#0f766e', desc: 'Clean Emerald Iteration' },
     { key: 'v8', name: 'V8 - Orig: Midnight', badge: 'THEME', path: '/eushop/v8/', bg: '#f1f5f9', color: '#0f172a', desc: 'Dark Slate Midnight Iteration' },
@@ -996,7 +1018,8 @@ function initFloatingSelector(currentKey) {
 document.addEventListener('DOMContentLoaded', () => {
   const currentPath = window.location.pathname;
   let key = 'v6';
-  if (currentPath.includes('/v7/')) key = 'v7';
+  if (currentPath.includes('/v3/')) key = 'v3_static';
+  else if (currentPath.includes('/v7/')) key = 'v7';
   else if (currentPath.includes('/v8/')) key = 'v8';
   else if (currentPath.includes('/v9/')) key = 'v9';
   else if (currentPath.includes('/v10/')) key = 'v10';
