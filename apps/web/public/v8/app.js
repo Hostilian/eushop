@@ -819,6 +819,7 @@ function filterByFoodName(name) {
      i f   ( h e r o )   o b s . o b s e r v e ( h e r o ) ; 
  } 
  
+
 // ─── Floating Version Selector (Added for Multi-Version Integration) ───────────
 function initFloatingSelector(currentKey) {
   const style = document.createElement('style');
@@ -864,6 +865,8 @@ function initFloatingSelector(currentKey) {
       box-shadow: 0 20px 50px rgba(0,0,0,0.5);
       flex-direction: column;
       gap: 6px;
+      max-height: 400px;
+      overflow-y: auto;
       animation: fvs-slide-in 0.2s ease-out;
     }
     @keyframes fvs-slide-in {
@@ -938,6 +941,10 @@ function initFloatingSelector(currentKey) {
     { key: 'v7', name: 'V7 - Orig: Emerald', badge: 'THEME', path: '/eushop/v7/', bg: '#ccfbf1', color: '#0f766e', desc: 'Clean Emerald Iteration' },
     { key: 'v8', name: 'V8 - Orig: Midnight', badge: 'THEME', path: '/eushop/v8/', bg: '#f1f5f9', color: '#0f172a', desc: 'Dark Slate Midnight Iteration' },
     { key: 'v9', name: 'V9 - Orig: Rose Gold', badge: 'THEME', path: '/eushop/v9/', bg: '#ffe4e6', color: '#9f1239', desc: 'Rose Gold Luxury Iteration' },
+    { key: 'v10', name: 'V10 - Platinum Light', badge: 'THEME', path: '/eushop/v10/', bg: '#f1f5f9', color: '#0f172a', desc: 'Premium Platinum Minimalist' },
+    { key: 'v11', name: 'V11 - Forest Green', badge: 'THEME', path: '/eushop/v11/', bg: '#dcfce7', color: '#15803d', desc: 'Sleek Alabaster & Forest' },
+    { key: 'v12', name: 'V12 - Terracotta Warm', badge: 'THEME', path: '/eushop/v12/', bg: '#ffedd5', color: '#c2410c', desc: 'Warm Ivory & Terracotta' },
+    { key: 'v13', name: 'V13 - Lavender Field', badge: 'THEME', path: '/eushop/v13/', bg: '#f3e8ff', color: '#7e22ce', desc: 'Minimalist Lavender & Snow' },
   ];
 
   const currentOpt = versions.find(v => v.key === currentKey);
@@ -992,5 +999,9 @@ document.addEventListener('DOMContentLoaded', () => {
   if (currentPath.includes('/v7/')) key = 'v7';
   else if (currentPath.includes('/v8/')) key = 'v8';
   else if (currentPath.includes('/v9/')) key = 'v9';
+  else if (currentPath.includes('/v10/')) key = 'v10';
+  else if (currentPath.includes('/v11/')) key = 'v11';
+  else if (currentPath.includes('/v12/')) key = 'v12';
+  else if (currentPath.includes('/v13/')) key = 'v13';
   initFloatingSelector(key);
 });
