@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/router';
 import { foodAPI, FoodItem, authAPI, User } from '../../lib/services';
@@ -26,6 +26,56 @@ interface OrderRecord {
   createdAt: string;
 }
 
+// Utility functions for better maintainability
+const formatDate = (dateString: string): string => {
+  try {
+    return new Date(dateString).toLocaleString();
+  } catch {
+    return dateString;
+  }
+};
+
+const getStatusStyles = (status: string): string => {
+  const styles: Record<string, string> = {
+    PENDING: 'bg-amber-50 border-amber-200 text-amber-700',
+    VERIFIED: 'bg-emerald-50 border-emerald-200 text-emerald-700',
+    REJECTED: 'bg-red-50 border-red-200 text-red-700',
+    PROCESSING: 'bg-amber-50 border-amber-200 text-amber-700',
+    SHIPPED: 'bg-blue-50 border-blue-200 text-blue-700',
+    DELIVERED: 'bg-emerald-50 border-emerald-200 text-emerald-700',
+  };
+  return styles[status] || 'bg-gray-50 border-gray-200 text-gray-700';
+};
+
+// Safe localStorage parser to reduce duplication and improve error handling
+const safeParseJSON = <T,>(key: string, defaultValue: T): T => {
+  try {
+    const item = localStorage.getItem(key);
+    return item ? JSON.parse(item) : defaultValue;
+  } catch {
+    return defaultValue;
+  }
+};
+
+interface TabButtonProps {
+  id: 'sellers' | 'listings' | 'orders' | 'waitlist';
+  label: string;
+  count: number;
+  activeTab: string;
+  onClick: (tab: 'sellers' | 'listings' | 'orders' | 'waitlist') => void;
+}
+
+const TabButton = ({ id, label, count, activeTab, onClick }: TabButtonProps) => (
+  <button
+    onClick={() => onClick(id)}
+    className={`px-4 py-2.5 font-bold text-xs uppercase tracking-wider transition ${
+      activeTab === id ? 'border-b-2 border-primary text-primary' : 'text-gray-400 hover:text-gray-700'
+    }`}
+  >
+    {label} ({count})
+  </button>
+);
+
 export default function AdminDashboard() {
   const router = useRouter();
   const [adminUser, setAdminUser] = useState<User | null>(null);
@@ -37,16 +87,17 @@ export default function AdminDashboard() {
   const [orders, setOrders] = useState<OrderRecord[]>([]);
   const [waitlist, setWaitlist] = useState<string[]>([]);
 
+  // Memoized computed values for performance
+  const pendingSellersCount = useMemo(() => 
+    sellers.filter(s => s.status === 'PENDING').length, 
+    [sellers]
+  );
+
   useEffect(() => {
     // 1. Verify user role or auto-login default Admin for demo convenience
-    const userStr = localStorage.getItem('user');
-    if (userStr) {
-      try {
-        const parsed = JSON.parse(userStr);
-        setAdminUser(parsed);
-      } catch (error) {
-        console.error('Failed to parse user session:', error);
-      }
+    const userData = safeParseJSON<User | null>('user', null);
+    if (userData) {
+      setAdminUser(userData);
     } else {
       // Auto-assign mock Admin role for smooth testing on GitHub Pages
       const mockAdmin: User = {
@@ -64,9 +115,9 @@ export default function AdminDashboard() {
     }
 
     // 2. Load applications from localStorage
-    const rawSellers = localStorage.getItem('seller_applications');
-    if (rawSellers) {
-      setSellers(JSON.parse(rawSellers));
+    const storedSellers = safeParseJSON<SellerApplication[]>('seller_applications', []);
+    if (storedSellers.length > 0) {
+      setSellers(storedSellers);
     } else {
       const defaultSellers: SellerApplication[] = [
         {
@@ -111,9 +162,9 @@ export default function AdminDashboard() {
     }
 
     // 3. Load orders from localStorage
-    const rawOrders = localStorage.getItem('orders');
-    if (rawOrders) {
-      setOrders(JSON.parse(rawOrders));
+    const storedOrders = safeParseJSON<OrderRecord[]>('orders', []);
+    if (storedOrders.length > 0) {
+      setOrders(storedOrders);
     } else {
       const defaultOrders: OrderRecord[] = [
         {
@@ -151,9 +202,9 @@ export default function AdminDashboard() {
     fetchListings();
 
     // 5. Load investor waitlist
-    const rawWaitlist = localStorage.getItem('waitlist_emails');
-    if (rawWaitlist) {
-      setWaitlist(JSON.parse(rawWaitlist));
+    const storedWaitlist = safeParseJSON<string[]>('waitlist_emails', []);
+    if (storedWaitlist.length > 0) {
+      setWaitlist(storedWaitlist);
     } else {
       const defaultEmails = ['investor1@earlystage.vc', 'venture.lead@pan-eu.fund'];
       localStorage.setItem('waitlist_emails', JSON.stringify(defaultEmails));
@@ -167,19 +218,12 @@ export default function AdminDashboard() {
     const updatedSellers = sellers.map(s => {
       if (s.id === appId) {
         // Upgrade role of matching user in user database simulation
-        const usersStr = localStorage.getItem('local_users');
-        if (usersStr) {
-          try {
-            const users: User[] = JSON.parse(usersStr);
-            const userIdx = users.findIndex(u => u.email === s.email);
-            if (userIdx > -1) {
-              users[userIdx].role = 'SELLER';
-              users[userIdx].kycVerified = true;
-              localStorage.setItem('local_users', JSON.stringify(users));
-            }
-          } catch (e) {
-            console.error(e);
-          }
+        const users = safeParseJSON<User[]>('local_users', []);
+        const userIdx = users.findIndex(u => u.email === s.email);
+        if (userIdx > -1) {
+          users[userIdx].role = 'SELLER';
+          users[userIdx].kycVerified = true;
+          localStorage.setItem('local_users', JSON.stringify(users));
         }
         return { ...s, status: 'VERIFIED' as const };
       }
@@ -202,18 +246,13 @@ export default function AdminDashboard() {
   };
 
   const handleRemoveListing = (foodId: string) => {
-    const localFoodsStr = localStorage.getItem('local_foods');
-    if (localFoodsStr) {
-      try {
-        const localFoods: FoodItem[] = JSON.parse(localFoodsStr);
-        const filtered = localFoods.filter(f => f.id !== foodId);
-        localStorage.setItem('local_foods', JSON.stringify(filtered));
-        // Update local UI state
-        setListings(prev => prev.filter(f => f.id !== foodId));
-        alert('Listing removed from simulated database.');
-      } catch (e) {
-        console.error(e);
-      }
+    const localFoods = safeParseJSON<FoodItem[]>('local_foods', []);
+    if (localFoods.length > 0) {
+      const filtered = localFoods.filter(f => f.id !== foodId);
+      localStorage.setItem('local_foods', JSON.stringify(filtered));
+      // Update local UI state
+      setListings(prev => prev.filter(f => f.id !== foodId));
+      alert('Listing removed from simulated database.');
     } else {
       // It is a static trending food, remove from local UI only
       setListings(prev => prev.filter(f => f.id !== foodId));
@@ -279,38 +318,34 @@ export default function AdminDashboard() {
 
         {/* Tab Buttons */}
         <div className="flex border-b border-gray-200 mb-8 gap-2">
-          <button
-            onClick={() => setActiveTab('sellers')}
-            className={`px-4 py-2.5 font-bold text-xs uppercase tracking-wider transition ${
-              activeTab === 'sellers' ? 'border-b-2 border-primary text-primary' : 'text-gray-400 hover:text-gray-700'
-            }`}
-          >
-            Seller Applications ({sellers.filter(s => s.status === 'PENDING').length} Pending)
-          </button>
-          <button
-            onClick={() => setActiveTab('listings')}
-            className={`px-4 py-2.5 font-bold text-xs uppercase tracking-wider transition ${
-              activeTab === 'listings' ? 'border-b-2 border-primary text-primary' : 'text-gray-400 hover:text-gray-700'
-            }`}
-          >
-            Food Listings ({listings.length})
-          </button>
-          <button
-            onClick={() => setActiveTab('orders')}
-            className={`px-4 py-2.5 font-bold text-xs uppercase tracking-wider transition ${
-              activeTab === 'orders' ? 'border-b-2 border-primary text-primary' : 'text-gray-400 hover:text-gray-700'
-            }`}
-          >
-            System Orders ({orders.length})
-          </button>
-          <button
-            onClick={() => setActiveTab('waitlist')}
-            className={`px-4 py-2.5 font-bold text-xs uppercase tracking-wider transition ${
-              activeTab === 'waitlist' ? 'border-b-2 border-primary text-primary' : 'text-gray-400 hover:text-gray-700'
-            }`}
-          >
-            Investor Waitlist ({waitlist.length})
-          </button>
+          <TabButton
+            id="sellers"
+            label="Seller Applications"
+            count={pendingSellersCount}
+            activeTab={activeTab}
+            onClick={setActiveTab}
+          />
+          <TabButton
+            id="listings"
+            label="Food Listings"
+            count={listings.length}
+            activeTab={activeTab}
+            onClick={setActiveTab}
+          />
+          <TabButton
+            id="orders"
+            label="System Orders"
+            count={orders.length}
+            activeTab={activeTab}
+            onClick={setActiveTab}
+          />
+          <TabButton
+            id="waitlist"
+            label="Investor Waitlist"
+            count={waitlist.length}
+            activeTab={activeTab}
+            onClick={setActiveTab}
+          />
         </div>
 
         {/* Tab Content */}
@@ -326,11 +361,7 @@ export default function AdminDashboard() {
                   <div className="space-y-2">
                     <div className="flex items-center gap-3">
                       <h3 className="font-bold text-sm text-brand-dark">{app.name}</h3>
-                      <span className={`text-[9px] font-extrabold px-2 py-0.5 rounded border uppercase tracking-wider ${
-                        app.status === 'PENDING' ? 'bg-amber-50 border-amber-200 text-amber-700' :
-                        app.status === 'VERIFIED' ? 'bg-emerald-50 border-emerald-200 text-emerald-700' :
-                        'bg-red-50 border-red-200 text-red-700'
-                      }`}>
+                      <span className={`text-[9px] font-extrabold px-2 py-0.5 rounded border uppercase tracking-wider ${getStatusStyles(app.status)}`}>
                         {app.status}
                       </span>
                     </div>
@@ -430,11 +461,7 @@ export default function AdminDashboard() {
                   <div className="space-y-2">
                     <div className="flex items-center gap-3">
                       <h3 className="font-bold text-sm text-brand-dark">{order.productName}</h3>
-                      <span className={`text-[9px] font-extrabold px-2 py-0.5 rounded border uppercase tracking-wider ${
-                        order.status === 'PROCESSING' ? 'bg-amber-50 border-amber-200 text-amber-700' :
-                        order.status === 'DELIVERED' ? 'bg-emerald-50 border-emerald-200 text-emerald-700' :
-                        'bg-blue-50 border-blue-200 text-blue-700'
-                      }`}>
+                      <span className={`text-[9px] font-extrabold px-2 py-0.5 rounded border uppercase tracking-wider ${getStatusStyles(order.status)}`}>
                         {order.status}
                       </span>
                     </div>
@@ -445,7 +472,7 @@ export default function AdminDashboard() {
                       <div><strong className="text-gray-700">Seller:</strong> {order.sellerName}</div>
                       <div><strong className="text-gray-700">Total:</strong> €{order.totalPrice.toFixed(2)}</div>
                     </div>
-                    <div className="text-[10px] text-gray-400">Transaction Date: {new Date(order.createdAt).toLocaleString()}</div>
+                    <div className="text-[10px] text-gray-400">Transaction Date: {formatDate(order.createdAt)}</div>
                   </div>
 
                   <div className="flex gap-2">
