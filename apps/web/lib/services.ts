@@ -354,3 +354,5 @@ export const foodAPI = {
       console.warn('foodAPI.getTrending failed. Falling back to local database simulation.');
       return getLocalFoods().slice(0, 3);
     }
+  }, // Added missing closing brace for getTrending method
+}; // Added missing closing brace for foodAPI object
