@@ -5,6 +5,37 @@ import { ProductCardSkeleton } from '../components/ui/Skeleton';
 import { foodAPI, FoodItem } from '../lib/services';
 import { Button } from '../components/ui/Button';
 
+// --- Constants for better readability and maintainability ---
+const SEARCH_TIMEOUT_MS = 8000; // 8-second timeout for API calls
+const CACHE_FRESHNESS_MS = 30 * 60 * 1000; // 30 minutes for cache freshness
+const PAGE_SIZE = 20;
+const DEBOUNCE_DELAY_MS = 400;
+
+const EU_COUNTRIES = [
+  '', 'Austria', 'Belgium', 'Bulgaria', 'Croatia', 'Cyprus', 'Czech Republic',
+  'Denmark', 'Estonia', 'Finland', 'France', 'Germany', 'Greece',
+  'Hungary', 'Ireland', 'Italy', 'Latvia', 'Lithuania', 'Luxembourg',
+  'Malta', 'Netherlands', 'Poland', 'Portugal', 'Romania', 'Slovakia',
+  'Slovenia', 'Spain', 'Sweden',
+];
+
+// Mapping for food images based on keywords
+const FOOD_IMAGE_MAP: { [key: string]: string } = {
+  chocolate: '/images/belgian_chocolates.png',
+  praline: '/images/belgian_chocolates.png',
+  truffle: '/images/belgian_chocolates.png',
+  oil: '/images/italian_olive_oil.png',
+  vinegar: '/images/italian_olive_oil.png',
+  balsamic: '/images/italian_olive_oil.png',
+  cheese: '/images/spanish_manchego.png',
+  brie: '/images/spanish_manchego.png',
+  manchego: '/images/spanish_manchego.png',
+  sausage: '/images/german_delicatessen.png',
+  speck: '/images/german_delicatessen.png',
+  deli: '/images/german_delicatessen.png',
+  marzipan: '/images/german_delicatessen.png',
+};
+
 export default function SearchPage() {
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedCountry, setSelectedCountry] = useState('');
@@ -12,33 +43,19 @@ export default function SearchPage() {
   const [loading, setLoading] = useState(false);
   const [page, setPage] = useState(1);
 
-  const getFoodImage = (foodName: string) => {
-    const name = foodName.toLowerCase();
-    if (name.includes('chocolate') || name.includes('praline') || name.includes('truffle')) {
-      return '/images/belgian_chocolates.png';
-    }
-    if (name.includes('oil') || name.includes('vinegar') || name.includes('balsamic')) {
-      return '/images/italian_olive_oil.png';
-    }
-    if (name.includes('cheese') || name.includes('brie') || name.includes('manchego')) {
-      return '/images/spanish_manchego.png';
-    }
-    if (name.includes('sausage') || name.includes('speck') || name.includes('deli') || name.includes('marzipan')) {
-      return '/images/german_delicatessen.png';
+  const getFoodImage = (foodName: string): string | undefined => {
+    const nameLower = foodName.toLowerCase();
+    for (const keyword in FOOD_IMAGE_MAP) {
+      if (nameLower.includes(keyword)) {
+        return FOOD_IMAGE_MAP[keyword];
+      }
     }
     return undefined;
   };
 
-  const countries = [
-    '', 'Austria', 'Belgium', 'Bulgaria', 'Croatia', 'Cyprus', 'Czech Republic',
-    'Denmark', 'Estonia', 'Finland', 'France', 'Germany', 'Greece',
-    'Hungary', 'Ireland', 'Italy', 'Latvia', 'Lithuania', 'Luxembourg',
-    'Malta', 'Netherlands', 'Poland', 'Portugal', 'Romania', 'Slovakia',
-    'Slovenia', 'Spain', 'Sweden',
-  ];
-
   const performSearch = useCallback(async () => {
     setLoading(true);
+    
     // Graceful degradation: If offline, immediately use cached results
     if (!navigator.onLine) {
       try {
@@ -54,7 +71,7 @@ export default function SearchPage() {
       } catch (cacheError) {
         console.warn('Could not read cached search results while offline:', cacheError);
       }
-      // No cache available offline
+      // No cache available offline or cache read failed
       setFoods([
         { 
           id: 'offline-fallback', 
@@ -71,26 +88,31 @@ export default function SearchPage() {
 
     try {
       const controller = new AbortController();
-      const timeoutId = setTimeout(() => controller.abort(), 8000); // 8 second timeout
-      const result: any = await foodAPI.search(searchQuery, selectedCountry, page, 20, { signal: controller.signal });
+      const timeoutId = setTimeout(() => controller.abort(), SEARCH_TIMEOUT_MS);
+      
+      const result: any = await foodAPI.search(searchQuery, selectedCountry, page, PAGE_SIZE, { signal: controller.signal });
       clearTimeout(timeoutId);
+      
+      // Ensure result is an array of FoodItem
       const foodsArray = Array.isArray(result) ? result : (result?.data || result?.foods || []);
       setFoods(foodsArray);
+
       // Cache successful results for graceful degradation
       try {
         localStorage.setItem('search_fallback', JSON.stringify(foodsArray));
-        // Also store timestamp for cache freshness
         localStorage.setItem('search_fallback_timestamp', Date.now().toString());
       } catch (cacheError) {
         console.warn('Could not cache search results:', cacheError);
       }
     } catch (error: any) {
       console.error('Search failed:', error);
-      // Graceful degradation: Use cached results from localStorage if available
+      
+      // Graceful degradation: Use cached results from localStorage if available and fresh
       try {
         const cachedResults = localStorage.getItem('search_fallback');
         const cachedTimestamp = localStorage.getItem('search_fallback_timestamp');
-        const isCacheFresh = cachedTimestamp && (Date.now() - Number(cachedTimestamp)) < 30 * 60 * 1000; // 30 minutes
+        const isCacheFresh = cachedTimestamp && (Date.now() - Number(cachedTimestamp)) < CACHE_FRESHNESS_MS;
+        
         if (cachedResults && isCacheFresh) {
           const parsed = JSON.parse(cachedResults);
           if (Array.isArray(parsed) && parsed.length > 0) {
@@ -99,7 +121,7 @@ export default function SearchPage() {
           }
         }
       } catch (cacheError) {
-        console.warn('Could not read cached search results:', cacheError);
+        console.warn('Could not read cached search results during error fallback:', cacheError);
       }
       
       // Ultimate fallback: show user-friendly message and minimal data
@@ -121,7 +143,7 @@ export default function SearchPage() {
   useEffect(() => {
     const delayTimer = setTimeout(() => {
       performSearch();
-    }, 400);
+    }, DEBOUNCE_DELAY_MS); // Debounce search input
 
     return () => clearTimeout(delayTimer);
   }, [performSearch]);
@@ -129,25 +151,26 @@ export default function SearchPage() {
   const handleAddToCart = (id: string) => {
     try {
       const cart = JSON.parse(localStorage.getItem('cart') || '[]');
-      const existing = cart.find((item: any) => item.id === id);
-      if (existing) {
-        existing.quantity += 1;
+      const existingItemIndex = cart.findIndex((item: any) => item.id === id);
+
+      if (existingItemIndex > -1) {
+        cart[existingItemIndex].quantity += 1;
       } else {
-        const item = foods.find((f) => f.id === id);
-        if (item) {
+        const itemToAdd = foods.find((f) => f.id === id);
+        if (itemToAdd) {
           cart.push({
-            id: item.id,
-            name: item.name,
-            price: item.price,
-            country: item.country,
+            id: itemToAdd.id,
+            name: itemToAdd.name,
+            price: itemToAdd.price,
+            country: itemToAdd.country,
             quantity: 1,
-            sellerId: item.sellerId,
-            finderFee: item.finderFee || 5.00
+            sellerId: itemToAdd.sellerId,
+            finderFee: itemToAdd.finderFee || 5.00 // Default finderFee if not present
           });
         }
       }
       localStorage.setItem('cart', JSON.stringify(cart));
-      window.dispatchEvent(new Event('cart-updated'));
+      window.dispatchEvent(new Event('cart-updated')); // Notify other components about cart change
     } catch (e) {
       console.error('Failed to add to cart:', e);
     }
@@ -177,7 +200,7 @@ export default function SearchPage() {
                 value={searchQuery}
                 onChange={(e) => {
                   setSearchQuery(e.target.value);
-                  setPage(1);
+                  setPage(1); // Reset page on new search query
                 }}
                 className="w-full px-4 py-2.5 border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-950 rounded-xl focus:ring-2 focus:ring-primary focus:border-transparent text-sm transition"
               />
@@ -192,11 +215,11 @@ export default function SearchPage() {
                 value={selectedCountry}
                 onChange={(e) => {
                   setSelectedCountry(e.target.value);
-                  setPage(1);
+                  setPage(1); // Reset page on country change
                 }}
                 className="w-full px-4 py-2.5 border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-950 rounded-xl focus:ring-2 focus:ring-primary focus:border-transparent text-sm transition"
               >
-                {countries.map((country) => (
+                {EU_COUNTRIES.map((country) => (
                   <option key={country} value={country}>
                     {country || 'All Countries (EU member states only)'}
                   </option>
@@ -206,7 +229,7 @@ export default function SearchPage() {
           </div>
         </div>
 
-        {/* Results */}
+        {/* Results Display */}
         {loading ? (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
             <ProductCardSkeleton />
@@ -236,7 +259,7 @@ export default function SearchPage() {
                   imageUrl={getFoodImage(food.name)}
                   allergens={food.allergens || []}
                   seller={{
-                    name: 'Producer',
+                    name: 'Producer', // Default seller name, consider fetching actual seller info
                     rating: 5.0,
                     verified: true,
                   }}
@@ -245,12 +268,12 @@ export default function SearchPage() {
               ))}
             </div>
 
-            {/* Pagination */}
+            {/* Pagination Controls */}
             <div className="flex justify-center items-center gap-4 mt-12">
               <Button
                 variant="secondary"
                 size="sm"
-                onClick={() => setPage(Math.max(1, page - 1))}
+                onClick={() => setPage(prevPage => Math.max(1, prevPage - 1))}
                 disabled={page === 1}
               >
                 Previous
@@ -261,7 +284,8 @@ export default function SearchPage() {
               <Button
                 variant="secondary"
                 size="sm"
-                onClick={() => setPage(page + 1)}
+                onClick={() => setPage(prevPage => prevPage + 1)}
+                // Consider disabling 'Next' if no more results are available from API
               >
                 Next
               </Button>
@@ -288,4 +312,3 @@ export default function SearchPage() {
     </PageWrapper>
   );
 }
-
