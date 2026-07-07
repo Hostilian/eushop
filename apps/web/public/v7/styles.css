@@ -16,7 +16,7 @@
   --nav-bg-scrolled:rgba(15, 23, 42, 0.98);
   --nav-border:rgba(16, 185, 129, 0.2);
   --nav-shadow:rgba(16, 185, 129, 0.1);
-  --nav-shadow-lg: border-color:rgba(16, 185, 129, 0.2);
+  --nav-shadow-lg: 0 10px 30px rgba(16,185,129, 0.15);
   --hero-bg:linear-gradient(160deg, #020617 0%, #0f172a 40%, #064e3b 100%);
   --hero-badge-bg:rgba(16, 185, 129, 0.15);
   --hero-badge-border:rgba(16, 185, 129, 0.4);

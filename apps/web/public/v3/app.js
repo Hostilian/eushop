@@ -1,5 +1,26 @@
 // EuShop — Application Logic
 'use strict';
+// ── Graceful Degradation Storage & XSS Security Helpers ───────────────────
+function safeGetItem(key) {
+  try { return safeGetItem(key); } catch (e) { return null; }
+}
+function safeSetItem(key, value) {
+  try { safeSetItem(key, value); } catch (e) {}
+}
+function escapeHTML(str) {
+  if (str === null || str === undefined) return '';
+  return str.toString().replace(/[&<>"']/g, function(m) {
+    switch (m) {
+      case '&': return '&amp;';
+      case '<': return '&lt;';
+      case '>': return '&gt;';
+      case '"': return '&quot;';
+      case "'": return '&#039;';
+      default: return m;
+    }
+  });
+}
+
 
 // ── State ─────────────────────────────────────────────────────────────────
 let allListings = [];
@@ -9,9 +30,9 @@ let activeCountry = null;
 let activeCategory = 'all';
 let catalogFilter = '';
 let countryFilter = '';
-let SESSION_KEY = 'eushop_session_' + (localStorage.getItem('eushop_uid') || (() => {
+let SESSION_KEY = 'eushop_session_' + (safeGetItem('eushop_uid') || (() => {
   const uid = 'u_' + Date.now();
-  localStorage.setItem('eushop_uid', uid);
+  safeSetItem('eushop_uid', uid);
   return uid;
 })());
 
@@ -44,24 +65,24 @@ document.addEventListener('DOMContentLoaded', () => {
 
 // ── localStorage ──────────────────────────────────────────────────────────
 function loadListings() {
-  const stored = JSON.parse(localStorage.getItem('eushop_listings') || '[]');
+  const stored = JSON.parse(safeGetItem('eushop_listings') || '[]');
   allListings = [...DEMO_LISTINGS, ...stored];
 }
 function saveListings() {
   const userListings = allListings.filter(l => !l.id.startsWith('demo'));
-  localStorage.setItem('eushop_listings', JSON.stringify(userListings));
+  safeSetItem('eushop_listings', JSON.stringify(userListings));
 }
 function loadRequests() {
-  allRequests = JSON.parse(localStorage.getItem('eushop_requests') || '[]');
+  allRequests = JSON.parse(safeGetItem('eushop_requests') || '[]');
 }
 function saveRequests() {
-  localStorage.setItem('eushop_requests', JSON.stringify(allRequests));
+  safeSetItem('eushop_requests', JSON.stringify(allRequests));
 }
 function loadFavorites() {
-  favorites = new Set(JSON.parse(localStorage.getItem('eushop_favs') || '[]'));
+  favorites = new Set(JSON.parse(safeGetItem('eushop_favs') || '[]'));
 }
 function saveFavorites() {
-  localStorage.setItem('eushop_favs', JSON.stringify([...favorites]));
+  safeSetItem('eushop_favs', JSON.stringify([...favorites]));
 }
 
 
@@ -107,7 +128,7 @@ function buildCountryGrid(filter = '') {
     card.className = 'country-card fade-in' + (activeCountry === c.code ? ' active' : '');
     card.id = 'country-' + c.code;
     const flagCode = c.code.toLowerCase();
-    card.innerHTML = `<img class="country-flag-img" src="https://flagcdn.com/w80/${flagCode}.png" alt="${c.name} flag" onerror="this.style.display='none';this.nextSibling.style.display='block'"/><span class="country-flag" style="display:none">${c.flag}</span>
+    card.innerHTML = `<img class="country-flag-img" src="https://flagcdn.com/w80/${flagCode}.png" alt="${c.name} flag" onerror="this.style.display='none';if(this.nextElementSibling) this.nextElementSibling.style.display='block'"/><span class="country-flag" style="display:none">${c.flag}</span>
       <div class="country-card-name">${c.name}</div>
       <div class="country-card-count">${count} listing${count !== 1 ? 's' : ''}</div>`;
     card.onclick = () => setCountryFilter(c.code, c.name, c.flag);
@@ -228,15 +249,15 @@ function renderListings() {
         <button class="fav-btn ${isFav?'active':''}" id="fav-${l.id}" onclick="toggleFav(event,'${l.id}')">${isFav?'❤️':'🤍'}</button>
       </div>
       <div class="listing-card-body">
-        <div class="listing-food-name">${l.food}</div>
-        <div class="listing-location">📍 ${l.location}</div>
-        <div class="listing-description">${l.description || 'No description provided.'}</div>
+        <div class="listing-food-name">${escapeHTML(l.food)}</div>
+        <div class="listing-location">📍 ${escapeHTML(l.location)}</div>
+        <div class="listing-description">${escapeHTML(l.description || 'No description provided.')}</div>
         <div class="listing-footer">
           <div class="listing-fee">€${l.fee} <span>finder's fee</span></div>
           <button class="listing-contact-btn" onclick="openDetailModal('${l.id}')">View Details</button>
         </div>
       </div>
-      <div class="listing-poster">Posted by ${l.name} · ${formatDate(l.date)}</div>`;
+      <div class="listing-poster">Posted by ${escapeHTML(l.name)} · ${formatDate(l.date)}</div>`;
     grid.appendChild(card);
     setTimeout(() => card.classList.add('visible'), i * 60);
   });
@@ -316,18 +337,18 @@ function openDetailModal(id) {
   const alsoFrom = buildAlsoFrom(l.country, l.id);
   content.innerHTML = `
     ${flagImg}
-    <div class="detail-food">${l.emoji ? l.emoji + ' ' : ''}${l.food}</div>
-    <div class="detail-country-name">${country.name || l.country} · ${catLabel(l.category)}</div>
+    <div class="detail-food">${escapeHTML(l.emoji ? l.emoji + ' ' : '')}${escapeHTML(l.food)}</div>
+    <div class="detail-country-name">${escapeHTML(country.name || l.country)} · ${catLabel(l.category)}</div>
     <div class="detail-fee-big">€${l.fee}</div>
     <div class="detail-fee-label">Finder's Fee</div>
-    ${l.description ? `<div class="detail-desc">${l.description}</div>` : ''}
+    ${l.description ? `<div class="detail-desc">${escapeHTML(l.description)}</div>` : ''}
     <div class="detail-grid">
-      <div class="detail-item"><div class="detail-item-label">📍 Location</div><div class="detail-item-value">${l.location}</div></div>
-      <div class="detail-item"><div class="detail-item-label">👤 Listed By</div><div class="detail-item-value">${l.name}</div></div>
+      <div class="detail-item"><div class="detail-item-label">📍 Location</div><div class="detail-item-value">${escapeHTML(l.location)}</div></div>
+      <div class="detail-item"><div class="detail-item-label">👤 Listed By</div><div class="detail-item-value">${escapeHTML(l.name)}</div></div>
       <div class="detail-item"><div class="detail-item-label">📅 Posted</div><div class="detail-item-value">${formatDate(l.date)}</div></div>
       <div class="detail-item"><div class="detail-item-label">🏷️ Category</div><div class="detail-item-value">${catLabel(l.category)}</div></div>
     </div>
-    <button class="detail-contact-btn" onclick="contactLister('${l.contact}','${l.food.replace(/'/g,'\'')}')">📩 Contact ${l.name}</button>
+    <button class="detail-contact-btn" onclick="contactLister('${escapeHTML(l.contact.replace(/'/g, "\\'"))}','${escapeHTML(l.food.replace(/'/g, "\\'"))}')">📩 Contact ${l.name}</button>
     <div class="detail-actions">
       <button class="detail-share-btn" onclick="shareListing('${l.id}')">🔗 Share Listing</button>
       <button class="detail-share-btn ${isFav?'active':''}" style="${isFav?'background:var(--navy);color:#fff;':''}" onclick="toggleFav(event,'${l.id}');openDetailModal('${l.id}')">${isFav?'❤️ Saved':'🤍 Save'}</button>
@@ -506,10 +527,10 @@ function renderRequests() {
   }
   list.innerHTML = allRequests.map(r => `
     <div class="req-card">
-      <div class="req-food-name">🔍 ${r.food}</div>
-      <div class="req-meta">From: ${r.countryName || r.country} &nbsp;·&nbsp; 📍 ${r.location} &nbsp;·&nbsp; ${formatDate(r.date)}</div>
-      ${r.note ? `<div class="req-note">${r.note}</div>` : ''}
-      <button class="req-contact-btn" onclick="contactLister('${r.contact}','${r.food}')">📩 I Have This!</button>
+      <div class="req-food-name">🔍 ${escapeHTML(r.food)}</div>
+      <div class="req-meta">From: ${escapeHTML(r.countryName || r.country)} &nbsp;·&nbsp; 📍 ${escapeHTML(r.location)} &nbsp;·&nbsp; ${formatDate(r.date)}</div>
+      ${r.note ? `<div class="req-note">${escapeHTML(r.note)}</div>` : ''}
+      <button class="req-contact-btn" onclick="contactLister('${escapeHTML(r.contact.replace(/'/g, "\\'"))}','${escapeHTML(r.food.replace(/'/g, "\\'"))}')">📩 I Have This!</button>
     </div>`).join('');
 }
 
@@ -531,11 +552,11 @@ function renderMyListings() {
     card.innerHTML = `
       <div class="my-listing-header">
         <img src="https://flagcdn.com/w80/${fc}.png" style="width:28px;height:20px;border-radius:3px;object-fit:cover" alt="${country.name||''}"/>
-        <span class="my-listing-title">${l.food}</span>
+        <span class="my-listing-title">${escapeHTML(l.food)}</span>
         <span style="color:var(--gold);font-weight:700">€${l.fee}</span>
       </div>
       <div class="my-listing-body">
-        <div class="my-listing-meta">📍 ${l.location} &nbsp;·&nbsp; ${catLabel(l.category)}</div>
+        <div class="my-listing-meta">📍 ${escapeHTML(l.location)} &nbsp;·&nbsp; ${catLabel(l.category)}</div>
         <div class="my-listing-meta">Posted ${formatDate(l.date)}</div>
         <div class="my-listing-actions">
           <button class="my-btn-edit" onclick="openDetailModal('${l.id}')">👁 View</button>
@@ -660,11 +681,11 @@ function initBackToTop() {
 
 // ── Cookie Banner ─────────────────────────────────────────────────────────
 function initCookieBanner() {
-  if (localStorage.getItem('eushop_cookies')) return;
+  if (safeGetItem('eushop_cookies')) return;
   setTimeout(() => document.getElementById('cookie-banner')?.classList.add('show'), 1800);
 }
 function acceptCookies() {
-  localStorage.setItem('eushop_cookies', '1');
+  safeSetItem('eushop_cookies', '1');
   const b = document.getElementById('cookie-banner');
   if (b) { b.style.transform = 'translateY(100%)'; setTimeout(() => b.remove(), 400); }
   showToast('🍪 Cookies accepted — now go find some actual speculoos!');
@@ -819,3 +840,191 @@ function filterByFoodName(name) {
      i f   ( h e r o )   o b s . o b s e r v e ( h e r o ) ; 
  } 
  
+
+// ─── Floating Version Selector (Added for Multi-Version Integration) ───────────
+function initFloatingSelector(currentKey) {
+  const style = document.createElement('style');
+  style.textContent = `
+    .floating-version-selector {
+      position: fixed;
+      bottom: 24px;
+      right: 24px;
+      z-index: 10000;
+      font-family: 'Inter', system-ui, -apple-system, sans-serif;
+    }
+    .fvs-btn {
+      background: #0f172a;
+      color: #f8fafc;
+      border: 1px solid #1e293b;
+      padding: 10px 18px;
+      border-radius: 9999px;
+      font-size: 13px;
+      font-weight: 700;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+      transition: all 0.2s ease;
+    }
+    .fvs-btn:hover {
+      background: #1e293b;
+      transform: translateY(-2px);
+      box-shadow: 0 12px 36px rgba(0,0,0,0.4);
+    }
+    .fvs-dropdown {
+      display: none;
+      position: absolute;
+      bottom: 54px;
+      right: 0;
+      width: 340px;
+      background: rgba(15, 23, 42, 0.95);
+      backdrop-filter: blur(12px);
+      border: 1px solid #1e293b;
+      border-radius: 20px;
+      padding: 10px;
+      box-shadow: 0 20px 50px rgba(0,0,0,0.5);
+      flex-direction: column;
+      gap: 6px;
+      max-height: 400px;
+      overflow-y: auto;
+      animation: fvs-slide-in 0.2s ease-out;
+    }
+    @keyframes fvs-slide-in {
+      from { transform: translateY(10px); opacity: 0; }
+      to { transform: translateY(0); opacity: 1; }
+    }
+    .fvs-dropdown.open {
+      display: flex;
+    }
+    .fvs-header {
+      padding: 6px 12px 10px;
+      border-bottom: 1px solid #1e293b;
+      color: #94a3b8;
+      font-size: 11px;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+    }
+    .fvs-option {
+      background: none;
+      border: none;
+      color: #cbd5e1;
+      padding: 8px 12px;
+      border-radius: 12px;
+      cursor: pointer;
+      text-align: left;
+      font-size: 12px;
+      font-weight: 600;
+      display: flex;
+      flex-direction: column;
+      transition: all 0.15s;
+    }
+    .fvs-option:hover {
+      background: #1e293b;
+      color: #f8fafc;
+    }
+    .fvs-option.active {
+      background: rgba(37, 99, 235, 0.2);
+      border: 1px solid rgba(37, 99, 235, 0.3);
+      color: #60a5fa;
+    }
+    .fvs-option-desc {
+      font-size: 10px;
+      color: #64748b;
+      font-weight: 400;
+      margin-top: 3px;
+    }
+    .fvs-badge {
+      display: inline-block;
+      font-size: 8px;
+      font-weight: 900;
+      padding: 2px 6px;
+      border-radius: 4px;
+      text-transform: uppercase;
+      margin-bottom: 4px;
+      align-self: flex-start;
+      letter-spacing: 0.05em;
+    }
+  `;
+  document.head.appendChild(style);
+
+  const container = document.createElement('div');
+  container.className = 'floating-version-selector';
+  
+  const versions = [
+    { key: 'v1', name: 'V1 - Investor Pitch', badge: 'INVESTOR', path: '/eushop/?v=v1', bg: '#fee2e2', color: '#be123c', desc: 'Financial waitlist & TAM pitch' },
+    { key: 'v2', name: 'V2 - Buyer Marketplace', badge: 'BUYER', path: '/eushop/?v=v2', bg: '#dcfce7', color: '#15803d', desc: 'Food Explorer, Cart, Checkout' },
+    { key: 'v3', name: 'V3 - Seller Compliance', badge: 'SELLER', path: '/eushop/become-seller/?v=v3', bg: '#fef3c7', color: '#b45309', desc: 'KYBC DAC7 Registration' },
+    { key: 'v4', name: 'V4 - Admin Console', badge: 'OPERATOR', path: '/eushop/admin/dashboard/?v=v4', bg: '#ede9fe', color: '#6d28d9', desc: 'Moderation, Audits, Logs' },
+    { key: 'v5', name: 'V5 - Developer Portal', badge: 'DEVELOPER', path: '/eushop/docs/?v=v5', bg: '#dbeafe', color: '#1d4ed8', desc: 'Audits & REST API Docs' },
+    { key: 'v3_static', name: 'V3 - Legacy Static', badge: 'LEGACY', path: '/eushop/v3/', bg: '#e2e8f0', color: '#475569', desc: 'Original Static Prototype' },
+    { key: 'v6', name: 'V6 - Orig: Core App', badge: 'ORIGINAL', path: '/eushop/v6/', bg: '#e2e8f0', color: '#475569', desc: 'Original Static Prototype' },
+    { key: 'v7', name: 'V7 - Orig: Emerald', badge: 'THEME', path: '/eushop/v7/', bg: '#ccfbf1', color: '#0f766e', desc: 'Clean Emerald Iteration' },
+    { key: 'v8', name: 'V8 - Orig: Midnight', badge: 'THEME', path: '/eushop/v8/', bg: '#f1f5f9', color: '#0f172a', desc: 'Dark Slate Midnight Iteration' },
+    { key: 'v9', name: 'V9 - Orig: Rose Gold', badge: 'THEME', path: '/eushop/v9/', bg: '#ffe4e6', color: '#9f1239', desc: 'Rose Gold Luxury Iteration' },
+    { key: 'v10', name: 'V10 - Platinum Light', badge: 'THEME', path: '/eushop/v10/', bg: '#f1f5f9', color: '#0f172a', desc: 'Premium Platinum Minimalist' },
+    { key: 'v11', name: 'V11 - Forest Green', badge: 'THEME', path: '/eushop/v11/', bg: '#dcfce7', color: '#15803d', desc: 'Sleek Alabaster & Forest' },
+    { key: 'v12', name: 'V12 - Terracotta Warm', badge: 'THEME', path: '/eushop/v12/', bg: '#ffedd5', color: '#c2410c', desc: 'Warm Ivory & Terracotta' },
+    { key: 'v13', name: 'V13 - Lavender Field', badge: 'THEME', path: '/eushop/v13/', bg: '#f3e8ff', color: '#7e22ce', desc: 'Minimalist Lavender & Snow' },
+  ];
+
+  const currentOpt = versions.find(v => v.key === currentKey);
+
+  container.innerHTML = `
+    <button class="fvs-btn" id="fvs-btn">
+      <span style="background:${currentOpt.bg};color:${currentOpt.color};padding:2px 6px;border-radius:4px;font-size:9px;font-weight:900">${currentOpt.badge}</span>
+      <span>${currentOpt.name.split(' - ')[0]}</span>
+      <span style="font-size:8px;color:#64748b">▲</span>
+    </button>
+    <div class="fvs-dropdown" id="fvs-dropdown">
+      <div class="fvs-header">Select Demo Face</div>
+      ${versions.map(v => `
+        <button class="fvs-option ${v.key === currentKey ? 'active' : ''}" onclick="window.setDemoVersion('${v.key}', '${v.path}')">
+          <span class="fvs-badge" style="background:${v.bg};color:${v.color}">${v.badge}</span>
+          <span style="display:flex;justify-content:space-between;align-items:center;width:100%">
+            <span>${v.name}</span>
+            ${v.key === currentKey ? '<span style="color:#60a5fa">●</span>' : ''}
+          </span>
+          <span class="fvs-option-desc">${v.desc}</span>
+        </button>
+      `).join('')}
+    </div>
+  `;
+
+  document.body.appendChild(container);
+
+  const btn = document.getElementById('fvs-btn');
+  const dropdown = document.getElementById('fvs-dropdown');
+  
+  btn.addEventListener('click', (e) => {
+    e.stopPropagation();
+    dropdown.classList.toggle('open');
+  });
+  
+  document.addEventListener('click', () => {
+    dropdown.classList.remove('open');
+  });
+
+  window.setDemoVersion = function(key, path) {
+    try {
+      localStorage.setItem('eushop-demo-version', key);
+    } catch(e) {}
+    window.location.href = path;
+  };
+}
+
+// Auto-initialize floating selector
+document.addEventListener('DOMContentLoaded', () => {
+  const currentPath = window.location.pathname;
+  let key = 'v6';
+  if (currentPath.includes('/v3/')) key = 'v3_static';
+  else if (currentPath.includes('/v7/')) key = 'v7';
+  else if (currentPath.includes('/v8/')) key = 'v8';
+  else if (currentPath.includes('/v9/')) key = 'v9';
+  else if (currentPath.includes('/v10/')) key = 'v10';
+  else if (currentPath.includes('/v11/')) key = 'v11';
+  else if (currentPath.includes('/v12/')) key = 'v12';
+  else if (currentPath.includes('/v13/')) key = 'v13';
+  initFloatingSelector(key);
+});
