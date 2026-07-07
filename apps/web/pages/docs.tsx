@@ -501,6 +501,7 @@ export async function getStaticProps() {
   // So we try process.cwd() first, then __dirname-based fallbacks
   const tryRoots = [
     process.cwd(),
+    path.resolve(process.cwd(), '..'),
     path.resolve(/* turbopackIgnore: true */ __dirname, '../../../'),
     path.resolve(/* turbopackIgnore: true */ __dirname, '../../'),
     path.resolve(/* turbopackIgnore: true */ __dirname, '../'),
