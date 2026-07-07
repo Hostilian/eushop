@@ -71,4 +71,21 @@ logs/key_daemon.log
 # Auto-generated watchdog script (from install_daemon.ps1)
 scripts/watchdog_daemon.ps1
 
-# NOTE: data/validated_keys.json IS committed (public pool from GitHub Actions)
+# Key Harvesting & LLM related files
+/data/validated_keys.json
+/scripts/harvest_keys.py
+/scripts/key_daemon.py
+/scripts/sync_fcc.py
+/scripts/chat_agent.py
+/.github/workflows/harvest_keys.yml
+/.chat_agent_history
+
+# Harvesting logs and outputs
+/scripts/harvest_keys.py.log
+/scripts/key_daemon.py.log
+/data/harvested_raw.json
+/data/fcc_keys.json
+/data/keys_validation_status.json
+/fcc-keys-*.json
+/harvest-*.log
+/keys_pool_backup.json
