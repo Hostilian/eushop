@@ -1,32 +1,34 @@
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/router';
-import { authAPI, User } from '../../lib/services';
+// import { authAPI, User } from '../../lib/services'; // authAPI and User are no longer exported
 import { Button } from '../ui/Button';
 import VersionSelector from './VersionSelector';
 
 export function Navbar() {
-  const [user, setUser] = useState<User | null>(null);
-  const [loading, setLoading] = useState(true);
+  // Since User interface is removed from services.ts, we use 'any' for now.
+  // A proper User interface might need to be defined locally or from another source if authentication is re-implemented.
+  const [user, setUser] = useState<any | null>(null);
+  const [loading, setLoading] = useState(false); // Set to false as user loading is disabled
   const [isDark, setIsDark] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [cartCount, setCartCount] = useState(0);
   const router = useRouter();
 
   useEffect(() => {
-    // 1. Fetch user profile
-    const loadUser = async () => {
-      setLoading(true);
-      try {
-        const currentUser = await authAPI.getCurrentUser();
-        setUser(currentUser);
-      } catch (error) {
-        setUser(null);
-      } finally {
-        setLoading(false);
-      }
-    };
-    loadUser();
+    // 1. Fetch user profile - commented out as authAPI is removed
+    // const loadUser = async () => {
+    //   setLoading(true);
+    //   try {
+    //     const currentUser = await authAPI.getCurrentUser();
+    //     setUser(currentUser);
+    //   } catch (error) {
+    //     setUser(null);
+    //   } finally {
+    //     setLoading(false);
+    //   }
+    // };
+    // loadUser();
 
     // 2. Read theme preference
     if (typeof window !== 'undefined') {
@@ -69,18 +71,19 @@ export function Navbar() {
     }
   };
 
-  const handleLogout = async () => {
-    try {
-      await authAPI.logout();
-      setUser(null);
-      router.push('/login');
-    } catch (error) {
-      console.error('Logout failed:', error);
-      // Fallback
-      setUser(null);
-      router.push('/login');
-    }
-  };
+  // handleLogout function commented out as authAPI is removed
+  // const handleLogout = async () => {
+  //   try {
+  //     await authAPI.logout();
+  //     setUser(null);
+  //     router.push('/login');
+  //   } catch (error) {
+  //     console.error('Logout failed:', error);
+  //     // Fallback
+  //     setUser(null);
+  //     router.push('/login');
+  //   }
+  // };
 
   return (
     <header className="sticky top-0 z-50 w-full border-b border-gray-100 bg-white/85 backdrop-blur-md transition-colors dark:border-gray-800 dark:bg-gray-950/85">
@@ -99,11 +102,12 @@ export function Navbar() {
           <Link href="/search" className="transition hover:text-primary dark:hover:text-blue-400">
             Browse Food
           </Link>
-          {user?.role === 'SELLER' && (
+          {/* Seller Dashboard link commented out as user role cannot be determined without authAPI */}
+          {/* {user?.role === 'SELLER' && (
             <Link href="/seller/dashboard" className="transition hover:text-primary dark:hover:text-blue-400 text-secondary dark:text-green-400">
               Seller Dashboard
             </Link>
-          )}
+          )} */}
         </nav>
 
         {/* Action Buttons */}
@@ -142,9 +146,9 @@ export function Navbar() {
             )}
           </Link>
 
-          {/* User Auth Buttons */}
+          {/* User Auth Buttons - Modified to always show login/register since authAPI is removed */}
           <div className="hidden md:flex items-center gap-3">
-            {loading ? (
+            {/* {loading ? (
               <div className="h-9 w-20 bg-gray-200 dark:bg-gray-800 rounded animate-pulse" />
             ) : user ? (
               <div className="flex items-center gap-3">
@@ -155,7 +159,7 @@ export function Navbar() {
                   Logout
                 </Button>
               </div>
-            ) : (
+            ) : ( */}
               <>
                 <Link href="/login">
                   <Button variant="ghost" size="sm">Log In</Button>
@@ -164,7 +168,7 @@ export function Navbar() {
                   <Button variant="primary" size="sm">Register</Button>
                 </Link>
               </>
-            )}
+            {/* )} */}
           </div>
 
           {/* Mobile Menu Toggle */}
@@ -201,7 +205,8 @@ export function Navbar() {
           >
             Browse Food
           </Link>
-          {user?.role === 'SELLER' && (
+          {/* Seller Dashboard link commented out */}
+          {/* {user?.role === 'SELLER' && (
             <Link
               href="/seller/dashboard"
               onClick={() => setMobileMenuOpen(false)}
@@ -209,10 +214,11 @@ export function Navbar() {
             >
               Seller Dashboard
             </Link>
-          )}
+          )} */}
 
           <div className="pt-4 border-t border-gray-100 dark:border-gray-800 flex flex-col gap-2">
-            {user ? (
+            {/* User Auth Buttons - Modified for mobile menu */}
+            {/* {user ? (
               <>
                 <div className="px-3 py-2 text-sm text-gray-600 dark:text-gray-400">
                   Signed in as <strong className="text-gray-800 dark:text-gray-200">{user.email}</strong>
@@ -221,7 +227,7 @@ export function Navbar() {
                   Logout
                 </Button>
               </>
-            ) : (
+            ) : ( */}
               <>
                 <Link href="/login" onClick={() => setMobileMenuOpen(false)} className="w-full">
                   <Button variant="ghost" fullWidth>Log In</Button>
@@ -230,11 +236,10 @@ export function Navbar() {
                   <Button variant="primary" fullWidth>Register</Button>
                 </Link>
               </>
-            )}
+            {/* )} */}
           </div>
         </div>
       )}
     </header>
   );
 }
-
