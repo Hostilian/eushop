@@ -163,7 +163,7 @@ jobs:
           REGISTRY_API: ${{ secrets.REGISTRY_API_URL }}
       
       - name: Upload build metadata
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: build-metadata
           path: build-metadata/
@@ -331,7 +331,7 @@ jobs:
           
       - name: Upload deployment artifacts
         if: always()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: deployment-artifacts
           path: |
