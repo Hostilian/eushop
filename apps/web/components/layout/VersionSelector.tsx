@@ -52,6 +52,14 @@ const VERSIONS: VersionOption[] = [
     color: 'from-blue-500 to-cyan-600 border-blue-200 text-blue-700'
   },
   {
+    key: 'v3_static',
+    name: 'V3 - Orig: Core App (Legacy)',
+    badge: 'LEGACY',
+    desc: 'Original static prototype from the eushopcursor folder.',
+    path: '/v3/',
+    color: 'from-gray-400 to-slate-500 border-slate-200 text-slate-700'
+  },
+  {
     key: 'v6',
     name: 'V6 - Orig: Core App',
     badge: 'ORIGINAL',
@@ -82,6 +90,38 @@ const VERSIONS: VersionOption[] = [
     desc: 'Original static prototype rendered in luxury Rose Gold.',
     path: '/v9/',
     color: 'from-rose-400 to-rose-600 border-rose-300 text-rose-800'
+  },
+  {
+    key: 'v10',
+    name: 'V10 - Platinum Light',
+    badge: 'THEME',
+    desc: 'Original static prototype rendered in Platinum Light.',
+    path: '/v10/',
+    color: 'from-slate-300 to-slate-500 border-slate-200 text-slate-700'
+  },
+  {
+    key: 'v11',
+    name: 'V11 - Forest Green',
+    badge: 'THEME',
+    desc: 'Original static prototype rendered in Forest Green.',
+    path: '/v11/',
+    color: 'from-emerald-600 to-green-800 border-green-200 text-green-700'
+  },
+  {
+    key: 'v12',
+    name: 'V12 - Terracotta Warm',
+    badge: 'THEME',
+    desc: 'Original static prototype rendered in Terracotta Warm.',
+    path: '/v12/',
+    color: 'from-orange-400 to-amber-600 border-orange-200 text-orange-700'
+  },
+  {
+    key: 'v13',
+    name: 'V13 - Lavender Field',
+    badge: 'THEME',
+    desc: 'Original static prototype rendered in Lavender Field.',
+    path: '/v13/',
+    color: 'from-purple-400 to-indigo-600 border-purple-200 text-purple-700'
   }
 ];
 
@@ -126,8 +166,8 @@ export default function VersionSelector() {
     // Dispatch global event
     window.dispatchEvent(new Event('demo-version-changed'));
 
-    // Handle static HTML folders (v6, v7, v8, v9)
-    if (['v6', 'v7', 'v8', 'v9'].includes(option.key)) {
+    // Handle static HTML folders (v3_static, v6-v9, v10-v13)
+    if (['v3_static', 'v6', 'v7', 'v8', 'v9', 'v10', 'v11', 'v12', 'v13'].includes(option.key)) {
       window.location.href = (router.basePath || '') + option.path;
       return;
     }
