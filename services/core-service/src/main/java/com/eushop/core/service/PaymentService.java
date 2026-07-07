@@ -80,7 +80,7 @@ public class PaymentService {
         return response;
     }
 
-    public Map<String, Object> createPaymentIntent(Double amount, String currency, String sellerAccountId) throws StripeException {
+    public Map<String, Object> createPaymentIntent(Double amount, String currency, String sellerAccountId, String idempotencyKey) throws StripeException {
         long amountInCents = Math.round(amount * 100);
 
         if (isMock()) {
@@ -103,7 +103,16 @@ public class PaymentService {
             ).setApplicationFeeAmount(applicationFeeAmount);
         }
 
-        PaymentIntent paymentIntent = PaymentIntent.create(builder.build());
+        PaymentIntent paymentIntent;
+        if (idempotencyKey != null && !idempotencyKey.trim().isEmpty()) {
+            com.stripe.net.RequestOptions options = com.stripe.net.RequestOptions.builder()
+                    .setIdempotencyKey(idempotencyKey)
+                    .build();
+            paymentIntent = PaymentIntent.create(builder.build(), options);
+        } else {
+            paymentIntent = PaymentIntent.create(builder.build());
+        }
+
         Map<String, Object> response = new HashMap<>();
         response.put("clientSecret", paymentIntent.getClientSecret());
         response.put("id", paymentIntent.getId());

@@ -31,12 +31,25 @@ public class WebhookController {
     private static final Logger log = LoggerFactory.getLogger(WebhookController.class);
 
     private final OrderService orderService;
+    private final org.springframework.jdbc.core.JdbcTemplate jdbcTemplate;
 
     @Value("${stripe.webhook.secret:whsec_placeholder}")
     private String webhookSecret;
 
-    public WebhookController(OrderService orderService) {
+    @Value("${spring.profiles.active:dev}")
+    private String activeProfile;
+
+    public WebhookController(OrderService orderService, org.springframework.jdbc.core.JdbcTemplate jdbcTemplate) {
         this.orderService = orderService;
+        this.jdbcTemplate = jdbcTemplate;
+    }
+
+    @jakarta.annotation.PostConstruct
+    public void validateConfig() {
+        boolean isProduction = !"dev".equalsIgnoreCase(activeProfile) && !"test".equalsIgnoreCase(activeProfile);
+        if (isProduction && (webhookSecret == null || webhookSecret.startsWith("whsec_placeholder") || webhookSecret.trim().isEmpty())) {
+            throw new IllegalStateException("FATAL: Stripe webhook secret is not configured in production mode. Failing closed.");
+        }
     }
 
     /**
@@ -68,6 +81,20 @@ public class WebhookController {
         }
 
         log.info("Received Stripe event: type={} id={}", event.getType(), event.getId());
+
+        // Deduplicate events to ensure processing idempotency
+        String eventId = event.getId();
+        if (eventId != null) {
+            try {
+                jdbcTemplate.update("INSERT INTO processed_webhook_events (event_id) VALUES (?)", eventId);
+            } catch (org.springframework.dao.DuplicateKeyException e) {
+                log.info("Duplicate Stripe webhook event detected and skipped: id={}", eventId);
+                return ResponseEntity.ok("Received (Duplicate)");
+            } catch (Exception e) {
+                log.error("Failed to record processed webhook event: {}", e.getMessage());
+                return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Database error");
+            }
+        }
 
         switch (event.getType()) {
             case "payment_intent.succeeded" -> handlePaymentIntentSucceeded(event);

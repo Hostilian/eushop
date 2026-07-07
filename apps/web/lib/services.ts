@@ -294,6 +294,11 @@ const saveLocalUsers = (users: User[]) => {
 // API SERVICES IMPLEMENTATION WITH AUTOMATIC FALLBACKS
 // -------------------------------------------------------------
 
+const shouldUseMock = (): boolean => {
+  if (typeof window === 'undefined') return false;
+  return process.env.NODE_ENV !== 'production' && API_CONFIG.USE_MOCK_AUTH;
+};
+
 export const foodAPI = {
   search: async (query?: string, country?: string, page: number = 1, size: number = 20, config?: any): Promise<FoodItem[]> => {
     try {
@@ -306,6 +311,9 @@ export const foodAPI = {
       const response = await apiClient.get('/foods', { params, ...config });
       return response.data.content || response.data;
     } catch (e) {
+      if (!shouldUseMock()) {
+        throw e;
+      }
       console.warn('foodAPI.search failed. Falling back to local database simulation.');
       let allFoods = getLocalFoods();
       
@@ -327,6 +335,7 @@ export const foodAPI = {
       const response = await apiClient.get(`/foods/${id}`, config);
       return response.data;
     } catch (e) {
+      if (!shouldUseMock()) throw e;
       console.warn(`foodAPI.getById(${id}) failed. Falling back to local database simulation.`);
       const allFoods = getLocalFoods();
       const found = allFoods.find(f => f.id === id);
@@ -340,6 +349,7 @@ export const foodAPI = {
       const response = await apiClient.get('/foods/trending');
       return response.data;
     } catch (e) {
+      if (!shouldUseMock()) throw e;
       console.warn('foodAPI.getTrending failed. Falling back to local database simulation.');
       return getLocalFoods().slice(0, 3);
     }
@@ -349,6 +359,7 @@ export const foodAPI = {
     try {
       return await apiClient.post('/cart/sync', cartItems);
     } catch (e) {
+      if (!shouldUseMock()) throw e;
       console.warn('foodAPI.syncCart failed. Storing in local storage only.');
       return { status: 'sync_delayed' };
     }
@@ -370,6 +381,7 @@ export const foodAPI = {
       const response = await apiClient.post('/foods', newItem);
       return response.data;
     } catch (e) {
+      if (!shouldUseMock()) throw e;
       console.warn('foodAPI.addCustomListing failed. Saving to local storage simulated database.');
       saveLocalFood(newItem);
       return newItem;
@@ -387,6 +399,7 @@ export const authAPI = {
       }
       return response.data;
     } catch (e) {
+      if (!shouldUseMock()) throw e;
       console.warn('authAPI.login failed. Simulating local session.');
       const users = getLocalUsers();
       let matched = users.find(u => u.email === email);
@@ -426,6 +439,7 @@ export const authAPI = {
       }
       return response.data;
     } catch (e) {
+      if (!shouldUseMock()) throw e;
       console.warn('authAPI.signup failed. Simulating local signup.');
       const users = getLocalUsers();
       if (users.some(u => u.email === email)) {
@@ -460,6 +474,7 @@ export const authAPI = {
     try {
       await apiClient.post('/auth/logout');
     } catch (e) {
+      if (!shouldUseMock()) throw e;
       console.warn('authAPI.logout network call failed. Performing client-side logout.');
     } finally {
       sessionStorage.removeItem('userProfile');
@@ -478,7 +493,8 @@ export const authAPI = {
         localStorage.setItem('user', JSON.stringify(user));
       }
       return user ?? null;
-    } catch {
+    } catch (e) {
+      if (!shouldUseMock()) throw e;
       // Return local storage profile if offline/api down
       if (typeof window !== 'undefined') {
         const raw = localStorage.getItem('user');
@@ -504,6 +520,7 @@ export const authAPI = {
       sessionStorage.removeItem('userProfile');
       return response.data;
     } catch (e) {
+      if (!shouldUseMock()) throw e;
       console.warn('authAPI.becomeSeller failed. Recording seller application locally.');
       
       // Update local application registry
@@ -547,6 +564,7 @@ export const authAPI = {
       });
       return response.data.data;
     } catch (e) {
+      if (!shouldUseMock()) throw e;
       console.warn('authAPI.exportUserData failed. Generating client-side export.');
       const user = authAPI.getCachedProfile();
       const orders = getLocalOrders().filter(o => o.buyerEmail === user?.email);
@@ -568,6 +586,7 @@ export const authAPI = {
       localStorage.removeItem('user');
       return response.data;
     } catch (e) {
+      if (!shouldUseMock()) throw e;
       console.warn('authAPI.deleteAccount failed. Clearing local data sandbox.');
       sessionStorage.removeItem('userProfile');
       localStorage.removeItem('user');
@@ -590,6 +609,7 @@ export const authAPI = {
       });
       return response.data;
     } catch (e) {
+      if (!shouldUseMock()) throw e;
       console.warn('authAPI.recordConsent failed. Storing consent locally.');
       localStorage.setItem(`consent_${consentType}`, JSON.stringify({ granted, version: consentVersion, timestamp: new Date().toISOString() }));
       return { success: true };
@@ -603,6 +623,7 @@ export const paymentAPI = {
       const response = await apiClient.post('/payments/create-payment-intent', { amount, currency, sellerId });
       return response.data;
     } catch (e) {
+      if (!shouldUseMock()) throw e;
       console.warn('paymentAPI.createPaymentIntent failed. Returning simulated client secret.');
       return {
         clientSecret: `pi_mock_secret_${Date.now()}_${Math.random().toString(36).substr(2, 5)}`,
@@ -622,6 +643,7 @@ export const orderAPI = {
       });
       return response.data;
     } catch (e) {
+      if (!shouldUseMock()) throw e;
       console.warn('orderAPI.create failed. Storing order in local browser database.');
       const profile = authAPI.getCachedProfile();
       const allFoods = getLocalFoods();
@@ -651,6 +673,7 @@ export const orderAPI = {
       const response = await apiClient.get(`/orders/${id}`);
       return response.data;
     } catch (e) {
+      if (!shouldUseMock()) throw e;
       console.warn(`orderAPI.getById(${id}) failed. Returning from local simulated storage.`);
       const orders = getLocalOrders();
       const found = orders.find(o => o.id === id);
@@ -668,6 +691,7 @@ export const orderAPI = {
       });
       return response.data.content || response.data;
     } catch (e) {
+      if (!shouldUseMock()) throw e;
       console.warn('orderAPI.getBuyerOrders failed. Loading from browser storage.');
       const profile = authAPI.getCachedProfile();
       const orders = getLocalOrders();
@@ -684,6 +708,7 @@ export const orderAPI = {
       });
       return response.data.content || response.data;
     } catch (e) {
+      if (!shouldUseMock()) throw e;
       console.warn('orderAPI.getSellerOrders failed. Loading from browser storage.');
       const profile = authAPI.getCachedProfile();
       const orders = getLocalOrders();
@@ -701,6 +726,7 @@ export const orderAPI = {
       });
       return response.data;
     } catch (e) {
+      if (!shouldUseMock()) throw e;
       console.warn('orderAPI.updateStatus failed. Updating local browser record.');
       const orders = getLocalOrders();
       const idx = orders.findIndex(o => o.id === orderId);

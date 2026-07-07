@@ -53,7 +53,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             try {
                 String url = auth0Domain.startsWith("http") ? auth0Domain : "https://" + auth0Domain;
                 jwkProvider = new JwkProviderBuilder(new URL(url))
-                        .withCached(10, 24, TimeUnit.HOURS)
+                        .cached(10, 24, TimeUnit.HOURS)
                         .build();
             } catch (Exception e) {
                 log.error("Failed to build JWK Provider: {}", e.getMessage());
