@@ -354,5 +354,389 @@ export const foodAPI = {
       console.warn('foodAPI.getTrending failed. Falling back to local database simulation.');
       return getLocalFoods().slice(0, 3);
     }
-  }, // Added missing closing brace for getTrending method
-}; // Added missing closing brace for foodAPI object
+  },
+
+  syncCart: async (cartItems: any[]): Promise<any> => {
+    try {
+      return await apiClient.post('/cart/sync', cartItems);
+    } catch (e) {
+      if (!shouldUseMock()) throw e;
+      console.warn('foodAPI.syncCart failed. Storing in local storage only.');
+      return { status: 'sync_delayed' };
+    }
+  },
+
+  addCustomListing: async (listing: Omit<FoodItem, 'id'>): Promise<FoodItem> => {
+    const newItem: FoodItem = {
+      ...listing,
+      id: `food-${Date.now()}`,
+      seller: listing.seller || {
+        id: listing.sellerId,
+        name: 'Local Producer',
+        rating: 5.0,
+        verified: true
+      }
+    };
+    
+    try {
+      const response = await apiClient.post('/foods', newItem);
+      return response.data;
+    } catch (e) {
+      if (!shouldUseMock()) throw e;
+      console.warn('foodAPI.addCustomListing failed. Saving to local storage simulated database.');
+      saveLocalFood(newItem);
+      return newItem;
+    }
+  }
+};
+
+export const authAPI = {
+  login: async (email: string, password: string): Promise<LoginResponse> => {
+    try {
+      const response = await apiClient.post('/auth/login', { email, password });
+      if (response.data.user) {
+        sessionStorage.setItem('userProfile', JSON.stringify(response.data.user));
+        localStorage.setItem('user', JSON.stringify(response.data.user));
+      }
+      return response.data;
+    } catch (e) {
+      if (!shouldUseMock()) throw e;
+      console.warn('authAPI.login failed. Simulating local session.');
+      const users = getLocalUsers();
+      let matched = users.find(u => u.email === email);
+      if (!matched) {
+        // Auto-register a default account if it doesn't exist to ease testing
+        matched = {
+          id: `usr-${Date.now()}`,
+          email,
+          name: email.split('@')[0].toUpperCase(),
+          country: 'DE',
+          role: email.includes('admin') ? 'ADMIN' : 'BUYER',
+          kycVerified: false,
+          emailVerified: true,
+          selfCertifiedCompliant: false
+        };
+        users.push(matched);
+        saveLocalUsers(users);
+      }
+      
+      const payload: LoginResponse = {
+        message: 'Mock login successful',
+        user: matched
+      };
+      sessionStorage.setItem('userProfile', JSON.stringify(matched));
+      localStorage.setItem('user', JSON.stringify(matched));
+      window.dispatchEvent(new Event('auth-changed'));
+      return payload;
+    }
+  },
+
+  signup: async (email: string, password: string, name: string, country: string): Promise<SignupResponse> => {
+    try {
+      const response = await apiClient.post('/auth/signup', { email, password, name, country });
+      if (response.data.user) {
+        sessionStorage.setItem('userProfile', JSON.stringify(response.data.user));
+        localStorage.setItem('user', JSON.stringify(response.data.user));
+      }
+      return response.data;
+    } catch (e) {
+      if (!shouldUseMock()) throw e;
+      console.warn('authAPI.signup failed. Simulating local signup.');
+      const users = getLocalUsers();
+      if (users.some(u => u.email === email)) {
+        throw new Error('Email is already registered');
+      }
+      
+      const newUser: User = {
+        id: `usr-${Date.now()}`,
+        email,
+        name,
+        country,
+        role: email.includes('admin') ? 'ADMIN' : 'BUYER',
+        kycVerified: false,
+        emailVerified: true,
+        selfCertifiedCompliant: false
+      };
+      users.push(newUser);
+      saveLocalUsers(users);
+      
+      const payload: SignupResponse = {
+        message: 'Mock signup successful',
+        user: newUser
+      };
+      sessionStorage.setItem('userProfile', JSON.stringify(newUser));
+      localStorage.setItem('user', JSON.stringify(newUser));
+      window.dispatchEvent(new Event('auth-changed'));
+      return payload;
+    }
+  },
+
+  logout: async (): Promise<void> => {
+    try {
+      await apiClient.post('/auth/logout');
+    } catch (e) {
+      if (!shouldUseMock()) throw e;
+      console.warn('authAPI.logout network call failed. Performing client-side logout.');
+    } finally {
+      sessionStorage.removeItem('userProfile');
+      localStorage.removeItem('user');
+      localStorage.removeItem('cart');
+      window.dispatchEvent(new Event('auth-changed'));
+    }
+  },
+
+  getCurrentUser: async (config?: any): Promise<User | null> => {
+    try {
+      const response = await apiClient.get('/auth/me', config);
+      const user = response.data.data;
+      if (user) {
+        sessionStorage.setItem('userProfile', JSON.stringify(user));
+        localStorage.setItem('user', JSON.stringify(user));
+      }
+      return user ?? null;
+    } catch (e) {
+      if (!shouldUseMock()) throw e;
+      // Return local storage profile if offline/api down
+      if (typeof window !== 'undefined') {
+        const raw = localStorage.getItem('user');
+        return raw ? JSON.parse(raw) as User : null;
+      }
+      return null;
+    }
+  },
+
+  getCachedProfile: (): User | null => {
+    if (typeof window === 'undefined') return null;
+    try {
+      const raw = localStorage.getItem('user');
+      return raw ? (JSON.parse(raw) as User) : null;
+    } catch {
+      return null;
+    }
+  },
+
+  becomeSeller: async (userId: string, data: BecomeSellerRequest): Promise<any> => {
+    try {
+      const response = await apiClient.put(`/users/${userId}/become-seller`, data);
+      sessionStorage.removeItem('userProfile');
+      return response.data;
+    } catch (e) {
+      if (!shouldUseMock()) throw e;
+      console.warn('authAPI.becomeSeller failed. Recording seller application locally.');
+      
+      // Update local application registry
+      saveLocalSeller({
+        userId,
+        name: data.businessName || 'Artisanal Merchant',
+        email: data.phone || 'seller@eushop.local',
+        country: data.country || 'EU',
+        taxId: data.taxId,
+        vatNumber: data.vatNumber,
+        tradeRegisterNumber: data.tradeRegisterNumber,
+        address: `${data.addressStreet}, ${data.addressCity}, ${data.addressPostalCode}`,
+        selfCertified: data.selfCertifiedCompliant
+      });
+
+      // Instantly mark local user as SELLER for demo responsiveness
+      const currentUser = authAPI.getCachedProfile();
+      if (currentUser && currentUser.id === userId) {
+        const updated = {
+          ...currentUser,
+          role: 'SELLER' as const,
+          selfCertifiedCompliant: data.selfCertifiedCompliant,
+          taxId: data.taxId,
+          vatNumber: data.vatNumber,
+          tradeRegisterNumber: data.tradeRegisterNumber,
+          address: `${data.addressStreet}, ${data.addressCity}, ${data.addressPostalCode}`
+        };
+        localStorage.setItem('user', JSON.stringify(updated));
+        sessionStorage.setItem('userProfile', JSON.stringify(updated));
+        window.dispatchEvent(new Event('auth-changed'));
+      }
+      
+      return { success: true, message: 'Simulated seller registration registered' };
+    }
+  },
+
+  exportUserData: async (userId: string): Promise<any> => {
+    try {
+      const response = await apiClient.get(`/users/${userId}/export`, {
+        headers: { 'X-User-Id': userId }
+      });
+      return response.data.data;
+    } catch (e) {
+      if (!shouldUseMock()) throw e;
+      console.warn('authAPI.exportUserData failed. Generating client-side export.');
+      const user = authAPI.getCachedProfile();
+      const orders = getLocalOrders().filter(o => o.buyerEmail === user?.email);
+      return {
+        userProfile: user,
+        ordersList: orders,
+        exportedAt: new Date().toISOString(),
+        gdprRegulatoryNotice: 'This is an export of data stored in your local browser sandbox.'
+      };
+    }
+  },
+
+  deleteAccount: async (userId: string): Promise<any> => {
+    try {
+      const response = await apiClient.delete(`/users/${userId}/account`, {
+        headers: { 'X-User-Id': userId }
+      });
+      sessionStorage.removeItem('userProfile');
+      localStorage.removeItem('user');
+      return response.data;
+    } catch (e) {
+      if (!shouldUseMock()) throw e;
+      console.warn('authAPI.deleteAccount failed. Clearing local data sandbox.');
+      sessionStorage.removeItem('userProfile');
+      localStorage.removeItem('user');
+      localStorage.removeItem('cart');
+      const users = getLocalUsers().filter(u => u.id !== userId);
+      saveLocalUsers(users);
+      window.dispatchEvent(new Event('auth-changed'));
+      return { success: true };
+    }
+  },
+
+  recordConsent: async (userId: string, consentType: string, consentVersion: string, granted: boolean): Promise<any> => {
+    try {
+      const response = await apiClient.post(`/users/${userId}/consent`, {
+        consentType,
+        consentVersion,
+        granted
+      }, {
+        headers: { 'X-User-Id': userId }
+      });
+      return response.data;
+    } catch (e) {
+      if (!shouldUseMock()) throw e;
+      console.warn('authAPI.recordConsent failed. Storing consent locally.');
+      localStorage.setItem(`consent_${consentType}`, JSON.stringify({ granted, version: consentVersion, timestamp: new Date().toISOString() }));
+      return { success: true };
+    }
+  },
+};
+
+export const paymentAPI = {
+  createPaymentIntent: async (amount: number, currency: string = 'eur', sellerId?: string): Promise<PaymentIntentResponse> => {
+    try {
+      const response = await apiClient.post('/payments/create-payment-intent', { amount, currency, sellerId });
+      return response.data;
+    } catch (e) {
+      if (!shouldUseMock()) throw e;
+      console.warn('paymentAPI.createPaymentIntent failed. Returning simulated client secret.');
+      return {
+        clientSecret: `pi_mock_secret_${Date.now()}_${Math.random().toString(36).substr(2, 5)}`,
+        id: `pi_mock_id_${Date.now()}`
+      };
+    }
+  },
+};
+
+export const orderAPI = {
+  create: async (order: CreateOrderRequest): Promise<any> => {
+    try {
+      const profile = authAPI.getCachedProfile();
+      if (!profile) throw new Error('Not authenticated');
+      const response = await apiClient.post('/orders', order, {
+        headers: { 'X-User-Id': profile.id },
+      });
+      return response.data;
+    } catch (e) {
+      if (!shouldUseMock()) throw e;
+      console.warn('orderAPI.create failed. Storing order in local browser database.');
+      const profile = authAPI.getCachedProfile();
+      const allFoods = getLocalFoods();
+      const foodItem = allFoods.find(f => f.id === order.foodId);
+      
+      const newOrder = {
+        foodId: order.foodId,
+        productName: foodItem?.name || 'Artisanal Delicacy',
+        sellerId: order.sellerId,
+        sellerName: foodItem?.seller?.name || 'Local Seller',
+        quantity: order.quantity,
+        totalPrice: order.totalPrice,
+        finderFee: order.finderFee,
+        shippingAddress: order.shippingAddress,
+        buyerEmail: profile?.email || 'guest@eushop.local',
+        status: 'PROCESSING',
+        stripePaymentIntentId: order.stripePaymentIntentId || `pi_mock_${Date.now()}`
+      };
+      
+      saveLocalOrder(newOrder);
+      return newOrder;
+    }
+  },
+
+  getById: async (id: string): Promise<any> => {
+    try {
+      const response = await apiClient.get(`/orders/${id}`);
+      return response.data;
+    } catch (e) {
+      if (!shouldUseMock()) throw e;
+      console.warn(`orderAPI.getById(${id}) failed. Returning from local simulated storage.`);
+      const orders = getLocalOrders();
+      const found = orders.find(o => o.id === id);
+      if (!found) throw new Error('Order not found');
+      return found;
+    }
+  },
+
+  getBuyerOrders: async (): Promise<any[]> => {
+    try {
+      const profile = authAPI.getCachedProfile();
+      if (!profile) throw new Error('Not authenticated');
+      const response = await apiClient.get('/orders', {
+        headers: { 'X-User-Id': profile.id },
+      });
+      return response.data.content || response.data;
+    } catch (e) {
+      if (!shouldUseMock()) throw e;
+      console.warn('orderAPI.getBuyerOrders failed. Loading from browser storage.');
+      const profile = authAPI.getCachedProfile();
+      const orders = getLocalOrders();
+      return orders.filter(o => o.buyerEmail === profile?.email);
+    }
+  },
+
+  getSellerOrders: async (): Promise<any[]> => {
+    try {
+      const profile = authAPI.getCachedProfile();
+      if (!profile) throw new Error('Not authenticated');
+      const response = await apiClient.get('/orders/seller', {
+        headers: { 'X-User-Id': profile.id },
+      });
+      return response.data.content || response.data;
+    } catch (e) {
+      if (!shouldUseMock()) throw e;
+      console.warn('orderAPI.getSellerOrders failed. Loading from browser storage.');
+      const profile = authAPI.getCachedProfile();
+      const orders = getLocalOrders();
+      return orders.filter(o => o.sellerId === profile?.id || o.sellerId === profile?.email);
+    }
+  },
+
+  updateStatus: async (orderId: string, status: string): Promise<any> => {
+    try {
+      const profile = authAPI.getCachedProfile();
+      if (!profile) throw new Error('Not authenticated');
+      const response = await apiClient.put(`/orders/${orderId}/status`, null, {
+        params: { status },
+        headers: { 'X-User-Id': profile.id },
+      });
+      return response.data;
+    } catch (e) {
+      if (!shouldUseMock()) throw e;
+      console.warn('orderAPI.updateStatus failed. Updating local browser record.');
+      const orders = getLocalOrders();
+      const idx = orders.findIndex(o => o.id === orderId);
+      if (idx > -1) {
+        orders[idx].status = status;
+        localStorage.setItem('orders', JSON.stringify(orders));
+        return orders[idx];
+      }
+      throw new Error('Order not found in simulation');
+    }
+  },
+};
