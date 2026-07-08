@@ -4,6 +4,9 @@ import { PageWrapper } from '../components/layout/PageWrapper';
 import { ProductCard } from '../components/ui/ProductCard';
 import { Button } from '../components/ui/Button';
 import { foodAPI, FoodItem } from '../lib/services';
+import PredictiveSearch, { ParsedFilters } from '../components/PredictiveSearch';
+import DiscoveryCanvas from '../components/DiscoveryCanvas';
+import ZeroStepCheckout from '../components/ZeroStepCheckout';
 
 const fallbackTrendingFoods: FoodItem[] = [
   { id: '1', name: 'Belgian Chocolates', country: 'Belgium', price: 24.99, description: 'Fine artisanal chocolates with creamy hazelnut fillings.', sellerId: 'seller-be' },
@@ -240,18 +243,22 @@ function InvestorPitch() {
 }
 
 export default function Home() {
-  const [demoVersion, setDemoVersion] = useState('v2');
-  const [trendingFoods, setTrendingFoods] = useState<FoodItem[]>(fallbackTrendingFoods);
+  const [demoVersion, setDemoVersion] = useState('v15');
+  const [trendingFoods, setTrendingFoods] = useState<FoodItem[]>([]);
+  const [filteredProducts, setFilteredProducts] = useState<FoodItem[]>([]);
   const [loadingFoods, setLoadingFoods] = useState(false);
+  const [isLoadingSearch, setIsLoadingSearch] = useState(false);
+  const [selectedProductForCheckout, setSelectedProductForCheckout] = useState<FoodItem | null>(null);
+  const [isCheckoutOpen, setIsCheckoutOpen] = useState(false);
 
   useEffect(() => {
     // 1. Initial version read
-    const stored = localStorage.getItem('eushop-demo-version') || 'v2';
+    const stored = localStorage.getItem('eushop-demo-version') || 'v15';
     setDemoVersion(stored);
 
     // 2. Listen for switcher updates
     const handleVersionChange = () => {
-      setDemoVersion(localStorage.getItem('eushop-demo-version') || 'v2');
+      setDemoVersion(localStorage.getItem('eushop-demo-version') || 'v15');
     };
     window.addEventListener('demo-version-changed', handleVersionChange);
 
@@ -260,10 +267,13 @@ export default function Home() {
       setLoadingFoods(true);
       try {
         const foods: any = await foodAPI.getTrending();
-        setTrendingFoods(Array.isArray(foods) ? foods : (foods?.data || foods?.foods || []));
+        const list = Array.isArray(foods) ? foods : (foods?.data || foods?.foods || []);
+        setTrendingFoods(list);
+        setFilteredProducts(list);
       } catch (error) {
         console.error('Failed to fetch trending foods:', error);
         setTrendingFoods(fallbackTrendingFoods);
+        setFilteredProducts(fallbackTrendingFoods);
       } finally {
         setLoadingFoods(false);
       }
@@ -292,7 +302,7 @@ export default function Home() {
             country: item.country,
             quantity: 1,
             sellerId: item.sellerId,
-            finderFee: item.finderFee || 5.00
+            finderFee: item.finderFee || 2.50
           });
         }
       }
@@ -303,8 +313,110 @@ export default function Home() {
     }
   };
 
+  const handleSearch = (query: string, filters: ParsedFilters) => {
+    setIsLoadingSearch(true);
+    // Simulate AI parsing/search engine latency
+    setTimeout(() => {
+      let results = [...trendingFoods];
+      if (filters.country) {
+        results = results.filter(p => p.country.toLowerCase() === filters.country!.toLowerCase());
+      }
+      if (filters.category) {
+        results = results.filter(p => p.category?.toLowerCase() === filters.category!.toLowerCase());
+      }
+      if (filters.maxPrice) {
+        results = results.filter(p => p.price <= filters.maxPrice!);
+      }
+      if (filters.allergensAvoid && filters.allergensAvoid.length > 0) {
+        results = results.filter(p => {
+          const itemAllergens = p.allergens || [];
+          return !filters.allergensAvoid!.some(avoidAllergen =>
+            itemAllergens.some(a => a.toLowerCase() === avoidAllergen.toLowerCase())
+          );
+        });
+      }
+      setFilteredProducts(results);
+      setIsLoadingSearch(false);
+    }, 450);
+  };
+
+  const handleClearSearch = () => {
+    setFilteredProducts(trendingFoods);
+  };
+
   if (demoVersion === 'v1') {
     return <InvestorPitch />;
+  }
+
+  if (demoVersion === 'v15') {
+    return (
+      <PageWrapper>
+        {/* Next-Gen Hero Banner */}
+        <section className="relative overflow-hidden py-16 px-6 rounded-[32px] bg-gradient-to-br from-violet-50/60 via-white to-fuchsia-50/30 dark:from-gray-955 dark:via-gray-900 dark:to-indigo-950/20 border border-gray-150 dark:border-indigo-950/40 shadow-sm mb-16 text-center animate-slide-up">
+          <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,_var(--tw-gradient-stops))] from-indigo-500/5 via-transparent to-transparent pointer-events-none" />
+          <div className="max-w-4xl mx-auto space-y-6">
+            <div className="inline-block text-[9px] uppercase tracking-wider font-extrabold px-3 py-1 rounded-full bg-indigo-100 text-indigo-800 dark:bg-indigo-900/30 dark:text-indigo-400 animate-pulse">
+              Introducing EUshop v15.0
+            </div>
+            <h1 className="text-4xl sm:text-5xl md:text-6xl font-black text-brand-dark dark:text-white tracking-tight leading-tight uppercase font-display">
+              Sensory Food Discovery <span className="text-transparent bg-clip-text bg-gradient-to-r from-violet-600 to-fuchsia-500 dark:from-violet-400 dark:to-fuchsia-400">Simplified</span>
+            </h1>
+            <p className="text-xs sm:text-sm text-gray-600 dark:text-gray-400 max-w-2xl mx-auto leading-relaxed">
+              Experience conversational AI food matching, compliance pre-cleared logistics under the Digital Services Act (DSA), and zero-step biometric checkout.
+            </p>
+          </div>
+        </section>
+
+        {/* AI Predictive Search */}
+        <section className="mb-12">
+          <PredictiveSearch onSearch={handleSearch} onClear={handleClearSearch} />
+        </section>
+
+        {/* Dynamic Canvas Area */}
+        <section className="mb-16">
+          <DiscoveryCanvas
+            products={filteredProducts}
+            isLoading={isLoadingSearch || loadingFoods}
+            onQuickCheckout={(prod) => {
+              setSelectedProductForCheckout(prod);
+              setIsCheckoutOpen(true);
+            }}
+          />
+        </section>
+
+        {/* Direct Compliance Ledger Live Feed */}
+        <section className="py-6 px-8 rounded-3xl bg-gray-50 dark:bg-gray-900/30 border border-gray-150 dark:border-gray-850 mb-16 font-mono text-[10px] text-gray-500 dark:text-gray-400 space-y-2.5">
+          <div className="flex items-center justify-between border-b border-gray-200 dark:border-gray-850 pb-2 mb-2 font-sans font-bold text-gray-400">
+            <span>DIRECT EU COMPLIANCE DELEGATES LOG</span>
+            <span className="text-emerald-500 flex items-center gap-1 font-bold">
+              <span className="relative flex h-1.5 w-1.5">
+                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+                <span className="relative inline-flex rounded-full h-1.5 w-1.5 bg-emerald-500"></span>
+              </span>
+              LEDGER_SYNC_OK
+            </span>
+          </div>
+          <div className="flex gap-2">
+            <span className="text-indigo-500 font-bold shrink-0">[KYBC-LOG]</span>
+            <p>DSA Article 30 merchant register active: verified 10 regional producers across France, Italy, Spain, and Germany.</p>
+          </div>
+          <div className="flex gap-2 border-t border-gray-100 dark:border-gray-900/50 pt-2.5">
+            <span className="text-indigo-500 font-bold shrink-0">[TAX-OSS]</span>
+            <p>DAC7 reporting node online. VAT OSS rates bound dynamically matching Germany (7%), France (5.5%), Spain (10%), and Italy (4%).</p>
+          </div>
+        </section>
+
+        {/* Zero Step Checkout Side Drawer */}
+        <ZeroStepCheckout
+          product={selectedProductForCheckout}
+          isOpen={isCheckoutOpen}
+          onClose={() => {
+            setIsCheckoutOpen(false);
+            setSelectedProductForCheckout(null);
+          }}
+        />
+      </PageWrapper>
+    );
   }
 
   return (
