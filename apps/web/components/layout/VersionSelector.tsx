@@ -214,7 +214,7 @@ export default function VersionSelector() {
 
       {/* Dropdown Menu */}
       {open && (
-        <div className="absolute right-0 mt-2.5 w-80 md:w-96 rounded-2xl border border-gray-150 dark:border-gray-800 bg-white/95 dark:bg-gray-950/95 backdrop-blur-md shadow-2xl p-2.5 space-y-1 animate-slide-up origin-top-right">
+        <div className="absolute right-0 mt-2.5 w-80 md:w-96 max-h-[80vh] overflow-y-auto rounded-2xl border border-gray-150 dark:border-gray-800 bg-white/95 dark:bg-gray-950/95 backdrop-blur-md shadow-2xl p-2.5 space-y-1 animate-slide-up origin-top-right">
           <div className="px-3.5 py-2 border-b border-gray-100 dark:border-gray-900 mb-1.5">
             <h3 className="text-xs font-bold text-brand-dark dark:text-white uppercase tracking-wider">Select System Face</h3>
             <p className="text-[11px] text-gray-500 dark:text-gray-400 mt-0.5">Tuck into 5 interactive versions designed for investors & developers.</p>
