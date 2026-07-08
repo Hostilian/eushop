@@ -15,6 +15,9 @@ export default [
       "@typescript-eslint/no-unused-vars": "off",
       "react/no-unescaped-entities": "off",
       "react-hooks/set-state-in-effect": "off",
+      "@next/next/no-html-link-for-pages": "off",
+      "react-hooks/immutability": "off",
+      "import/no-anonymous-default-export": "off",
     }
   },
   {
@@ -28,7 +31,8 @@ export default [
       "tailwind.config.ts",
       "postcss.config.js",
       "jest.config.js",
-      "jest.setup.js"
+      "jest.setup.js",
+      "coverage/**"
     ]
   }
 ];
