@@ -151,6 +151,24 @@ const response = await client.chat.completions.create({
 });
 console.log(response.choices[0].message.content);
 
+--- PowerShell Example ---
+# No external package needed! Queries the multi-model AI gateway via native REST.
+$apiKey = "your-sk-api-key-here"
+$prompt = "Write a python script to parse JSON."
+
+$body = @{
+    model = "deepseek-chat" # or gemini-2.5-flash, claude-sonnet-4-6, etc.
+    messages = @( @{ role = "user"; content = $prompt } )
+} | ConvertTo-Json -Depth 10
+
+$response = Invoke-RestMethod -Uri "https://aiapiv2.pekpik.com/v1/chat/completions" `
+    -Method Post `
+    -Headers @{ Authorization = "Bearer $apiKey" } `
+    -ContentType "application/json; charset=utf-8" `
+    -Body $body
+
+$response.choices[0].message.content
+
 --- Aider (Manual Launch) ---
 If you prefer running Aider manually without our python selection wrapper:
 1. Open terminal
