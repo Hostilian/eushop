@@ -12,6 +12,14 @@ interface VersionOption {
 
 const VERSIONS: VersionOption[] = [
   {
+    key: 'v15',
+    name: 'V15 - Next-Gen Discovery',
+    badge: 'NEXT-GEN',
+    desc: 'Fluid content discovery, predictive AI search, and frictionless zero-step checkout.',
+    path: '/',
+    color: 'from-violet-500 to-fuchsia-600 border-fuchsia-200 text-fuchsia-700'
+  },
+  {
     key: 'v1',
     name: 'V1 - Pitch & Calculator',
     badge: 'INVESTOR',
@@ -126,19 +134,19 @@ const VERSIONS: VersionOption[] = [
 ];
 
 export default function VersionSelector() {
-  const [activeVersion, setActiveVersion] = useState('v2');
+  const [activeVersion, setActiveVersion] = useState('v15');
   const [open, setOpen] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
   const router = useRouter();
 
   useEffect(() => {
     // 1. Initial load
-    const stored = localStorage.getItem('eushop-demo-version') || 'v2';
+    const stored = localStorage.getItem('eushop-demo-version') || 'v15';
     setActiveVersion(stored);
 
     // 2. Event listener for changes from other tabs or actions
     const handleVersionChange = () => {
-      const current = localStorage.getItem('eushop-demo-version') || 'v2';
+      const current = localStorage.getItem('eushop-demo-version') || 'v15';
       setActiveVersion(current);
     };
 
@@ -172,7 +180,7 @@ export default function VersionSelector() {
       return;
     }
 
-    // Next.js client-side routing for v1-v5
+    // Next.js client-side routing for v1-v5 & v15
     const currentPath = router.pathname;
     if (option.path === '/' && currentPath !== '/') {
       router.push('/');
@@ -181,7 +189,7 @@ export default function VersionSelector() {
     }
   };
 
-  const currentOpt = VERSIONS.find(v => v.key === activeVersion) || VERSIONS[1];
+  const currentOpt = VERSIONS.find(v => v.key === activeVersion) || VERSIONS[0];
 
   return (
     <div className="relative z-50 font-sans" ref={dropdownRef}>

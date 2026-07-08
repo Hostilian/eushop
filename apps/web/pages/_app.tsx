@@ -156,7 +156,7 @@ function ThemeInitializer() {
     try {
       const params = new URLSearchParams(window.location.search);
       const vParam = params.get('v');
-      if (vParam && /^v([1-9]|1[0-3]|3_static)$/.test(vParam)) {
+      if (vParam && /^v([1-9]|1[0-5]|3_static)$/.test(vParam)) {
         localStorage.setItem('eushop-demo-version', vParam);
         // Dispatch event so VersionSelector and index page react instantly
         window.dispatchEvent(new Event('demo-version-changed'));
