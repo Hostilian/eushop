@@ -9,7 +9,7 @@ from concurrent.futures import ThreadPoolExecutor, as_completed
 PEKPIK_BASE = "https://aiapiv2.pekpik.com/v1"
 README_PATH = "D:\\CODING\\eushop\\free-llm-api-keys-main\\README.md"
 FCC_ENV_PATH = "D:\\CODING\\eushop\\free-claude-code-main\\free-claude-code-main\\.env"
-REPO_DIR = "D:\\CODING\\eushop\\free-claude-code-main"
+REPO_DIR = "D:\\CODING\\eushop\\free-claude-code-main\\free-claude-code-main"
 
 def clean_text(text: str) -> str:
     if not text:
