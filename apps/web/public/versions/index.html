@@ -148,6 +148,19 @@
     }
     footer a { color: var(--primary); text-decoration: none; }
     footer a:hover { text-decoration: underline; }
+    .swatches {
+      display: flex;
+      gap: 0.25rem;
+      margin-top: 0.5rem;
+      align-items: center;
+    }
+    .swatch {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      border: 1px solid var(--border);
+      display: inline-block;
+    }
   </style>
 </head>
 <body>
@@ -156,6 +169,12 @@
 
   <h1>Choose a Version</h1>
   <p class="subtitle">19 interactive demos — showcasing the Next.js platform and original designs</p>
+
+  <div style="margin-bottom: 2.5rem; display: flex; gap: 1rem; justify-content: center; flex-wrap: wrap;">
+    <a href="/eushop/android/" style="display: inline-flex; align-items: center; gap: 0.5rem; background: #2563eb; color: #fff; text-decoration: none; padding: 0.6rem 1.2rem; border-radius: 9999px; font-size: 0.8rem; font-weight: 700; box-shadow: 0 4px 12px rgba(37,99,235,0.2); transition: all 0.2s;" onmouseover="this.style.transform='translateY(-1px)'" onmouseout="this.style.transform='none'">
+      <span>📱</span> Get the Android App (APK)
+    </a>
+  </div>
 
   <div class="grid">
 
@@ -218,6 +237,12 @@
       <div class="card-content">
         <h3>V6 — Original Core App</h3>
         <p>The original static prototype design containing the country filter grid, catalog, listings, and requests forms.</p>
+        <div class="swatches">
+          <span class="swatch" style="background:#0f172a;"></span>
+          <span class="swatch" style="background:#1e293b;"></span>
+          <span class="swatch" style="background:#f8fafc;"></span>
+          <span style="font-size:0.65rem;color:var(--muted);margin-left:0.25rem;">Slate Theme</span>
+        </div>
         <span class="live-chip"><span class="dot"></span> Live Demo</span>
       </div>
     </a>
@@ -227,6 +252,12 @@
       <div class="card-content">
         <h3>V7 — Original: Emerald</h3>
         <p>The original static prototype rendered in an elegant Emerald and Slate modern theme iteration.</p>
+        <div class="swatches">
+          <span class="swatch" style="background:#10b981;"></span>
+          <span class="swatch" style="background:#059669;"></span>
+          <span class="swatch" style="background:#ecfdf5;"></span>
+          <span style="font-size:0.65rem;color:var(--muted);margin-left:0.25rem;">Emerald Theme</span>
+        </div>
         <span class="live-chip"><span class="dot"></span> Live Demo</span>
       </div>
     </a>
@@ -236,6 +267,12 @@
       <div class="card-content">
         <h3>V8 — Original: Midnight</h3>
         <p>The original static prototype rendered in a sleek Midnight Slate dark theme iteration.</p>
+        <div class="swatches">
+          <span class="swatch" style="background:#0f172a;"></span>
+          <span class="swatch" style="background:#3b82f6;"></span>
+          <span class="swatch" style="background:#1e1b4b;"></span>
+          <span style="font-size:0.65rem;color:var(--muted);margin-left:0.25rem;">Midnight Slate</span>
+        </div>
         <span class="live-chip"><span class="dot"></span> Live Demo</span>
       </div>
     </a>
@@ -245,6 +282,12 @@
       <div class="card-content">
         <h3>V9 — Original: Rose Gold</h3>
         <p>The original static prototype rendered in a luxury Rose Gold and Charcoal theme iteration.</p>
+        <div class="swatches">
+          <span class="swatch" style="background:#e11d48;"></span>
+          <span class="swatch" style="background:#fb7185;"></span>
+          <span class="swatch" style="background:#fff1f2;"></span>
+          <span style="font-size:0.65rem;color:var(--muted);margin-left:0.25rem;">Rose Gold</span>
+        </div>
         <span class="live-chip"><span class="dot"></span> Live Demo</span>
       </div>
     </a>
@@ -254,6 +297,12 @@
       <div class="card-content">
         <h3>V10 — Original: Platinum Light</h3>
         <p>The original static prototype rendered in a premium Platinum Minimalist theme iteration.</p>
+        <div class="swatches">
+          <span class="swatch" style="background:#e2e8f0;"></span>
+          <span class="swatch" style="background:#94a3b8;"></span>
+          <span class="swatch" style="background:#ffffff;"></span>
+          <span style="font-size:0.65rem;color:var(--muted);margin-left:0.25rem;">Platinum Minimal</span>
+        </div>
         <span class="live-chip"><span class="dot"></span> Live Demo</span>
       </div>
     </a>
@@ -263,6 +312,12 @@
       <div class="card-content">
         <h3>V11 — Original: Forest Green</h3>
         <p>The original static prototype rendered in a sleek Alabaster and Forest theme iteration.</p>
+        <div class="swatches">
+          <span class="swatch" style="background:#047857;"></span>
+          <span class="swatch" style="background:#065f46;"></span>
+          <span class="swatch" style="background:#f0fdf4;"></span>
+          <span style="font-size:0.65rem;color:var(--muted);margin-left:0.25rem;">Forest Green</span>
+        </div>
         <span class="live-chip"><span class="dot"></span> Live Demo</span>
       </div>
     </a>
@@ -272,6 +327,12 @@
       <div class="card-content">
         <h3>V12 — Original: Terracotta Warm</h3>
         <p>The original static prototype rendered in a warm Ivory and Terracotta theme iteration.</p>
+        <div class="swatches">
+          <span class="swatch" style="background:#c2410c;"></span>
+          <span class="swatch" style="background:#ea580c;"></span>
+          <span class="swatch" style="background:#fff7ed;"></span>
+          <span style="font-size:0.65rem;color:var(--muted);margin-left:0.25rem;">Terracotta Warm</span>
+        </div>
         <span class="live-chip"><span class="dot"></span> Live Demo</span>
       </div>
     </a>
@@ -281,15 +342,27 @@
       <div class="card-content">
         <h3>V13 — Original: Lavender Field</h3>
         <p>The original static prototype rendered in a minimalist Lavender and Snow theme iteration.</p>
+        <div class="swatches">
+          <span class="swatch" style="background:#7e22ce;"></span>
+          <span class="swatch" style="background:#a855f7;"></span>
+          <span class="swatch" style="background:#faf5ff;"></span>
+          <span style="font-size:0.65rem;color:var(--muted);margin-left:0.25rem;">Lavender Field</span>
+        </div>
         <span class="live-chip"><span class="dot"></span> Live Demo</span>
       </div>
     </a>
 
     <a href="/eushop/v14/" class="card" onclick="setVersion('v14')" id="v14-card">
-      <span class="badge" style="background:#e0f2fe;color:#0369a1;">THEME</span>
+      <span class="badge" style="background:#f1f5f9;color:#0f172a;">THEME</span>
       <div class="card-content">
-        <h3>V14 — Original: Sky Blue</h3>
-        <p>The original static prototype rendered in a beautiful Sky Blue and Ice White theme iteration.</p>
+        <h3>V14 — White Modern Sleek</h3>
+        <p>The original static prototype rendered in a pure white professional design with Outfit typography, clean cards, and minimal shadows.</p>
+        <div class="swatches">
+          <span class="swatch" style="background:#ffffff;"></span>
+          <span class="swatch" style="background:#0066ff;"></span>
+          <span class="swatch" style="background:#0f1623;"></span>
+          <span style="font-size:0.65rem;color:var(--muted);margin-left:0.25rem;">White Modern Sleek</span>
+        </div>
         <span class="live-chip"><span class="dot"></span> Live Demo</span>
       </div>
     </a>
@@ -308,6 +381,12 @@
       <div class="card-content">
         <h3>V16 — Original: Cherry Blossom</h3>
         <p>The original static prototype rendered in a soft Cherry Blossom Pink theme iteration.</p>
+        <div class="swatches">
+          <span class="swatch" style="background:#db2777;"></span>
+          <span class="swatch" style="background:#f472b6;"></span>
+          <span class="swatch" style="background:#fdf2f8;"></span>
+          <span style="font-size:0.65rem;color:var(--muted);margin-left:0.25rem;">Cherry Blossom</span>
+        </div>
         <span class="live-chip"><span class="dot"></span> Live Demo</span>
       </div>
     </a>
@@ -317,6 +396,12 @@
       <div class="card-content">
         <h3>V17 — Original: Royal Gold</h3>
         <p>The original static prototype rendered in a premium Royal Gold and Champagne theme iteration.</p>
+        <div class="swatches">
+          <span class="swatch" style="background:#d97706;"></span>
+          <span class="swatch" style="background:#fbbf24;"></span>
+          <span class="swatch" style="background:#fffbeb;"></span>
+          <span style="font-size:0.65rem;color:var(--muted);margin-left:0.25rem;">Royal Gold</span>
+        </div>
         <span class="live-chip"><span class="dot"></span> Live Demo</span>
       </div>
     </a>
@@ -326,6 +411,12 @@
       <div class="card-content">
         <h3>V18 — Marketplace: Auction Style</h3>
         <p>eBay-inspired white marketplace with auction countdowns, seller ratings, watchlist, and dense listing grid.</p>
+        <div class="swatches">
+          <span class="swatch" style="background:#0052cc;"></span>
+          <span class="swatch" style="background:#e53238;"></span>
+          <span class="swatch" style="background:#ffffff;"></span>
+          <span style="font-size:0.65rem;color:var(--muted);margin-left:0.25rem;">Auction Style</span>
+        </div>
         <span class="live-chip"><span class="dot"></span> Live Demo</span>
       </div>
     </a>
@@ -335,6 +426,12 @@
       <div class="card-content">
         <h3>V19 — Marketplace: Catalog Style</h3>
         <p>Amazon-inspired white marketplace with mega-nav, hero carousel, scrollable recommendation rows, and live cart.</p>
+        <div class="swatches">
+          <span class="swatch" style="background:#ff9900;"></span>
+          <span class="swatch" style="background:#111111;"></span>
+          <span class="swatch" style="background:#ffffff;"></span>
+          <span style="font-size:0.65rem;color:var(--muted);margin-left:0.25rem;">Catalog Style</span>
+        </div>
         <span class="live-chip"><span class="dot"></span> Live Demo</span>
       </div>
     </a>
