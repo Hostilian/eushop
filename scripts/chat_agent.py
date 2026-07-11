@@ -57,6 +57,32 @@ HISTORY_FILE = os.path.join(PROJECT_ROOT, ".chat_agent_history")
 # Key Pool Loader — NEW multi-source cascade
 # ─────────────────────────────────────────────
 
+def load_custom_keys() -> list[dict]:
+    """Load custom keys from custom_keys.json in project root."""
+    path = os.path.join(PROJECT_ROOT, "custom_keys.json")
+    if os.path.exists(path):
+        try:
+            with open(path, "r", encoding="utf-8") as f:
+                data = json.load(f)
+            keys = []
+            for item in data:
+                if isinstance(item, dict) and "key" in item:
+                    keys.append({
+                        "key": item["key"],
+                        "model": item.get("model", "gemini-2.5-flash"),
+                        "working_base_url": item.get("base_url", DEFAULT_API_BASE),
+                        "base_url": item.get("base_url", DEFAULT_API_BASE),
+                        "group": item.get("group", "Custom User Key"),
+                        "valid": True,
+                        "rate_limited": False,
+                        "custom": True
+                    })
+            return keys
+        except Exception:
+            pass
+    return []
+
+
 def load_key_pool() -> list[dict]:
     """
     Load validated keys from sources in priority order:
@@ -66,6 +92,10 @@ def load_key_pool() -> list[dict]:
     4. Existing README scrape (original fallback)
     Returns list of key dicts compatible with the original format.
     """
+    custom_keys = load_custom_keys()
+    normalized_custom = _normalize_pool_keys(custom_keys) if custom_keys else []
+    
+    pool_keys = []
     # Source 1: hot cache
     if os.path.exists(HOT_CACHE_PATH):
         try:
@@ -75,41 +105,62 @@ def load_key_pool() -> list[dict]:
             if keys:
                 updated = data.get("updated_at", "?")
                 console.print(f"[green][OK] Loaded {len(keys)} keys from hot cache (updated {updated})[/green]")
-                return _normalize_pool_keys(keys)
+                pool_keys = _normalize_pool_keys(keys)
         except Exception as e:
             console.print(f"[yellow][WARN] Hot cache read failed: {e}[/yellow]")
 
     # Source 2: committed validated_keys.json
-    if os.path.exists(VALIDATED_KEYS_PATH):
+    if not pool_keys and os.path.exists(VALIDATED_KEYS_PATH):
         try:
             with open(VALIDATED_KEYS_PATH, "r", encoding="utf-8") as f:
                 data = json.load(f)
             keys = data.get("keys", [])
             if keys:
                 console.print(f"[green][OK] Loaded {len(keys)} keys from data/validated_keys.json[/green]")
-                return _normalize_pool_keys(keys)
+                pool_keys = _normalize_pool_keys(keys)
         except Exception as e:
             console.print(f"[yellow][WARN] validated_keys.json read failed: {e}[/yellow]")
 
     # Source 3: remote validated_keys.json
-    console.print("[yellow]Fetching validated keys from remote repo...[/yellow]")
-    try:
-        req = urllib.request.Request(
-            REMOTE_VALIDATED_KEYS_URL,
-            headers={"User-Agent": "EushopAgent/2.0"}
-        )
-        with urllib.request.urlopen(req, timeout=6) as resp:
-            data = json.loads(resp.read().decode("utf-8"))
-        keys = data.get("keys", [])
-        if keys:
-            console.print(f"[green][OK] Loaded {len(keys)} keys from remote repo[/green]")
-            return _normalize_pool_keys(keys)
-    except Exception as e:
-        console.print(f"[yellow][WARN] Remote pool fetch failed: {e}[/yellow]")
+    if not pool_keys:
+        console.print("[yellow]Fetching validated keys from remote repo...[/yellow]")
+        try:
+            req = urllib.request.Request(
+                REMOTE_VALIDATED_KEYS_URL,
+                headers={"User-Agent": "EushopAgent/2.0"}
+            )
+            with urllib.request.urlopen(req, timeout=6) as resp:
+                data = json.loads(resp.read().decode("utf-8"))
+            keys = data.get("keys", [])
+            if keys:
+                console.print(f"[green][OK] Loaded {len(keys)} keys from remote repo[/green]")
+                pool_keys = _normalize_pool_keys(keys)
+        except Exception as e:
+            console.print(f"[yellow][WARN] Remote pool fetch failed: {e}[/yellow]")
+
+    # Deduplicate custom keys and loaded keys, keeping custom keys first
+    seen = set()
+    final_keys = []
+    
+    for k in normalized_custom:
+        key_pair = (k["key"], k["model"])
+        if key_pair not in seen:
+            seen.add(key_pair)
+            final_keys.append(k)
+            
+    for k in pool_keys:
+        key_pair = (k["key"], k["model"])
+        if key_pair not in seen:
+            seen.add(key_pair)
+            final_keys.append(k)
+            
+    if final_keys:
+        return final_keys
 
     # Source 4: original README scrape fallback
     console.print("[yellow]Falling back to README scrape...[/yellow]")
     return []  # Caller will handle README path
+
 
 
 def _normalize_pool_keys(keys: list[dict]) -> list[dict]:
