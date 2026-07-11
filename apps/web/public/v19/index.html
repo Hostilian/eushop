@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>ShopNow EU — Europe's Online Marketplace</title>
+  <meta name="description" content="ShopNow EU is a European online marketplace with thousands of products across electronics, books, clothing, kitchen, toys and garden. Fast delivery across the EU." />
+  <link rel="icon" href="/eushop/favicon.ico" />
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+
+  <!-- MEGA NAV -->
+  <header class="mega-nav" id="mega-nav">
+    <div class="nav-top">
+      <a href="#" class="nav-logo" id="logo-link" aria-label="ShopNow EU home">
+        🏪 Shop<span class="nav-logo-mark">Now</span>&nbsp;EU
+      </a>
+
+      <button class="nav-cat-btn" aria-label="Browse categories">☰ All</button>
+
+      <form class="nav-search" id="search-form" role="search" aria-label="Search products">
+        <select class="nav-search-cat" id="search-cat" aria-label="Category">
+          <option value="">All</option>
+          <option value="electronics">Electronics</option>
+          <option value="books">Books</option>
+          <option value="clothing">Clothing</option>
+          <option value="kitchen">Kitchen</option>
+          <option value="toys">Toys</option>
+          <option value="garden">Garden</option>
+        </select>
+        <input class="nav-search-input" id="search-input" type="search"
+          placeholder="Search products…" aria-label="Search products" autocomplete="off" />
+        <button class="nav-search-btn" type="submit" aria-label="Search">🔍</button>
+      </form>
+
+      <div class="nav-right">
+        <button class="nav-icon-btn" aria-label="Sign in / Account" title="Account">
+          👤 Account
+        </button>
+        <button class="nav-icon-btn" aria-label="Cart" id="cart-nav-btn" title="Cart">
+          🛒 Cart
+          <span class="cart-count-badge" id="cart-count-badge" aria-live="polite" style="display:none">0</span>
+        </button>
+      </div>
+    </div>
+
+    <!-- Category Bar -->
+    <nav class="nav-bottom" aria-label="Product categories">
+      <div class="nav-bottom-inner">
+        <a href="#" class="nav-cat-link active" data-cat="all" id="nav-cat-all">All</a>
+        <a href="#" class="nav-cat-link" data-cat="electronics" id="nav-cat-electronics">💻 Electronics</a>
+        <a href="#" class="nav-cat-link" data-cat="books" id="nav-cat-books">📚 Books</a>
+        <a href="#" class="nav-cat-link" data-cat="clothing" id="nav-cat-clothing">👗 Clothing</a>
+        <a href="#" class="nav-cat-link" data-cat="kitchen" id="nav-cat-kitchen">🍳 Kitchen</a>
+        <a href="#" class="nav-cat-link" data-cat="toys" id="nav-cat-toys">🧸 Toys</a>
+        <a href="#" class="nav-cat-link" data-cat="garden" id="nav-cat-garden">🌿 Garden</a>
+      </div>
+    </nav>
+  </header>
+
+  <!-- HERO CAROUSEL -->
+  <!-- ASSUMPTION: Auto-rotates every 4s via setInterval in app.js; no library required. -->
+  <section class="hero-carousel" aria-label="Featured promotions">
+    <div class="carousel-track" id="carousel-track">
+      <!-- populated by buildCarousel() in app.js -->
+    </div>
+    <div class="carousel-dots" id="carousel-dots" aria-label="Carousel navigation"></div>
+    <button class="carousel-btn prev" id="carousel-prev" aria-label="Previous slide">‹</button>
+    <button class="carousel-btn next" id="carousel-next" aria-label="Next slide">›</button>
+  </section>
+
+  <!-- PAGE CONTENT -->
+  <div class="page-wrap">
+
+    <!-- Today's Deals scroll row -->
+    <section class="scroll-section" aria-labelledby="deals-heading">
+      <h2 class="section-heading" id="deals-heading">Today's Deals</h2>
+      <div class="scroll-row-wrap">
+        <div class="scroll-row" id="deals-row" role="list" aria-label="Today's deals">
+          <!-- populated by buildScrollRows() -->
+        </div>
+      </div>
+    </section>
+
+    <!-- Electronics scroll row -->
+    <section class="scroll-section" aria-labelledby="elec-heading">
+      <h2 class="section-heading" id="elec-heading">💻 Electronics</h2>
+      <div class="scroll-row-wrap">
+        <div class="scroll-row" id="electronics-row" role="list" aria-label="Electronics products">
+          <!-- populated by buildScrollRows() -->
+        </div>
+      </div>
+    </section>
+
+    <!-- Browse All Products -->
+    <section aria-labelledby="browse-heading">
+      <h2 class="section-heading" id="browse-heading">Browse All Products</h2>
+
+      <!-- Filter / Sort Bar -->
+      <div class="filter-bar" role="toolbar" aria-label="Filter and sort products">
+        <button class="filter-chip active" data-cat="all" id="chip-all">All</button>
+        <button class="filter-chip" data-cat="electronics" id="chip-electronics">💻 Electronics</button>
+        <button class="filter-chip" data-cat="books" id="chip-books">📚 Books</button>
+        <button class="filter-chip" data-cat="clothing" id="chip-clothing">👗 Clothing</button>
+        <button class="filter-chip" data-cat="kitchen" id="chip-kitchen">🍳 Kitchen</button>
+        <button class="filter-chip" data-cat="toys" id="chip-toys">🧸 Toys</button>
+        <button class="filter-chip" data-cat="garden" id="chip-garden">🌿 Garden</button>
+        <select class="sort-select-v19" id="sort-select-v19" aria-label="Sort products">
+          <option value="featured">Featured</option>
+          <option value="price-asc">Price: Low → High</option>
+          <option value="price-desc">Price: High → Low</option>
+          <option value="rating">Highest rated</option>
+          <option value="reviews">Most reviewed</option>
+        </select>
+      </div>
+
+      <p style="font-size:13px;color:#565959;margin-bottom:0.75rem" id="results-count" aria-live="polite">Loading…</p>
+
+      <!-- Product grid — populated by app.js -->
+      <div class="product-grid" id="product-grid" aria-label="Product results">
+        <!-- populated by renderProducts() -->
+      </div>
+
+      <!-- noscript fallback -->
+      <noscript>
+        <div class="noscript-notice">
+          ℹ️ JavaScript is disabled. Here is a static preview of available products.
+          Enable JavaScript for the full catalog, filtering, cart, and detail views.
+        </div>
+        <table class="noscript-table">
+          <thead>
+            <tr><th>Product</th><th>Category</th><th>Price</th><th>Rating</th><th>Shipping</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>Compact Wireless Bluetooth Speaker</td><td>Electronics</td><td>€39.99</td><td>4.5★</td><td>Free tomorrow</td></tr>
+            <tr><td>USB-C Docking Station 12-in-1</td><td>Electronics</td><td>€54.99</td><td>4.3★</td><td>Free in 2 days</td></tr>
+            <tr><td>Atomic Habits — James Clear</td><td>Books</td><td>€14.99</td><td>4.9★</td><td>Free tomorrow</td></tr>
+            <tr><td>Chef's Knife 8" German Steel</td><td>Kitchen</td><td>€44.99</td><td>4.8★</td><td>Free tomorrow</td></tr>
+            <tr><td>Magnetic Tiles 3D Building Set</td><td>Toys</td><td>€38.99</td><td>4.9★</td><td>Free tomorrow</td></tr>
+            <tr><td>LED Solar Garden Lights 12-Pack</td><td>Garden</td><td>€28.99</td><td>4.3★</td><td>Free in 2 days</td></tr>
+            <tr><td colspan="5" style="color:#666;text-align:center">…and 34 more. Enable JavaScript to browse all products.</td></tr>
+          </tbody>
+        </table>
+      </noscript>
+
+    </section>
+
+  </div><!-- /.page-wrap -->
+
+  <!-- DETAIL MODAL -->
+  <!-- ASSUMPTION: Expand-in-place modal matching v13 and v18 pattern -->
+  <div class="detail-overlay" id="detail-overlay" role="dialog" aria-modal="true" aria-label="Product detail">
+    <div class="detail-box" id="detail-box">
+      <button class="detail-close" id="detail-close-btn" aria-label="Close product detail">✕</button>
+      <div id="detail-content">
+        <!-- populated by openDetail() in app.js -->
+      </div>
+    </div>
+  </div>
+
+  <!-- TOAST -->
+  <div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+  <!-- BACK TO TOP -->
+  <button class="back-to-top" id="back-to-top" onclick="window.scrollTo({top:0,behavior:'smooth'})"
+    aria-label="Back to top" title="Back to top">↑</button>
+
+  <!-- FOOTER -->
+  <footer id="footer">
+    <div class="footer-grid">
+      <div class="footer-col">
+        <div class="footer-col-title">Get to Know Us</div>
+        <a href="#">About ShopNow EU</a>
+        <a href="#">Careers</a>
+        <a href="#">Press</a>
+        <a href="#">Investor Relations</a>
+      </div>
+      <div class="footer-col">
+        <div class="footer-col-title">Make Money with Us</div>
+        <a href="#">Sell products</a>
+        <a href="#">Become an Affiliate</a>
+        <a href="#">Advertise</a>
+      </div>
+      <div class="footer-col">
+        <div class="footer-col-title">Help &amp; Support</div>
+        <a href="#">Help Centre</a>
+        <a href="#">Track Your Order</a>
+        <a href="#">Returns &amp; Refunds</a>
+        <a href="#">Contact Us</a>
+      </div>
+      <div class="footer-col">
+        <div class="footer-col-title">EUshop Project</div>
+        <a href="https://github.com/Hostilian/eushop" target="_blank" rel="noopener">GitHub Repository</a>
+        <a href="/eushop/versions/">All Versions</a>
+        <a href="#">Privacy Policy</a>
+        <a href="#">Cookie Policy</a>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      © 2025 ShopNow EU · EUshop v19 Demo · Original design, not affiliated with any existing marketplace
+    </div>
+  </footer>
+
+  <!-- Cache-bust v=1 per repo convention -->
+  <script src="data.js?v=1"></script>
+  <script src="app.js?v=1"></script>
+</body>
+</html>
