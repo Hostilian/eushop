@@ -130,6 +130,22 @@ const VERSIONS: VersionOption[] = [
     desc: 'Original static prototype rendered in Lavender Field.',
     path: '/v13/',
     color: 'from-purple-400 to-indigo-600 border-purple-200 text-purple-700'
+  },
+  {
+    key: 'v18',
+    name: 'V18 - Auction Marketplace',
+    badge: 'MARKETPLACE',
+    desc: 'eBay-inspired white marketplace with auction countdowns, seller ratings & watchlist.',
+    path: '/v18/',
+    color: 'from-blue-500 to-blue-700 border-blue-200 text-blue-700'
+  },
+  {
+    key: 'v19',
+    name: 'V19 - Catalog Marketplace',
+    badge: 'MARKETPLACE',
+    desc: 'Amazon-inspired white marketplace with mega-nav, hero carousel & live cart.',
+    path: '/v19/',
+    color: 'from-amber-500 to-orange-600 border-amber-200 text-amber-800'
   }
 ];
 
@@ -174,8 +190,8 @@ export default function VersionSelector() {
     // Dispatch global event
     window.dispatchEvent(new Event('demo-version-changed'));
 
-    // Handle static HTML folders (v3_static, v6-v9, v10-v13)
-    if (['v3_static', 'v6', 'v7', 'v8', 'v9', 'v10', 'v11', 'v12', 'v13'].includes(option.key)) {
+    // Handle static HTML folders (v3_static, v6-v9, v10-v13, v18, v19)
+    if (['v3_static', 'v6', 'v7', 'v8', 'v9', 'v10', 'v11', 'v12', 'v13', 'v18', 'v19'].includes(option.key)) {
       window.location.href = (router.basePath || '') + option.path;
       return;
     }
@@ -225,7 +241,7 @@ export default function VersionSelector() {
         <div className="absolute right-0 mt-2.5 w-80 md:w-96 max-h-[80vh] overflow-y-auto rounded-2xl border border-gray-150 dark:border-gray-800 bg-white/95 dark:bg-gray-950/95 backdrop-blur-md shadow-2xl p-2.5 space-y-1 animate-slide-up origin-top-right">
           <div className="px-3.5 py-2 border-b border-gray-100 dark:border-gray-900 mb-1.5">
             <h3 className="text-xs font-bold text-brand-dark dark:text-white uppercase tracking-wider">Select System Face</h3>
-            <p className="text-[11px] text-gray-500 dark:text-gray-400 mt-0.5">Tuck into 5 interactive versions designed for investors & developers.</p>
+            <p className="text-[11px] text-gray-500 dark:text-gray-400 mt-0.5">Choose from 16 interactive versions designed for buyers, sellers, and operators.</p>
           </div>
 
           <div className="space-y-1" role="listbox">
