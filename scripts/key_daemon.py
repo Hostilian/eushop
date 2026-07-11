@@ -281,6 +281,32 @@ def validate_key(item: dict, timeout: int = VALIDATION_TIMEOUT) -> dict:
     return item
 
 
+def load_custom_keys() -> list[dict]:
+    """Load custom keys from custom_keys.json in project root."""
+    path = PROJECT_ROOT / "custom_keys.json"
+    if path.exists():
+        try:
+            data = json.loads(path.read_text(encoding="utf-8"))
+            keys = []
+            for item in data:
+                if isinstance(item, dict) and "key" in item:
+                    keys.append({
+                        "key": item["key"],
+                        "model": item.get("model", "gemini-2.5-flash"),
+                        "base_url": item.get("base_url", PROXY_BASE_URLS[0]),
+                        "group": item.get("group", "Custom User Key"),
+                        "custom": True,
+                        "source_priority": 100,
+                        "valid": True,
+                        "rate_limited": False
+                    })
+            log.info(f"Loaded {len(keys)} custom keys from custom_keys.json")
+            return keys
+        except Exception as e:
+            log.warning(f"Failed to load custom keys: {e}")
+    return []
+
+
 # ─────────────────────────────────────────────────────────────────────────────
 # Layer 1: Hot cache
 # ─────────────────────────────────────────────────────────────────────────────
@@ -537,10 +563,10 @@ def model_score(model: str) -> int:
 
 def write_hot_cache(valid_keys: list[dict], source_tag: str = "refresh"):
     """Write the hot cache sorted by model priority."""
-    # Sort: non-rate-limited first, then by model score
+    # Sort: custom first, then non-rate-limited first, then by model score
     sorted_keys = sorted(
         valid_keys,
-        key=lambda k: (not k.get("rate_limited", False), model_score(k.get("model", ""))),
+        key=lambda k: (k.get("custom", False), not k.get("rate_limited", False), model_score(k.get("model", ""))),
         reverse=True,
     )
     data = {
@@ -745,7 +771,8 @@ def refresh_cycle(force_harvest: bool = False) -> int:
         remote_keys = load_remote_pool()
 
     # ── Merge all raw sources ─────────────────────────────────────────────────
-    all_raw = fresh_from_harvest + local_keys + remote_keys
+    custom_keys = load_custom_keys()
+    all_raw = custom_keys + fresh_from_harvest + local_keys + remote_keys
     all_raw = [k for k in all_raw if k.get("key") and k["key"] not in known_invalid]
     all_raw = deduplicate(all_raw)
 
