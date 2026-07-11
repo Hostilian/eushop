@@ -415,3 +415,162 @@ document.addEventListener('DOMContentLoaded', function() {
   initFilters();
   initScroll();
 });
+
+
+// ── EUSHOP DYNAMIC VERSION NAVIGATION WIDGET ──────────────────────────────
+(function() {
+  if (window.self !== window.top) return; // Do not render inside iframes
+  if (document.getElementById('eushop-dynamic-nav')) return;
+
+  const versions = [
+    { key: 'v15', name: 'V15 - Next-Gen Discovery', path: '/eushop/' },
+    { key: 'v1', name: 'V1 - Pitch & Calculator', path: '/eushop/?v=v1' },
+    { key: 'v2', name: 'V2 - Buyer Marketplace', path: '/eushop/?v=v2' },
+    { key: 'v3', name: 'V3 - Seller Compliance Hub', path: '/eushop/become-seller/?v=v3' },
+    { key: 'v4', name: 'V4 - Admin Console', path: '/eushop/admin/dashboard/?v=v4' },
+    { key: 'v5', name: 'V5 - Developer Portal & Docs', path: '/eushop/docs/?v=v5' },
+    { key: 'v3_static', name: 'V3 - Legacy Static Core App', path: '/eushop/v3/' },
+    { key: 'v6', name: 'V6 - Original Core App', path: '/eushop/v6/' },
+    { key: 'v7', name: 'V7 - Original: Emerald', path: '/eushop/v7/' },
+    { key: 'v8', name: 'V8 - Original: Midnight', path: '/eushop/v8/' },
+    { key: 'v9', name: 'V9 - Original: Rose Gold', path: '/eushop/v9/' },
+    { key: 'v10', name: 'V10 - Platinum Light', path: '/eushop/v10/' },
+    { key: 'v11', name: 'V11 - Forest Green', path: '/eushop/v11/' },
+    { key: 'v12', name: 'V12 - Terracotta Warm', path: '/eushop/v12/' },
+    { key: 'v13', name: 'V13 - Lavender Field', path: '/eushop/v13/' },
+    { key: 'v18', name: 'V18 - Auction Marketplace', path: '/eushop/v18/' },
+    { key: 'v19', name: 'V19 - Catalog Marketplace', path: '/eushop/v19/' }
+  ];
+
+  // Determine current active version
+  let activeKey = 'v15';
+  const pathName = window.location.pathname;
+  if (pathName.includes('/v3/')) activeKey = 'v3_static';
+  else if (pathName.includes('/v6/')) activeKey = 'v6';
+  else if (pathName.includes('/v7/')) activeKey = 'v7';
+  else if (pathName.includes('/v8/')) activeKey = 'v8';
+  else if (pathName.includes('/v9/')) activeKey = 'v9';
+  else if (pathName.includes('/v10/')) activeKey = 'v10';
+  else if (pathName.includes('/v11/')) activeKey = 'v11';
+  else if (pathName.includes('/v12/')) activeKey = 'v12';
+  else if (pathName.includes('/v13/')) activeKey = 'v13';
+  else if (pathName.includes('/v18/')) activeKey = 'v18';
+  else if (pathName.includes('/v19/')) activeKey = 'v19';
+
+  // Inject Styles
+  const style = document.createElement('style');
+  style.id = 'eushop-dynamic-nav-style';
+  style.innerHTML = `
+    .eushop-nav-bar {
+      position: fixed;
+      bottom: 20px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: rgba(255, 255, 255, 0.88);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      border: 1px solid rgba(0, 0, 0, 0.1);
+      border-radius: 999px;
+      padding: 6px 12px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.08);
+      z-index: 999999;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      transition: all 0.3s ease;
+    }
+    .dark .eushop-nav-bar, [data-theme="dark"] .eushop-nav-bar, body.dark-mode .eushop-nav-bar, .dark-mode .eushop-nav-bar {
+      background: rgba(20, 20, 25, 0.9);
+      border-color: rgba(255, 255, 255, 0.15);
+      box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+    }
+    .eushop-nav-label {
+      font-size: 10px;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      color: #666;
+      white-space: nowrap;
+    }
+    .dark .eushop-nav-label, [data-theme="dark"] .eushop-nav-label, body.dark-mode .eushop-nav-label, .dark-mode .eushop-nav-label {
+      color: #aaa;
+    }
+    .eushop-nav-select {
+      background: transparent;
+      border: none;
+      font-size: 13px;
+      font-weight: 700;
+      color: #111;
+      cursor: pointer;
+      outline: none;
+      padding-right: 20px;
+      appearance: none;
+      -webkit-appearance: none;
+      background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24' fill='none' stroke='%23333333' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><polyline points='6 9 12 15 18 9'></polyline></svg>");
+      background-repeat: no-repeat;
+      background-position: right center;
+      background-size: 14px;
+    }
+    .dark .eushop-nav-select, [data-theme="dark"] .eushop-nav-select, body.dark-mode .eushop-nav-select, .dark-mode .eushop-nav-select {
+      color: #fff;
+      background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24' fill='none' stroke='%23ffffff' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><polyline points='6 9 12 15 18 9'></polyline></svg>");
+    }
+    .eushop-nav-portal {
+      font-size: 12px;
+      font-weight: 700;
+      color: #2563eb;
+      text-decoration: none;
+      padding: 4px 12px;
+      border-radius: 999px;
+      background: rgba(37, 99, 235, 0.08);
+      transition: all 0.2s;
+      white-space: nowrap;
+    }
+    .eushop-nav-portal:hover {
+      background: rgba(37, 99, 235, 0.16);
+      text-decoration: none;
+    }
+  `;
+  document.head.appendChild(style);
+
+  // Create Container
+  const container = document.createElement('div');
+  container.id = 'eushop-dynamic-nav';
+  container.className = 'eushop-nav-bar';
+  
+  const label = document.createElement('span');
+  label.className = 'eushop-nav-label';
+  label.innerText = 'Active Face:';
+  container.appendChild(label);
+
+  const select = document.createElement('select');
+  select.className = 'eushop-nav-select';
+  
+  versions.forEach(v => {
+    const opt = document.createElement('option');
+    opt.value = v.key;
+    opt.style.color = '#000'; // Make options readable in dark mode
+    opt.innerText = v.name;
+    opt.selected = v.key === activeKey;
+    select.appendChild(opt);
+  });
+  
+  select.addEventListener('change', function() {
+    const selected = versions.find(v => v.key === this.value);
+    if (selected) {
+      localStorage.setItem('eushop-demo-version', selected.key);
+      window.location.href = selected.path;
+    }
+  });
+  
+  container.appendChild(select);
+
+  const portalLink = document.createElement('a');
+  portalLink.className = 'eushop-nav-portal';
+  portalLink.href = '/eushop/versions/';
+  portalLink.innerText = 'Portal';
+  container.appendChild(portalLink);
+
+  document.body.appendChild(container);
+})();
