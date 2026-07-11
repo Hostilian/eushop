@@ -19,6 +19,14 @@ const EU_COUNTRIES = [
   'Slovenia', 'Spain', 'Sweden',
 ];
 
+const FOOD_CATEGORIES = [
+  '', 'Chocolate', 'Cheese', 'Wine', 'Charcuterie', 'Candy', 'Biscuit', 'Sweet', 'Savory', 'Drink', 'Condiment', 'Dairy', 'Pastry', 'Noodle'
+];
+
+const EU_ALLERGENS = [
+  '', 'Celery', 'Cereals containing gluten', 'Crustaceans', 'Eggs', 'Fish', 'Lupin', 'Milk', 'Molluscs', 'Mustard', 'Nuts', 'Peanuts', 'Sesame seeds', 'Soya', 'Sulphur dioxide and sulphites'
+];
+
 // Mapping for food images based on keywords
 const FOOD_IMAGE_MAP: { [key: string]: string } = {
   chocolate: '/images/belgian_chocolates.png',
@@ -39,8 +47,11 @@ const FOOD_IMAGE_MAP: { [key: string]: string } = {
 export default function SearchPage() {
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedCountry, setSelectedCountry] = useState('');
+  const [selectedCategory, setSelectedCategory] = useState('');
+  const [selectedAllergen, setSelectedAllergen] = useState('');
   const [foods, setFoods] = useState<FoodItem[]>([]);
   const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
   const [page, setPage] = useState(1);
 
   const getFoodImage = (foodName: string): string | undefined => {
@@ -55,6 +66,7 @@ export default function SearchPage() {
 
   const performSearch = useCallback(async () => {
     setLoading(true);
+    setError(null);
     
     // Graceful degradation: If offline, immediately use cached results
     if (!navigator.onLine) {
@@ -90,7 +102,15 @@ export default function SearchPage() {
       const controller = new AbortController();
       const timeoutId = setTimeout(() => controller.abort(), SEARCH_TIMEOUT_MS);
       
-      const result: any = await foodAPI.search(searchQuery, selectedCountry, page, PAGE_SIZE, { signal: controller.signal });
+      const result: any = await foodAPI.search(
+        searchQuery,
+        selectedCountry,
+        page,
+        PAGE_SIZE,
+        selectedCategory,
+        selectedAllergen,
+        { signal: controller.signal }
+      );
       clearTimeout(timeoutId);
       
       // Ensure result is an array of FoodItem
@@ -104,8 +124,9 @@ export default function SearchPage() {
       } catch (cacheError) {
         console.warn('Could not cache search results:', cacheError);
       }
-    } catch (error: any) {
-      console.error('Search failed:', error);
+    } catch (err: any) {
+      console.error('Search failed:', err);
+      setError('Search service is temporarily unavailable. Please try again later.');
       
       // Graceful degradation: Use cached results from localStorage if available and fresh
       try {
@@ -124,21 +145,12 @@ export default function SearchPage() {
         console.warn('Could not read cached search results during error fallback:', cacheError);
       }
       
-      // Ultimate fallback: show user-friendly message and minimal data
-      setFoods([
-        { 
-          id: 'fallback-1', 
-          name: 'Sample Product', 
-          country: 'EU', 
-          price: 19.99, 
-          description: 'Search services are temporarily unavailable. Please try again later or check your connection.', 
-          sellerId: 'system-fallback' 
-        },
-      ]);
+      // Ultimate fallback: show minimal data
+      setFoods([]);
     } finally {
       setLoading(false);
     }
-  }, [searchQuery, selectedCountry, page]);
+  }, [searchQuery, selectedCountry, selectedCategory, selectedAllergen, page]);
 
   useEffect(() => {
     const delayTimer = setTimeout(() => {
@@ -188,7 +200,7 @@ export default function SearchPage() {
 
         {/* Filter Bar */}
         <div className="bg-white dark:bg-gray-900 border border-gray-150 dark:border-gray-800 rounded-3xl p-6 shadow-sm mb-10">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
             <div>
               <label htmlFor="search-input" className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">
                 Search Listings
@@ -226,8 +238,63 @@ export default function SearchPage() {
                 ))}
               </select>
             </div>
+
+            <div>
+              <label htmlFor="category-select" className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">
+                Food Category
+              </label>
+              <select
+                id="category-select"
+                value={selectedCategory}
+                onChange={(e) => {
+                  setSelectedCategory(e.target.value);
+                  setPage(1); // Reset page on category change
+                }}
+                className="w-full px-4 py-2.5 border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-950 rounded-xl focus:ring-2 focus:ring-primary focus:border-transparent text-sm transition"
+              >
+                {FOOD_CATEGORIES.map((cat) => (
+                  <option key={cat} value={cat}>
+                    {cat || 'All Categories'}
+                  </option>
+                ))}
+              </select>
+            </div>
+
+            <div>
+              <label htmlFor="allergen-select" className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">
+                Allergen-Free Filter
+              </label>
+              <select
+                id="allergen-select"
+                value={selectedAllergen}
+                onChange={(e) => {
+                  setSelectedAllergen(e.target.value);
+                  setPage(1); // Reset page on allergen change
+                }}
+                className="w-full px-4 py-2.5 border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-950 rounded-xl focus:ring-2 focus:ring-primary focus:border-transparent text-sm transition"
+              >
+                {EU_ALLERGENS.map((allergen) => (
+                  <option key={allergen} value={allergen}>
+                    {allergen ? `Free from ${allergen}` : 'No Exclusion Filters (Show All)'}
+                  </option>
+                ))}
+              </select>
+            </div>
           </div>
         </div>
+
+        {/* Error Banner */}
+        {error && (
+          <div className="bg-red-50 dark:bg-red-950/30 border border-red-200 dark:border-red-900 text-red-700 dark:text-red-300 p-4 rounded-2xl mb-8 flex items-center justify-between text-sm">
+            <div className="flex items-center gap-2">
+              <span>⚠️</span>
+              <span>{error}</span>
+            </div>
+            <Button variant="ghost" size="sm" onClick={() => performSearch()}>
+              Retry
+            </Button>
+          </div>
+        )}
 
         {/* Results Display */}
         {loading ? (
@@ -236,13 +303,15 @@ export default function SearchPage() {
             <ProductCardSkeleton />
             <ProductCardSkeleton />
             <ProductCardSkeleton />
+            <ProductCardSkeleton />
+            <ProductCardSkeleton />
+            <ProductCardSkeleton />
+            <ProductCardSkeleton />
           </div>
         ) : foods.length > 0 ? (
           <>
             <p className="text-sm text-gray-500 dark:text-gray-400 mb-6 font-medium">
-              {foods[0]?.id?.startsWith('fallback-') 
-                ? 'Search service is currently limited. Showing sample product.' 
-                : foods[0]?.id?.startsWith('offline-fallback')
+              {foods[0]?.id?.startsWith('offline-fallback')
                 ? 'You are offline. Showing cached data if available.'
                 : `Showing ${foods.length} delicacies found`}
             </p>
@@ -259,9 +328,9 @@ export default function SearchPage() {
                   imageUrl={getFoodImage(food.name)}
                   allergens={food.allergens || []}
                   seller={{
-                    name: 'Producer', // Default seller name, consider fetching actual seller info
-                    rating: 5.0,
-                    verified: true,
+                    name: food.seller?.name || 'Producer',
+                    rating: food.seller?.rating || 5.0,
+                    verified: food.seller?.verified ?? true,
                   }}
                   onAddToCart={handleAddToCart}
                 />
@@ -285,7 +354,6 @@ export default function SearchPage() {
                 variant="secondary"
                 size="sm"
                 onClick={() => setPage(prevPage => prevPage + 1)}
-                // Consider disabling 'Next' if no more results are available from API
               >
                 Next
               </Button>
@@ -301,6 +369,8 @@ export default function SearchPage() {
               onClick={() => {
                 setSearchQuery('');
                 setSelectedCountry('');
+                setSelectedCategory('');
+                setSelectedAllergen('');
                 setPage(1);
               }}
             >

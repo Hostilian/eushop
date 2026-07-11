@@ -184,8 +184,8 @@ function CheckoutForm() {
             <p>{formData.postalCode} {formData.city}</p>
             <p className="text-primary font-semibold mt-1">🌍 EU Country: {formData.country}</p>
           </div>
-          <Link href="/" className="block w-full bg-primary text-white py-3 rounded-lg font-bold hover:opacity-90 transition">
-            Return to Homepage
+          <Link href="/dashboard" className="block w-full bg-primary text-white py-3 rounded-lg font-bold hover:opacity-90 transition">
+            Go to Dashboard
           </Link>
         </div>
       </div>

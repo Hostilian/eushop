@@ -224,7 +224,11 @@ def validate_key(item: dict, timeout: int = VALIDATION_TIMEOUT) -> dict:
     preferred = item.get("working_base_url") or item.get("base_url")
     urls_to_try = get_healthy_urls(preferred)
 
-    headers = {"Authorization": f"Bearer {key}", "Content-Type": "application/json"}
+    headers = {
+        "Authorization": f"Bearer {key}",
+        "Content-Type": "application/json",
+        "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36"
+    }
     payload = {"model": model, "messages": [{"role": "user", "content": "hi"}], "max_tokens": 1}
 
     for base_url in urls_to_try[:4]:  # Try up to 4 endpoints per key

@@ -471,3 +471,98 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:18px;heigh
   .back-to-top{bottom:5.5rem;right:1rem}
 }
 
+/* === APP PROMO CARD === */
+.app-promo-card {
+  background: var(--white);
+  border: 1px solid var(--gray-200);
+  border-radius: 20px;
+  padding: 2.5rem;
+  margin: 3rem auto;
+  width: calc(100% - 2rem);
+  max-width: 1000px;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
+  gap: 2rem;
+  box-shadow: var(--shadow);
+}
+@media (max-width: 768px) {
+  .app-promo-card {
+    flex-direction: column;
+    text-align: center;
+  }
+}
+.app-promo-content h2 {
+  font-size: 1.5rem;
+  font-family: 'Outfit', sans-serif;
+  font-weight: 800;
+  color: var(--dark);
+  margin-bottom: 0.75rem;
+}
+.app-promo-content p {
+  font-size: 0.9rem;
+  color: var(--gray-700);
+  line-height: 1.6;
+  max-width: 550px;
+  margin-bottom: 1.5rem;
+}
+.download-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  background: var(--navy);
+  color: #fff;
+  text-decoration: none;
+  padding: 0.8rem 1.6rem;
+  border-radius: 50px;
+  font-size: 0.9rem;
+  font-weight: 700;
+  box-shadow: 0 4px 14px rgba(37,99,235,0.3);
+  transition: all 0.2s;
+  border: none;
+  cursor: pointer;
+}
+.download-btn:hover {
+  transform: translateY(-2px);
+  background: var(--navy-dark);
+  box-shadow: 0 6px 20px rgba(37,99,235,0.5);
+}
+.qr-mockup-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.75rem;
+  flex-shrink: 0;
+}
+.qr-code {
+  width: 130px;
+  height: 130px;
+  background: white;
+  border: 8px solid white;
+  border-radius: 12px;
+  box-shadow: var(--shadow-lg);
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+.qr-pixel-row {
+  display: flex;
+  justify-content: space-between;
+  height: 12.5%;
+}
+.qr-pixel-row .p {
+  width: 12.5%;
+  height: 100%;
+}
+.qr-pixel-row .p.b {
+  background: #000;
+}
+.qr-label {
+  font-size: 0.7rem;
+  font-weight: 700;
+  color: var(--gold);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+

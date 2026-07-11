@@ -102,12 +102,9 @@ export function Navbar() {
           <Link href="/search" className="transition hover:text-primary dark:hover:text-blue-400">
             Browse Food
           </Link>
-          {/* Seller Dashboard link commented out as user role cannot be determined without authAPI */}
-          {/* {user?.role === 'SELLER' && (
-            <Link href="/seller/dashboard" className="transition hover:text-primary dark:hover:text-blue-400 text-secondary dark:text-green-400">
-              Seller Dashboard
-            </Link>
-          )} */}
+          <Link href="/android" className="transition hover:text-primary dark:hover:text-blue-400 font-bold text-blue-500 dark:text-blue-400 flex items-center gap-1">
+            <span>📱</span> Get the App
+          </Link>
         </nav>
 
         {/* Action Buttons */}
@@ -205,16 +202,13 @@ export function Navbar() {
           >
             Browse Food
           </Link>
-          {/* Seller Dashboard link commented out */}
-          {/* {user?.role === 'SELLER' && (
-            <Link
-              href="/seller/dashboard"
-              onClick={() => setMobileMenuOpen(false)}
-              className="block px-3 py-2 rounded-lg text-base font-semibold text-secondary hover:bg-gray-50 dark:text-green-400 dark:hover:bg-gray-900"
-            >
-              Seller Dashboard
-            </Link>
-          )} */}
+          <Link
+            href="/android"
+            onClick={() => setMobileMenuOpen(false)}
+            className="block px-3 py-2 rounded-lg text-base font-bold text-blue-500 hover:bg-gray-50 dark:text-blue-400 dark:hover:bg-gray-900"
+          >
+            📱 Get the App
+          </Link>
 
           <div className="pt-4 border-t border-gray-100 dark:border-gray-800 flex flex-col gap-2">
             {/* User Auth Buttons - Modified for mobile menu */}

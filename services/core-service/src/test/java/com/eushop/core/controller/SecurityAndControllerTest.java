@@ -26,6 +26,9 @@ public class SecurityAndControllerTest {
     @Autowired
     private MockMvc mockMvc;
 
+    @Autowired
+    private WebhookController webhookController;
+
     @MockBean
     private FoodService foodService;
 
@@ -86,5 +89,25 @@ public class SecurityAndControllerTest {
                 .header("Stripe-Signature", "t=123,v1=abc"))
                 .andExpect(status().isOk())
                 .andExpect(content().string("Received"));
+    }
+
+    @Test
+    public void testStripeWebhook_InvalidSignature_ReturnsBadRequest() throws Exception {
+        // Force the controller to use a "real" secret to trigger signature verification
+        org.springframework.test.util.ReflectionTestUtils.setField(webhookController, "webhookSecret", "whsec_real_secret_123");
+        
+        try {
+            String mockPayload = "{\"id\":\"evt_test_123\",\"type\":\"payment_intent.succeeded\"}";
+            
+            mockMvc.perform(post("/api/webhooks/stripe")
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .content(mockPayload)
+                    .header("Stripe-Signature", "t=123,v1=invalid_sig"))
+                    .andExpect(status().isBadRequest())
+                    .andExpect(content().string("Invalid signature"));
+        } finally {
+            // Restore default placeholder secret
+            org.springframework.test.util.ReflectionTestUtils.setField(webhookController, "webhookSecret", "whsec_placeholder");
+        }
     }
 }
