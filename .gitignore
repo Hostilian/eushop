@@ -99,3 +99,11 @@ __pycache__/
 .chat_agent_history
 *.session
 
+
+# Out-of-scope harvested-credential / scraper artifacts — block re-entry
+# (.endpoint_health.json, /free-llm-api-keys-main/, /free-claude-code-main/ already covered above)
+*validated_keys*.json
+.api_keys*.json
+custom_keys.json
+*_api_keys_guide.txt
+puter-ai-test/
