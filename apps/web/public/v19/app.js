@@ -437,6 +437,8 @@ document.addEventListener('DOMContentLoaded', function() {
 });
 
 
+
+
 // ── EUSHOP DYNAMIC VERSION NAVIGATION WIDGET ──────────────────────────────
 (function() {
   if (window.self !== window.top) return; // Do not render inside iframes

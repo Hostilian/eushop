@@ -502,6 +502,7 @@ export async function getStaticProps() {
   const tryRoots = [
     process.cwd(),
     path.resolve(process.cwd(), '..'),
+    path.resolve(process.cwd(), '../..'),
     path.resolve(/* turbopackIgnore: true */ __dirname, '../../../'),
     path.resolve(/* turbopackIgnore: true */ __dirname, '../../'),
     path.resolve(/* turbopackIgnore: true */ __dirname, '../'),
