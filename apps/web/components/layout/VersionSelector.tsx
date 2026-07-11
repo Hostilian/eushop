@@ -132,6 +132,30 @@ const VERSIONS: VersionOption[] = [
     color: 'from-purple-400 to-indigo-600 border-purple-200 text-purple-700'
   },
   {
+    key: 'v14',
+    name: 'V14 - Sky Blue',
+    badge: 'THEME',
+    desc: 'Original static prototype rendered in Sky Blue.',
+    path: '/v14/',
+    color: 'from-sky-400 to-sky-600 border-sky-200 text-sky-700'
+  },
+  {
+    key: 'v16',
+    name: 'V16 - Cherry Blossom',
+    badge: 'THEME',
+    desc: 'Original static prototype rendered in Cherry Blossom Pink.',
+    path: '/v16/',
+    color: 'from-pink-400 to-pink-600 border-pink-200 text-pink-700'
+  },
+  {
+    key: 'v17',
+    name: 'V17 - Royal Gold',
+    badge: 'THEME',
+    desc: 'Original static prototype rendered in Royal Gold.',
+    path: '/v17/',
+    color: 'from-amber-400 to-amber-600 border-amber-200 text-amber-700'
+  },
+  {
     key: 'v18',
     name: 'V18 - Auction Marketplace',
     badge: 'MARKETPLACE',
