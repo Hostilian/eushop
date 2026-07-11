@@ -52,4 +52,26 @@ public interface FoodRepository extends JpaRepository<Food, String> {
     Long countBySellerId(String sellerId);
 
     Long countByAvailableTrue();
+
+    @Query(value = "SELECT * FROM foods WHERE available = true AND " +
+           "(:query IS NULL OR :query = '' OR " +
+           " name ILIKE CONCAT('%', :query, '%') OR " +
+           " description ILIKE CONCAT('%', :query, '%')) AND " +
+           "(:country IS NULL OR :country = '' OR country = :country) AND " +
+           "(:category IS NULL OR :category = '' OR category = :category) AND " +
+           "(:allergenFree IS NULL OR :allergenFree = '' OR NOT (allergens::jsonb @> CAST(CONCAT('[\"', :allergenFree, '\"]') AS jsonb)))",
+           countQuery = "SELECT COUNT(*) FROM foods WHERE available = true AND " +
+           "(:query IS NULL OR :query = '' OR " +
+           " name ILIKE CONCAT('%', :query, '%') OR " +
+           " description ILIKE CONCAT('%', :query, '%')) AND " +
+           "(:country IS NULL OR :country = '' OR country = :country) AND " +
+           "(:category IS NULL OR :category = '' OR category = :category) AND " +
+           "(:allergenFree IS NULL OR :allergenFree = '' OR NOT (allergens::jsonb @> CAST(CONCAT('[\"', :allergenFree, '\"]') AS jsonb)))",
+           nativeQuery = true)
+    Page<Food> advancedSearch(
+            @Param("query") String query,
+            @Param("country") String country,
+            @Param("category") String category,
+            @Param("allergenFree") String allergenFree,
+            Pageable pageable);
 }

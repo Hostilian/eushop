@@ -178,8 +178,33 @@ public class FoodController {
         
         Food updated = foodService.getFoodById(id)
                 .orElseThrow(() -> new IllegalArgumentException("Food not found"));
-        
         return ResponseEntity.ok(ApiResponse.success(toDTO(updated), "Food availability updated"));
+    }
+
+    /**
+     * Search foods using advanced query parameters and high-performance trigram matching.
+     * Request parameters:
+     * - q: search query string (matches name/description, nullable)
+     * - country: source country filter (nullable)
+     * - category: food category filter (nullable)
+     * - allergenFree: allergen to exclude (nullable)
+     * - page: 0-indexed page number (default 0)
+     * - size: items per page (default 10)
+     * 
+     * Response shape: ApiResponse containing a Page of FoodDTOs.
+     */
+    @GetMapping("/search")
+    public ResponseEntity<ApiResponse<Page<FoodDTO>>> searchFoods(
+            @RequestParam(required = false) String q,
+            @RequestParam(required = false) String country,
+            @RequestParam(required = false) String category,
+            @RequestParam(required = false) String allergenFree,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size) {
+        
+        Page<Food> foods = foodService.advancedSearch(q, country, category, allergenFree, page, size);
+        Page<FoodDTO> dtos = foods.map(this::toDTO);
+        return ResponseEntity.ok(ApiResponse.success(dtos, "Search results fetched successfully"));
     }
 
     private FoodDTO toDTO(Food food) {

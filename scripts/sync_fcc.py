@@ -133,9 +133,9 @@ def pull_latest_code():
     try:
         # Discard local modifications to allow clean pull without conflicts
         files_to_checkout = [
-            "free-claude-code-main/config/settings.py",
-            "free-claude-code-main/config/provider_catalog.py",
-            "free-claude-code-main/core/anthropic/tokens.py"
+            "src/free_claude_code/config/settings.py",
+            "src/free_claude_code/config/provider_catalog.py",
+            "src/free_claude_code/core/anthropic/tokens.py"
         ]
         subprocess.run(["git", "-C", REPO_DIR, "checkout", "--"] + files_to_checkout, capture_output=True)
         
@@ -149,7 +149,7 @@ def apply_local_patches(selected_base_url: str = PEKPIK_BASE):
     print(f"[INFO] Re-applying custom compatibility and Pekpik gateway routing patches (base: {selected_base_url})...")
     
     # 1. Patch config/settings.py
-    settings_path = "D:\\CODING\\eushop\\free-claude-code-main\\free-claude-code-main\\config\\settings.py"
+    settings_path = "D:\\CODING\\eushop\\free-claude-code-main\\free-claude-code-main\\src\\free_claude_code\\config\\settings.py"
     if os.path.exists(settings_path):
         with open(settings_path, "r", encoding="utf-8") as f:
             content = f.read()
@@ -161,7 +161,7 @@ def apply_local_patches(selected_base_url: str = PEKPIK_BASE):
             print("[PATCH] Applied __future__ annotations to settings.py")
 
     # 2. Patch core/anthropic/tokens.py
-    tokens_path = "D:\\CODING\\eushop\\free-claude-code-main\\free-claude-code-main\\core\\anthropic\\tokens.py"
+    tokens_path = "D:\\CODING\\eushop\\free-claude-code-main\\free-claude-code-main\\src\\free_claude_code\\core\\anthropic\\tokens.py"
     if os.path.exists(tokens_path):
         with open(tokens_path, "r", encoding="utf-8") as f:
             content = f.read()
@@ -172,7 +172,7 @@ def apply_local_patches(selected_base_url: str = PEKPIK_BASE):
             print("[PATCH] Applied exception parenthesis fix to tokens.py")
 
     # 3. Patch config/provider_catalog.py
-    catalog_path = "D:\\CODING\\eushop\\free-claude-code-main\\free-claude-code-main\\config\\provider_catalog.py"
+    catalog_path = "D:\\CODING\\eushop\\free-claude-code-main\\free-claude-code-main\\src\\free_claude_code\\config\\provider_catalog.py"
     if os.path.exists(catalog_path):
         # We need to make sure we overwrite any previous base URL overrides
         with open(catalog_path, "r", encoding="utf-8") as f:
@@ -238,8 +238,10 @@ def main():
                 pass
 
     if not active_models:
-        print("[ERROR] No active keys found for any model. Sync aborted.")
-        sys.exit(1)
+        print("[WARNING] No active keys found for any model in the verification. Using custom/placeholder keys to generate config...")
+        for k in keys:
+            if k["model"] not in active_models:
+                active_models[k["model"]] = k
 
     # Select the best model for Claude Code
     priority_list = [

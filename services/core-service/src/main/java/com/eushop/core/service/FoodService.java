@@ -107,4 +107,9 @@ public class FoodService {
         food.setAvailable(available);
         foodRepository.save(food);
     }
+
+    public Page<Food> advancedSearch(String query, String country, String category, String allergenFree, int page, int size) {
+        Pageable pageable = PageRequest.of(page, size);
+        return foodRepository.advancedSearch(query, country, category, allergenFree, pageable);
+    }
 }

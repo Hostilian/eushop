@@ -87,8 +87,10 @@ export const fallbackTrendingFoods: FoodItem[] = [
     price: 24.99,
     description: 'Fine handmade pralines and truffles crafted by master chocolatiers in Brussels using 100% cocoa butter.',
     sellerId: 'seller_belgium@eushop.local',
-    category: 'Sweets & Confectionery',
-    allergens: ['Milk', 'Soy', 'Nuts'],
+    category: 'Chocolate',
+    allergens: ['Milk', 'Soya', 'Nuts'],
+    dietaryRestrictions: ['Vegetarian'],
+    images: ['/images/belgian_chocolates.png'],
     imageUrl: '/images/belgian_chocolates.png',
     seller: { id: 'seller_belgium@eushop.local', name: 'Brussels Praline Co.', rating: 4.9, verified: true }
   },
@@ -99,8 +101,10 @@ export const fallbackTrendingFoods: FoodItem[] = [
     price: 49.99,
     description: 'Authentic aged balsamic vinegar of Modena DOP, matured in oak casks for rich complex flavors.',
     sellerId: 'seller_italy@eushop.local',
-    category: 'Condiments',
-    allergens: ['Sulfites'],
+    category: 'Condiment',
+    allergens: ['Sulphur dioxide and sulphites'],
+    dietaryRestrictions: ['Vegan', 'Gluten-Free'],
+    images: ['/images/italian_olive_oil.png'],
     imageUrl: '/images/italian_olive_oil.png',
     seller: { id: 'seller_italy@eushop.local', name: 'Modena Olive & Vineyards', rating: 4.8, verified: true }
   },
@@ -111,8 +115,10 @@ export const fallbackTrendingFoods: FoodItem[] = [
     price: 29.99,
     description: 'Cured sheep milk cheese from the La Mancha region, matured for 12 months with a firm, nutty flavor.',
     sellerId: 'seller_spain@eushop.local',
-    category: 'Dairy & Cheese',
+    category: 'Cheese',
     allergens: ['Milk'],
+    dietaryRestrictions: ['Vegetarian', 'Gluten-Free'],
+    images: ['/images/spanish_manchego.png'],
     imageUrl: '/images/spanish_manchego.png',
     seller: { id: 'seller_spain@eushop.local', name: 'Queserías de la Mancha', rating: 4.7, verified: true }
   },
@@ -123,8 +129,10 @@ export const fallbackTrendingFoods: FoodItem[] = [
     price: 18.99,
     description: 'Traditional smoked ham cured with pine needles and cold-smoked in the Black Forest region.',
     sellerId: 'seller_germany@eushop.local',
-    category: 'Meat & Deli',
+    category: 'Charcuterie',
     allergens: [],
+    dietaryRestrictions: ['Gluten-Free'],
+    images: ['/images/german_delicatessen.png'],
     imageUrl: '/images/german_delicatessen.png',
     seller: { id: 'seller_germany@eushop.local', name: 'Schwarzwald Metzgerei', rating: 4.6, verified: true }
   },
@@ -135,8 +143,11 @@ export const fallbackTrendingFoods: FoodItem[] = [
     price: 14.50,
     description: 'Creamy, rich raw milk cheese crafted in Normandy, with a bloomy rind and earthy aroma.',
     sellerId: 'seller_france@eushop.local',
-    category: 'Dairy & Cheese',
+    category: 'Cheese',
     allergens: ['Milk'],
+    dietaryRestrictions: ['Vegetarian', 'Gluten-Free'],
+    images: ['/images/spanish_manchego.png'],
+    imageUrl: '/images/spanish_manchego.png',
     seller: { id: 'seller_france@eushop.local', name: 'Normandie Fromagerie', rating: 4.9, verified: true }
   },
   {
@@ -146,8 +157,11 @@ export const fallbackTrendingFoods: FoodItem[] = [
     price: 22.00,
     description: 'First cold-pressed extra virgin olive oil made from hand-picked Kalamata olives.',
     sellerId: 'seller_greece@eushop.local',
-    category: 'Condiments',
+    category: 'Condiment',
     allergens: [],
+    dietaryRestrictions: ['Vegan', 'Gluten-Free'],
+    images: ['/images/italian_olive_oil.png'],
+    imageUrl: '/images/italian_olive_oil.png',
     seller: { id: 'seller_greece@eushop.local', name: 'Peloponnese Olives', rating: 4.8, verified: true }
   },
   {
@@ -157,8 +171,11 @@ export const fallbackTrendingFoods: FoodItem[] = [
     price: 34.00,
     description: 'Classic Viennese double-layer chocolate cake with apricot jam filling and dark chocolate glaze.',
     sellerId: 'seller_austria@eushop.local',
-    category: 'Sweets & Confectionery',
-    allergens: ['Gluten', 'Eggs', 'Milk'],
+    category: 'Pastry',
+    allergens: ['Cereals containing gluten', 'Eggs', 'Milk'],
+    dietaryRestrictions: ['Vegetarian'],
+    images: ['/images/belgian_chocolates.png'],
+    imageUrl: '/images/belgian_chocolates.png',
     seller: { id: 'seller_austria@eushop.local', name: 'Vienna Royal Bakery', rating: 4.7, verified: true }
   },
   {
@@ -168,8 +185,11 @@ export const fallbackTrendingFoods: FoodItem[] = [
     price: 12.00,
     description: 'Box of 6 traditional egg tart pastries dusted with cinnamon and powdered sugar.',
     sellerId: 'seller_portugal@eushop.local',
-    category: 'Sweets & Confectionery',
-    allergens: ['Gluten', 'Eggs', 'Milk'],
+    category: 'Pastry',
+    allergens: ['Cereals containing gluten', 'Eggs', 'Milk'],
+    dietaryRestrictions: ['Vegetarian'],
+    images: ['/images/belgian_chocolates.png'],
+    imageUrl: '/images/belgian_chocolates.png',
     seller: { id: 'seller_portugal@eushop.local', name: 'Lisbon Pastry Hub', rating: 4.9, verified: true }
   },
   {
@@ -179,8 +199,11 @@ export const fallbackTrendingFoods: FoodItem[] = [
     price: 26.50,
     description: 'Rich, crumbly cow milk cheese aged for 24 months with sweet butterscotch flavor crystals.',
     sellerId: 'seller_netherlands@eushop.local',
-    category: 'Dairy & Cheese',
+    category: 'Cheese',
     allergens: ['Milk'],
+    dietaryRestrictions: ['Vegetarian', 'Gluten-Free'],
+    images: ['/images/spanish_manchego.png'],
+    imageUrl: '/images/spanish_manchego.png',
     seller: { id: 'seller_netherlands@eushop.local', name: 'Gouda Masters', rating: 4.8, verified: true }
   },
   {
@@ -190,8 +213,11 @@ export const fallbackTrendingFoods: FoodItem[] = [
     price: 32.00,
     description: 'Dry-cured ham sliced paper-thin, aged 18 months, with sweet delicate texture.',
     sellerId: 'seller_italy@eushop.local',
-    category: 'Meat & Deli',
+    category: 'Charcuterie',
     allergens: [],
+    dietaryRestrictions: ['Gluten-Free'],
+    images: ['/images/german_delicatessen.png'],
+    imageUrl: '/images/german_delicatessen.png',
     seller: { id: 'seller_italy@eushop.local', name: 'Emilia-Romagna Meats', rating: 4.9, verified: true }
   }
 ];
@@ -294,23 +320,59 @@ const saveLocalUsers = (users: User[]) => {
 // API SERVICES IMPLEMENTATION WITH AUTOMATIC FALLBACKS
 // -------------------------------------------------------------
 
+export const isStaticMode = (): boolean => {
+  if (typeof window === 'undefined') return false;
+  return (
+    process.env.NEXT_PUBLIC_STATIC_MODE === 'true' ||
+    !process.env.NEXT_PUBLIC_API_URL
+  );
+};
+
 const shouldUseMock = (): boolean => {
   if (typeof window === 'undefined') return false;
-  // API_CONFIG is not defined, assuming USE_MOCK_AUTH is an environment variable
-  return process.env.NODE_ENV !== 'production' && process.env.NEXT_PUBLIC_USE_MOCK_AUTH === 'true';
+  return isStaticMode() || process.env.NEXT_PUBLIC_USE_MOCK_AUTH !== 'false';
 };
 
 export const foodAPI = {
-  search: async (query?: string, country?: string, page: number = 1, size: number = 20, config?: any): Promise<FoodItem[]> => {
+  search: async (
+    query?: string,
+    country?: string,
+    page: number = 1,
+    size: number = 20,
+    category?: string,
+    allergenFree?: string,
+    config?: any
+  ): Promise<FoodItem[]> => {
+    if (isStaticMode()) {
+      let allFoods = getLocalFoods();
+      if (query) {
+        const q = query.toLowerCase();
+        allFoods = allFoods.filter(f => f.name.toLowerCase().includes(q) || f.description.toLowerCase().includes(q) || (f.category && f.category.toLowerCase().includes(q)));
+      }
+      if (country) {
+        allFoods = allFoods.filter(f => f.country.toLowerCase() === country.toLowerCase());
+      }
+      if (category) {
+        allFoods = allFoods.filter(f => f.category && f.category.toLowerCase() === category.toLowerCase());
+      }
+      if (allergenFree) {
+        allFoods = allFoods.filter(f => !f.allergens || !f.allergens.some(a => a.toLowerCase() === allergenFree.toLowerCase()));
+      }
+      const start = (page - 1) * size;
+      return allFoods.slice(start, start + size);
+    }
+
     try {
       const params = new URLSearchParams();
-      if (query) params.append('query', query);
+      if (query) params.append('q', query);
       if (country) params.append('country', country);
+      if (category) params.append('category', category);
+      if (allergenFree) params.append('allergenFree', allergenFree);
       params.append('page', (page - 1).toString());
       params.append('size', size.toString());
 
-      const response = await apiClient.get('/foods', { params, ...config });
-      return response.data.content || response.data;
+      const response = await apiClient.get('/foods/search', { params, ...config });
+      return response.data.data?.content || response.data.content || response.data;
     } catch (e) {
       if (!shouldUseMock()) {
         throw e;
@@ -324,6 +386,12 @@ export const foodAPI = {
       }
       if (country) {
         allFoods = allFoods.filter(f => f.country.toLowerCase() === country.toLowerCase());
+      }
+      if (category) {
+        allFoods = allFoods.filter(f => f.category && f.category.toLowerCase() === category.toLowerCase());
+      }
+      if (allergenFree) {
+        allFoods = allFoods.filter(f => !f.allergens || !f.allergens.some(a => a.toLowerCase() === allergenFree.toLowerCase()));
       }
       
       const start = (page - 1) * size;
@@ -621,8 +689,8 @@ export const authAPI = {
 export const paymentAPI = {
   createPaymentIntent: async (amount: number, currency: string = 'eur', sellerId?: string): Promise<PaymentIntentResponse> => {
     try {
-      const response = await apiClient.post('/payments/create-payment-intent', { amount, currency, sellerId });
-      return response.data;
+      const response = await apiClient.post('/payments/create-payment-intent', { amount, currency, sellerAccountId: sellerId });
+      return response.data.data || response.data;
     } catch (e) {
       if (!shouldUseMock()) throw e;
       console.warn('paymentAPI.createPaymentIntent failed. Returning simulated client secret.');

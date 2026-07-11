@@ -161,6 +161,94 @@
       border: 1px solid var(--border);
       display: inline-block;
     }
+    .app-promo-card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 1.25rem;
+      padding: 2rem;
+      margin: 2rem 0;
+      width: 100%;
+      max-width: 900px;
+      display: flex;
+      flex-direction: row;
+      align-items: center;
+      justify-content: space-between;
+      gap: 2rem;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.02);
+    }
+    @media (max-width: 768px) {
+      .app-promo-card {
+        flex-direction: column;
+        text-align: center;
+      }
+    }
+    .app-promo-content h2 {
+      font-size: 1.25rem;
+      font-weight: 800;
+      margin-bottom: 0.5rem;
+    }
+    .app-promo-content p {
+      font-size: 0.8rem;
+      color: var(--muted);
+      line-height: 1.6;
+      max-width: 500px;
+      margin-bottom: 1.25rem;
+    }
+    .download-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      background: #10b981;
+      color: #fff;
+      text-decoration: none;
+      padding: 0.75rem 1.5rem;
+      border-radius: 9999px;
+      font-size: 0.85rem;
+      font-weight: 700;
+      box-shadow: 0 4px 14px rgba(16,185,129,0.3);
+      transition: all 0.2s;
+    }
+    .download-btn:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 6px 20px rgba(16,185,129,0.4);
+    }
+    .qr-mockup-container {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 0.5rem;
+      flex-shrink: 0;
+    }
+    .qr-code {
+      width: 120px;
+      height: 120px;
+      background: white;
+      border: 6px solid white;
+      border-radius: 0.5rem;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+    }
+    .qr-pixel-row {
+      display: flex;
+      justify-content: space-between;
+      height: 12.5%;
+    }
+    .qr-pixel-row .p {
+      width: 12.5%;
+      height: 100%;
+    }
+    .qr-pixel-row .p.b {
+      background: #000;
+    }
+    .qr-label {
+      font-size: 0.65rem;
+      font-weight: 700;
+      color: var(--muted);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
   </style>
 </head>
 <body>
@@ -436,6 +524,49 @@
       </div>
     </a>
 
+  </div>
+
+  <div class="app-promo-card">
+    <div class="app-promo-content">
+      <span class="badge" style="background:#d1fae5;color:#065f46;margin-bottom:0.75rem;display:inline-block;">NEW APK RELEASE</span>
+      <h2>Get the EUshop Android App</h2>
+      <p>Scan the QR code or click the button below to download the companion Android app and receive push notifications on orders, deliveries, and special offers.</p>
+      <div class="app-promo-actions">
+        <a href="/eushop/android-app.apk" class="download-btn">
+          <span>🤖</span> Download Android APK
+        </a>
+      </div>
+    </div>
+    <div class="qr-mockup-container">
+      <div class="qr-code">
+        <!-- CSS-only QR Code Grid -->
+        <div class="qr-pixel-row">
+          <div class="p b"></div><div class="p b"></div><div class="p b"></div><div class="p b"></div><div class="p b"></div><div class="p"></div><div class="p b"></div><div class="p b"></div>
+        </div>
+        <div class="qr-pixel-row">
+          <div class="p b"></div><div class="p"></div><div class="p"></div><div class="p"></div><div class="p b"></div><div class="p b"></div><div class="p"></div><div class="p b"></div>
+        </div>
+        <div class="qr-pixel-row">
+          <div class="p b"></div><div class="p"></div><div class="p"></div><div class="p"></div><div class="p b"></div><div class="p"></div><div class="p b"></div><div class="p b"></div>
+        </div>
+        <div class="qr-pixel-row">
+          <div class="p b"></div><div class="p b"></div><div class="p b"></div><div class="p b"></div><div class="p b"></div><div class="p b"></div><div class="p"></div><div class="p"></div>
+        </div>
+        <div class="qr-pixel-row">
+          <div class="p"></div><div class="p"></div><div class="p b"></div><div class="p"></div><div class="p"></div><div class="p b"></div><div class="p b"></div><div class="p b"></div>
+        </div>
+        <div class="qr-pixel-row">
+          <div class="p b"></div><div class="p b"></div><div class="p"></div><div class="p b"></div><div class="p"></div><div class="p"></div><div class="p"></div><div class="p b"></div>
+        </div>
+        <div class="qr-pixel-row">
+          <div class="p"></div><div class="p b"></div><div class="p b"></div><div class="p"></div><div class="p b"></div><div class="p b"></div><div class="p"></div><div class="p b"></div>
+        </div>
+        <div class="qr-pixel-row">
+          <div class="p b"></div><div class="p b"></div><div class="p b"></div><div class="p b"></div><div class="p"></div><div class="p b"></div><div class="p b"></div><div class="p b"></div>
+        </div>
+      </div>
+      <span class="qr-label">Scan to Install APK</span>
+    </div>
   </div>
 
   <footer>
