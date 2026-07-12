@@ -111,6 +111,7 @@ export default function CartPage() {
                     <div className="flex items-center gap-4 w-full sm:w-auto">
                       <div className="h-16 w-16 rounded-xl overflow-hidden bg-brand-sand shrink-0 flex items-center justify-center border border-gray-100">
                         {img ? (
+                          // eslint-disable-next-line @next/next/no-img-element
                           <img src={img} alt={item.name} className="w-full h-full object-cover" />
                         ) : (
                           <span className="text-2xl">🧀</span>

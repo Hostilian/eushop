@@ -51,8 +51,9 @@ apiClient.interceptors.response.use(
   (response) => response,
   (error) => {
     if (error.response?.status === 401) {
-      // Clear the cached display profile (cookie is cleared server-side)
-      typeof window !== 'undefined' && sessionStorage.removeItem('userProfile');
+      if (typeof window !== 'undefined') {
+        sessionStorage.removeItem('userProfile');
+      }
       if (typeof window !== 'undefined' && window.location.pathname !== '/login') {
         window.location.href = '/login';
       }

@@ -967,6 +967,12 @@ function initFloatingSelector(currentKey) {
     { key: 'v11', name: 'V11 - Forest Green', badge: 'THEME', path: '/eushop/v11/', bg: '#dcfce7', color: '#15803d', desc: 'Sleek Alabaster & Forest' },
     { key: 'v12', name: 'V12 - Terracotta Warm', badge: 'THEME', path: '/eushop/v12/', bg: '#ffedd5', color: '#c2410c', desc: 'Warm Ivory & Terracotta' },
     { key: 'v13', name: 'V13 - Lavender Field', badge: 'THEME', path: '/eushop/v13/', bg: '#f3e8ff', color: '#7e22ce', desc: 'Minimalist Lavender & Snow' },
+    { key: 'v14', name: 'V14 - White Modern Sleek', badge: 'THEME', path: '/eushop/v14/', bg: '#f1f5f9', color: '#0f172a', desc: 'Pure White Professional' },
+    { key: 'v15', name: 'V15 - Next-Gen Discovery', badge: 'NEXT-GEN', path: '/eushop/', bg: '#ede9fe', color: '#6d28d9', desc: 'Next-Gen Discovery Portal' },
+    { key: 'v16', name: 'V16 - Cherry Blossom', badge: 'THEME', path: '/eushop/v16/', bg: '#ffe4e6', color: '#9d174d', desc: 'Soft Cherry Blossom Theme' },
+    { key: 'v17', name: 'V17 - Royal Gold', badge: 'THEME', path: '/eushop/v17/', bg: '#fef3c7', color: '#78350f', desc: 'Royal Gold & Champagne' },
+    { key: 'v18', name: 'V18 - Auction Marketplace', badge: 'MARKETPLACE', path: '/eushop/v18/', bg: '#dbeafe', color: '#1e40af', desc: 'eBay-style White Auction' },
+    { key: 'v19', name: 'V19 - Catalog Marketplace', badge: 'MARKETPLACE', path: '/eushop/v19/', bg: '#fef3c7', color: '#92400e', desc: 'Amazon-style White Catalog' },
   ];
 
   const currentOpt = versions.find(v => v.key === currentKey);
@@ -1026,6 +1032,12 @@ document.addEventListener('DOMContentLoaded', () => {
   else if (currentPath.includes('/v11/')) key = 'v11';
   else if (currentPath.includes('/v12/')) key = 'v12';
   else if (currentPath.includes('/v13/')) key = 'v13';
+  else if (currentPath.includes('/v14/')) key = 'v14';
+  else if (currentPath.includes('/v15/')) key = 'v15';
+  else if (currentPath.includes('/v16/')) key = 'v16';
+  else if (currentPath.includes('/v17/')) key = 'v17';
+  else if (currentPath.includes('/v18/')) key = 'v18';
+  else if (currentPath.includes('/v19/')) key = 'v19';
   initFloatingSelector(key);
 });
 
@@ -1053,6 +1065,9 @@ document.addEventListener('DOMContentLoaded', () => {
     { key: 'v11', name: 'V11 - Forest Green', path: '/eushop/v11/' },
     { key: 'v12', name: 'V12 - Terracotta Warm', path: '/eushop/v12/' },
     { key: 'v13', name: 'V13 - Lavender Field', path: '/eushop/v13/' },
+    { key: 'v14', name: 'V14 - White Modern Sleek', path: '/eushop/v14/' },
+    { key: 'v16', name: 'V16 - Cherry Blossom', path: '/eushop/v16/' },
+    { key: 'v17', name: 'V17 - Royal Gold', path: '/eushop/v17/' },
     { key: 'v18', name: 'V18 - Auction Marketplace', path: '/eushop/v18/' },
     { key: 'v19', name: 'V19 - Catalog Marketplace', path: '/eushop/v19/' }
   ];
@@ -1069,6 +1084,9 @@ document.addEventListener('DOMContentLoaded', () => {
   else if (pathName.includes('/v11/')) activeKey = 'v11';
   else if (pathName.includes('/v12/')) activeKey = 'v12';
   else if (pathName.includes('/v13/')) activeKey = 'v13';
+  else if (pathName.includes('/v14/')) activeKey = 'v14';
+  else if (pathName.includes('/v16/')) activeKey = 'v16';
+  else if (pathName.includes('/v17/')) activeKey = 'v17';
   else if (pathName.includes('/v18/')) activeKey = 'v18';
   else if (pathName.includes('/v19/')) activeKey = 'v19';
 

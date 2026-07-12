@@ -133,11 +133,11 @@ const VERSIONS: VersionOption[] = [
   },
   {
     key: 'v14',
-    name: 'V14 - Sky Blue',
+    name: 'V14 - White Modern Sleek',
     badge: 'THEME',
-    desc: 'Original static prototype rendered in Sky Blue.',
+    desc: 'Original static prototype in pure white professional design.',
     path: '/v14/',
-    color: 'from-sky-400 to-sky-600 border-sky-200 text-sky-700'
+    color: 'from-gray-100 to-gray-200 border-gray-300 text-gray-800'
   },
   {
     key: 'v16',
@@ -214,8 +214,8 @@ export default function VersionSelector() {
     // Dispatch global event
     window.dispatchEvent(new Event('demo-version-changed'));
 
-    // Handle static HTML folders (v3_static, v6-v9, v10-v13, v18, v19)
-    if (['v3_static', 'v6', 'v7', 'v8', 'v9', 'v10', 'v11', 'v12', 'v13', 'v18', 'v19'].includes(option.key)) {
+    // Handle static HTML folders (v3_static, v6-v9, v10-v13, v14, v16, v17, v18, v19)
+    if (['v3_static', 'v6', 'v7', 'v8', 'v9', 'v10', 'v11', 'v12', 'v13', 'v14', 'v16', 'v17', 'v18', 'v19'].includes(option.key)) {
       window.location.href = (router.basePath || '') + option.path;
       return;
     }
