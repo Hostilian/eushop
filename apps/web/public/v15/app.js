@@ -2,10 +2,10 @@
 'use strict';
 // ── Graceful Degradation Storage & XSS Security Helpers ───────────────────
 function safeGetItem(key) {
-  try { return safeGetItem(key); } catch (e) { return null; }
+  try { return localStorage.getItem(key); } catch (e) { return null; }
 }
 function safeSetItem(key, value) {
-  try { safeSetItem(key, value); } catch (e) {}
+  try { localStorage.setItem(key, value); } catch (e) {}
 }
 function escapeHTML(str) {
   if (str === null || str === undefined) return '';
