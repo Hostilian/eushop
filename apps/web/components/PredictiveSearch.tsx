@@ -19,20 +19,20 @@ const PRESET_QUERIES = [
   { text: 'Smoked ham from Black Forest Germany', icon: '🌲' },
 ];
 
+const STEPS = [
+  'Parsing linguistic intent & semantic matching...',
+  'Checking DAC7 compliance & merchant trade-registers...',
+  'Filtering regulatory allergen profiles (EU 1169/2011)...',
+  'Securing DSA Article 30 KYBC merchant status...',
+  'Mapping OSS VAT rates and shipping lanes...',
+];
+
 export default function PredictiveSearch({ onSearch, onClear }: PredictiveSearchProps) {
   const [query, setQuery] = useState('');
   const [isFocused, setIsFocused] = useState(false);
   const [aiState, setAiState] = useState<'idle' | 'parsing' | 'complete'>('idle');
   const [reasoningLogs, setReasoningLogs] = useState<string[]>([]);
   const [activeStep, setActiveStep] = useState(0);
-
-  const steps = [
-    'Parsing linguistic intent & semantic matching...',
-    'Checking DAC7 compliance & merchant trade-registers...',
-    'Filtering regulatory allergen profiles (EU 1169/2011)...',
-    'Securing DSA Article 30 KYBC merchant status...',
-    'Mapping OSS VAT rates and shipping lanes...',
-  ];
 
   useEffect(() => {
     if (aiState === 'parsing') {
@@ -41,8 +41,8 @@ export default function PredictiveSearch({ onSearch, onClear }: PredictiveSearch
       
       const interval = setInterval(() => {
         setActiveStep((prev) => {
-          if (prev < steps.length) {
-            setReasoningLogs((logs) => [...logs, steps[prev]]);
+          if (prev < STEPS.length) {
+            setReasoningLogs((logs) => [...logs, STEPS[prev]]);
             return prev + 1;
           } else {
             clearInterval(interval);
@@ -57,6 +57,7 @@ export default function PredictiveSearch({ onSearch, onClear }: PredictiveSearch
 
       return () => clearInterval(interval);
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [aiState, query]);
 
   const parseNaturalLanguage = (text: string): ParsedFilters => {

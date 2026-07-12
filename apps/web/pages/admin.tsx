@@ -140,13 +140,13 @@ export default function AdminPage() {
 
     checkAdminAccess();
 
-    // Cleanup function
     return () => {
       clearSessionTimeout();
       window.removeEventListener('mousemove', resetSessionTimeout);
       window.removeEventListener('keydown', resetSessionTimeout);
       window.removeEventListener('click', resetSessionTimeout);
     };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [router]);
 
   if (loading) {

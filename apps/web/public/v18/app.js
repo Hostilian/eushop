@@ -440,6 +440,9 @@ document.addEventListener('DOMContentLoaded', function() {
     { key: 'v11', name: 'V11 - Forest Green', path: '/eushop/v11/' },
     { key: 'v12', name: 'V12 - Terracotta Warm', path: '/eushop/v12/' },
     { key: 'v13', name: 'V13 - Lavender Field', path: '/eushop/v13/' },
+    { key: 'v14', name: 'V14 - White Modern Sleek', path: '/eushop/v14/' },
+    { key: 'v16', name: 'V16 - Cherry Blossom', path: '/eushop/v16/' },
+    { key: 'v17', name: 'V17 - Royal Gold', path: '/eushop/v17/' },
     { key: 'v18', name: 'V18 - Auction Marketplace', path: '/eushop/v18/' },
     { key: 'v19', name: 'V19 - Catalog Marketplace', path: '/eushop/v19/' }
   ];
@@ -456,6 +459,9 @@ document.addEventListener('DOMContentLoaded', function() {
   else if (pathName.includes('/v11/')) activeKey = 'v11';
   else if (pathName.includes('/v12/')) activeKey = 'v12';
   else if (pathName.includes('/v13/')) activeKey = 'v13';
+  else if (pathName.includes('/v14/')) activeKey = 'v14';
+  else if (pathName.includes('/v16/')) activeKey = 'v16';
+  else if (pathName.includes('/v17/')) activeKey = 'v17';
   else if (pathName.includes('/v18/')) activeKey = 'v18';
   else if (pathName.includes('/v19/')) activeKey = 'v19';
 
