@@ -53,30 +53,28 @@ jobs:
 
       - name: Run frontend tests (web only)
         run: pnpm --filter "@eushop/web" run test
-        continue-on-error: true  # Test failures reported but do not gate the build
 
       # ── Java / Spring Boot steps ──────────────────────────────────────────
       # NOTE: services/core-service (Spring Boot backend) is currently frozen
       # pending MVP backend decisions. These steps are kept for reference but
       # do NOT block CI — continue-on-error: true on all Maven steps.
       # Remove the continue-on-error flags when the Java service is restored.
-      - name: Setup JDK 17 (backend — frozen)
+      - name: Setup JDK 17 (backend)
         uses: actions/setup-java@v4
         with:
           java-version: '17'
           distribution: 'temurin'
           cache: 'maven'
-        continue-on-error: true
 
-      - name: Run backend Maven tests (frozen — non-blocking)
+      - name: Run backend Maven tests
         run: |
-          if [ -f services/core-service/pom.xml ]; then
-            mvn test --no-transfer-progress
+          if [ -f pom.xml ]; then
+            chmod +x mvnw
+            ./mvnw test --no-transfer-progress
           else
-            echo "ℹ️ services/core-service not present — skipping Maven tests"
+            echo "ℹ️ pom.xml not present — skipping Maven tests"
           fi
-        working-directory: .
-        continue-on-error: true
+        working-directory: services/core-service
         env:
           SPRING_DATASOURCE_URL: jdbc:postgresql://localhost:5432/eushop_db
           SPRING_DATASOURCE_USERNAME: eushop_dev
@@ -106,20 +104,19 @@ jobs:
           languages: java
           queries: security-and-quality
 
-      - name: Build for CodeQL analysis (frozen — non-blocking)
+      - name: Build for CodeQL analysis
         run: |
-          if [ -f services/core-service/pom.xml ]; then
-            mvn compile --no-transfer-progress -DskipTests
+          if [ -f pom.xml ]; then
+            chmod +x mvnw
+            ./mvnw compile --no-transfer-progress -DskipTests
           else
-            echo "ℹ️ services/core-service not present — skipping Maven compile for CodeQL"
+            echo "ℹ️ pom.xml not present — skipping Maven compile for CodeQL"
           fi
-        working-directory: .
-        continue-on-error: true
+        working-directory: services/core-service
 
       # github/codeql-action — analyze
       - name: Perform CodeQL Analysis
         uses: github/codeql-action/analyze@v3
-        continue-on-error: true  # Non-blocking for frozen backend
 
   build:
     name: Build Artifacts
@@ -152,20 +149,19 @@ jobs:
 
       # ── Spring Boot build ─────────────────────────────────────────────────
       # Non-blocking: only runs if pom.xml exists
-      - name: Setup JDK 17 (backend — frozen)
+      - name: Setup JDK 17 (backend)
         uses: actions/setup-java@v4
         with:
           java-version: '17'
           distribution: 'temurin'
           cache: 'maven'
-        continue-on-error: true
 
-      - name: Build Spring Boot JAR (frozen — non-blocking)
+      - name: Build Spring Boot JAR
         run: |
-          if [ -f services/core-service/pom.xml ]; then
-            mvn package --no-transfer-progress -DskipTests
+          if [ -f pom.xml ]; then
+            chmod +x mvnw
+            ./mvnw package --no-transfer-progress -DskipTests
           else
-            echo "ℹ️ services/core-service not present — skipping Maven build"
+            echo "ℹ️ pom.xml not present — skipping Maven build"
           fi
-        working-directory: .
-        continue-on-error: true
+        working-directory: services/core-service
