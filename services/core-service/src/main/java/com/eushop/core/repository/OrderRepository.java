@@ -1,6 +1,8 @@
 package com.eushop.core.repository;
 
 import java.time.LocalDateTime;
+import java.util.List;
+import java.util.Map;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -50,4 +52,17 @@ public interface OrderRepository extends JpaRepository<Order, String> {
      */
     @EntityGraph(attributePaths = {"food", "seller", "buyer"})
     java.util.Optional<Order> findByStripePaymentIntentId(String stripePaymentIntentId);
+
+    @Query("SELECT o.sellerId AS sellerId, " +
+           "SUM(o.totalPrice) AS totalConsideration, " +
+           "COUNT(o) AS transactionCount, " +
+           "SUM(o.platformFeeEur) AS platformFeeTotal, " +
+           "SUM(o.sellerPayoutEur) AS sellerPayoutTotal " +
+           "FROM Order o " +
+           "WHERE o.status = 'DELIVERED' " +
+           "AND o.completedAt >= :startOfYear AND o.completedAt < :endOfYear " +
+           "GROUP BY o.sellerId")
+    List<Map<String, Object>> calculateDac7AggregatesForYear(
+            @Param("startOfYear") LocalDateTime startOfYear,
+            @Param("endOfYear") LocalDateTime endOfYear);
 }

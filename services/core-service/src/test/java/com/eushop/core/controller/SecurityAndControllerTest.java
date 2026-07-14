@@ -6,6 +6,7 @@ import com.eushop.core.service.FoodService;
 import com.eushop.core.service.OrderService;
 import com.eushop.core.service.PaymentService;
 import com.eushop.core.service.UserService;
+import com.eushop.core.service.Dac7Service;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
@@ -19,7 +20,7 @@ import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
-@WebMvcTest(controllers = {FoodController.class, OrderController.class, WebhookController.class, PaymentController.class})
+@WebMvcTest(controllers = {FoodController.class, OrderController.class, WebhookController.class, PaymentController.class, Dac7Controller.class})
 @Import({SecurityConfig.class, JwtAuthenticationFilter.class})
 public class SecurityAndControllerTest {
 
@@ -40,6 +41,9 @@ public class SecurityAndControllerTest {
 
     @MockBean
     private PaymentService paymentService;
+
+    @MockBean
+    private Dac7Service dac7Service;
 
     @MockBean
     private JdbcTemplate jdbcTemplate;
@@ -109,5 +113,26 @@ public class SecurityAndControllerTest {
             // Restore default placeholder secret
             org.springframework.test.util.ReflectionTestUtils.setField(webhookController, "webhookSecret", "whsec_placeholder");
         }
+    }
+
+    @Test
+    public void testDac7Report_BlockedNonAdmin() throws Exception {
+        // {"sub":"buyer-id","email":"buyer@eushop.eu","role":"BUYER"} in Base64
+        String buyerToken = "eyJzdWIiOiJidXllci1pZCIsImVtYWlsIjoiYnV5ZXJAZXVzaG9wLmV1Iiwicm9sZSI6IkJVRVIifQ==";
+        mockMvc.perform(get("/api/admin/dac7/report?year=2026")
+                .header("Authorization", "Bearer " + buyerToken))
+                .andExpect(status().isForbidden());
+    }
+
+    @Test
+    public void testDac7Report_AllowedAdmin() throws Exception {
+        when(dac7Service.generateSnapshotsForYear(2026))
+                .thenReturn(java.util.Collections.emptyList());
+
+        // {"sub":"admin-id","email":"admin@eushop.eu","role":"ADMIN"} in Base64
+        String adminToken = "eyJzdWIiOiJhZG1pbi1pZCIsImVtYWlsIjoiYWRtaW5AZXVzaG9wLmV1Iiwicm9sZSI6IkFETUlOIn0=";
+        mockMvc.perform(get("/api/admin/dac7/report?year=2026")
+                .header("Authorization", "Bearer " + adminToken))
+                .andExpect(status().isOk());
     }
 }
