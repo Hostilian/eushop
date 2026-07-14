@@ -330,7 +330,7 @@ export const isStaticMode = (): boolean => {
 
 const shouldUseMock = (): boolean => {
   if (typeof window === 'undefined') return false;
-  return isStaticMode() || process.env.NEXT_PUBLIC_USE_MOCK_AUTH !== 'false';
+  return isStaticMode(); // Removed mock auth fallback — Auth0 is now the only provider
 };
 
 export const foodAPI = {
@@ -460,83 +460,21 @@ export const foodAPI = {
 
 export const authAPI = {
   login: async (email: string, password: string): Promise<LoginResponse> => {
-    try {
-      const response = await apiClient.post('/auth/login', { email, password });
-      if (response.data.user) {
-        sessionStorage.setItem('userProfile', JSON.stringify(response.data.user));
-        localStorage.setItem('user', JSON.stringify(response.data.user));
-      }
-      return response.data;
-    } catch (e) {
-      if (!shouldUseMock()) throw e;
-      console.warn('authAPI.login failed. Simulating local session.');
-      const users = getLocalUsers();
-      let matched = users.find(u => u.email === email);
-      if (!matched) {
-        // Auto-register a default account if it doesn't exist to ease testing
-        matched = {
-          id: `usr-${Date.now()}`,
-          email,
-          name: email.split('@')[0].toUpperCase(),
-          country: 'DE',
-          role: email.includes('admin') ? 'ADMIN' : 'BUYER',
-          kycVerified: false,
-          emailVerified: true,
-          selfCertifiedCompliant: false
-        };
-        users.push(matched);
-        saveLocalUsers(users);
-      }
-      
-      const payload: LoginResponse = {
-        message: 'Mock login successful',
-        user: matched
-      };
-      sessionStorage.setItem('userProfile', JSON.stringify(matched));
-      localStorage.setItem('user', JSON.stringify(matched));
-      window.dispatchEvent(new Event('auth-changed'));
-      return payload;
+    const response = await apiClient.post('/auth/login', { email, password });
+    if (response.data.user) {
+      sessionStorage.setItem('userProfile', JSON.stringify(response.data.user));
+      localStorage.setItem('user', JSON.stringify(response.data.user));
     }
+    return response.data;
   },
 
   signup: async (email: string, password: string, name: string, country: string): Promise<SignupResponse> => {
-    try {
-      const response = await apiClient.post('/auth/signup', { email, password, name, country });
-      if (response.data.user) {
-        sessionStorage.setItem('userProfile', JSON.stringify(response.data.user));
-        localStorage.setItem('user', JSON.stringify(response.data.user));
-      }
-      return response.data;
-    } catch (e) {
-      if (!shouldUseMock()) throw e;
-      console.warn('authAPI.signup failed. Simulating local signup.');
-      const users = getLocalUsers();
-      if (users.some(u => u.email === email)) {
-        throw new Error('Email is already registered');
-      }
-      
-      const newUser: User = {
-        id: `usr-${Date.now()}`,
-        email,
-        name,
-        country,
-        role: email.includes('admin') ? 'ADMIN' : 'BUYER',
-        kycVerified: false,
-        emailVerified: true,
-        selfCertifiedCompliant: false
-      };
-      users.push(newUser);
-      saveLocalUsers(users);
-      
-      const payload: SignupResponse = {
-        message: 'Mock signup successful',
-        user: newUser
-      };
-      sessionStorage.setItem('userProfile', JSON.stringify(newUser));
-      localStorage.setItem('user', JSON.stringify(newUser));
-      window.dispatchEvent(new Event('auth-changed'));
-      return payload;
+    const response = await apiClient.post('/auth/signup', { email, password, name, country });
+    if (response.data.user) {
+      sessionStorage.setItem('userProfile', JSON.stringify(response.data.user));
+      localStorage.setItem('user', JSON.stringify(response.data.user));
     }
+    return response.data;
   },
 
   logout: async (): Promise<void> => {
@@ -554,33 +492,13 @@ export const authAPI = {
   },
 
   getCurrentUser: async (config?: any): Promise<User | null> => {
-    try {
-      const response = await apiClient.get('/auth/me', config);
-      const user = response.data.data;
-      if (user) {
-        sessionStorage.setItem('userProfile', JSON.stringify(user));
-        localStorage.setItem('user', JSON.stringify(user));
-      }
-      return user ?? null;
-    } catch (e) {
-      if (!shouldUseMock()) throw e;
-      // Return local storage profile if offline/api down
-      if (typeof window !== 'undefined') {
-        const raw = localStorage.getItem('user');
-        return raw ? JSON.parse(raw) as User : null;
-      }
-      return null;
+    const response = await apiClient.get('/auth/me', config);
+    const user = response.data.data;
+    if (user) {
+      sessionStorage.setItem('userProfile', JSON.stringify(user));
+      localStorage.setItem('user', JSON.stringify(user));
     }
-  },
-
-  getCachedProfile: (): User | null => {
-    if (typeof window === 'undefined') return null;
-    try {
-      const raw = localStorage.getItem('user');
-      return raw ? (JSON.parse(raw) as User) : null;
-    } catch {
-      return null;
-    }
+    return user ?? null;
   },
 
   becomeSeller: async (userId: string, data: BecomeSellerRequest): Promise<any> => {
