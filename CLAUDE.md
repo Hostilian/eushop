@@ -170,10 +170,10 @@ Stripe: `PaymentController`/`WebhookController` already exist with real signatur
 | # | Area | Finding | Where |
 |---|---|---|---|
 | 1 | Security | `@CrossOrigin(origins = "*")` on all seven REST controllers | `services/core-service/.../controller/*.java` |
-| 2 | Security | Session secret has a hardcoded fallback value if the env var is unset | `apps/web/lib/auth0.ts` |
-| 3 | Security / Auth | Mock base64 token + `localStorage` session still live alongside the Auth0 scaffold | `apps/web/lib/services.ts` |
-| 4 | CI/CD | Two workflows both named "CI/CD Pipeline" trigger on the same branches | `.github/workflows/ci-cd.yml`, `ci-cd-pipeline.yml` |
-| 5 | CI/CD | Workflow filename is invalid — GitHub Actions silently never runs it | `.github/workflows/nextjs.ymljkn` |
+| 2 | Security | Session secret has a hardcoded fallback value if the env var is unset | RESOLVED (Commit 0962d0a) |
+| 3 | Security / Auth | Mock base64 token + `localStorage` session still live alongside the Auth0 scaffold | RESOLVED (Commit 0962d0a) |
+| 4 | CI/CD | **RESOLVED** — `ci-cd-pipeline.yml` does not exist; only `ci-cd.yml` is present | `.github/workflows/ci-cd.yml` |
+| 5 | CI/CD | **RESOLVED** — File was renamed to `nextjs.yml` and is valid | `.github/workflows/nextjs.yml` |
 | 6 | Docs | AI-agent instructions reference services no longer in the tree | `.github/copilot-instructions.md` |
 | 7 | Testing | Automated coverage is effectively two Java tests + two Jest tests | `services/core-service/src/test`, `apps/web/__tests__` |
 | 8 | Repo hygiene | `services/api-gateway` still exists with real source despite STATUS.md marking it removed; not a pnpm workspace member | `services/api-gateway/` |
