@@ -24,6 +24,11 @@ public class OrderService {
 
     public Order createOrder(Order order) {
         order.setStatus(Order.OrderStatus.PENDING);
+        if (order.getTotalPrice() != null) {
+            double fee = Math.round(order.getTotalPrice() * 0.15 * 100.0) / 100.0;
+            order.setPlatformFeeEur(fee);
+            order.setSellerPayoutEur(Math.round((order.getTotalPrice() - fee) * 100.0) / 100.0);
+        }
         return orderRepository.save(order);
     }
 

@@ -174,6 +174,14 @@ public class FoodController {
                     .body(ApiResponse.error("Only seller or admin can modify this food"));
         }
 
+        if (available) {
+            var seller = userService.getUserById(food.getSellerId()).orElse(null);
+            if (seller == null || !Boolean.TRUE.equals(seller.getKycVerified())) {
+                return ResponseEntity.status(HttpStatus.FORBIDDEN)
+                        .body(ApiResponse.error("DSA_VERIFICATION_REQUIRED: Your seller account must be KYC-verified before making listings available."));
+            }
+        }
+
         foodService.toggleAvailability(id, available);
         
         Food updated = foodService.getFoodById(id)
