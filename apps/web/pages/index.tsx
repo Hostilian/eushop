@@ -506,7 +506,7 @@ export default function Home() {
           </div>
           <div className="flex gap-2">
             <span className="text-brand-gold font-bold shrink-0">[KYBC-LOG]</span>
-            <p>DSA Article 30 merchant register active: verified 10 regional producers across France, Italy, Spain, and Germany.</p>
+            <p>DSA Article 30 merchant register active: verified 10 regional producers across France, Italy, Spain, and Germany. DAC7 tax reporting is in progress.</p>
           </div>
           <div className="flex gap-2 border-t border-gray-100 dark:border-gray-900/50 pt-2.5">
             <span className="text-brand-gold font-bold shrink-0">[TAX-OSS]</span>
@@ -581,7 +581,7 @@ export default function Home() {
           </div>
           <div className="flex gap-2">
             <span className="text-indigo-500 font-bold shrink-0">[KYBC-LOG]</span>
-            <p>DSA Article 30 merchant register active: verified 10 regional producers across France, Italy, Spain, and Germany.</p>
+            <p>DSA Article 30 merchant register active: verified 10 regional producers across France, Italy, Spain, and Germany. DAC7 tax reporting is in progress.</p>
           </div>
           <div className="flex gap-2 border-t border-gray-100 dark:border-gray-900/50 pt-2.5">
             <span className="text-indigo-500 font-bold shrink-0">[TAX-OSS]</span>
@@ -653,7 +653,7 @@ export default function Home() {
             <div className="text-4xl mb-4" aria-hidden="true">🤝</div>
             <h3 className="text-lg font-bold mb-2 text-brand-dark dark:text-white font-display">Verified EU Merchants</h3>
             <p className="text-xs text-gray-600 dark:text-gray-400 leading-relaxed">
-              Every listing is published by traders fully verified under the Digital Services Act (DSA) and registered for DAC7 annual tax reporting.
+              Every listing is published by traders fully verified under the Digital Services Act (DSA). DAC7 annual tax reporting is in progress.
             </p>
           </div>
           

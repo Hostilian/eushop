@@ -176,7 +176,7 @@ Stripe: `PaymentController`/`WebhookController` already exist with real signatur
 | 5 | CI/CD | **RESOLVED** — File was renamed to `nextjs.yml` and is valid | `.github/workflows/nextjs.yml` |
 | 6 | Docs | AI-agent instructions reference services no longer in the tree | `.github/copilot-instructions.md` |
 | 7 | Testing | Automated coverage is effectively two Java tests + two Jest tests | `services/core-service/src/test`, `apps/web/__tests__` |
-| 8 | Repo hygiene | `services/api-gateway` still exists with real source despite STATUS.md marking it removed; not a pnpm workspace member | `services/api-gateway/` |
+| 8 | Repo hygiene | **RESOLVED** — `services/api-gateway` has been deleted | `services/api-gateway/` |
 
 Add rows as you find things; mark resolved ones with the commit/PR that fixed them instead of deleting the row.
 

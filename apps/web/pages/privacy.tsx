@@ -38,7 +38,7 @@ export default function PrivacyPolicy() {
                   <strong className="text-gray-900 dark:text-white">Account Information:</strong> Name, email address, password hashes, and registration preferences (buyer vs. seller).
                 </li>
                 <li>
-                  <strong className="text-gray-900 dark:text-white">Seller Verification & Compliance Data:</strong> Personal or business tax IDs, VAT numbers, trade register numbers, address details, and identity documents as required by EU law (including DSA Article 30 and DAC7).
+                  <strong className="text-gray-900 dark:text-white">Seller Verification & Compliance Data:</strong> Personal or business tax IDs, VAT numbers, trade register numbers, address details, and identity documents as required by EU law (including DSA Article 30). DAC7 tax reporting is in progress.
                 </li>
                 <li>
                   <strong className="text-gray-900 dark:text-white">Transaction & Payment Information:</strong> Order details, shipping address, and payment metadata (processed securely via Stripe; we do not store raw credit card numbers).
@@ -61,7 +61,7 @@ export default function PrivacyPolicy() {
                   <strong className="text-gray-900 dark:text-white">Contract Performance:</strong> To process orders, manage accounts, and facilitate communications between buyers and sellers.
                 </li>
                 <li>
-                  <strong className="text-gray-900 dark:text-white">Legal Obligation:</strong> To comply with regulatory requirements under the Digital Services Act (DSA) (Article 30 KYBC verification) and DAC7 tax reporting directives.
+                  <strong className="text-gray-900 dark:text-white">Legal Obligation:</strong> To comply with regulatory requirements under the Digital Services Act (DSA) (Article 30 KYBC verification). DAC7 tax reporting is in progress.
                 </li>
                 <li>
                   <strong className="text-gray-900 dark:text-white">Consent:</strong> For marketing emails or cookie trackers, where you have explicitly opted in.
