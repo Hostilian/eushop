@@ -4,6 +4,8 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
 import java.util.Optional;
+import java.util.Arrays;
+import java.util.List;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -35,7 +37,8 @@ public class FoodServiceTest {
         mockFood.setPrice(24.99);
         mockFood.setCountry("BE");
         mockFood.setCategory("Chocolates");
-        mockFood.setAllergens("None");
+        mockFood.setAllergens(Arrays.asList("Milk", "Nuts"));
+        mockFood.setDietaryRestrictions(Arrays.asList("Vegetarian", "Gluten-Free"));
         mockFood.setViewCount(5);
         mockFood.setAvailable(true);
     }
@@ -76,7 +79,8 @@ public class FoodServiceTest {
         updateDetails.setCategory("Gifts");
         updateDetails.setPrice(29.99);
         updateDetails.setCountry("BE");
-        updateDetails.setAllergens("Nuts");
+        updateDetails.setAllergens(Arrays.asList("Nuts"));
+        updateDetails.setDietaryRestrictions(Arrays.asList("Vegan"));
 
         Food updated = foodService.updateFood("food-123", updateDetails);
 
@@ -84,8 +88,21 @@ public class FoodServiceTest {
         assertEquals("Updated Chocolates", updated.getName());
         assertEquals("Updated Description", updated.getDescription());
         assertEquals(29.99, updated.getPrice());
-        assertEquals("Nuts", updated.getAllergens());
+        assertEquals(Arrays.asList("Nuts"), updated.getAllergens());
+        assertEquals(Arrays.asList("Vegan"), updated.getDietaryRestrictions());
         verify(foodRepository, times(1)).findById("food-123");
+        verify(foodRepository, times(1)).save(mockFood);
+    }
+
+    @Test
+    void testCreateFood_AllergenDataIntegrity() {
+        when(foodRepository.save(any(Food.class))).thenReturn(mockFood);
+
+        Food created = foodService.createFood(mockFood, "seller-999");
+
+        assertNotNull(created);
+        assertEquals(Arrays.asList("Milk", "Nuts"), created.getAllergens());
+        assertEquals(Arrays.asList("Vegetarian", "Gluten-Free"), created.getDietaryRestrictions());
         verify(foodRepository, times(1)).save(mockFood);
     }
 

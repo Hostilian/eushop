@@ -13,7 +13,12 @@ declare global {
 }
 
 export default function CookieBanner() {
-  const [showBanner, setShowBanner] = useState(false);
+  const [showBanner, setShowBanner] = useState(() => {
+    if (typeof window !== 'undefined') {
+      return !localStorage.getItem('cookieConsent');
+    }
+    return false;
+  });
   const [showPreferences, setShowPreferences] = useState(false);
   const [preferences, setPreferences] = useState<CookiePreferences>({
     essential: true,
@@ -37,11 +42,6 @@ export default function CookieBanner() {
           return false;
         }
       };
-    }
-
-    const consent = localStorage.getItem('cookieConsent');
-    if (!consent) {
-      setShowBanner(true);
     }
   }, []);
 

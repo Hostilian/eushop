@@ -10,10 +10,49 @@ export default function GDPRPage() {
   const [exporting, setExporting] = useState(false);
   const [deleting, setDeleting] = useState(false);
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
-  const [cookieConsent, setCookieConsent] = useState({ analytics: false, marketing: false });
+  const [cookieConsent, setCookieConsent] = useState(() => {
+    if (typeof window !== 'undefined') {
+      const consentStr = localStorage.getItem('cookieConsent');
+      if (consentStr) {
+        try {
+          const parsed = JSON.parse(consentStr);
+          return {
+            analytics: !!parsed.analytics,
+            marketing: !!parsed.marketing,
+          };
+        } catch {}
+      }
+    }
+    return { analytics: false, marketing: false };
+  });
+  const [biometricConsent, setBiometricConsent] = useState(() => {
+    if (typeof window !== 'undefined') {
+      return localStorage.getItem('biometricConsent') === 'true';
+    }
+    return false;
+  });
   const [error, setError] = useState('');
   const [successMsg, setSuccessMsg] = useState('');
   const router = useRouter();
+
+  const handleBiometricChange = async () => {
+    const updated = !biometricConsent;
+    setBiometricConsent(updated);
+    try {
+      localStorage.setItem('biometricConsent', String(updated));
+    } catch (e) {
+      console.error('Failed to save biometric consent to localStorage:', e);
+    }
+    
+    if (user) {
+      try {
+        const currentDate = new Date().toISOString().split('T')[0];
+        await authAPI.recordConsent(user.id, 'biometrics', currentDate, updated);
+      } catch (err) {
+        console.error('Failed to log biometric consent change on server:', err);
+      }
+    }
+  };
 
   useEffect(() => {
     const fetchUser = async () => {
@@ -32,22 +71,6 @@ export default function GDPRPage() {
       }
     };
     fetchUser();
-
-    // Read cookie preferences
-    if (typeof window !== 'undefined') {
-      const consentStr = localStorage.getItem('cookieConsent');
-      if (consentStr) {
-        try {
-          const parsed = JSON.parse(consentStr);
-          setCookieConsent({
-            analytics: !!parsed.analytics,
-            marketing: !!parsed.marketing,
-          });
-        } catch {
-          // ignore
-        }
-      }
-    }
   }, [router]);
 
   const handleExport = async () => {
@@ -363,6 +386,19 @@ export default function GDPRPage() {
                 type="checkbox"
                 checked={cookieConsent.marketing}
                 onChange={() => handleCookieChange('marketing')}
+                className="h-4.5 w-4.5 text-primary focus:ring-primary border-gray-300 dark:border-gray-700 rounded cursor-pointer"
+              />
+            </div>
+
+            <div className="flex items-center justify-between p-4 bg-gray-50 dark:bg-gray-950 rounded-xl">
+              <div className="max-w-[85%]">
+                <span className="font-semibold block text-sm">Biometric Authentication & Checkout</span>
+                <span className="text-xs text-gray-400 dark:text-gray-500">Allow processing of biometric authentication parameters (Face ID / Touch ID) to facilitate Zero-Step checkout. In accordance with GDPR Article 9 (Special Category Data), this requires your explicit, voluntary opt-in.</span>
+              </div>
+              <input
+                type="checkbox"
+                checked={biometricConsent}
+                onChange={handleBiometricChange}
                 className="h-4.5 w-4.5 text-primary focus:ring-primary border-gray-300 dark:border-gray-700 rounded cursor-pointer"
               />
             </div>

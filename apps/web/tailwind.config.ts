@@ -18,6 +18,24 @@ const config: Config = {
         danger:    'var(--color-danger)',
         success:   'var(--color-success)',
         warning:   'var(--color-warning)',
+        'v20-bg':      'var(--color-gray-50)',
+        'v20-surface': 'var(--color-surface)',
+        'v20-text':    'var(--color-gray-900)',
+        'v20-border':  'var(--color-border)',
+        'v20-muted':   'var(--color-gray-100)',
+        // Override default grays to match our V20 neutral palette
+        gray: {
+          50:  'var(--color-gray-50)',   // Warm Ivory background
+          100: 'var(--color-border)',    // Warm Stone Gray border
+          200: 'var(--color-gray-100)',   // Soft Stone
+          300: '#d1cdc0',
+          400: '#a39e8f',
+          500: '#7a7566',
+          600: '#5c584c',
+          700: '#3e3a30',
+          800: 'var(--color-gray-900)',   // Charcoal Black text
+          900: '#161b19',
+        },
         // Brand palette
         brand: {
           green:  '#1e3f20',

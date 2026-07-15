@@ -14,13 +14,17 @@ interface PageWrapperProps {
  */
 export function PageWrapper({ children, className = '' }: PageWrapperProps) {
   // Graceful degradation: Check if we're online to show a subtle indicator
-  const [isOnline, setIsOnline] = useState(true);
+  const [isOnline, setIsOnline] = useState(() => {
+    if (typeof window !== 'undefined') {
+      return navigator.onLine;
+    }
+    return true;
+  });
   
   useEffect(() => {
     const handleOnline = () => setIsOnline(true);
     const handleOffline = () => setIsOnline(false);
     
-    setIsOnline(navigator.onLine);
     window.addEventListener('online', handleOnline);
     window.addEventListener('offline', handleOffline);
     

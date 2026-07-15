@@ -5,17 +5,34 @@
 @import "tailwindcss/utilities";
 
 :root {
-  --color-primary: #1e3f20; /* Deep Forest Green */
-  --color-secondary: #d4a373; /* Warm Gold / Earthy Amber */
+  --color-primary: #1e3f20; /* Gourmet Forest Green */
+  --color-secondary: #d4a373; /* Culinary Gold */
   --color-danger: #b33939;
   --color-success: #2e7d32;
   --color-warning: #e67e22;
-  --color-gray-50: #fcfbf7;
-  --color-gray-100: #f4f1ea;
-  --color-gray-900: #1c1d1a;
+  --color-gray-50: #faf9f6; /* Warm Ivory background */
+  --color-gray-100: #f4f1ea; /* Warm Stone Gray */
+  --color-gray-900: #161b19; /* Charcoal Black text */
+  
+  --color-surface: #ffffff;
+  --color-border: #ebe9e1;
   
   --font-display: 'Outfit', 'Inter', sans-serif;
   --font-body: 'Inter', sans-serif;
+}
+
+.dark {
+  --color-primary: #7b8f77; /* Soft Olive Green */
+  --color-secondary: #e5a869; /* Brighter Culinary Gold */
+  --color-danger: #ef4444;
+  --color-success: #22c55e;
+  --color-warning: #f59e0b;
+  --color-gray-50: #161b19; /* Charcoal background */
+  --color-gray-100: #2a332f; /* Slate secondary */
+  --color-gray-900: #faf9f6; /* Ivory text */
+  
+  --color-surface: #222825; /* Dark surface */
+  --color-border: #313a35; /* Muted border */
 }
 
 * {
@@ -25,6 +42,7 @@
 html,
 body {
   @apply w-full h-full;
+  transition: background-color 0.3s ease, color 0.3s ease;
 }
 
 body {
@@ -36,4 +54,5 @@ body {
 h1, h2, h3, h4, h5, h6 {
   font-family: var(--font-display);
 }
+
 

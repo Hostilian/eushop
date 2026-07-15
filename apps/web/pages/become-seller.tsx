@@ -297,14 +297,15 @@ export default function BecomeSeller() {
   const [loading, setLoading] = useState(true);
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState('');
-  const [demoVersion, setDemoVersion] = useState('v2');
+  const [demoVersion, setDemoVersion] = useState(() => {
+    if (typeof window !== 'undefined') {
+      return localStorage.getItem('eushop-demo-version') || 'v2';
+    }
+    return 'v2';
+  });
   const router = useRouter();
 
   useEffect(() => {
-    // 1. Initial version read
-    const stored = localStorage.getItem('eushop-demo-version') || 'v2';
-    setDemoVersion(stored);
-
     const handleVersionChange = () => {
       setDemoVersion(localStorage.getItem('eushop-demo-version') || 'v2');
     };

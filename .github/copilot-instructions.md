@@ -18,16 +18,16 @@ This is a full-stack marketplace platform for discovering EU specialty foods. Mo
 ## Tech Stack
 - Frontend: Next.js 15, React 19 (web); React Native 0.76 + Expo 51 (mobile); TypeScript, Tailwind CSS
 - Backend: Spring Boot (Java 17), PostgreSQL 16 (+ pg_trgm), Redis 7
-- Auth: Auth0 (JWT / session verification) — note the web app still has a legacy mock-token path alongside the Auth0 wiring
+- Auth: Auth0 (JWT / session verification) — **mock-token path has been removed; Auth0 is now the only provider**
 - Payments: Stripe Connect (webhook-signature-verified)
 - Deployment: Docker Compose (local), Kubernetes (`k8s/`)
 
 ## Key Development Rules
 1. Use pnpm workspaces for monorepo management (workspace members: `apps/*` and `services/core-service` only — see `pnpm-workspace.yaml`)
 2. TypeScript in strict mode for web/mobile
-3. PostgreSQL for transactional data; Redis for sessions/caching; full-text search via PostgreSQL trigram indexing inside `FoodRepository` (no Elasticsearch)
-4. RESTful API with cookie/session auth (no GraphQL)
-5. Buyer-seller chat is REST-based (client-side polling), stored relationally in PostgreSQL (no WebSocket messaging service)
+3. PostgreSQL for transactional data; Redis for sessions/caching; full-text search via PostgreSQL trigram indexing inside `FoodRepository`
+4. RESTful API with cookie/session auth (no GraphQL, no API gateway)
+5. Buyer-seller chat is REST-based (client-side polling), stored relationally in PostgreSQL
 6. Always add a new sequential migration for database changes; keep it consistent with GDPR erasure/export and DSA/DAC7 compliance fields
 
 ## Setup Commands

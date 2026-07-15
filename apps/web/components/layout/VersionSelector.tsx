@@ -12,6 +12,14 @@ interface VersionOption {
 
 const VERSIONS: VersionOption[] = [
   {
+    key: 'v20',
+    name: 'V20 - Relaunch (Active)',
+    badge: 'V20 LIVE',
+    desc: 'Premium design overhaul, unified colors, strict DSA/DAC7 compliance, and mobile companion.',
+    path: '/',
+    color: 'from-emerald-700 to-amber-600 border-amber-300 text-emerald-800 dark:text-emerald-300'
+  },
+  {
     key: 'v15',
     name: 'V15 - Next-Gen Discovery',
     badge: 'NEXT-GEN',
@@ -174,25 +182,26 @@ const VERSIONS: VersionOption[] = [
 ];
 
 export default function VersionSelector() {
-  const [activeVersion, setActiveVersion] = useState('v15');
+  const [activeVersion, setActiveVersion] = useState(() => {
+    if (typeof window !== 'undefined') {
+      return localStorage.getItem('eushop-demo-version') || 'v20';
+    }
+    return 'v20';
+  });
   const [open, setOpen] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
   const router = useRouter();
 
   useEffect(() => {
-    // 1. Initial load
-    const stored = localStorage.getItem('eushop-demo-version') || 'v15';
-    setActiveVersion(stored);
-
-    // 2. Event listener for changes from other tabs or actions
+    // 1. Event listener for changes from other tabs or actions
     const handleVersionChange = () => {
-      const current = localStorage.getItem('eushop-demo-version') || 'v15';
+      const current = localStorage.getItem('eushop-demo-version') || 'v20';
       setActiveVersion(current);
     };
 
     window.addEventListener('demo-version-changed', handleVersionChange);
 
-    // 3. Handle click outside to close dropdown
+    // 2. Handle click outside to close dropdown
     const clickOutside = (e: MouseEvent) => {
       if (dropdownRef.current && !dropdownRef.current.contains(e.target as Node)) {
         setOpen(false);
@@ -216,7 +225,7 @@ export default function VersionSelector() {
 
     // Handle static HTML folders (v3_static, v6-v9, v10-v13, v14, v16, v17, v18, v19)
     if (['v3_static', 'v6', 'v7', 'v8', 'v9', 'v10', 'v11', 'v12', 'v13', 'v14', 'v16', 'v17', 'v18', 'v19'].includes(option.key)) {
-      window.location.href = (router.basePath || '') + option.path;
+      window.location.assign((router.basePath || '') + option.path);
       return;
     }
 

@@ -34,32 +34,6 @@ export default function PredictiveSearch({ onSearch, onClear }: PredictiveSearch
   const [reasoningLogs, setReasoningLogs] = useState<string[]>([]);
   const [activeStep, setActiveStep] = useState(0);
 
-  useEffect(() => {
-    if (aiState === 'parsing') {
-      setReasoningLogs([]);
-      setActiveStep(0);
-      
-      const interval = setInterval(() => {
-        setActiveStep((prev) => {
-          if (prev < STEPS.length) {
-            setReasoningLogs((logs) => [...logs, STEPS[prev]]);
-            return prev + 1;
-          } else {
-            clearInterval(interval);
-            setAiState('complete');
-            // Execute search after logs finish
-            const filters = parseNaturalLanguage(query);
-            onSearch(query, filters);
-            return prev;
-          }
-        });
-      }, 350); // Fast, satisfying typing interval
-
-      return () => clearInterval(interval);
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [aiState, query]);
-
   const parseNaturalLanguage = (text: string): ParsedFilters => {
     const lower = text.toLowerCase();
     const filters: ParsedFilters = {};
@@ -111,14 +85,41 @@ export default function PredictiveSearch({ onSearch, onClear }: PredictiveSearch
     return filters;
   };
 
+  useEffect(() => {
+    if (aiState === 'parsing') {
+      const interval = setInterval(() => {
+        setActiveStep((prev) => {
+          if (prev < STEPS.length) {
+            setReasoningLogs((logs) => [...logs, STEPS[prev]]);
+            return prev + 1;
+          } else {
+            clearInterval(interval);
+            setAiState('complete');
+            // Execute search after logs finish
+            const filters = parseNaturalLanguage(query);
+            onSearch(query, filters);
+            return prev;
+          }
+        });
+      }, 350); // Fast, satisfying typing interval
+
+      return () => clearInterval(interval);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [aiState, query]);
+
   const handleSearchSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (!query.trim()) return;
+    setReasoningLogs([]);
+    setActiveStep(0);
     setAiState('parsing');
   };
 
   const triggerPreset = (presetText: string) => {
     setQuery(presetText);
+    setReasoningLogs([]);
+    setActiveStep(0);
     setAiState('parsing');
   };
 
