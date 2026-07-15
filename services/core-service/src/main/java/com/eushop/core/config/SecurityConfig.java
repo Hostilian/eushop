@@ -25,7 +25,7 @@ public class SecurityConfig {
 
     private final JwtAuthenticationFilter jwtAuthenticationFilter;
 
-    @Value("${CORS_ALLOWED_ORIGINS:http://localhost:3002,https://hostilian.github.io}")
+    @Value("${CORS_ALLOWED_ORIGINS:http://localhost:3002,https://hostilian.github.io,https://eushop.com}")
     private String allowedOrigins;
 
     public SecurityConfig(JwtAuthenticationFilter jwtAuthenticationFilter) {
@@ -42,6 +42,7 @@ public class SecurityConfig {
                 // Public endpoints
                 .requestMatchers(HttpMethod.POST, "/api/webhooks/**").permitAll()
                 .requestMatchers(HttpMethod.GET, "/api/foods/**").permitAll()
+                .requestMatchers("/api/auth/**").permitAll() // Expose auth endpoints
                 .requestMatchers("/v3/api-docs/**", "/swagger-ui/**", "/swagger-ui.html").permitAll()
                 
                 // Secure endpoints
