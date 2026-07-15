@@ -1,6 +1,53 @@
-import React from 'react';
-import { ScrollView, StyleSheet, Text, TouchableOpacity, View, Image, StatusBar } from 'react-native';
+import React, { useEffect, useState } from 'react';
+import { ScrollView, StyleSheet, Text, TouchableOpacity, View, Image, StatusBar, ActivityIndicator } from 'react-native';
 import { theme } from '../lib/theme';
+
+// Simulate API fetch
+const fetchTrendingFoods = async (): Promise<any[]> => {
+  return new Promise((resolve) => {
+    setTimeout(() => {
+      // Simulate empty state (10% chance)
+      if (Math.random() < 0.1) {
+        resolve([]);
+        return;
+      }
+      // Simulate error state (10% chance)
+      if (Math.random() < 0.1) {
+        throw new Error('Failed to load trending foods');
+      }
+      // Return mock data
+      resolve([
+        {
+          id: '1',
+          name: 'Artisanal Belgian Chocolates',
+          country: 'Belgium',
+          price: 24.99,
+          description: 'Fine handmade pralines and truffles by Brussels master chocolatiers.',
+          emoji: '🇧🇪',
+          seller: 'Brussels Praline Co.'
+        },
+        {
+          id: '2',
+          name: 'Aceto Balsamico DOP',
+          country: 'Italy',
+          price: 49.99,
+          description: 'Aged balsamic vinegar of Modena DOP, matured in oak casks.',
+          emoji: '🇮🇹',
+          seller: 'Modena Olive & Vineyards'
+        },
+        {
+          id: '3',
+          name: 'Spanish Manchego Cheese',
+          country: 'Spain',
+          price: 29.99,
+          description: 'Cured sheep milk cheese from La Mancha, matured 12 months.',
+          emoji: '🇪🇸',
+          seller: 'Queserías de la Mancha'
+        }
+      ]);
+    }, 1000); // Simulate network delay
+  });
+}
 
 export default function HomeScreen({ navigation }: any) {
   const categories = [
@@ -12,35 +59,26 @@ export default function HomeScreen({ navigation }: any) {
     { name: 'Condiment', emoji: '🏺' }
   ];
 
-  const trendingFoods = [
-    {
-      id: '1',
-      name: 'Artisanal Belgian Chocolates',
-      country: 'Belgium',
-      price: 24.99,
-      description: 'Fine handmade pralines and truffles by Brussels master chocolatiers.',
-      emoji: '🇧🇪',
-      seller: 'Brussels Praline Co.'
-    },
-    {
-      id: '2',
-      name: 'Aceto Balsamico DOP',
-      country: 'Italy',
-      price: 49.99,
-      description: 'Aged balsamic vinegar of Modena DOP, matured in oak casks.',
-      emoji: '🇮🇹',
-      seller: 'Modena Olive & Vineyards'
-    },
-    {
-      id: '3',
-      name: 'Spanish Manchego Cheese',
-      country: 'Spain',
-      price: 29.99,
-      description: 'Cured sheep milk cheese from La Mancha, matured 12 months.',
-      emoji: '🇪🇸',
-      seller: 'Queserías de la Mancha'
-    }
-  ];
+  const [trendingFoods, setTrendingFoods] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    const loadData = async () => {
+      try {
+        setLoading(true);
+        setError(null);
+        const data = await fetchTrendingFoods();
+        setTrendingFoods(data);
+      } catch (err) {
+        setError(err instanceof Error ? err.message : 'Unknown error occurred');
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    loadData();
+  }, []);
 
   return (
     <ScrollView style={styles.container} contentContainerStyle={styles.contentContainer} showsVerticalScrollIndicator={false}>
@@ -75,36 +113,58 @@ export default function HomeScreen({ navigation }: any) {
       {/* Hero Banner */}
       <View style={styles.heroBanner}>
         <Text style={styles.heroTitle}>Direct From European Producers</Text>
-        <Text style={styles.heroText}>Every merchant is verified for KYBC compliance under DSA Article 30 and DAC7 tax standards.</Text>
+        <Text style={styles.heroText}>Every merchant is verified for KYBC compliance under DSA Article 30. DAC7 tax reporting is in progress.</Text>
       </View>
 
       {/* Trending Now */}
       <View style={styles.section}>
         <Text style={styles.sectionTitle}>🔥 Trending Now</Text>
-        <View style={styles.trendingGrid}>
-          {trendingFoods.map((food) => (
-            <TouchableOpacity 
-              key={food.id} 
-              style={styles.trendingCard}
-              onPress={() => navigation.navigate('Checkout', { product: food })}
-            >
-              <View style={styles.cardHeader}>
-                <Text style={styles.cardEmoji}>{food.emoji}</Text>
-                <View style={styles.cardInfo}>
-                  <Text style={styles.cardTitle}>{food.name}</Text>
-                  <Text style={styles.cardSeller}>by {food.seller}</Text>
-                </View>
-              </View>
-              <Text style={styles.cardDescription} numberOfLines={2}>{food.description}</Text>
-              <View style={styles.cardFooter}>
-                <Text style={styles.cardPrice}>€{food.price.toFixed(2)}</Text>
-                <View style={styles.buyButton}>
-                  <Text style={styles.buyButtonText}>Buy Now</Text>
-                </View>
-              </View>
+        {loading ? (
+          <View style={styles.loadingContainer}>
+            <ActivityIndicator size="large" color={theme.colors.primary} />
+            <Text style={styles.loadingText}>Loading trending foods...</Text>
+          </View>
+        ) : error ? (
+          <View style={styles.errorContainer}>
+            <Text style={styles.errorText}>⚠️ {error}</Text>
+            <TouchableOpacity style={styles.retryButton} onPress={() => {
+              setLoading(true);
+              fetchTrendingFoods().then(setTrendingFoods).catch(setError).finally(() => setLoading(false));
+            }}>
+              <Text style={styles.retryButtonText}>Retry</Text>
             </TouchableOpacity>
-          ))}
-        </View>
+          </View>
+        ) : trendingFoods.length === 0 ? (
+          <View style={styles.emptyContainer}>
+            <Text style={styles.emptyText}>🍽️ No trending foods found</Text>
+            <Text style={styles.emptySubtext}>Check back later for new artisanal discoveries!</Text>
+          </View>
+        ) : (
+          <View style={styles.trendingGrid}>
+            {trendingFoods.map((food) => (
+              <TouchableOpacity
+                key={food.id}
+                style={styles.trendingCard}
+                onPress={() => navigation.navigate('Checkout', { product: food })}
+              >
+                <View style={styles.cardHeader}>
+                  <Text style={styles.cardEmoji}>{food.emoji}</Text>
+                  <View style={styles.cardInfo}>
+                    <Text style={styles.cardTitle}>{food.name}</Text>
+                    <Text style={styles.cardSeller}>by {food.seller}</Text>
+                  </View>
+                </View>
+                <Text style={styles.cardDescription} numberOfLines={2}>{food.description}</Text>
+                <View style={styles.cardFooter}>
+                  <Text style={styles.cardPrice}>€{food.price.toFixed(2)}</Text>
+                  <View style={styles.buyButton}>
+                    <Text style={styles.buyButtonText}>Buy Now</Text>
+                  </View>
+                </View>
+              </TouchableOpacity>
+            ))}
+          </View>
+        )}
       </View>
     </ScrollView>
   );
@@ -290,5 +350,57 @@ const styles = StyleSheet.create({
     color: '#fff',
     fontSize: 12,
     fontWeight: '700',
+  },
+  // Loading state
+  loadingContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    padding: 40,
+  },
+  loadingText: {
+    marginTop: 12,
+    color: theme.colors.textMuted,
+    fontSize: 14,
+  },
+  // Error state
+  errorContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    padding: 40,
+  },
+  errorText: {
+    color: theme.colors.danger,
+    fontSize: 14,
+    marginBottom: 16,
+  },
+  retryButton: {
+    backgroundColor: theme.colors.primary,
+    paddingHorizontal: 20,
+    paddingVertical: 10,
+    borderRadius: theme.borderRadius.md,
+  },
+  retryButtonText: {
+    color: '#fff',
+    fontSize: 14,
+    fontWeight: '600',
+  },
+  // Empty state
+  emptyContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    padding: 40,
+  },
+  emptyText: {
+    fontSize: 16,
+    fontWeight: '600',
+    color: theme.colors.text,
+    marginBottom: 8,
+  },
+  emptySubtext: {
+    fontSize: 14,
+    color: theme.colors.textMuted,
   },
 });

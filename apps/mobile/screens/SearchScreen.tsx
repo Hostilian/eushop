@@ -1,7 +1,27 @@
-import React, { useState } from 'react';
-import { ScrollView, StyleSheet, Text, TextInput, View, TouchableOpacity, Switch, Alert } from 'react-native';
+import React, { useState, useEffect } from 'react';
+import { ScrollView, StyleSheet, Text, TextInput, View, TouchableOpacity, Switch, Alert, ActivityIndicator } from 'react-native';
 import * as Location from 'expo-location';
 import { theme } from '../lib/theme';
+
+// Simulate API fetch
+const fetchFoods = async (): Promise<any[]> => {
+  return new Promise((resolve) => {
+    setTimeout(() => {
+      // Simulate error state (10% chance)
+      if (Math.random() < 0.1) {
+        throw new Error('Failed to load food listings');
+      }
+      // Return mock data
+      resolve([
+        { id: '1', name: 'Belgian Chocolates', country: 'Belgium', price: 24.99, category: 'Chocolate', allergens: ['Milk', 'Soya', 'Nuts'], seller: 'Brussels Praline Co.' },
+        { id: '2', name: 'Italian Balsamic Vinegar', country: 'Italy', price: 49.99, category: 'Condiment', allergens: ['Sulfites'], seller: 'Modena Olive & Vineyards' },
+        { id: '3', name: 'Spanish Manchego Cheese', country: 'Spain', price: 29.99, category: 'Cheese', allergens: ['Milk'], seller: 'Queserías de la Mancha' },
+        { id: '4', name: 'German Black Forest Ham', country: 'Germany', price: 18.99, category: 'Charcuterie', allergens: [], seller: 'Schwarzwald Metzgerei' },
+        { id: '5', name: 'French Camembert', country: 'France', price: 14.50, category: 'Cheese', allergens: ['Milk'], seller: 'Normandie Fromagerie' }
+      ]);
+    }, 1000); // Simulate network delay
+  });
+}
 
 export default function SearchScreen({ navigation, route }: any) {
   const selectedCategoryFromParams = route?.params?.category || '';
@@ -10,13 +30,26 @@ export default function SearchScreen({ navigation, route }: any) {
   const [locationName, setLocationName] = useState<string | null>(null);
   const [selectedCategory, setSelectedCategory] = useState(selectedCategoryFromParams);
   const [allergenExclusions, setAllergenExclusions] = useState<string[]>([]);
-  const [foods, setFoods] = useState([
-    { id: '1', name: 'Belgian Chocolates', country: 'Belgium', price: 24.99, category: 'Chocolate', allergens: ['Milk', 'Soya', 'Nuts'], seller: 'Brussels Praline Co.' },
-    { id: '2', name: 'Italian Balsamic Vinegar', country: 'Italy', price: 49.99, category: 'Condiment', allergens: ['Sulfites'], seller: 'Modena Olive & Vineyards' },
-    { id: '3', name: 'Spanish Manchego Cheese', country: 'Spain', price: 29.99, category: 'Cheese', allergens: ['Milk'], seller: 'Queserías de la Mancha' },
-    { id: '4', name: 'German Black Forest Ham', country: 'Germany', price: 18.99, category: 'Charcuterie', allergens: [], seller: 'Schwarzwald Metzgerei' },
-    { id: '5', name: 'French Camembert', country: 'France', price: 14.50, category: 'Cheese', allergens: ['Milk'], seller: 'Normandie Fromagerie' }
-  ]);
+  const [foods, setFoods] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    const loadData = async () => {
+      try {
+        setLoading(true);
+        setError(null);
+        const data = await fetchFoods();
+        setFoods(data);
+      } catch (err) {
+        setError(err instanceof Error ? err.message : 'Unknown error occurred');
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    loadData();
+  }, []);
 
   const EU_ALLERGENS = ['Gluten', 'Eggs', 'Milk', 'Nuts', 'Soya', 'Sulfites'];
 
@@ -90,7 +123,23 @@ export default function SearchScreen({ navigation, route }: any) {
         </View>
       </View>
 
-      <ScrollView contentContainerStyle={styles.scrollContent} showsVerticalScrollIndicator={false}>
+      {loading ? (
+        <View style={styles.loadingContainer}>
+          <ActivityIndicator size="large" color={theme.colors.primary} />
+          <Text style={styles.loadingText}>Loading food listings...</Text>
+        </View>
+      ) : error ? (
+        <View style={styles.errorContainer}>
+          <Text style={styles.errorText}>⚠️ {error}</Text>
+          <TouchableOpacity style={styles.retryButton} onPress={() => {
+            setLoading(true);
+            fetchFoods().then(setFoods).catch(setError).finally(() => setLoading(false));
+          }}>
+            <Text style={styles.retryButtonText}>Retry</Text>
+          </TouchableOpacity>
+        </View>
+      ) : (
+        <ScrollView contentContainerStyle={styles.scrollContent} showsVerticalScrollIndicator={false}
         {/* Category Filter */}
         <Text style={styles.sectionTitle}>Categories</Text>
         <ScrollView horizontal showsHorizontalScrollIndicator={false} style={styles.categoryRow}>
@@ -163,7 +212,8 @@ export default function SearchScreen({ navigation, route }: any) {
           </View>
         )}
       </ScrollView>
-    </View>
+    )}
+  </View>
   );
 }
 
@@ -336,5 +386,40 @@ const styles = StyleSheet.create({
     fontSize: 12,
     color: theme.colors.textMuted,
     marginTop: 4,
+  },
+  // Loading state
+  loadingContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    padding: 40,
+  },
+  loadingText: {
+    marginTop: 12,
+    color: theme.colors.textMuted,
+    fontSize: 14,
+  },
+  // Error state
+  errorContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    padding: 40,
+  },
+  errorText: {
+    color: theme.colors.danger,
+    fontSize: 14,
+    marginBottom: 16,
+  },
+  retryButton: {
+    backgroundColor: theme.colors.primary,
+    paddingHorizontal: 20,
+    paddingVertical: 10,
+    borderRadius: theme.borderRadius.md,
+  },
+  retryButtonText: {
+    color: '#fff',
+    fontSize: 14,
+    fontWeight: '600',
   },
 });

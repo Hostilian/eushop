@@ -2,7 +2,9 @@ import { Ionicons } from '@expo/vector-icons';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { NavigationContainer } from '@react-navigation/native';
 import * as SplashScreen from 'expo-splash-screen';
-import React, { useEffect } from 'react';
+import { PerformanceView } from '@shopify/react-native-performance';
+import React, { useEffect, useState } from 'react';
+import { PerformanceView } from '@shopify/react-native-performance';
 
 import HomeScreen from './screens/HomeScreen';
 import MessagesScreen from './screens/MessagesScreen';
@@ -32,9 +34,18 @@ export default function App() {
     prepare();
   }, []);
 
+  const [showPerformanceMonitor, setShowPerformanceMonitor] = useState(__DEV__);
+
   return (
-    <NavigationContainer>
-      <Tab.Navigator
+    <PerformanceView>
+      {showPerformanceMonitor && (
+        <PerformanceView.Overlay
+          style={{ position: 'absolute', top: 50, right: 10, zIndex: 1000 }}
+          onClose={() => setShowPerformanceMonitor(false)}
+        />
+      )}
+      <NavigationContainer>
+        <Tab.Navigator
         screenOptions={({ route }) => ({
           headerShown: true,
           tabBarIcon: ({ focused, color, size }) => {
