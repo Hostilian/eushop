@@ -20,7 +20,7 @@ import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
-@WebMvcTest(controllers = {FoodController.class, OrderController.class, WebhookController.class, PaymentController.class, Dac7Controller.class})
+@WebMvcTest(controllers = {FoodController.class, OrderController.class, WebhookController.class, PaymentController.class, Dac7Controller.class, AuthController.class})
 @Import({SecurityConfig.class, JwtAuthenticationFilter.class})
 public class SecurityAndControllerTest {
 
@@ -134,5 +134,81 @@ public class SecurityAndControllerTest {
         mockMvc.perform(get("/api/admin/dac7/report?year=2026")
                 .header("Authorization", "Bearer " + adminToken))
                 .andExpect(status().isOk());
+    }
+
+    @Test
+    public void testAuthLogin_Success() throws Exception {
+        com.eushop.core.entity.User mockUser = new com.eushop.core.entity.User();
+        mockUser.setId("usr-123");
+        mockUser.setEmail("test@eushop.eu");
+        mockUser.setName("TEST");
+        mockUser.setRole(com.eushop.core.entity.User.UserRole.BUYER);
+        mockUser.setKycVerified(false);
+        mockUser.setSelfCertifiedCompliant(false);
+
+        when(userService.getUserByEmail("test@eushop.eu")).thenReturn(java.util.Optional.of(mockUser));
+        when(userService.updateLastLogin(anyString())).thenReturn(mockUser);
+
+        mockMvc.perform(post("/api/auth/login")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content("{\"email\":\"test@eushop.eu\",\"password\":\"password\"}"))
+                .andExpect(status().isOk())
+                .andExpect(cookie().exists("token"))
+                .andExpect(cookie().httpOnly("token", true))
+                .andExpect(jsonPath("$.user.id").value("usr-123"));
+    }
+
+    @Test
+    public void testAuthSignup_Success() throws Exception {
+        com.eushop.core.entity.User mockUser = new com.eushop.core.entity.User();
+        mockUser.setId("usr-123");
+        mockUser.setEmail("test@eushop.eu");
+        mockUser.setName("TEST");
+        mockUser.setRole(com.eushop.core.entity.User.UserRole.BUYER);
+        mockUser.setKycVerified(false);
+        mockUser.setSelfCertifiedCompliant(false);
+
+        when(userService.getUserByEmail("test@eushop.eu")).thenReturn(java.util.Optional.empty());
+        when(userService.createUser(eq("test@eushop.eu"), eq("TEST"), eq("DE"), anyString())).thenReturn(mockUser);
+
+        mockMvc.perform(post("/api/auth/signup")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content("{\"email\":\"test@eushop.eu\",\"name\":\"TEST\",\"country\":\"DE\"}"))
+                .andExpect(status().isOk())
+                .andExpect(cookie().exists("token"))
+                .andExpect(cookie().httpOnly("token", true));
+    }
+
+    @Test
+    public void testAuthLogout_Success() throws Exception {
+        mockMvc.perform(post("/api/auth/logout"))
+                .andExpect(status().isOk())
+                .andExpect(cookie().maxAge("token", 0));
+    }
+
+    @Test
+    public void testAuthMe_Unauthenticated() throws Exception {
+        mockMvc.perform(get("/api/auth/me"))
+                .andExpect(status().isUnauthorized());
+    }
+
+    @Test
+    public void testAuthMe_Authenticated() throws Exception {
+        com.eushop.core.entity.User mockUser = new com.eushop.core.entity.User();
+        mockUser.setId("usr-123");
+        mockUser.setEmail("test@eushop.eu");
+        mockUser.setName("TEST");
+        mockUser.setRole(com.eushop.core.entity.User.UserRole.BUYER);
+
+        when(userService.getUserById("usr-123")).thenReturn(java.util.Optional.of(mockUser));
+
+        // {"sub":"usr-123","email":"test@eushop.eu","role":"BUYER"} in Base64
+        String token = "eyJzdWIiOiJ1c3ItMTIzIiwiZW1haWwiOiJ0ZXN0QGV1c2hvcC5ldSIsInJvbGUiOiJCVVlFUiJ9";
+
+        mockMvc.perform(get("/api/auth/me")
+                .header("Authorization", "Bearer " + token))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.success").value(true))
+                .andExpect(jsonPath("$.data.id").value("usr-123"));
     }
 }

@@ -13,7 +13,7 @@ This is a full-stack marketplace platform for discovering EU specialty foods. Mo
 - `k8s/` - Kubernetes manifests (`core-service-deployment.yml`, `ingress.yml`)
 - `docs/` - API and Auth0 setup docs
 
-> Note: `services/api-gateway/` and `services/messaging-service/` no longer exist in the tree — their responsibilities were folded into `services/core-service`. `infrastructure/terraform/` exists but is an empty stub (no `.tf` files); there is no live Terraform/IaC.
+> Note: `services/api-gateway/` was removed (responsibilities folded into `services/core-service`). There is no messaging service, Elasticsearch, GraphQL, or Terraform in the live runtime.
 
 ## Tech Stack
 - Frontend: Next.js 15, React 19 (web); React Native 0.76 + Expo 51 (mobile); TypeScript, Tailwind CSS
