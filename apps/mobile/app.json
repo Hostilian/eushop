@@ -5,45 +5,64 @@
     "version": "2.0.0",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
-    "userInterfaceStyle": "light",
+    "userInterfaceStyle": "automatic",
     "splash": {
       "image": "./assets/splash.png",
       "resizeMode": "contain",
-      "backgroundColor": "#faf9f6"
+      "backgroundColor": "#1E3F20"
     },
     "updates": {
       "fallbackToCacheTimeout": 0
     },
-    "assetBundlePatterns": [
-      "**/*"
-    ],
+    "assetBundlePatterns": ["**/*"],
     "ios": {
-      "supportsTabletMode": true,
-      "bundleIdentifier": "com.eushop.mobile"
+      "supportsTabletMode": false,
+      "bundleIdentifier": "com.eushop.mobile",
+      "buildNumber": "1"
     },
     "android": {
       "adaptiveIcon": {
-        "foregroundImage": "./assets/adaptive-icon.png",
-        "backgroundColor": "#ffffff"
+        "foregroundImage": "./assets/icon.png",
+        "backgroundColor": "#1E3F20"
       },
-      "package": "com.eushop.mobile"
+      "package": "com.eushop.mobile",
+      "versionCode": 1,
+      "permissions": [
+        "CAMERA",
+        "ACCESS_FINE_LOCATION",
+        "ACCESS_COARSE_LOCATION",
+        "RECEIVE_BOOT_COMPLETED",
+        "VIBRATE"
+      ]
     },
     "web": {
-      "favicon": "./assets/favicon.png"
+      "favicon": "./assets/icon.png"
     },
     "plugins": [
       [
         "expo-camera",
         {
-          "cameraPermission": "Allow EUshop to access your camera"
+          "cameraPermission": "EUshop needs camera access to photograph your food listings."
         }
       ],
       [
         "expo-location",
         {
-          "locationAlwaysAndWhenInUsePermission": "Allow EUshop to access your location"
+          "locationAlwaysAndWhenInUsePermission": "EUshop uses your location to show nearby artisanal food listings."
+        }
+      ],
+      [
+        "expo-notifications",
+        {
+          "icon": "./assets/icon.png",
+          "color": "#1E3F20"
         }
       ]
-    ]
+    ],
+    "extra": {
+      "eas": {
+        "projectId": "eushop-mobile"
+      }
+    }
   }
 }
