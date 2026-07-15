@@ -78,28 +78,10 @@ const TabButton = ({ id, label, count, activeTab, onClick }: TabButtonProps) => 
 
 export default function AdminDashboard() {
   const router = useRouter();
-  const [adminUser, setAdminUser] = useState<User | null>(null);
-  const [loading, setLoading] = useState(true);
-  const [activeTab, setActiveTab] = useState<'sellers' | 'listings' | 'orders' | 'waitlist'>('sellers');
-
-  const [sellers, setSellers] = useState<SellerApplication[]>([]);
-  const [listings, setListings] = useState<FoodItem[]>([]);
-  const [orders, setOrders] = useState<OrderRecord[]>([]);
-  const [waitlist, setWaitlist] = useState<string[]>([]);
-
-  // Memoized computed values for performance
-  const pendingSellersCount = useMemo(() => 
-    sellers.filter(s => s.status === 'PENDING').length, 
-    [sellers]
-  );
-
-  useEffect(() => {
-    // 1. Verify user role or auto-login default Admin for demo convenience
-    const userData = safeParseJSON<User | null>('user', null);
-    if (userData) {
-      setAdminUser(userData);
-    } else {
-      // Auto-assign mock Admin role for smooth testing on GitHub Pages
+  const [adminUser, setAdminUser] = useState<User | null>(() => {
+    if (typeof window !== 'undefined') {
+      const userData = safeParseJSON<User | null>('user', null);
+      if (userData) return userData;
       const mockAdmin: User = {
         id: 'admin-1',
         email: 'admin@eushop.local',
@@ -110,15 +92,20 @@ export default function AdminDashboard() {
         emailVerified: true,
         selfCertifiedCompliant: true
       };
-      localStorage.setItem('user', JSON.stringify(mockAdmin));
-      setAdminUser(mockAdmin);
+      try {
+        localStorage.setItem('user', JSON.stringify(mockAdmin));
+      } catch {}
+      return mockAdmin;
     }
+    return null;
+  });
+  const [loading, setLoading] = useState(true);
+  const [activeTab, setActiveTab] = useState<'sellers' | 'listings' | 'orders' | 'waitlist'>('sellers');
 
-    // 2. Load applications from localStorage
-    const storedSellers = safeParseJSON<SellerApplication[]>('seller_applications', []);
-    if (storedSellers.length > 0) {
-      setSellers(storedSellers);
-    } else {
+  const [sellers, setSellers] = useState<SellerApplication[]>(() => {
+    if (typeof window !== 'undefined') {
+      const storedSellers = safeParseJSON<SellerApplication[]>('seller_applications', []);
+      if (storedSellers.length > 0) return storedSellers;
       const defaultSellers: SellerApplication[] = [
         {
           id: 'app-1',
@@ -157,15 +144,18 @@ export default function AdminDashboard() {
           status: 'VERIFIED',
         }
       ];
-      localStorage.setItem('seller_applications', JSON.stringify(defaultSellers));
-      setSellers(defaultSellers);
+      try {
+        localStorage.setItem('seller_applications', JSON.stringify(defaultSellers));
+      } catch {}
+      return defaultSellers;
     }
-
-    // 3. Load orders from localStorage
-    const storedOrders = safeParseJSON<OrderRecord[]>('orders', []);
-    if (storedOrders.length > 0) {
-      setOrders(storedOrders);
-    } else {
+    return [];
+  });
+  const [listings, setListings] = useState<FoodItem[]>([]);
+  const [orders, setOrders] = useState<OrderRecord[]>(() => {
+    if (typeof window !== 'undefined') {
+      const storedOrders = safeParseJSON<OrderRecord[]>('orders', []);
+      if (storedOrders.length > 0) return storedOrders;
       const defaultOrders: OrderRecord[] = [
         {
           id: 'order-1',
@@ -186,32 +176,45 @@ export default function AdminDashboard() {
           createdAt: new Date(Date.now() - 1 * 24 * 60 * 60 * 1000).toISOString()
         }
       ];
-      localStorage.setItem('orders', JSON.stringify(defaultOrders));
-      setOrders(defaultOrders);
+      try {
+        localStorage.setItem('orders', JSON.stringify(defaultOrders));
+      } catch {}
+      return defaultOrders;
     }
+    return [];
+  });
+  const [waitlist, setWaitlist] = useState<string[]>(() => {
+    if (typeof window !== 'undefined') {
+      const storedWaitlist = safeParseJSON<string[]>('waitlist_emails', []);
+      if (storedWaitlist.length > 0) return storedWaitlist;
+      const defaultEmails = ['investor1@earlystage.vc', 'venture.lead@pan-eu.fund'];
+      try {
+        localStorage.setItem('waitlist_emails', JSON.stringify(defaultEmails));
+      } catch {}
+      return defaultEmails;
+    }
+    return [];
+  });
 
-    // 4. Load listings
+  // Memoized computed values for performance
+  const pendingSellersCount = useMemo(() => 
+    sellers.filter(s => s.status === 'PENDING').length, 
+    [sellers]
+  );
+
+  useEffect(() => {
+    // Load listings and resolve loading status
     const fetchListings = async () => {
       try {
         const all = await foodAPI.search(undefined, undefined, 1, 100);
         setListings(all);
       } catch (err) {
         console.error(err);
+      } finally {
+        setLoading(false);
       }
     };
     fetchListings();
-
-    // 5. Load investor waitlist
-    const storedWaitlist = safeParseJSON<string[]>('waitlist_emails', []);
-    if (storedWaitlist.length > 0) {
-      setWaitlist(storedWaitlist);
-    } else {
-      const defaultEmails = ['investor1@earlystage.vc', 'venture.lead@pan-eu.fund'];
-      localStorage.setItem('waitlist_emails', JSON.stringify(defaultEmails));
-      setWaitlist(defaultEmails);
-    }
-
-    setLoading(false);
   }, []);
 
   const handleApproveSeller = (appId: string) => {

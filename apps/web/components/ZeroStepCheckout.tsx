@@ -17,8 +17,11 @@ export default function ZeroStepCheckout({ product, isOpen, onClose }: ZeroStepC
   // Reset checkout state when product changes or opens
   useEffect(() => {
     if (isOpen) {
-      setSliderVal(0);
-      setCheckoutStep('idle');
+      const timer = setTimeout(() => {
+        setSliderVal(0);
+        setCheckoutStep('idle');
+      }, 0);
+      return () => clearTimeout(timer);
     }
   }, [isOpen, product]);
 

@@ -27,30 +27,29 @@ const getFoodImage = (foodName: string) => {
 };
 
 export default function CartPage() {
-  const [cartItems, setCartItems] = useState<CartItem[]>([]);
-  const [loading, setLoading] = useState(true);
-
-  useEffect(() => {
-    // Load cart from localStorage
-    const savedCart = localStorage.getItem('cart');
-    if (savedCart) {
-      try {
-        setCartItems(JSON.parse(savedCart));
-      } catch (error) {
-        console.error('Failed to parse cart items:', error);
+  const [cartItems, setCartItems] = useState<CartItem[]>(() => {
+    if (typeof window !== 'undefined') {
+      const savedCart = localStorage.getItem('cart');
+      if (savedCart) {
+        try {
+          return JSON.parse(savedCart);
+        } catch (error) {
+          console.error('Failed to parse cart items:', error);
+        }
+      } else {
+        const mockItems = [
+          { id: '1', name: 'Belgian Chocolates', country: 'Belgium', price: 24.99, quantity: 2 },
+          { id: '2', name: 'Italian Balsamic', country: 'Italy', price: 34.99, quantity: 1 }
+        ];
+        try {
+          localStorage.setItem('cart', JSON.stringify(mockItems));
+        } catch {}
+        return mockItems;
       }
     }
-    // Mock item if cart is empty for demonstration purposes
-    else {
-      const mockItems = [
-        { id: '1', name: 'Belgian Chocolates', country: 'Belgium', price: 24.99, quantity: 2 },
-        { id: '2', name: 'Italian Balsamic', country: 'Italy', price: 34.99, quantity: 1 }
-      ];
-      localStorage.setItem('cart', JSON.stringify(mockItems));
-      setCartItems(mockItems);
-    }
-    setLoading(false);
-  }, []);
+    return [];
+  });
+  const [loading, setLoading] = useState(false);
 
   const updateQuantity = (id: string, newQuantity: number) => {
     if (newQuantity < 1) return;

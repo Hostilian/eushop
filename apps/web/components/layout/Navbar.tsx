@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/router';
-// import { authAPI, User } from '../../lib/services'; // authAPI and User are no longer exported
+import { authAPI, User } from '../../lib/services';
 import { Button } from '../ui/Button';
 import VersionSelector from './VersionSelector';
 
@@ -10,33 +10,44 @@ export function Navbar() {
   // A proper User interface might need to be defined locally or from another source if authentication is re-implemented.
   const [user, setUser] = useState<any | null>(null);
   const [loading, setLoading] = useState(false); // Set to false as user loading is disabled
-  const [isDark, setIsDark] = useState(false);
+  const [isDark, setIsDark] = useState(() => {
+    if (typeof window !== 'undefined') {
+      return document.documentElement.classList.contains('dark');
+    }
+    return false;
+  });
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
-  const [cartCount, setCartCount] = useState(0);
+  const [cartCount, setCartCount] = useState(() => {
+    if (typeof window !== 'undefined') {
+      try {
+        const cart = JSON.parse(localStorage.getItem('cart') || '[]');
+        return cart.reduce((total: number, item: any) => total + (item.quantity || 1), 0);
+      } catch {
+        return 0;
+      }
+    }
+    return 0;
+  });
   const router = useRouter();
 
   useEffect(() => {
-    // 1. Fetch user profile - commented out as authAPI is removed
-    // const loadUser = async () => {
-    //   setLoading(true);
-    //   try {
-    //     const currentUser = await authAPI.getCurrentUser();
-    //     setUser(currentUser);
-    //   } catch (error) {
-    //     setUser(null);
-    //   } finally {
-    //     setLoading(false);
-    //   }
-    // };
-    // loadUser();
+    const loadUser = async () => {
+      setLoading(true);
+      try {
+        const currentUser = await authAPI.getCurrentUser();
+        setUser(currentUser);
+      } catch (error) {
+        setUser(null);
+      } finally {
+        setLoading(false);
+      }
+    };
+    loadUser();
 
-    // 2. Read theme preference
-    if (typeof window !== 'undefined') {
-      const isDarkMode = document.documentElement.classList.contains('dark');
-      setIsDark(isDarkMode);
-    }
+    // Listen for global auth updates
+    window.addEventListener('auth-changed', loadUser);
 
-    // 3. Read cart count and listen to cart changes
+    // 2. Read cart count and listen to cart changes
     const updateCartCount = () => {
       try {
         const cart = JSON.parse(localStorage.getItem('cart') || '[]');
@@ -47,8 +58,6 @@ export function Navbar() {
       }
     };
 
-    updateCartCount();
-
     // Listen for custom storage events or cart updates
     window.addEventListener('storage', updateCartCount);
     window.addEventListener('cart-updated', updateCartCount);
@@ -56,6 +65,7 @@ export function Navbar() {
     return () => {
       window.removeEventListener('storage', updateCartCount);
       window.removeEventListener('cart-updated', updateCartCount);
+      window.removeEventListener('auth-changed', loadUser);
     };
   }, []);
 
@@ -71,19 +81,18 @@ export function Navbar() {
     }
   };
 
-  // handleLogout function commented out as authAPI is removed
-  // const handleLogout = async () => {
-  //   try {
-  //     await authAPI.logout();
-  //     setUser(null);
-  //     router.push('/login');
-  //   } catch (error) {
-  //     console.error('Logout failed:', error);
-  //     // Fallback
-  //     setUser(null);
-  //     router.push('/login');
-  //   }
-  // };
+  const handleLogout = async () => {
+    try {
+      await authAPI.logout();
+      setUser(null);
+      router.push('/login');
+    } catch (error) {
+      console.error('Logout failed:', error);
+      // Fallback
+      setUser(null);
+      router.push('/login');
+    }
+  };
 
   return (
     <header className="sticky top-0 z-50 w-full border-b border-gray-100 bg-white/85 backdrop-blur-md transition-colors dark:border-gray-800 dark:bg-gray-950/85">
@@ -143,10 +152,9 @@ export function Navbar() {
             )}
           </Link>
 
-          {/* User Auth Buttons - Modified to always show login/register since authAPI is removed */}
           <div className="hidden md:flex items-center gap-3">
-            {/* {loading ? (
-              <div className="h-9 w-20 bg-gray-200 dark:bg-gray-800 rounded animate-pulse" />
+            {loading ? (
+              <div className="h-9 w-20 bg-gray-250 dark:bg-gray-800 rounded animate-pulse" />
             ) : user ? (
               <div className="flex items-center gap-3">
                 <span className="text-sm font-semibold text-gray-700 dark:text-gray-300">
@@ -156,7 +164,7 @@ export function Navbar() {
                   Logout
                 </Button>
               </div>
-            ) : ( */}
+            ) : (
               <>
                 <Link href="/login">
                   <Button variant="ghost" size="sm">Log In</Button>
@@ -165,7 +173,7 @@ export function Navbar() {
                   <Button variant="primary" size="sm">Register</Button>
                 </Link>
               </>
-            {/* )} */}
+            )}
           </div>
 
           {/* Mobile Menu Toggle */}
@@ -212,7 +220,7 @@ export function Navbar() {
 
           <div className="pt-4 border-t border-gray-100 dark:border-gray-800 flex flex-col gap-2">
             {/* User Auth Buttons - Modified for mobile menu */}
-            {/* {user ? (
+            {user ? (
               <>
                 <div className="px-3 py-2 text-sm text-gray-600 dark:text-gray-400">
                   Signed in as <strong className="text-gray-800 dark:text-gray-200">{user.email}</strong>
@@ -221,7 +229,7 @@ export function Navbar() {
                   Logout
                 </Button>
               </>
-            ) : ( */}
+            ) : (
               <>
                 <Link href="/login" onClick={() => setMobileMenuOpen(false)} className="w-full">
                   <Button variant="ghost" fullWidth>Log In</Button>
@@ -230,7 +238,7 @@ export function Navbar() {
                   <Button variant="primary" fullWidth>Register</Button>
                 </Link>
               </>
-            {/* )} */}
+            )}
           </div>
         </div>
       )}
