@@ -82,7 +82,7 @@ export default function ProfileScreen({ navigation }: any) {
               <Text style={styles.buttonText}>Log In</Text>
             </TouchableOpacity>
 
-            <Text style={styles.tipText}>Tip: Use "seller@eushop.local" as email to bypass verification gates for testing purposes.</Text>
+
           </View>
         </ScrollView>
       </View>
