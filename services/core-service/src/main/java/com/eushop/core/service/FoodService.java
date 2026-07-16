@@ -41,15 +41,9 @@ public class FoodService {
     public Page<Food> searchFoods(String query, String country, String category, int page, int size) {
         Pageable pageable = PageRequest.of(page, size);
 
-        if (query != null && !query.isEmpty()) {
-            return foodRepository.searchByNameOrDescription(query, pageable);
-        } else if (country != null && !country.isEmpty()) {
-            return foodRepository.findByCountry(country, pageable);
-        } else if (category != null && !category.isEmpty()) {
-            return foodRepository.findByCategory(category, pageable);
-        } else {
-            return foodRepository.findByAvailableTrue(pageable);
-        }
+        // Combined filtering is intentional; the old branch order discarded country/category
+        // whenever q was supplied and returned misleading product results.
+        return foodRepository.advancedSearch(query, country, category, null, pageable);
     }
 
     public Page<Food> getFoodsByCountry(String country, int page, int size) {

@@ -13,6 +13,8 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
 
 import com.eushop.core.entity.Food;
 import com.eushop.core.repository.FoodRepository;
@@ -113,5 +115,18 @@ public class FoodServiceTest {
         foodService.deleteFood("food-123");
 
         verify(foodRepository, times(1)).deleteById("food-123");
+    }
+
+    @Test
+    void searchFoods_CombinesQueryAndFilters() {
+        var page = new PageImpl<>(List.of(mockFood), PageRequest.of(0, 10), 1);
+        when(foodRepository.advancedSearch("chocolate", "BE", "Chocolates", null, PageRequest.of(0, 10)))
+                .thenReturn(page);
+
+        var result = foodService.searchFoods("chocolate", "BE", "Chocolates", 0, 10);
+
+        assertEquals(1, result.getTotalElements());
+        verify(foodRepository).advancedSearch("chocolate", "BE", "Chocolates", null, PageRequest.of(0, 10));
+        verify(foodRepository, never()).searchByNameOrDescription(anyString(), any());
     }
 }
