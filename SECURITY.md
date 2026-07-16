@@ -25,6 +25,11 @@ EUshop enforces modern web security best practices across all components:
     *   Idempotency is enforced by tracking processed event IDs in the `processed_webhook_events` database table.
     *   Idempotency keys (using `X-Correlation-ID`) are passed to all Stripe PaymentIntent creation requests.
 
+4. **Build and deployment security**:
+   * The canonical CI workflow applies least-privilege permissions and gates GitHub Pages deployment on Node, Maven, configuration, and security jobs.
+   * Gitleaks and CodeQL scan source and history available to CI. Findings must be triaged before release; scanner coverage is not a substitute for review.
+   * CI does not render Compose configuration or print environment values. Local Compose defaults are for development only; use an untracked `.env` file for non-default local credentials.
+
 ## Reporting a Vulnerability
 
 If you discover a security vulnerability within this project, please report it to our team.

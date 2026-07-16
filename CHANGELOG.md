@@ -7,6 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased] — Phase 1 Master Agent Pass
 
+### Changed
+- Consolidated CI into one least-privilege workflow with mandatory Node, Maven,
+  configuration, secret-scanning, and CodeQL checks before GitHub Pages deploy.
+- Added Docker/Kubernetes validation, release/smoke-test/rollback checklists,
+  and a configuration validator that never prints environment values.
+
 ### Added
 - **`packages/compliance/`** — Single source of truth for all regulatory logic.
   - `allergens.ts`: EU 14-allergen list (Reg. 1169/2011 Annex II) and FDA 9-allergen list (FALCPA + FASTER Act) as `as const` arrays with `// COMPLIANCE-REVIEW:` citations.

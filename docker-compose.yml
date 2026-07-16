@@ -3,10 +3,10 @@ version: '3.8'
 services:
   postgres:
     image: postgres:16-alpine
-    container_name: eushop_postgres
     environment:
       POSTGRES_USER: ${POSTGRES_USER:-eushop_dev}
-      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-dev_password_123}
+      # Local development only. Set POSTGRES_PASSWORD in an untracked .env file.
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-eushop_local_only}
       POSTGRES_DB: ${POSTGRES_DB:-eushop_db}
     ports:
       - "${POSTGRES_PORT:-5432}:5432"
@@ -20,14 +20,13 @@ services:
 
   redis:
     image: redis:7-alpine
-    container_name: eushop_redis
-    command: redis-server --requirepass ${REDIS_PASSWORD:-}
+    command: redis-server --requirepass ${REDIS_PASSWORD:-eushop_local_only}
     ports:
       - "${REDIS_PORT:-6379}:6379"
     volumes:
       - redis_data:/data
     healthcheck:
-      test: ["CMD", "redis-cli", "ping"]
+      test: ["CMD-SHELL", "redis-cli -a \"$$REDIS_PASSWORD\" ping"]
       interval: 10s
       timeout: 5s
       retries: 5
@@ -35,7 +34,7 @@ services:
   # Optional: pgAdmin for database management
   pgadmin:
     image: dpage/pgadmin4:latest
-    container_name: eushop_pgadmin
+    profiles: ["tools"]
     environment:
       PGADMIN_DEFAULT_EMAIL: admin@eushop.local
       PGADMIN_DEFAULT_PASSWORD: admin

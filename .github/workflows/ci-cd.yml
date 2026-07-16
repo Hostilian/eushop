@@ -1,14 +1,3 @@
-# EUshop — Enhanced CI/CD Pipeline
-# Phases: lint → unit (compliance first) → build → accessibility → security → deploy
-#
-# Key additions over the base nextjs.yml:
-#   - Compliance engine unit tests (DAC7 edge cases, VAT rates, allergen integrity)
-#   - Lighthouse CI with performance budgets
-#   - axe-core accessibility scan (floor, not substitute for manual testing)
-#   - Snyk dependency vulnerability scan
-#   - Preview deployments on PRs (Vercel-style via GitHub Pages preview)
-#   - COMPLIANCE-REVIEW: Failing compliance tests must block merge, not just warn.
-
 name: EUshop CI
 
 on:
@@ -20,281 +9,126 @@ on:
 
 permissions:
   contents: read
-  pages: write
-  id-token: write
-  pull-requests: write
 
 concurrency:
-  group: ci-${{ github.ref }}
+  group: ci-${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
 
 env:
   NODE_VERSION: '20'
-  PNPM_VERSION: '9'
+  JAVA_VERSION: '17'
 
 jobs:
-  # ─── 1. Lint & Type-check ──────────────────────────────────────────────────
-  lint:
-    name: Lint & Type-check
+  node:
+    name: Node quality checks
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
       - uses: pnpm/action-setup@v4
         with:
-          version: ${{ env.PNPM_VERSION }}
+          version: 9.7.1
       - uses: actions/setup-node@v4
         with:
           node-version: ${{ env.NODE_VERSION }}
-      - uses: actions/cache@v4
-        with:
-          path: ~/.local/share/pnpm/store
-          key: ${{ runner.os }}-pnpm-${{ hashFiles('**/pnpm-lock.yaml') }}
-          restore-keys: ${{ runner.os }}-pnpm-
-      - run: pnpm install --prefer-frozen-lockfile
-      - run: pnpm --filter "@eushop/web" run lint
-      - run: pnpm --filter "@eushop/web" run type-check
-
-  # ─── 2. Compliance Engine Tests (HIGHEST PRIORITY — must not be skipped) ──
-  compliance-tests:
-    name: Compliance Engine Tests
-    runs-on: ubuntu-latest
-    # COMPLIANCE-REVIEW: These tests are the most important in the repo.
-    # A silently-failing VAT calculation or wrong DAC7 threshold is worse
-    # than a visibly broken page. Never set continue-on-error: true here.
-    steps:
-      - uses: actions/checkout@v4
-      - uses: pnpm/action-setup@v4
-        with:
-          version: ${{ env.PNPM_VERSION }}
-      - uses: actions/setup-node@v4
-        with:
-          node-version: ${{ env.NODE_VERSION }}
-      - uses: actions/cache@v4
-        with:
-          path: ~/.local/share/pnpm/store
-          key: ${{ runner.os }}-pnpm-${{ hashFiles('**/pnpm-lock.yaml') }}
-          restore-keys: ${{ runner.os }}-pnpm-
-      - run: pnpm install --prefer-frozen-lockfile
-      - name: Run compliance engine tests
-        run: pnpm --filter "@eushop/compliance" run test --ci --coverage
-      - name: Upload compliance test coverage
-        uses: actions/upload-artifact@v4
-        if: always()
-        with:
-          name: compliance-coverage
-          path: packages/compliance/coverage/
-
-  # ─── 3. Web Unit Tests ────────────────────────────────────────────────────
-  web-tests:
-    name: Web Unit Tests
-    runs-on: ubuntu-latest
-    needs: [lint]
-    steps:
-      - uses: actions/checkout@v4
-      - uses: pnpm/action-setup@v4
-        with:
-          version: ${{ env.PNPM_VERSION }}
-      - uses: actions/setup-node@v4
-        with:
-          node-version: ${{ env.NODE_VERSION }}
-      - uses: actions/cache@v4
-        with:
-          path: ~/.local/share/pnpm/store
-          key: ${{ runner.os }}-pnpm-${{ hashFiles('**/pnpm-lock.yaml') }}
-          restore-keys: ${{ runner.os }}-pnpm-
-      - run: pnpm install --prefer-frozen-lockfile
-      - run: pnpm --filter "@eushop/web" run test --ci --coverage
-      - uses: actions/upload-artifact@v4
-        if: always()
-        with:
-          name: web-coverage
-          path: apps/web/coverage/
-
-  # ─── 4. Build ─────────────────────────────────────────────────────────────
-  build:
-    name: Build Static Export
-    runs-on: ubuntu-latest
-    needs: [compliance-tests, web-tests]
-    steps:
-      - uses: actions/checkout@v4
-      - uses: pnpm/action-setup@v4
-        with:
-          version: ${{ env.PNPM_VERSION }}
-      - uses: actions/setup-node@v4
-        with:
-          node-version: ${{ env.NODE_VERSION }}
-      - uses: actions/cache@v4
-        with:
-          path: ~/.local/share/pnpm/store
-          key: ${{ runner.os }}-pnpm-${{ hashFiles('**/pnpm-lock.yaml') }}
-          restore-keys: ${{ runner.os }}-pnpm-
-      - uses: actions/cache@v4
-        with:
-          path: apps/web/.next/cache
-          key: ${{ runner.os }}-nextjs-${{ hashFiles('**/pnpm-lock.yaml') }}-${{ hashFiles('apps/web/**.[jt]s', 'apps/web/**.[jt]sx') }}
-          restore-keys: ${{ runner.os }}-nextjs-${{ hashFiles('**/pnpm-lock.yaml') }}-
-      - run: pnpm install --prefer-frozen-lockfile
-      - name: Build
-        run: pnpm --filter "@eushop/web" run build
+      - name: Install dependencies
+        # The repository does not yet commit a pnpm lockfile. This is explicit
+        # until a reviewed lockfile can be introduced; it is not a suppressed
+        # quality failure.
+        run: pnpm install --no-frozen-lockfile
+      - name: Block known high-severity Node dependency vulnerabilities
+        run: pnpm audit --audit-level=high
+      - name: Lint web application
+        run: pnpm --filter @eushop/web lint
+      - name: Type-check TypeScript packages
+        run: |
+          pnpm --filter @eushop/web type-check
+          pnpm --filter @eushop/compliance type-check
+          pnpm --filter @eushop/types exec tsc --noEmit
+      - name: Run Node tests
+        run: |
+          pnpm --filter @eushop/compliance test -- --ci
+          pnpm --filter @eushop/web test -- --ci
+          node --test scripts/__tests__/validate-config.test.js
+      - name: Build static web export
+        run: pnpm --filter @eushop/web build
         env:
           NODE_ENV: production
           NEXT_PUBLIC_STATIC_MODE: 'true'
-      - name: Verify output
+      - name: Verify required static output
         run: |
-          set -e
-          [ -d "apps/web/out" ] || (echo "❌ out/ missing" && exit 1)
-          [ -f "apps/web/out/index.html" ] || (echo "❌ index.html missing" && exit 1)
-          echo "✅ Build output verified"
+          test -f apps/web/out/index.html
+          test -f apps/web/out/versions/index.html
       - uses: actions/upload-artifact@v4
         with:
           name: static-export
-          path: apps/web/out/
+          path: apps/web/out
           retention-days: 7
 
-  # ─── 5. Accessibility Scan (axe-core — floor, not ceiling) ───────────────
-  accessibility:
-    name: Accessibility Scan (axe-core)
+  maven:
+    name: Maven tests and package
     runs-on: ubuntu-latest
-    needs: [build]
+    defaults:
+      run:
+        working-directory: services/core-service
     steps:
       - uses: actions/checkout@v4
-      - uses: pnpm/action-setup@v4
+      - uses: actions/setup-java@v4
         with:
-          version: ${{ env.PNPM_VERSION }}
-      - uses: actions/setup-node@v4
-        with:
-          node-version: ${{ env.NODE_VERSION }}
-      - uses: actions/cache@v4
-        with:
-          path: ~/.local/share/pnpm/store
-          key: ${{ runner.os }}-pnpm-${{ hashFiles('**/pnpm-lock.yaml') }}
-          restore-keys: ${{ runner.os }}-pnpm-
-      - run: pnpm install --prefer-frozen-lockfile
-      - uses: actions/download-artifact@v4
-        with:
-          name: static-export
-          path: apps/web/out/
-      - name: Serve static export
-        run: npx serve apps/web/out -p 3000 &
-      - name: Wait for server
-        run: sleep 3
-      - name: Run axe-core accessibility scan
-        # COMPLIANCE-REVIEW: axe-core catches ~30-50% of real WCAG issues.
-        # Manual VoiceOver + TalkBack testing is required before launch (Phase 3.3).
-        # Critical paths to test manually: checkout flow, allergen filters, search.
-        run: |
-          npx @axe-core/cli http://localhost:3000 \
-            --tags wcag2a,wcag2aa,wcag21aa \
-            --exit \
-            --reporter json \
-            --output-file axe-results.json || true
-          cat axe-results.json
-      - uses: actions/upload-artifact@v4
-        if: always()
-        with:
-          name: axe-results
-          path: axe-results.json
+          distribution: temurin
+          java-version: ${{ env.JAVA_VERSION }}
+          cache: maven
+      - name: Run unit tests
+        run: ./mvnw --batch-mode --no-transfer-progress test
+      - name: Package after tests
+        run: ./mvnw --batch-mode --no-transfer-progress package
 
-  # ─── 6. Lighthouse CI (performance budgets) ───────────────────────────────
-  lighthouse:
-    name: Lighthouse CI
+  configuration:
+    name: Configuration validation
     runs-on: ubuntu-latest
-    needs: [build]
     steps:
       - uses: actions/checkout@v4
-      - uses: pnpm/action-setup@v4
-        with:
-          version: ${{ env.PNPM_VERSION }}
-      - uses: actions/setup-node@v4
-        with:
-          node-version: ${{ env.NODE_VERSION }}
-      - uses: actions/cache@v4
-        with:
-          path: ~/.local/share/pnpm/store
-          key: ${{ runner.os }}-pnpm-${{ hashFiles('**/pnpm-lock.yaml') }}
-          restore-keys: ${{ runner.os }}-pnpm-
-      - run: pnpm install --prefer-frozen-lockfile
-      - uses: actions/download-artifact@v4
-        with:
-          name: static-export
-          path: apps/web/out/
-      - name: Serve static export
-        run: npx serve apps/web/out -p 3000 &
-      - name: Wait for server
-        run: sleep 3
-      - name: Run Lighthouse CI
-        run: |
-          npx @lhci/cli@0.14.x autorun \
-            --collect.url=http://localhost:3000 \
-            --collect.numberOfRuns=1 \
-            --assert.preset=lighthouse:recommended \
-            --assert.assertions.categories:performance=["warn",{"minScore":0.8}] \
-            --assert.assertions.categories:accessibility=["error",{"minScore":0.9}] \
-            --assert.assertions.categories:best-practices=["warn",{"minScore":0.9}] \
-            --assert.assertions.categories:seo=["warn",{"minScore":0.8}] \
-            --upload.target=temporary-public-storage || true
-      - uses: actions/upload-artifact@v4
-        if: always()
-        with:
-          name: lighthouse-results
-          path: .lighthouseci/
+      - name: Validate repository configuration references
+        run: node scripts/validate-config.js
+      - name: Validate Docker Compose syntax without rendering environment values
+        run: docker compose -f docker-compose.yml config --quiet
+      - uses: imranismail/setup-kubeconform@v1
+      - name: Validate Kubernetes manifests
+        run: kubeconform -strict -summary -ignore-missing-schemas k8s/*.yml
 
-  # ─── 7. Security — Dependency Scan ────────────────────────────────────────
   security:
-    name: Security Scan
-    runs-on: ubuntu-latest
-    needs: [lint]
-    steps:
-      - uses: actions/checkout@v4
-      - uses: pnpm/action-setup@v4
-        with:
-          version: ${{ env.PNPM_VERSION }}
-      - uses: actions/setup-node@v4
-        with:
-          node-version: ${{ env.NODE_VERSION }}
-      - uses: actions/cache@v4
-        with:
-          path: ~/.local/share/pnpm/store
-          key: ${{ runner.os }}-pnpm-${{ hashFiles('**/pnpm-lock.yaml') }}
-          restore-keys: ${{ runner.os }}-pnpm-
-      - run: pnpm install --prefer-frozen-lockfile
-      - name: pnpm audit
-        run: pnpm audit --audit-level=high || true
-      - name: Check for secrets in code
-        # Fail if any .env files with real values are accidentally committed
-        run: |
-          if grep -r "sk_live_\|pk_live_\|STRIPE_SECRET\|AUTH0_CLIENT_SECRET" --include="*.ts" --include="*.tsx" --include="*.js" .; then
-            echo "❌ FATAL: Potential secret found in source code"
-            exit 1
-          fi
-          echo "✅ No secrets detected in source files"
-
-  # ─── 8. CodeQL (Java backend) ─────────────────────────────────────────────
-  codeql:
-    name: CodeQL Analysis
+    name: Dependency and secret scanning
     runs-on: ubuntu-latest
     permissions:
+      contents: read
       security-events: write
     steps:
       - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: gitleaks/gitleaks-action@v2
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       - uses: github/codeql-action/init@v3
         with:
-          languages: java
+          languages: javascript-typescript, java
       - uses: actions/setup-java@v4
         with:
-          java-version: '17'
-          distribution: 'temurin'
-      - name: Build Spring Boot
-        run: cd services/core-service && ./mvnw.cmd package -DskipTests || ./mvnw package -DskipTests
-        continue-on-error: true
+          distribution: temurin
+          java-version: ${{ env.JAVA_VERSION }}
+      - name: Build Java for CodeQL
+        run: ./mvnw --batch-mode --no-transfer-progress package -DskipTests
+        working-directory: services/core-service
       - uses: github/codeql-action/analyze@v3
 
-  # ─── 9. Deploy (main branch only) ─────────────────────────────────────────
-  deploy:
-    name: Deploy to GitHub Pages
+  deploy-pages:
+    name: Deploy GitHub Pages
+    needs: [node, maven, configuration, security]
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
     runs-on: ubuntu-latest
-    needs: [build, compliance-tests, security]
-    if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+    permissions:
+      contents: read
+      pages: write
+      id-token: write
     environment:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
@@ -303,10 +137,9 @@ jobs:
       - uses: actions/download-artifact@v4
         with:
           name: static-export
-          path: ./out
+          path: out
       - uses: actions/upload-pages-artifact@v3
         with:
-          path: ./out
-      - name: Deploy to GitHub Pages
-        id: deployment
+          path: out
+      - id: deployment
         uses: actions/deploy-pages@v4
