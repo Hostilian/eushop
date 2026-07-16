@@ -4,8 +4,10 @@ import React, { useState } from 'react';
 import { ConversationList } from './ConversationList';
 import { MessageList } from './MessageList';
 import { MessageInput } from './MessageInput';
+import { WebSocketStatus } from './WebSocketStatus';
 import { Conversation } from '../../lib/services/chatService';
 import { chatService } from '../../lib/services/chatService';
+import { websocketService } from '../../lib/services/websocketService';
 import { Button } from '../ui/Button';
 import { Skeleton } from '../ui/Skeleton';
 import { Alert } from '../ui/Alert';
@@ -90,13 +92,16 @@ export const ChatContainer: React.FC<ChatContainerProps> = ({
                   </p>
                 )}
               </div>
-              <Button
-                variant="ghost"
-                size="sm"
-                onClick={() => setSelectedConversationId(undefined)}
-              >
-                Close
-              </Button>
+              <div className="flex items-center gap-4">
+                <WebSocketStatus />
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={() => setSelectedConversationId(undefined)}
+                >
+                  Close
+                </Button>
+              </div>
             </div>
 
             <MessageList

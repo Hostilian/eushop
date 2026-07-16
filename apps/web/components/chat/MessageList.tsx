@@ -1,12 +1,16 @@
 "use client";
 
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { Message } from '../../lib/services/chatService';
 import { chatService } from '../../lib/services/chatService';
+import { websocketService } from '../../lib/services/websocketService';
 import { useAuth } from '../../lib/auth';
 import { Skeleton } from '../ui/Skeleton';
 import { Alert } from '../ui/Alert';
 import { Button } from '../ui/Button';
+import { MessageSearch } from './MessageSearch';
+import { MessageReactions } from './MessageReactions';
+import { MessageAttachment } from './MessageAttachment';
 
 interface MessageListProps {
   conversationId: string;
@@ -22,6 +26,7 @@ export const MessageList: React.FC<MessageListProps> = ({
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [retryCount, setRetryCount] = useState(0);
+  const [typingUser, setTypingUser] = useState<string | null>(null);
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
   // Load messages with retry logic
@@ -36,6 +41,7 @@ export const MessageList: React.FC<MessageListProps> = ({
         // Mark as read when messages are loaded
         if (data.length > 0) {
           await chatService.markAsRead(conversationId);
+          await websocketService.sendReadReceipt(conversationId);
         }
       } catch (err) {
         console.error('Failed to load messages:', err);
@@ -49,15 +55,58 @@ export const MessageList: React.FC<MessageListProps> = ({
       loadMessages();
     }
 
-    // Set up polling for new messages
-    const interval = setInterval(() => {
-      if (conversationId) {
-        loadMessages();
+    // Set up WebSocket listeners
+    const handleNewMessage = (messageData: any) => {
+      if (messageData.conversationId === conversationId) {
+        setMessages(prev => [...prev, {
+          id: messageData.id,
+          conversationId: messageData.conversationId,
+          sender: { id: messageData.senderId, name: '' },
+          content: messageData.content,
+          isRead: messageData.isRead,
+          createdAt: messageData.createdAt,
+          reactions: messageData.reactions || {},
+        }]);
+        if (onNewMessage) {
+          onNewMessage();
+        }
       }
-    }, 5000); // Poll every 5 seconds for new messages
+    };
 
-    return () => clearInterval(interval);
-  }, [conversationId, retryCount]);
+    const handleTyping = (typingData: any) => {
+      if (typingData.conversationId === conversationId && typingData.userId !== user?.id) {
+        setTypingUser(typingData.typing ? typingData.userId : null);
+      }
+    };
+
+    const handleRead = (readData: any) => {
+      if (readData.conversationId === conversationId) {
+        setMessages(prev => prev.map(msg =>
+          msg.sender.id !== user?.id ? { ...msg, isRead: true } : msg
+        ));
+      }
+    };
+
+    const handleReaction = (reactionData: any) => {
+      if (reactionData.conversationId === conversationId) {
+        setMessages(prev => prev.map(msg =>
+          msg.id === reactionData.id ? { ...msg, reactions: reactionData.reactions || {} } : msg
+        ));
+      }
+    };
+
+    websocketService.onMessage(handleNewMessage);
+    websocketService.onTyping(handleTyping);
+    websocketService.onRead(handleRead);
+    websocketService.onReaction(handleReaction);
+
+    return () => {
+      websocketService.offMessage(handleNewMessage);
+      websocketService.offTyping(handleTyping);
+      websocketService.offRead(handleRead);
+      websocketService.offReaction(handleReaction);
+    };
+  }, [conversationId, retryCount, user?.id, onNewMessage]);
 
   // Scroll to bottom when messages change
   useEffect(() => {
@@ -94,14 +143,41 @@ export const MessageList: React.FC<MessageListProps> = ({
   }
 
   return (
-    <div className="flex flex-col gap-4 p-4 overflow-y-auto flex-1">
-      {messages.map((message) => (
-        <MessageItem
-          key={message.id}
-          message={message}
-          isCurrentUser={message.sender.id === user?.id}
+    <>
+      <div className="p-4 border-b border-gray-200">
+        <MessageSearch
+          conversationId={conversationId}
+          onSelectMessage={(messageId) => {
+            // Scroll to selected message
+            const messageElement = document.getElementById(`message-${messageId}`);
+            if (messageElement) {
+              messageElement.scrollIntoView({ behavior: 'smooth', block: 'center' });
+              messageElement.classList.add('bg-yellow-50');
+              setTimeout(() => {
+                messageElement.classList.remove('bg-yellow-50');
+              }, 2000);
+            }
+          }}
         />
-      ))}
+      </div>
+      <div className="flex flex-col gap-4 p-4 overflow-y-auto flex-1">
+        {messages.map((message) => (
+          <MessageItem
+            key={message.id}
+            message={message}
+            isCurrentUser={message.sender.id === user?.id}
+            id={`message-${message.id}`}
+          />
+        ))}
+        {/* Typing indicator */}
+        {typingUser && (
+          <div className="flex justify-start mb-2">
+            <div className="bg-gray-100 text-gray-600 text-xs px-3 py-1 rounded-full">
+              typing...
+            </div>
+          </div>
+        )}
+
       <div ref={messagesEndRef} />
     </div>
   );
@@ -110,14 +186,15 @@ export const MessageList: React.FC<MessageListProps> = ({
 const MessageItem: React.FC<{
   message: Message;
   isCurrentUser: boolean;
-}> = ({ message, isCurrentUser }) => {
+  id?: string;
+}> = ({ message, isCurrentUser, id }) => {
   const formatTime = (dateString: string) => {
     const date = new Date(dateString);
     return date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
   };
 
   return (
-    <div className={`flex ${isCurrentUser ? 'justify-end' : 'justify-start'}`}>
+    <div className={`flex ${isCurrentUser ? 'justify-end' : 'justify-start'}`} id={id}>
       <div
         className={`max-w-xs md:max-w-md lg:max-w-lg xl:max-w-xl rounded-lg px-4 py-2 ${
           isCurrentUser
@@ -126,15 +203,25 @@ const MessageItem: React.FC<{
         }`}
       >
         <div className="text-sm whitespace-pre-wrap break-words">
-          {message.content}
+          {message.content.replace(/\\[Attachment: .+?\\\]\(.+?\)/g, '').trim()}
         </div>
-        <div className="flex justify-end mt-1">
-          <span className="text-xs opacity-70">
-            {formatTime(message.createdAt)}
-          </span>
-          {isCurrentUser && message.isRead && (
-            <span className="ml-1 text-xs opacity-70">✓✓</span>
-          )}
+        <MessageAttachment content={message.content} />
+        <div className="flex justify-between items-center mt-1">
+          <MessageReactions
+            messageId={message.id}
+            reactions={message.reactions || {}}
+            onAddReaction={() => {
+              // Refresh reactions if needed
+            }}
+          />
+          <div className="flex items-center">
+            <span className="text-xs opacity-70">
+              {formatTime(message.createdAt)}
+            </span>
+            {isCurrentUser && message.isRead && (
+              <span className="ml-1 text-xs opacity-70">✓✓</span>
+            )}
+          </div>
         </div>
       </div>
     </div>

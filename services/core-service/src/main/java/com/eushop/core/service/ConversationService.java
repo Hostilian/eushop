@@ -95,4 +95,79 @@ public class ConversationService {
             conversationRepository.save(conversation);
         }
     }
+
+    /**
+     * Check if a user is part of a conversation
+     * @param userId The user ID to check
+     * @param conversationId The conversation ID
+     * @return true if the user is part of the conversation
+     */
+    public boolean isUserInConversation(String userId, String conversationId) {
+        Optional<Conversation> conversation = conversationRepository.findById(conversationId);
+        return conversation.map(conv ->
+            conv.getBuyer().getId().equals(userId) || conv.getSeller().getId().equals(userId)
+        ).orElse(false);
+    }
+
+    /**
+     * Get the other user in a conversation
+     * @param userId The current user ID
+     * @param conversationId The conversation ID
+     * @return The ID of the other user, or null if not found
+     */
+    public String getOtherUserInConversation(String userId, String conversationId) {
+        Optional<Conversation> conversation = conversationRepository.findById(conversationId);
+        if (conversation.isPresent()) {
+            Conversation conv = conversation.get();
+            if (conv.getBuyer().getId().equals(userId)) {
+                return conv.getSeller().getId();
+            } else if (conv.getSeller().getId().equals(userId)) {
+                return conv.getBuyer().getId();
+            }
+        }
+        return null;
+    }
+
+    /**
+     * Add a reaction to a message
+     * @param messageId The message ID
+     * @param userId The user ID adding the reaction
+     * @param reaction The reaction emoji
+     * @return The updated message
+     */
+    public Message addReaction(String messageId, String userId, String reaction) {
+        Optional<Message> messageOpt = messageRepository.findById(messageId);
+        if (messageOpt.isEmpty()) {
+            return null;
+        }
+
+        Message message = messageOpt.get();
+
+        // Check if user is part of the conversation
+        if (!isUserInConversation(userId, message.getConversation().getId())) {
+            return null;
+        }
+
+        // Get or create reactions map
+        Map<String, Object> metadata = message.getMetadata();
+        if (metadata == null) {
+            metadata = new HashMap<>();
+        }
+
+        Map<String, Integer> reactions;
+        if (metadata.containsKey("reactions")) {
+            reactions = (Map<String, Integer>) metadata.get("reactions");
+        } else {
+            reactions = new HashMap<>();
+        }
+
+        // Update reaction count
+        reactions.put(reaction, reactions.getOrDefault(reaction, 0) + 1);
+
+        // Update metadata
+        metadata.put("reactions", reactions);
+        message.setMetadata(metadata);
+
+        return messageRepository.save(message);
+    }
 }
