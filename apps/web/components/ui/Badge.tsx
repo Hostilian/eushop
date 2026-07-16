@@ -70,11 +70,17 @@ export function VerifiedPurchaseBadge() {
 /**
  * Renders an EU allergen label for one of the 14 regulated allergens.
  * Used in food listings to satisfy EU Food Information Regulation (EU FIR 1169/2011).
+ *
+ * WCAG 1.4.1: Must not rely on colour alone. The aria-label provides a full
+ * text alternative for screen readers. The warning icon is decorative (aria-hidden).
+ * WCAG 1.3.1: The role="img" + aria-label pattern ensures the allergen name is
+ * announced even if CSS is disabled.
  */
 export function AllergenBadge({ allergen }: { allergen: string }) {
   return (
     <Badge variant="allergen" size="sm">
-      ⚠ {allergen}
+      <span aria-hidden="true">⚠</span>
+      <span aria-label={`Contains allergen: ${allergen}`}>{allergen}</span>
     </Badge>
   );
 }

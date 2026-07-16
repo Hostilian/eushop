@@ -1,0 +1,31 @@
+---
+description: Launch prep, security, and testing rules
+globs: [".github/**", "apps/web/__tests__/**", "apps/web/next.config.js"]
+alwaysApply: false
+---
+
+# Launch Rules
+
+## Security
+
+- Stripe webhook handlers MUST verify the signature on every incoming event.
+- `next.config.js` must NOT have `ignoreBuildErrors: true` or
+  `ignoreDuringBuilds: true` in production builds.
+- No secrets in code. Use environment variables only.
+- PCI-DSS scope: card data must never touch EUshop servers. Use Stripe Elements
+  or Stripe Checkout only. Verify this holds after any Connect changes.
+
+## Testing requirements (Phase 4.3)
+
+Compliance engine tests are the highest priority. Required fixture tests:
+- DAC7: exactly 30 transactions (excluded), 31 (reportable)
+- DAC7: exactly €2,000 consideration (excluded), €2,001 (reportable)
+- VAT: known rate per destination country (DE=7%, IE=0%, DK=25%)
+- Allergen filter: item with allergen excluded when filter active
+
+## SEO (Phase 4.1)
+
+- JSON-LD structured data must NOT repeat unverified compliance claims.
+- Use Next.js Metadata API (or `next/head` for Pages Router) consistently.
+- `hreflang` tags required for language/locale variants.
+- Canonical URLs required for currency/locale variants of the same product.

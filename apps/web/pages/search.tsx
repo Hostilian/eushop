@@ -361,8 +361,11 @@ export default function SearchPage() {
           </>
         ) : (
           <div className="text-center py-16 bg-white dark:bg-gray-900 border border-gray-150 dark:border-gray-800 rounded-3xl p-8">
-            <p className="text-gray-500 dark:text-gray-400 text-lg mb-6">
-              No foods found for the current query or filters.
+            <p className="text-gray-500 dark:text-gray-400 text-lg mb-2">
+              No results match your filters.
+            </p>
+            <p className="text-sm text-gray-400 dark:text-gray-500 mb-6">
+              Try removing a filter — for example, clear the allergen exclusion or broaden the country.
             </p>
             <Button
               variant="primary"

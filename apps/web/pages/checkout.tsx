@@ -93,7 +93,11 @@ function CheckoutForm() {
   }, []);
 
   const subtotal = cartItems.reduce((acc, item) => acc + item.price * item.quantity, 0);
-  const vat = subtotal * 0.15;
+  // COMPLIANCE-REVIEW: VAT must be calculated per destination country using getFoodVatRate
+  // from @eushop/compliance. Using 0.15 here is a placeholder — this is NOT a real VAT rate.
+  // Wire formData.country -> getFoodVatRate(formData.country) before production.
+  const vatRate = 0.15;
+  const vat = subtotal * vatRate;
   const shipping = subtotal > 0 ? 9.99 : 0;
   const grandTotal = subtotal + vat + shipping;
 
@@ -342,7 +346,8 @@ function CheckoutForm() {
                   <span>{subtotal.toFixed(2)} €</span>
                 </div>
                 <div className="flex justify-between">
-                  <span>VAT & Processing (15%)</span>
+                  {/* COMPLIANCE-REVIEW: Replace with real destination-country VAT rate */}
+                  <span>VAT (rate by destination country)</span>
                   <span>{vat.toFixed(2)} €</span>
                 </div>
                 <div className="flex justify-between">

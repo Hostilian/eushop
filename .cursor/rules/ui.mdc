@@ -1,0 +1,41 @@
+---
+description: UI/UX and accessibility rules for EUshop
+globs: ["apps/web/components/**", "apps/web/pages/**", "apps/mobile/screens/**"]
+alwaysApply: false
+---
+
+# UI/UX Rules
+
+## Accessibility (WCAG 2.2 AA target)
+
+- Every allergen icon/badge MUST have an `aria-label` describing the allergen.
+  Never rely on colour or shape alone (WCAG 1.4.1).
+- Decorative emoji must have `aria-hidden="true"`.
+- All interactive elements need visible focus indicators.
+- Respect `prefers-reduced-motion` for animations.
+- Form errors must be announced to assistive tech (use `role="alert"` or
+  `aria-live="polite"`), not just shown visually.
+
+## Copy standards (Phase 3.5)
+
+- Active voice, plain verbs, sentence case.
+- Empty states must explain what happened AND how to fix it.
+  BAD: "No compliant foods found"
+  GOOD: "No results match your filters — try removing the allergen exclusion."
+- Never use regulation acronyms (DSA, KYBC, OSS, DAC7) as marketing copy in
+  hero banners or product descriptions. State the plain-language benefit once.
+
+## Trust signals
+
+- "Verified EU Trader" badge renders ONLY when `seller.kycVerified === true`.
+  Never render it from a static asset or hardcoded prop.
+- PDO/PGI/TSG badges render ONLY when `product.qualitySchemeVerified === true`.
+- "Sold by [Name]" is a first-class persistent element, not a footnote.
+
+## Fake compliance UI (Phase 1.0 — do not re-introduce)
+
+The following patterns are banned:
+- Static green ticks for compliance items that aren't actually verified.
+- "EU-Wallet Gateway", "OSS Tax Ledger", "LOGLEDGER_SYNC_OK" style fake-terminal copy.
+- Meta descriptions or og:description claiming "DSA-compliant" or "VAT-transparent"
+  without those systems being live and legally verified.

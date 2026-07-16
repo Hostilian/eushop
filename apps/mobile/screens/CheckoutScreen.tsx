@@ -41,8 +41,6 @@ export default function CheckoutScreen({ navigation, route }: any) {
       contentContainerStyle={styles.contentContainer}
       showsVerticalScrollIndicator={false}
     >
-      <Text style={styles.title}>Checkout</Text>
-
       {/* Order Summary */}
       <View style={styles.card}>
         <View style={styles.itemHeader}>
