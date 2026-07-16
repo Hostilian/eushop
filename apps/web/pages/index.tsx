@@ -7,6 +7,7 @@ import { foodAPI, FoodItem } from '../lib/services';
 import PredictiveSearch, { ParsedFilters } from '../components/PredictiveSearch';
 import DiscoveryCanvas from '../components/DiscoveryCanvas';
 import ZeroStepCheckout from '../components/ZeroStepCheckout';
+import Head from 'next/head';
 
 const fallbackTrendingFoods: FoodItem[] = [
   { id: '1', name: 'Belgian Chocolates', country: 'Belgium', price: 24.99, description: 'Fine artisanal chocolates with creamy hazelnut fillings.', sellerId: 'seller-be' },
@@ -90,6 +91,12 @@ export default function Home() {
 
   return (
     <PageWrapper>
+      <Head>
+        <title>EUshop — Pan-European Artisanal Food Marketplace</title>
+        <meta name="description" content="Discover specialty foods from independent producers across Europe." />
+        <meta name="robots" content="index, follow" />
+        <link rel="canonical" href="https://hostilian.github.io/eushop/" />
+      </Head>
       {/* Hero */}
       <section className="relative overflow-hidden py-20 px-6 sm:px-12 rounded-[40px] bg-gradient-to-br from-brand-green to-slate-900 text-white border border-brand-green/20 shadow-2xl mb-16 text-center animate-slide-up">
         <div className="absolute inset-0 bg-[radial-gradient(circle_at_top,_var(--tw-gradient-stops))] from-white/10 via-transparent to-transparent pointer-events-none" />
@@ -166,7 +173,7 @@ export default function Home() {
                 country={food.country}
                 imageUrl={getFoodImage(food.name)}
                 allergens={food.allergens || []}
-                seller={{ name: 'Producer', rating: 5.0, verified: true }}
+                seller={food.seller}
                 onAddToCart={handleAddToCart}
               />
             ))}

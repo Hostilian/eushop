@@ -170,7 +170,7 @@ export default function App({ Component, pageProps }: AppProps) {
 
         {/* Security headers via meta tags */}
         <meta name="referrer" content="strict-origin-when-cross-origin" />
-        <meta name="robots" content="index, follow" />
+        <meta name="robots" content="noindex, follow" />
         <meta name="frame-options" content="DENY" />
       </Head>
 
