@@ -348,7 +348,7 @@ export default function FoodDetailPage() {
               </div>
             )}
 
-            {/* Add to cart */}
+            {/* Action buttons */}
             <div className="flex items-center gap-3">
               <div className="flex items-center border border-gray-200 dark:border-gray-700 rounded-xl overflow-hidden bg-gray-50 dark:bg-gray-950">
                 <button
@@ -371,6 +371,17 @@ export default function FoodDetailPage() {
               >
                 {addingToCart ? 'Adding…' : `Add to cart — €${(food.price * quantity).toFixed(2)}`}
               </button>
+            </div>
+
+            {/* Message Seller Button */}
+            <div className="mt-4">
+              <StartConversationButton
+                sellerId={food.seller.id}
+                sellerName={food.seller.name}
+                foodId={food.id}
+                foodName={food.name}
+                className="w-full bg-white text-brand-dark border border-gray-200 hover:bg-gray-50 py-3 rounded-xl font-bold transition text-sm"
+              />
             </div>
           </div>
         </div>
