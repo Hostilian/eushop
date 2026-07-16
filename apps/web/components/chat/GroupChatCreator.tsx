@@ -28,6 +28,11 @@ export const GroupChatCreator: React.FC<GroupChatCreatorProps> = ({
   const [error, setError] = useState<string | null>(null);
 
   const handleCreateGroup = async () => {
+    if (!user) {
+      setError('Please sign in before creating a group.');
+      return;
+    }
+
     if (!groupName.trim()) {
       setError('Group name is required');
       return;
@@ -46,8 +51,8 @@ export const GroupChatCreator: React.FC<GroupChatCreatorProps> = ({
       const groupConversation = await chatService.createGroupConversation({
         name: groupName.trim(),
         description: groupDescription.trim(),
-        participantIds: [user?.id, ...selectedUsers.map(u => u.id)],
-        createdBy: user?.id,
+        participantIds: [user.id, ...selectedUsers.map(u => u.id)],
+        createdBy: user.id,
       });
 
       if (groupConversation) {
@@ -92,6 +97,7 @@ export const GroupChatCreator: React.FC<GroupChatCreatorProps> = ({
               Group Name *
             </label>
             <Input
+              label="Group name"
               id="groupName"
               type="text"
               value={groupName}
@@ -122,7 +128,7 @@ export const GroupChatCreator: React.FC<GroupChatCreatorProps> = ({
             <UserSearch
               onSelect={handleUserSelect}
               selectedUsers={selectedUsers}
-              excludeUserIds={[user?.id]}
+              excludeUserIds={user ? [user.id] : []}
               placeholder="Search users to add to group"
             />
 

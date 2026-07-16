@@ -111,7 +111,9 @@ export const MessageList: React.FC<MessageListProps> = ({
 
   // Scroll to bottom when messages change
   useEffect(() => {
-    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+    if (typeof messagesEndRef.current?.scrollIntoView === 'function') {
+      messagesEndRef.current.scrollIntoView({ behavior: "smooth" });
+    }
     if (messages.length > 0 && onNewMessage) {
       onNewMessage();
     }
@@ -167,6 +169,20 @@ export const MessageList: React.FC<MessageListProps> = ({
             key={message.id}
             message={message}
             isCurrentUser={message.sender.id === user?.id}
+            onEdit={(newContent) => {
+              setMessages((previous) =>
+                previous.map((item) =>
+                  item.id === message.id
+                    ? { ...item, content: newContent }
+                    : item
+                )
+              );
+            }}
+            onDelete={() => {
+              setMessages((previous) =>
+                previous.filter((item) => item.id !== message.id)
+              );
+            }}
             id={`message-${message.id}`}
           />
         ))}
@@ -179,8 +195,9 @@ export const MessageList: React.FC<MessageListProps> = ({
           </div>
         )}
 
-      <div ref={messagesEndRef} />
-    </div>
+        <div ref={messagesEndRef} />
+      </div>
+    </>
   );
 };
 
@@ -188,7 +205,9 @@ const MessageItem: React.FC<{
   message: Message;
   isCurrentUser: boolean;
   id?: string;
-}> = ({ message, isCurrentUser, id }) => {
+  onEdit: (newContent: string) => void;
+  onDelete: () => void;
+}> = ({ message, isCurrentUser, id, onEdit, onDelete }) => {
   const formatTime = (dateString: string) => {
     const date = new Date(dateString);
     return date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
@@ -206,7 +225,7 @@ const MessageItem: React.FC<{
         <div className="flex justify-between items-start">
           <div className="flex-1">
             <div className="text-sm whitespace-pre-wrap break-words">
-              {message.content.replace(/\\[Attachment: .+?\\\]\(.+?\)/g, '').trim()}
+              {message.content.replace(/\[Attachment: .+?\]\(.+?\)/g, '').trim()}
             </div>
             <MessageAttachment content={message.content} />
             <div className="flex justify-between items-center mt-1">
@@ -223,14 +242,8 @@ const MessageItem: React.FC<{
             <MessageActions
               message={message}
               isCurrentUser={isCurrentUser}
-              onEdit={(newContent) => {
-                setMessages(prev => prev.map(msg =>
-                  msg.id === message.id ? { ...msg, content: newContent } : msg
-                ));
-              }}
-              onDelete={() => {
-                setMessages(prev => prev.filter(msg => msg.id !== message.id));
-              }}
+              onEdit={onEdit}
+              onDelete={onDelete}
             />
           </div>
         </div>

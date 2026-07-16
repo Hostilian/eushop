@@ -69,7 +69,7 @@ export default function Home() {
     }
   };
 
-  const handleSearch = (query: string, filters: ParsedFilters) => {
+  const handleSearch = (_query: string, filters: ParsedFilters) => {
     setIsLoadingSearch(true);
     setTimeout(() => {
       let results = [...trendingFoods];

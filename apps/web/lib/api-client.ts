@@ -7,7 +7,7 @@ const generateCorrelationId = (): string => {
   return `web-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
 };
 
-const apiClient: AxiosInstance = axios.create({
+export const apiClient: AxiosInstance = axios.create({
   baseURL: API_CONFIG.BASE_URL,
   timeout: API_CONFIG.TIMEOUT,
   headers: {

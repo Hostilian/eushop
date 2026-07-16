@@ -1,15 +1,22 @@
 package com.eushop.core.service;
 
 import java.time.LocalDateTime;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 
 import com.eushop.core.entity.Conversation;
+import com.eushop.core.entity.ConversationParticipant;
 import com.eushop.core.entity.Message;
 import com.eushop.core.entity.User;
+import com.eushop.core.repository.ConversationParticipantRepository;
 import com.eushop.core.repository.ConversationRepository;
 import com.eushop.core.repository.MessageRepository;
 import com.eushop.core.repository.UserRepository;
@@ -59,7 +66,7 @@ public class ConversationService {
         return conversationRepository.findActiveConversationsByUser(userId);
     }
 
-    public Conversation addMessage(String conversationId, String senderId, String content) {
+    public Message addMessage(String conversationId, String senderId, String content) {
         Optional<Conversation> convOpt = conversationRepository.findById(conversationId);
         Optional<User> senderOpt = userRepository.findById(senderId);
 
@@ -69,12 +76,13 @@ public class ConversationService {
 
         Conversation conversation = convOpt.get();
         Message message = new Message(conversation, senderOpt.get(), content);
-        messageRepository.save(message);
+        Message savedMessage = messageRepository.save(message);
 
         // Update conversation's last message
         conversation.setLastMessage(content);
         conversation.setLastMessageAt(LocalDateTime.now());
-        return conversationRepository.save(conversation);
+        conversationRepository.save(conversation);
+        return savedMessage;
     }
 
     public List<Message> getConversationHistory(String conversationId) {

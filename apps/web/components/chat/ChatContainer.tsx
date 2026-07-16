@@ -152,12 +152,12 @@ export const ChatContainer: React.FC<ChatContainerProps> = ({
             )}
 
             <MessageList
-              conversationId={selectedConversationId}
+              conversationId={selectedConversation.id}
               onNewMessage={handleNewMessage}
             />
 
             <MessageInput
-              conversationId={selectedConversationId}
+              conversationId={selectedConversation.id}
               onMessageSent={handleNewMessage}
             />
           </>

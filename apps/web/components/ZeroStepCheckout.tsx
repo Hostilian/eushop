@@ -3,7 +3,7 @@ import { FoodItem, orderAPI } from '../lib/services';
 // COMPLIANCE-REVIEW: VAT rate here uses DE as a placeholder until real address
 // collection is wired in. Do NOT treat this as production VAT logic.
 // getFoodVatRate must receive the buyer's actual destination country at checkout.
-import { getFoodVatRate } from '../../packages/compliance/src/vat';
+import { getFoodVatRate } from '@eushop/compliance';
 
 interface ZeroStepCheckoutProps {
   product: FoodItem | null;
@@ -26,6 +26,7 @@ export default function ZeroStepCheckout({ product, isOpen, onClose }: ZeroStepC
       }, 0);
       return () => clearTimeout(timer);
     }
+    return undefined;
   }, [isOpen, product]);
 
   if (!isOpen || !product) return null;

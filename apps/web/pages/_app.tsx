@@ -3,6 +3,7 @@ import Head from 'next/head';
 import React, { Component, ErrorInfo, ReactNode } from 'react';
 import '../globals.css';
 import CookieBanner from '../components/CookieBanner';
+import { AuthProvider } from '../lib/auth';
 
 // ─── Global Error Boundary ────────────────────────────────────────────────────
 // Catches any unhandled React errors and renders a user-friendly fallback
@@ -176,10 +177,12 @@ export default function App({ Component, pageProps }: AppProps) {
 
       <ThemeInitializer />
 
-      <GlobalErrorBoundary>
-        <Component {...pageProps} />
-        <CookieBanner />
-      </GlobalErrorBoundary>
+      <AuthProvider>
+        <GlobalErrorBoundary>
+          <Component {...pageProps} />
+          <CookieBanner />
+        </GlobalErrorBoundary>
+      </AuthProvider>
     </>
   );
 }
