@@ -11,6 +11,9 @@ import { websocketService } from '../../lib/services/websocketService';
 import { Button } from '../ui/Button';
 import { Skeleton } from '../ui/Skeleton';
 import { Alert } from '../ui/Alert';
+import { GroupChatCreator } from './GroupChatCreator';
+import { GroupChatInfo } from './GroupChatInfo';
+import { Plus } from 'lucide-react';
 
 interface ChatContainerProps {
   initialConversationId?: string;
@@ -27,6 +30,8 @@ export const ChatContainer: React.FC<ChatContainerProps> = ({
   const [selectedConversation, setSelectedConversation] = useState<Conversation | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [showGroupCreator, setShowGroupCreator] = useState(false);
+  const [showGroupInfo, setShowGroupInfo] = useState(false);
 
   const handleSelectConversation = async (conversationId: string) => {
     try {
@@ -57,14 +62,33 @@ export const ChatContainer: React.FC<ChatContainerProps> = ({
     <div className="flex h-[600px] max-h-[80vh] w-full max-w-6xl mx-auto bg-white rounded-xl shadow-lg overflow-hidden">
       {/* Conversation List */}
       <div className="w-1/3 border-r border-gray-200 overflow-y-auto">
-        <div className="p-4 border-b border-gray-200">
+        <div className="p-4 border-b border-gray-200 flex justify-between items-center">
           <h2 className="text-lg font-semibold text-gray-900">Conversations</h2>
+          <Button
+            variant="ghost"
+            size="icon"
+            onClick={() => setShowGroupCreator(true)}
+            aria-label="Create group chat"
+          >
+            <Plus className="h-5 w-5" />
+          </Button>
         </div>
         <ConversationList
           onSelectConversation={handleSelectConversation}
           selectedConversationId={selectedConversationId}
         />
       </div>
+
+      {/* Group Chat Creator */}
+      {showGroupCreator && (
+        <GroupChatCreator
+          onGroupCreated={(groupId) => {
+            setShowGroupCreator(false);
+            handleSelectConversation(groupId);
+          }}
+          onClose={() => setShowGroupCreator(false)}
+        />
+      )}
 
       {/* Message Area */}
       <div className="flex-1 flex flex-col">
@@ -84,15 +108,30 @@ export const ChatContainer: React.FC<ChatContainerProps> = ({
             <div className="p-4 border-b border-gray-200 flex justify-between items-center">
               <div>
                 <h3 className="font-semibold text-gray-900">
-                  {selectedConversation.seller.name}
+                  {selectedConversation.isGroup
+                    ? selectedConversation.groupName
+                    : selectedConversation.seller.name}
                 </h3>
-                {selectedConversation.food && (
+                {selectedConversation.isGroup ? (
+                  <p className="text-sm text-gray-500">
+                    Group conversation with {selectedConversation.participants?.length || 0} members
+                  </p>
+                ) : selectedConversation.food && (
                   <p className="text-sm text-gray-500">
                     {selectedConversation.food.name}
                   </p>
                 )}
               </div>
               <div className="flex items-center gap-4">
+                {selectedConversation.isGroup && (
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={() => setShowGroupInfo(true)}
+                  >
+                    Group Info
+                  </Button>
+                )}
                 <WebSocketStatus />
                 <Button
                   variant="ghost"
@@ -103,6 +142,14 @@ export const ChatContainer: React.FC<ChatContainerProps> = ({
                 </Button>
               </div>
             </div>
+
+            {/* Group Chat Info */}
+            {showGroupInfo && selectedConversation && (
+              <GroupChatInfo
+                conversationId={selectedConversation.id}
+                onClose={() => setShowGroupInfo(false)}
+              />
+            )}
 
             <MessageList
               conversationId={selectedConversationId}
