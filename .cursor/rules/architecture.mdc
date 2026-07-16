@@ -1,0 +1,22 @@
+---
+description: Architecture and monorepo structure rules for EUshop
+globs: ["apps/**", "packages/**", "services/**"]
+alwaysApply: true
+---
+
+# Architecture Rules
+
+See root `AGENTS.md` for the full brief.
+
+## Critical constraints
+
+- Anything regulatory (VAT rates, allergen lists, DAC7 thresholds) MUST come
+  from `packages/compliance/src/`. Never hardcode these values in `apps/`.
+- Shared TypeScript types live in `packages/types/src/`. Do not duplicate
+  product/seller/order shapes between web and mobile.
+- `apps/web` uses Next.js Pages Router with `output: 'export'` for GitHub Pages.
+  Do not introduce App Router patterns without migrating the whole app.
+- Server-side secrets (Stripe secret key, Auth0 client secret) must never appear
+  in client bundles. Use server actions or API routes only.
+- Leave `// COMPLIANCE-REVIEW:` comments on any line that implements regulatory
+  logic that needs legal verification before going live.

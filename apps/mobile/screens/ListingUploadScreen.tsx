@@ -111,7 +111,6 @@ export default function ListingUploadScreen({ navigation }: any) {
 
   return (
     <ScrollView style={styles.container} contentContainerStyle={styles.contentContainer} showsVerticalScrollIndicator={false}>
-      <Text style={styles.title}>List New Artisanal Food</Text>
       <Text style={styles.subtitle}>List your specialty item. The allergens registry is mandatory under Regulation EU 1169/2011.</Text>
 
       {/* Photo Capture */}

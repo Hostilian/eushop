@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import fs from 'fs';
 import path from 'path';
+import { PageWrapper } from '../components/layout/PageWrapper';
 
 interface DocsProps {
   statusContent: string;
@@ -382,25 +383,9 @@ export default function DeveloperDocs({ statusContent, devContent, auditContent,
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 text-gray-800 font-sans flex flex-col">
-      <nav className="bg-white border-b border-gray-150 py-4 px-6 shadow-sm sticky top-0 z-50">
-        <div className="max-w-7xl mx-auto flex justify-between items-center">
-          <Link href="/" className="text-2xl font-extrabold text-brand-green flex items-center gap-2">
-            <span className="text-secondary">🌿</span> EUshop
-          </Link>
-          <div className="flex items-center gap-3">
-            <span className="text-xs font-bold px-2.5 py-1 bg-blue-50 border border-blue-100 text-blue-700 rounded-full">
-              Developer Portal
-            </span>
-            <Link href="/" className="text-xs font-bold text-gray-500 hover:text-brand-green transition">
-              Storefront
-            </Link>
-          </div>
-        </div>
-      </nav>
-
+    <PageWrapper>
       {/* Workspace split screen layout */}
-      <div className="flex-1 max-w-7xl w-full mx-auto flex flex-col md:flex-row items-stretch">
+      <div className="flex-1 max-w-7xl w-full mx-auto flex flex-col md:flex-row items-stretch py-6">
         {/* Sidebar Nav */}
         <aside className="w-full md:w-64 border-r border-gray-200 bg-white p-6 shrink-0 space-y-6">
           <div>
@@ -485,7 +470,7 @@ export default function DeveloperDocs({ statusContent, devContent, auditContent,
           </article>
         </main>
       </div>
-    </div>
+    </PageWrapper>
   );
 }
 

@@ -70,7 +70,7 @@ const TabButton = ({ id, label, count, activeTab, onClick }: TabButtonProps) => 
   <button
     onClick={() => onClick(id)}
     className={`px-4 py-2.5 font-bold text-xs uppercase tracking-wider transition ${
-      activeTab === id ? 'border-b-2 border-primary text-primary' : 'text-gray-400 hover:text-gray-700'
+      activeTab === id ? 'border-b-2 border-brand-green text-brand-green' : 'text-gray-400 hover:text-gray-700'
     }`}
   >
     {label} ({count})
@@ -288,7 +288,7 @@ export default function AdminDashboard() {
       <PageWrapper>
         <div className="py-24 flex items-center justify-center">
           <div className="text-center">
-            <div className="inline-block animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
+            <div className="inline-block animate-spin rounded-full h-8 w-8 border-b-2 border-brand-green"></div>
             <p className="text-gray-500 dark:text-gray-400 mt-4">Loading system logs...</p>
           </div>
         </div>

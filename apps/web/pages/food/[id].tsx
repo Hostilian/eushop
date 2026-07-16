@@ -237,7 +237,7 @@ export default function FoodDetailPage() {
       <PageWrapper>
         <div className="py-24 flex items-center justify-center">
           <div className="text-center">
-            <div className="inline-block animate-spin rounded-full h-8 w-8 border-b-2 border-primary mb-4"></div>
+            <div className="inline-block animate-spin rounded-full h-8 w-8 border-b-2 border-brand-green mb-4"></div>
             <p className="text-gray-600 dark:text-gray-400">Loading food details...</p>
             <p className="text-gray-400 dark:text-gray-500 text-sm mt-2">This may take a moment</p>
             <div className="mt-4">
@@ -299,7 +299,7 @@ export default function FoodDetailPage() {
             <div className="mb-8">
               <h1 className="text-4xl font-extrabold text-brand-dark mb-2 font-display">{food.name}</h1>
               <div className="flex items-baseline gap-4">
-                <span className="text-3xl font-extrabold text-primary">€{food.price.toFixed(2)}</span>
+                <span className="text-3xl font-extrabold text-brand-green">€{food.price.toFixed(2)}</span>
                 {food.finderFee && (
                   <span className="text-gray-600">+€{food.finderFee.toFixed(2)} finder's fee</span>
                 )}
@@ -416,7 +416,7 @@ export default function FoodDetailPage() {
                 </button>
                 <button
                   onClick={handleContactSeller}
-                  className="flex-1 border-2 border-primary text-primary py-3 rounded-xl font-semibold hover:bg-gray-50 transition"
+                  className="flex-1 border-2 border-brand-green text-brand-green py-3 rounded-xl font-semibold hover:bg-gray-50 transition"
                 >
                   💬 Message Seller
                 </button>

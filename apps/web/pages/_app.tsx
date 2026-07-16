@@ -160,11 +160,12 @@ export default function App({ Component, pageProps }: AppProps) {
         <meta charSet="UTF-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0" />
         <meta httpEquiv="X-UA-Compatible" content="IE=edge" />
-        <meta name="description" content="EUshop — Europe's premier artisanal food marketplace. Discover verified sellers across the EU Single Market." />
+        <meta name="description" content="EUshop — Pan-European artisanal food marketplace. Buy directly from ID-verified independent producers across the EU Single Market." />
 
         {/* Open Graph */}
         <meta property="og:title" content="EUshop — Pan-European Artisanal Food Marketplace" />
-        <meta property="og:description" content="Discover rare artisanal delicacies from verified EU sellers. DSA-compliant, VAT-transparent, allergen-disclosed." />
+        {/* COMPLIANCE-REVIEW: og:description must not claim compliance status that hasn't been legally verified. */}
+        <meta property="og:description" content="Discover rare artisanal delicacies from independent EU producers. Every seller is ID-verified before listing." />
         <meta property="og:type" content="website" />
 
         {/* Security headers via meta tags */}

@@ -32,7 +32,6 @@ export default function GDPRScreen() {
 
   return (
     <ScrollView style={styles.container} contentContainerStyle={styles.contentContainer} showsVerticalScrollIndicator={false}>
-      <Text style={styles.title}>GDPR Privacy Center</Text>
       <Text style={styles.subtitle}>EUshop fully supports your rights under the EU General Data Protection Regulation (GDPR).</Text>
 
       {/* Rights summary card */}

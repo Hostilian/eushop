@@ -1,50 +1,19 @@
-# EU Specialty Food Marketplace - Copilot Instructions
+# EUshop — GitHub Copilot Instructions
 
-<!-- last verified: 2026-07-11 (against the actual tree, not older docs) -->
+Full brief: see [`AGENTS.md`](../../AGENTS.md) at the repo root.
 
-## Project Overview
-This is a full-stack marketplace platform for discovering EU specialty foods. Monorepo built around a **Spring Boot modular monolith** (not microservices) with a Next.js web frontend and an Expo React Native mobile shell. There is no live API gateway, messaging service, Elasticsearch, GraphQL, or Terraform — those were consolidated out for the MVP (see `STATUS.md`, "Removed / Consolidated for MVP").
+## Quick reference
 
-## Directory Structure
-- `apps/web/` - Next.js web application (Pages Router, TypeScript, Tailwind; dev port 3002)
-- `apps/mobile/` - React Native + Expo mobile app (**frozen for the pre-seed MVP**)
-- `services/core-service/` - Spring Boot modular monolith (Java 17; port 3001). Owns users, foods, orders, reviews, conversations/chat, notifications, and payments.
-- `db/` - Sequentially numbered SQL migrations and seed data (never edit a shipped migration; add the next number)
-- `k8s/` - Kubernetes manifests (`core-service-deployment.yml`, `ingress.yml`)
-- `docs/` - API and Auth0 setup docs
+**Stack:** Next.js (Pages Router, `apps/web`) + Expo (`apps/mobile`) + Spring Boot (`services/core-service`)
 
-> Note: `services/api-gateway/` was removed (responsibilities folded into `services/core-service`). There is no messaging service, Elasticsearch, GraphQL, or Terraform in the live runtime.
+**Critical rules:**
+1. VAT rates, allergen lists, and DAC7 thresholds come from `packages/compliance/` only — never hardcode them.
+2. Shared product/seller/order types come from `packages/types/` only.
+3. Leave `// COMPLIANCE-REVIEW:` on any line implementing regulatory logic.
+4. "Sold by [Seller Name]" must be a persistent, non-decorative UI element on every product and cart line (DSA Art. 30(7)).
+5. `AllergenBadge` must always include `aria-label` — never colour alone (WCAG 1.4.1).
+6. No secrets in code. No fake compliance badges. No unverified compliance claims in copy.
 
-## Tech Stack
-- Frontend: Next.js 15, React 19 (web); React Native 0.76 + Expo 51 (mobile); TypeScript, Tailwind CSS
-- Backend: Spring Boot (Java 17), PostgreSQL 16 (+ pg_trgm), Redis 7
-- Auth: Auth0 (JWT / session verification) — **mock-token path has been removed; Auth0 is now the only provider**
-- Payments: Stripe Connect (webhook-signature-verified)
-- Deployment: Docker Compose (local), Kubernetes (`k8s/`)
+## Path-specific rules
 
-## Key Development Rules
-1. Use pnpm workspaces for monorepo management (workspace members: `apps/*` and `services/core-service` only — see `pnpm-workspace.yaml`)
-2. TypeScript in strict mode for web/mobile
-3. PostgreSQL for transactional data; Redis for sessions/caching; full-text search via PostgreSQL trigram indexing inside `FoodRepository`
-4. RESTful API with cookie/session auth (no GraphQL, no API gateway)
-5. Buyer-seller chat is REST-based (client-side polling), stored relationally in PostgreSQL
-6. Always add a new sequential migration for database changes; keep it consistent with GDPR erasure/export and DSA/DAC7 compliance fields
-
-## Setup Commands
-```bash
-cp .env.example .env.local
-docker-compose up -d      # PostgreSQL + Redis
-pnpm install
-pnpm dev
-```
-
-## Testing Standards
-- Unit tests for services and utilities; integration tests (MockMvc) for API endpoints; E2E for critical user flows
-- Prioritize the highest-risk untested paths: Stripe webhook verification + order state transitions, KYBC/SELLER authorization gating, GDPR erasure/export, allergen data integrity
-- Verify tests are actually wired into CI before relying on enforcement (current automated footprint is thin)
-
-## Naming Conventions
-- Files: kebab-case (e.g., user-service.ts)
-- Classes: PascalCase (e.g., UserController)
-- Constants: SCREAMING_SNAKE_CASE
-- Variables/functions: camelCase
+See `.github/instructions/` for scoped rules per directory.

@@ -84,13 +84,15 @@ function SellerDashboard({ user }: { user: User }) {
               <h2 className="text-lg font-bold text-brand-dark dark:text-white mb-4 font-display">Compliance Status</h2>
               <div className="space-y-4">
                 {[
-                  { title: 'DSA Article 30 (KYBC)', desc: 'Trade registration and self-certifications recorded.' },
-                  { title: 'DAC7 Tax Registration', desc: 'TIN registered. Automated reporting in development.' },
-                  { title: 'EU 1169/2011 Allergens', desc: 'Mandatory allergen disclosure active on all listings.' },
-                  { title: 'Food Traceability (EC 178/2002)', desc: 'Supplier and buyer record pipeline configured.' },
+                  { title: 'DSA Article 30 (KYBC)', desc: 'Trade registration and self-certifications recorded. Automated identity verification pending.', done: user.kycVerified },
+                  { title: 'DAC7 Tax Registration', desc: 'TIN registered. Automated annual reporting to EU tax authorities is in development.', done: !!user.taxId },
+                  { title: 'EU 1169/2011 Allergens', desc: 'Mandatory allergen disclosure required on all listings before publishing.', done: true },
+                  { title: 'Food Traceability (EC 178/2002)', desc: 'Supplier and buyer record pipeline configured.', done: false },
                 ].map(item => (
                   <div key={item.title} className="flex items-start gap-3">
-                    <span className="text-emerald-500 font-bold mt-0.5 shrink-0">✓</span>
+                    <span className={`font-bold mt-0.5 shrink-0 ${item.done ? 'text-emerald-500' : 'text-amber-400'}`}>
+                      {item.done ? '✓' : '○'}
+                    </span>
                     <div>
                       <h4 className="text-xs font-bold text-gray-800 dark:text-gray-200">{item.title}</h4>
                       <p className="text-[10px] text-gray-500 dark:text-gray-400 mt-0.5">{item.desc}</p>

@@ -1,0 +1,31 @@
+---
+description: Compliance logic rules — VAT, allergens, DAC7, DSA, GDPR
+globs: ["packages/compliance/**", "apps/web/pages/checkout*", "apps/web/pages/become-seller*", "apps/web/components/ZeroStepCheckout*"]
+alwaysApply: false
+---
+
+# Compliance Rules
+
+See root `AGENTS.md` §"Key compliance facts" for the full list.
+
+## Hard rules
+
+- VAT rates are NEVER hardcoded in component files. Always import `getFoodVatRate`
+  from `packages/compliance/src/vat.ts`.
+- DAC7 thresholds are NEVER hardcoded. Always import `DAC7_THRESHOLDS` from
+  `packages/compliance/src/vat.ts`.
+- The 14 EU allergens are NEVER hardcoded as string arrays in components. Always
+  import `EU_ALLERGENS_14` from `packages/compliance/src/allergens.ts`.
+- Every compliance-sensitive function must have a `// COMPLIANCE-REVIEW:` comment
+  explaining what a lawyer needs to verify before it goes live.
+- "Sold by [Seller Name]" must appear as a persistent, non-decorative element on
+  every product card and cart line (DSA Art. 30(7)).
+- AllergenBadge must always include an `aria-label` — never rely on colour or
+  icon alone (WCAG 1.4.1).
+
+## DSA suspension timing
+
+DAC7 and DSA share the same onboarding data collection but have DIFFERENT
+suspension clocks. Do not let the more lenient DAC7 grace period (~60 days)
+leak into DSA-covered enforcement (which requires *swift* suspension).
+Implement as two separate flags/timers.

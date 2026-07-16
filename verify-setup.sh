@@ -34,7 +34,6 @@ check_file() {
 
 check_dir "apps/web"
 check_dir "apps/mobile"
-check_dir "services/api-gateway"
 check_dir "services/core-service"
 check_dir "db/migrations"
 check_dir "db/seed"
@@ -75,15 +74,9 @@ check_file "apps/web/pages/terms.tsx"
 check_file "apps/web/pages/admin/dashboard.tsx"
 echo ""
 
-# Check 6: API Gateway routes
-echo "✓ Checking API Gateway setup..."
-check_file "services/api-gateway/src/index.ts"
-check_file "services/api-gateway/src/routes/auth.ts"
-check_file "services/api-gateway/src/routes/foods.ts"
-check_file "services/api-gateway/src/middleware/error-handler.ts"
-echo ""
+# (API Gateway consolidated into core-service for V20 relaunch)
 
-# Check 7: Database setup
+# Check 6: Database setup
 echo "✓ Checking database files..."
 check_file "db/migrations/001_initial_schema.sql"
 check_file "db/migrations/002_compliance_fields.sql"
@@ -93,16 +86,15 @@ check_file "db/scripts/migrate.js"
 check_file "db/scripts/seed.js"
 echo ""
 
-# Check 8: Documentation
+# Check 7: Documentation
 echo "✓ Checking documentation..."
 check_file "DEVELOPMENT.md"
-check_file "API.md"
 check_file "README.md"
 check_file "STATUS.md"
 check_file "docs/AUTH0_SETUP.md"
 echo ""
 
-# Check 9: Docker (optional)
+# Check 8: Docker (optional)
 echo "✓ Checking Docker..."
 if command -v docker &> /dev/null; then
   docker_version=$(docker --version)

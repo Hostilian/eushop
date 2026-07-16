@@ -103,7 +103,7 @@ export default function Home() {
             <span className="text-brand-gold">Delivered Pan-EU</span>
           </h1>
           <p className="text-sm sm:text-base text-gray-300 max-w-2xl mx-auto leading-relaxed">
-            Connect directly with verified independent producers across the EU Single Market. Strict allergen disclosure, KYBC seller onboarding, and transparent pricing on every listing.
+            Connect directly with ID-verified independent producers across the EU Single Market. Full allergen disclosure and transparent pricing on every listing.
           </p>
           <div className="flex justify-center gap-4 pt-4">
             <a href="#explore" className="px-6 py-3 border border-brand-gold bg-brand-gold text-brand-green hover:opacity-90 font-bold rounded-xl text-sm transition shadow-lg shadow-brand-gold/10">
@@ -255,24 +255,24 @@ export default function Home() {
         </h2>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
           <div className="p-6 bg-white dark:bg-gray-900 border border-gray-100 dark:border-gray-800 rounded-2xl">
-            <span className="text-2xl">⚖️</span>
+            <span className="text-2xl" aria-hidden="true">⚖️</span>
             <h3 className="text-sm font-bold text-brand-dark dark:text-white mt-4 mb-2">DSA — Seller Verification</h3>
             <p className="text-[11px] text-gray-500 dark:text-gray-400 leading-relaxed">
-              KYBC onboarding collects trade register number, VAT ID, and tax ID from all sellers before listings go live. Verification is currently reviewed manually; automated identity checks are in progress.
+              Every seller must provide trade register number, VAT ID, and tax ID before listings go live. Verification is currently reviewed manually; automated identity checks are in development.
             </p>
           </div>
           <div className="p-6 bg-white dark:bg-gray-900 border border-gray-100 dark:border-gray-800 rounded-2xl">
-            <span className="text-2xl">💶</span>
+            <span className="text-2xl" aria-hidden="true">💶</span>
             <h3 className="text-sm font-bold text-brand-dark dark:text-white mt-4 mb-2">DAC7 — Tax Reporting</h3>
             <p className="text-[11px] text-gray-500 dark:text-gray-400 leading-relaxed">
               Seller VAT numbers, TINs, and transaction records are collected and stored. Automated annual reporting to EU tax authorities is in development.
             </p>
           </div>
           <div className="p-6 bg-white dark:bg-gray-900 border border-gray-100 dark:border-gray-800 rounded-2xl">
-            <span className="text-2xl">🍎</span>
+            <span className="text-2xl" aria-hidden="true">🍎</span>
             <h3 className="text-sm font-bold text-brand-dark dark:text-white mt-4 mb-2">EU 1169/2011 — Allergens</h3>
             <p className="text-[11px] text-gray-500 dark:text-gray-400 leading-relaxed">
-              All listings require disclosure of the 14 EU-regulated allergens before publishing. Allergen data is displayed prominently on every product page.
+              All listings require disclosure of the 14 EU-regulated allergens before publishing. Allergen data is displayed on every product page.
             </p>
           </div>
         </div>
