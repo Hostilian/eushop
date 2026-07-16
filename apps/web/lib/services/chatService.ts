@@ -40,6 +40,7 @@ export interface Message {
   isRead: boolean;
   readAt?: string;
   createdAt: string;
+  reactions?: Record<string, number>;
 }
 
 export interface CreateConversationRequest {
@@ -195,6 +196,24 @@ class ChatService {
     } catch (error) {
       console.error('Failed to get unread count:', error);
       return 0;
+    }
+  }
+
+  /**
+   * Search messages in a conversation
+   * @param conversationId - Conversation ID
+   * @param query - Search query
+   * @returns Promise with matching messages
+   */
+  async searchMessages(conversationId: string, query: string): Promise<Message[]> {
+    try {
+      const response = await apiClient.get<ApiResponse<Message[]>>(
+        `/api/conversations/${conversationId}/messages/search?q=${encodeURIComponent(query)}`
+      );
+      return response.data.data || [];
+    } catch (error) {
+      console.error('Failed to search messages:', error);
+      return [];
     }
   }
 }
