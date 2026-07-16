@@ -16,7 +16,7 @@ interface FoodDetail {
   country: string;
   price: number;
   category: string;
-  seller: { id: string; name: string; rating: number; verified: boolean };
+  seller?: { id?: string; name?: string; rating?: number; verified?: boolean };
   dietaryRestrictions?: string[];
   allergens?: string[];
   images?: string[];
@@ -74,12 +74,12 @@ export default function FoodDetailPage() {
           country: sanitizeHTML(result.country || ''),
           price: Math.max(0, Number(result.price)),
           category: sanitizeHTML(result.category || ''),
-          seller: {
-            id: sanitizeHTML(result.seller?.id || ''),
-            name: sanitizeHTML(result.seller?.name || 'Independent Producer'),
-            rating: Math.min(5, Math.max(0, Number(result.seller?.rating) || 0)),
-            verified: Boolean(result.seller?.verified),
-          },
+          seller: result.seller ? {
+            id: sanitizeHTML(result.seller.id || ''),
+            name: result.seller.name ? sanitizeHTML(result.seller.name) : undefined,
+            rating: typeof result.seller.rating === 'number' ? Math.min(5, Math.max(0, result.seller.rating)) : undefined,
+            verified: result.seller.verified === true,
+          } : undefined,
           dietaryRestrictions: result.dietaryRestrictions?.map(sanitizeHTML).slice(0, 20) || [],
           allergens: result.allergens?.map(sanitizeHTML).slice(0, 20) || [],
           images: result.images?.filter((img: string) => img?.startsWith('/') || img?.startsWith('https://')).slice(0, 10) || [],
@@ -120,7 +120,7 @@ export default function FoodDetailPage() {
       if (idx > -1) {
         cart[idx].quantity = Math.min(100, cart[idx].quantity + quantity);
       } else {
-        cart.push({ id: food.id, name: food.name, country: food.country, price: food.price, quantity, sellerId: food.seller.id });
+        cart.push({ id: food.id, name: food.name, country: food.country, price: food.price, quantity, sellerId: food.seller?.id || '' });
       }
       localStorage.setItem('cart', JSON.stringify(cart.slice(0, 50)));
       window.dispatchEvent(new Event('cart-updated'));
@@ -143,8 +143,7 @@ export default function FoodDetailPage() {
       '@type': 'Offer',
       priceCurrency: 'EUR',
       price: food.price.toFixed(2),
-      availability: 'https://schema.org/InStock',
-      seller: { '@type': 'Organization', name: food.seller.name },
+      ...(food.seller?.name ? { seller: { '@type': 'Organization', name: food.seller.name } } : {}),
     },
   } : null;
 
@@ -207,7 +206,7 @@ export default function FoodDetailPage() {
           <div className="bg-white dark:bg-gray-900 rounded-2xl border border-gray-100 dark:border-gray-800 p-8 flex items-center justify-center aspect-square">
             {food.images && food.images[0] ? (
               // eslint-disable-next-line @next/next/no-img-element
-              <img src={food.images[0]} alt={`Photo of ${food.name}`} className="w-full h-full object-cover rounded-xl" />
+              <img src={food.images[0]} alt={`Photo of ${food.name}`} className="w-full h-full object-cover rounded-xl" onError={(event) => { event.currentTarget.style.display = 'none'; }} />
             ) : (
               <span className="text-8xl" aria-label={`${food.category || 'food'} product`} role="img">
                 {food.category?.toLowerCase().includes('chocolate') ? '🍫' :
@@ -248,8 +247,8 @@ export default function FoodDetailPage() {
             {/* DSA Art. 30(7): Sold by — persistent, non-decorative */}
             <div className="flex items-center gap-2 p-3 bg-gray-50 dark:bg-gray-900 rounded-xl border border-gray-100 dark:border-gray-800">
               <span className="text-xs text-gray-500 dark:text-gray-400">Sold by</span>
-              <span className="text-sm font-bold text-gray-800 dark:text-gray-200">{food.seller.name}</span>
-              {food.seller.verified && <VerifiedSellerBadge />}
+              <span className="text-sm font-bold text-gray-800 dark:text-gray-200">{food.seller?.name || 'Seller information pending'}</span>
+              {food.seller?.verified && <VerifiedSellerBadge />}
             </div>
 
             {/* Description */}
@@ -374,15 +373,15 @@ export default function FoodDetailPage() {
             </div>
 
             {/* Message Seller Button */}
-            <div className="mt-4">
+            {food.seller?.id && <div className="mt-4">
               <StartConversationButton
-                sellerId={food.seller.id}
-                sellerName={food.seller.name}
+                sellerId={food.seller?.id || ''}
+                sellerName={food.seller?.name || 'Seller'}
                 foodId={food.id}
                 foodName={food.name}
                 className="w-full bg-white text-brand-dark border border-gray-200 hover:bg-gray-50 py-3 rounded-xl font-bold transition text-sm"
               />
-            </div>
+            </div>}
           </div>
         </div>
       </div>
