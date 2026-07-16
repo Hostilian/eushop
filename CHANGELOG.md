@@ -1,5 +1,13 @@
 # Changelog
 
+## Unreleased — 2026-07-16 truth and setup reliability
+
+- Reconciled scoped documentation with active web, backend, mobile, database, and GitHub Pages paths.
+- Standardized local ports/defaults and added setup preflight diagnostics.
+- Replaced semicolon-splitting migrations with a checksummed, manifest-driven, lock-protected transactional runner with bounded connection timeout.
+- Excluded incompatible chat drafts from standard migrations while preserving them for redesign and compliance review.
+- Made development fixtures opt-in, transactional, deterministic, fictional, and inactive by default; added focused setup tests.
+
 All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),

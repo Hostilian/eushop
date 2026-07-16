@@ -1,276 +1,75 @@
-# EUshop Development Guide
+# EUshop development setup
 
-## Complete Setup & Running the Application
+Last verified: 2026-07-16.
 
-### Prerequisites
-- Node.js 20+ installed
-- Docker and Docker Compose installed
-- pnpm installed globally (`npm install -g pnpm`)
-- Git installed
-- Java 17+ and Maven installed (for Spring Boot Core Service)
+## 1. Diagnose tools
 
-### Step 1: Environment Setup
+Run `pnpm preflight`. Node, pnpm, and Java are required for the standard workspace; Docker and Maven are reported separately because Docker is only needed for repository-managed infrastructure and a Maven wrapper may substitute for system Maven. The command exits non-zero when a required tool or migration manifest entry is missing.
 
-1. **Copy environment template:**
-```bash
-cp .env.example .env.local
+## 2. Install and configure
+
+Run `pnpm install`. Copy `.env.example` to `.env.local` only when local overrides are needed. Never commit or print `.env.local`.
+
+Local defaults are consistent across Compose, the migration runner, and Spring:
+
+- PostgreSQL: `localhost:5432`, database `eushop_db`, user `eushop_dev`
+- Spring API: `http://localhost:3001`
+- Next.js web: `http://localhost:3002`
+- Redis: `localhost:6379` (provisioned, integration not confirmed)
+
+## 3. Start infrastructure and migrate
+
+```sh
+docker compose up -d postgres redis
+docker compose ps
+pnpm db:migrate
 ```
 
-2. **Edit `.env.local` with your settings:**
-```bash
-# Database
-POSTGRES_HOST=localhost
-POSTGRES_PORT=5432
-POSTGRES_DB=eushop
-POSTGRES_USER=postgres
-POSTGRES_PASSWORD=postgres
+The migration runner uses a PostgreSQL advisory lock, a checksummed `schema_migrations` table, one transaction per file, and a five-second connection timeout. It executes only `db/migrations/manifest.json`. It never drops a database or volume.
 
-# Backend API (Spring Boot Core Service)
-BACKEND_API_URL=http://localhost:3001
+Do not use `docker compose down -v` as a troubleshooting step: it destroys local data. Existing databases created before checksummed tracking may need a reviewed baseline procedure; do not guess or mark migrations as applied without comparing the schema.
 
-# Optional: Auth0, Stripe, AWS, Cloudinary (for Phase 2+)
+## 4. Optional development fixtures
+
+The seed contains fictional demo data, uses fixed IDs, is safe to repeat, and leaves its listing inactive. It fails closed unless both guards are set:
+
+```sh
+NODE_ENV=development EUSHOP_ALLOW_DEV_SEED=1 pnpm db:seed
 ```
 
-### Step 2: Install Dependencies
+`db/seed/002_extended_data.sql` is retained as an unsupported historical fixture because its columns do not match the canonical migration schema. The standard seed command does not execute it.
 
-Dependencies are managed with pnpm workspaces. Install all packages:
+## 5. Run services
 
-```bash
-pnpm install
-```
+Use separate terminals:
 
-This installs:
-- `apps/web` - Next.js web application
-- `apps/mobile` - React Native/Expo mobile app (Frozen for MVP)
-- `services/core-service` - Spring Boot core service
-
-### Step 3: Start Infrastructure
-
-```bash
-# Start Docker containers (PostgreSQL, Redis, pgAdmin)
-docker-compose up -d
-
-# Verify containers are running
-docker-compose ps
-```
-
-Verify all containers are healthy:
-- **postgres:5432** - Main database
-- **redis:6379** - Caching and sessions
-- **pgadmin:5050** - Database management UI (http://localhost:5050, default email: admin@eushop.local, password: admin)
-
-### Step 4: Initialize Database
-
-```bash
-# Run migrations to create tables and schema
-pnpm run db:migrate
-
-# Seed test data (3 sellers, 3 foods)
-pnpm run db:seed
-
-# Verify data was inserted (using pgAdmin or psql)
-# Connect to postgres://postgres:postgres@localhost:5432/eushop
-```
-
-### Step 5: Start Development Environment
-
-**Option A: Start web and mobile apps (recommended)**
-```bash
-pnpm dev
-```
-
-This starts:
-- Next.js web app on **http://localhost:3000**
-- React Native Expo dev server
-
-**You must start the Spring Boot Core Service separately:**
-```bash
-# Terminal 2: Spring Boot Core Service
+```sh
 cd services/core-service
 mvn spring-boot:run
 ```
-The Spring Boot Core Service will typically run on **http://localhost:3001**.
 
-### Step 6: Access the Application
-
-Once everything is running:
-
-1. **Web App**: http://localhost:3000
-   - Home page with login/signup buttons
-   - Login with any test credentials
-   - Browse specialty foods
-   - View seller onboarding
-
-2. **Spring Boot Core Service API**: http://localhost:3001/api
-   - Health check: `http://localhost:3001/api/health`
-   - Login: `POST http://localhost:3001/api/auth/login`
-   - Signup: `POST http://localhost:3001/api/auth/signup`
-   - Foods: `GET http://localhost:3001/api/foods`
-
-3. **Database UI**: http://localhost:5050
-   - Username: admin@pgadmin.com
-   - Password: admin (default)
-   - Add connection to postgres server
-
-4. **Mobile**: Scan Expo QR code with Expo Go app (iOS/Android)
-
-## Testing Authentication Flow
-
-### 1. Signup
-```bash
-curl -X POST http://localhost:3001/api/auth/signup \
-  -H "Content-Type: application/json" \
-  -d '{
-    "email": "test@example.com",
-    "password": "password123",
-    "name": "Test User",
-    "country": "Belgium"
-  }'
+```sh
+pnpm --filter @eushop/web dev
 ```
 
-Response includes `token` - save this for subsequent requests.
+Verify API health with `curl http://localhost:3001/actuator/health` and open `http://localhost:3002`. `pnpm dev` intentionally starts only the web app; mobile and backend startup are explicit so an optional component failure does not hide the usable web process.
 
-### 2. Login
-```bash
-curl -X POST http://localhost:3001/api/auth/login \
-  -H "Content-Type: application/json" \
-  -d '{
-    "email": "test@example.com",
-    "password": "password123"
-  }'
+For mobile, run `pnpm --filter @eushop/mobile start`. This is a prototype path and may require Expo-compatible dependency alignment before a native build.
+
+## 6. Checks
+
+```sh
+pnpm test:setup
+pnpm --filter @eushop/web type-check
+pnpm --filter @eushop/web test
+pnpm --filter @eushop/core-service test
+pnpm --filter @eushop/web build
 ```
 
-### 3. Use Token
-```bash
-curl -X GET http://localhost:3001/api/auth/me \
-  -H "Authorization: Bearer <TOKEN>"
-```
+The web build is a static export. GitHub Pages serves only those static files; API-backed features must show their unavailable or demo state when no separately hosted backend exists.
 
-## Common Commands
+## Known setup limitations
 
-```bash
-# Install new package across all workspaces
-pnpm add package-name -w
-
-# Install in specific workspace
-pnpm add package-name --filter apps/web
-
-# Run tests
-pnpm test
-
-# Build for production
-pnpm build
-
-# Stop Docker containers
-docker-compose down
-
-# View logs for specific container
-docker-compose logs postgres
-docker-compose logs -f redis
-
-# Reset everything (careful!)
-docker-compose down -v  # Removes volumes
-pnpm clean              # Removes node_modules
-pnpm install
-```
-
-## Project Structure
-
-```
-eushop/
-├── apps/
-│   ├── web/              # Next.js web application
-│   │   ├── pages/        # Routes (login, signup, search, dashboard)
-│   │   ├── lib/          # API client, services
-│   │   └── public/       # Static assets
-│   └── mobile/           # React Native/Expo app
-├── services/
-│   └── core-service/     # Spring Boot business logic
-├── db/
-│   ├── migrations/       # SQL migration files
-│   ├── seed/             # Test data
-│   └── scripts/          # Migration/seed runners
-├── infrastructure/       # Terraform IaC (future)
-├── docs/                 # Documentation
-└── docker-compose.yml    # Local infrastructure setup
-```
-
-## Authentication Architecture
-
-### Current (Phase 1 - Mock)
-- Mock JWT token (Base64 encoded JSON)
-- Token stored in localStorage (web) / device storage (mobile)
-- Frontend directly calls Spring Boot Core Service.
-
-### Next Steps (Phase 2)
-- Integrate Auth0 OAuth 2.0 with Spring Security.
-- Real JWT verification within Spring Boot.
-- Refresh token rotation.
-- Session management with Redis.
-- Tokens stored in secure, HTTP-only cookies.
-
-## Troubleshooting
-
-### "Cannot find module" errors
-```bash
-# Clear and reinstall
-rm -rf node_modules pnpm-lock.yaml
-pnpm install --no-frozen-lockfile
-```
-
-### Docker container won't start
-```bash
-# Check logs
-docker-compose logs postgres
-
-# Rebuild containers
-docker-compose down -v
-docker-compose up -d
-```
-
-### Port already in use
-```bash
-# Find process using port 3000
-lsof -i :3000  # macOS/Linux
-netstat -ano | findstr :3000  # Windows
-
-# Kill process
-kill -9 <PID>  # macOS/Linux
-taskkill /PID <PID> /F  # Windows
-```
-
-### Spring Boot Core Service connection refused
-```bash
-# Ensure Spring Boot Core Service is running
-cd services/core-service && mvn spring-boot:run
-
-# Check logs for errors
-# Default Spring Boot port is 3001 (check services/core-service/src/main/resources/application.properties)
-```
-
-## Next Steps (Phase 2)
-
-- [ ] Implement Spring Boot controllers for Core Service (if not already done)
-- [ ] Add Auth0 integration with Spring Security
-- [ ] Create WebSocket message handlers (Messaging Service)
-- [ ] Add email verification system
-- [ ] Implement Elasticsearch integration for advanced search
-- [ ] Add payment processing (Stripe)
-- [ ] Create real-time messaging UI
-- [ ] Add seller listing management dashboard
-
-## Support
-
-For issues or questions:
-1. Check the QUICKSTART.md for common problems
-2. Review error logs in docker-compose output
-3. Test endpoints directly with curl before debugging frontend
-4. Check STATUS.md for current Phase progress
-
-## Resources
-
-- [Next.js Documentation](https://nextjs.org/docs)
-- [React Native / Expo](https://docs.expo.dev)
-- [Spring Boot Docs](https://spring.io/projects/spring-boot)
-- [PostgreSQL Docs](https://www.postgresql.org/docs/)
-- [Docker Compose Reference](https://docs.docker.com/compose/)
+- `005_food_rating_materialized_view.sql` expects `reviews.food_id`, which the canonical schema does not create. `009_chat_enhancements.sql` and `010_group_chat_enhancements.sql` reference non-existent chat columns/tables and mismatched ID types. They are not in the migration manifest and require redesign, including legal review of retention/erasure behavior.
+- The workspace has no checked-in `pnpm-lock.yaml`, reducing install reproducibility.
+- Authentication, payment, and compliance behavior is partial; successful production behavior must not be inferred from controllers or UI alone.

@@ -1,91 +1,48 @@
-# 🌿 EUshop — Specialty Food Marketplace
+# EUshop
 
-EUshop is a premium, two-sided online marketplace connecting commercial sellers and consumer buyers of niche specialty foods (regional sweets, pantry staples, artisanal chocolates) strictly within the **EU Single Market**.
+EUshop is a work-in-progress Pan-European specialty-food marketplace. This repository contains a static-exportable Next.js web app, an Expo mobile prototype, a Spring Boot API, and PostgreSQL migrations. It is not evidence of production readiness or legal compliance.
 
-This platform is architected as a lean **Next.js Web Application** paired with a **Spring Boot Modular Monolith** backend, fully compliant with EU regulations (GDPR, DSA, DAC7).
+Last verified against the repository: 2026-07-16.
 
----
+## Runtime paths
 
-## 🏛️ System Architecture
+| Component | Path | Local address | Verified state |
+| --- | --- | --- | --- |
+| Web | `apps/web` | `http://localhost:3002` | Active Pages Router app; static export is deployed by `.github/workflows/nextjs.yml`. Some screens use demo/fallback data. |
+| API | `services/core-service` | `http://localhost:3001` | Active Spring Boot modular monolith. External Auth0 and Stripe paths require configuration and are incomplete without it. |
+| Mobile | `apps/mobile` | Expo development server | Prototype with EAS configuration; not a verified store release. |
+| Database | `db` | PostgreSQL on `localhost:5432` | Eight migrations through `009_android_device_tokens` are supported by the manifest. The rating view and two chat drafts are excluded because they target columns absent from the canonical schema. |
+| Public deployment | GitHub Pages | `https://hostilian.github.io/eushop/` | Web static export only; no backend is deployed by the Pages workflow. |
 
-```mermaid
-graph TD
-    Client["Next.js Web Frontend (Port 3002)"]
-    Backend["Spring Boot Core Monolith (Port 3001)"]
-    DB[("PostgreSQL Database")]
-    Cache[("Redis Cache")]
-    Stripe["Stripe Connect Gateway"]
-    Auth0["Auth0 Identity Provider"]
+Redis is present in local Compose, but current source does not prove it is wired for sessions or caching. Archived services are not active runtime components.
 
-    Client -->|REST / Cookie Auth| Backend
-    Client -->|Stripe Elements| Stripe
-    Backend -->|JPA / pg_trgm Search| DB
-    Backend -->|Spring Session| Cache
-    Backend -->|Webhook Verification| Stripe
-    Backend -->|JWT Verification| Auth0
-```
+## Quick start
 
----
+Prerequisites: Node 20+, pnpm 9, Java 17, Maven 3.8+, and optionally Docker Compose for local infrastructure.
 
-## 🚀 Getting Started
-
-### Prerequisites
-- **Node.js** v20+
-- **pnpm** v9+
-- **Java JDK** 17+
-- **Maven** v3.8+
-- **Docker** and **Docker Compose**
-
-### 1. Clone & Install
-```bash
-git clone <repository-url>
-cd eushop
+```sh
+pnpm preflight
 pnpm install
-```
-
-### 2. Configure Environment
-Create `.env.local` inside `apps/web` or follow the root `.env.example`:
-```bash
-cp .env.example .env
-```
-
-### 3. Spin Up Infrastructure
-Start local PostgreSQL and Redis servers via Docker:
-```bash
-docker compose up -d
-```
-
-### 4. Run the Platform
-In separate terminal sessions or tabs:
-```bash
-# Start Next.js Web Frontend (http://localhost:3002)
+docker compose up -d postgres redis
+pnpm db:migrate
+pnpm --filter @eushop/core-service build
 pnpm --filter @eushop/web dev
-
-# Start Spring Boot Core Service (http://localhost:3001)
-cd services/core-service
-./mvnw.cmd spring-boot:run
 ```
 
----
+Start the API separately with `mvn spring-boot:run` from `services/core-service`. Verify it at `http://localhost:3001/actuator/health`; verify the web app at `http://localhost:3002`.
 
-## 🛡️ Regulatory Compliance & Security
+Development demo fixtures are fictional and opt-in:
 
-For details on security architecture and vulnerability disclosure, see [SECURITY.md](file:///d:/CODING/eushop/SECURITY.md). For details on regulatory compliance status and gap analysis, see [COMPLIANCE_GAPS.md](file:///d:/CODING/eushop/COMPLIANCE_GAPS.md).
+```sh
+NODE_ENV=development EUSHOP_ALLOW_DEV_SEED=1 pnpm db:seed
+```
 
-### General Data Protection Regulation (GDPR)
-- **Article 17 Erasure ("Right to be Forgotten")**: Anonymises personal profiles and credentials while retaining order histories for tax audit obligations.
-- **Article 20 Portability**: Users can download a full, machine-readable JSON copy of their stored account data.
-- **Consent logging**: Automatically records and hashes User-Agent/IP details on any cookies preferences update.
+On PowerShell, set those environment variables with `$env:NODE_ENV='development'` and `$env:EUSHOP_ALLOW_DEV_SEED='1'` before running the command.
 
-### Digital Services Act (DSA)
-- **Article 30/31 KYBC trader vetting**: Requires commercial sellers to have `kycVerified=true` and role `SELLER` to list items.
-- **Recital 62 Verified reviews**: Limits listing reviews only to verified buyers with a `DELIVERED` order status.
+See [DEVELOPMENT.md](DEVELOPMENT.md) for setup diagnostics and [STATUS.md](STATUS.md) for confirmed, partial, and planned behavior.
 
-### DAC7 Tax Reporting Directive
-- Captures seller taxation IDs, trade register records, and annual platform revenues for reporting to EU tax authorities.
+## Compliance and license
 
----
+Regulatory code and documentation provide implementation structure only. Qualified legal and tax professionals must review it before any compliance claim or launch. Regulatory constants belong only in `packages/compliance` and unresolved interpretations are marked `COMPLIANCE-REVIEW`.
 
-## 📜 License
-
-Proprietary — All Rights Reserved. Not to be shared or distributed.
+The repository license is proprietary; see [LICENSE](LICENSE).
