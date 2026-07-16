@@ -43,6 +43,21 @@ public class Conversation {
     @Column(name = "is_active", nullable = false)
     private Boolean isActive = true;
 
+    @Column(name = "is_group", nullable = false)
+    private Boolean isGroup = false;
+
+    @Column(name = "group_name")
+    private String groupName;
+
+    @Column(name = "group_description")
+    private String groupDescription;
+
+    @Column(name = "group_image_url")
+    private String groupImageUrl;
+
+    @Column(name = "created_by")
+    private String createdBy;
+
     @Column(name = "created_at", nullable = false, updatable = false)
     private LocalDateTime createdAt;
 
@@ -139,5 +154,45 @@ public class Conversation {
 
     public void setUpdatedAt(LocalDateTime updatedAt) {
         this.updatedAt = updatedAt;
+    }
+
+    public Boolean getIsGroup() {
+        return isGroup;
+    }
+
+    public void setIsGroup(Boolean isGroup) {
+        this.isGroup = isGroup;
+    }
+
+    public String getGroupName() {
+        return groupName;
+    }
+
+    public void setGroupName(String groupName) {
+        this.groupName = groupName;
+    }
+
+    public String getGroupDescription() {
+        return groupDescription;
+    }
+
+    public void setGroupDescription(String groupDescription) {
+        this.groupDescription = groupDescription;
+    }
+
+    public String getGroupImageUrl() {
+        return groupImageUrl;
+    }
+
+    public void setGroupImageUrl(String groupImageUrl) {
+        this.groupImageUrl = groupImageUrl;
+    }
+
+    public String getCreatedBy() {
+        return createdBy;
+    }
+
+    public void setCreatedBy(String createdBy) {
+        this.createdBy = createdBy;
     }
 }

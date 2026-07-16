@@ -11,6 +11,7 @@ import { Button } from '../ui/Button';
 import { MessageSearch } from './MessageSearch';
 import { MessageReactions } from './MessageReactions';
 import { MessageAttachment } from './MessageAttachment';
+import { MessageActions } from './MessageActions';
 
 interface MessageListProps {
   conversationId: string;
@@ -202,26 +203,44 @@ const MessageItem: React.FC<{
             : 'bg-gray-100 text-gray-900 rounded-bl-none'
         }`}
       >
-        <div className="text-sm whitespace-pre-wrap break-words">
-          {message.content.replace(/\\[Attachment: .+?\\\]\(.+?\)/g, '').trim()}
-        </div>
-        <MessageAttachment content={message.content} />
-        <div className="flex justify-between items-center mt-1">
-          <MessageReactions
-            messageId={message.id}
-            reactions={message.reactions || {}}
-            onAddReaction={() => {
-              // Refresh reactions if needed
-            }}
-          />
-          <div className="flex items-center">
-            <span className="text-xs opacity-70">
-              {formatTime(message.createdAt)}
-            </span>
-            {isCurrentUser && message.isRead && (
-              <span className="ml-1 text-xs opacity-70">✓✓</span>
-            )}
+        <div className="flex justify-between items-start">
+          <div className="flex-1">
+            <div className="text-sm whitespace-pre-wrap break-words">
+              {message.content.replace(/\\[Attachment: .+?\\\]\(.+?\)/g, '').trim()}
+            </div>
+            <MessageAttachment content={message.content} />
+            <div className="flex justify-between items-center mt-1">
+              <MessageReactions
+                messageId={message.id}
+                reactions={message.reactions || {}}
+                onAddReaction={() => {
+                  // Refresh reactions if needed
+                }}
+              />
+            </div>
           </div>
+          <div className="ml-2">
+            <MessageActions
+              message={message}
+              isCurrentUser={isCurrentUser}
+              onEdit={(newContent) => {
+                setMessages(prev => prev.map(msg =>
+                  msg.id === message.id ? { ...msg, content: newContent } : msg
+                ));
+              }}
+              onDelete={() => {
+                setMessages(prev => prev.filter(msg => msg.id !== message.id));
+              }}
+            />
+          </div>
+        </div>
+        <div className="flex justify-end items-center mt-1">
+          <span className="text-xs opacity-70">
+            {formatTime(message.createdAt)}
+          </span>
+          {isCurrentUser && message.isRead && (
+            <span className="ml-1 text-xs opacity-70">✓✓</span>
+          )}
         </div>
       </div>
     </div>
