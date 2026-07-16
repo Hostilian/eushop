@@ -1,0 +1,25 @@
+User-agent: *
+Allow: /
+
+# Block admin and internal pages from indexing
+Disallow: /admin/
+Disallow: /dashboard/
+Disallow: /gdpr/
+Disallow: /login/
+Disallow: /signup/
+
+# Block static demo versions (not production content)
+Disallow: /v3/
+Disallow: /v6/
+Disallow: /v7/
+Disallow: /v8/
+Disallow: /v9/
+Disallow: /v10/
+Disallow: /v11/
+Disallow: /v12/
+Disallow: /v13/
+Disallow: /v18/
+Disallow: /v19/
+Disallow: /versions/
+
+Sitemap: https://hostilian.github.io/eushop/sitemap.xml
