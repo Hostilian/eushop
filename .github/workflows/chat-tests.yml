@@ -1,0 +1,283 @@
+name: Chat Feature Tests
+
+on:
+  push:
+    branches: [ main ]
+    paths:
+      - 'apps/web/lib/services/chatService.ts'
+      - 'apps/web/components/chat/**'
+      - 'apps/web/pages/chat/**'
+      - 'services/core-service/src/main/java/com/eushop/core/controller/ConversationController.java'
+      - 'services/core-service/src/main/java/com/eushop/core/service/ConversationService.java'
+      - 'services/core-service/src/main/java/com/eushop/core/entity/Conversation.java'
+      - 'services/core-service/src/main/java/com/eushop/core/entity/Message.java'
+      - 'db/migrations/009_chat_enhancements.sql'
+      - '.github/workflows/chat-tests.yml'
+  pull_request:
+    branches: [ main ]
+    paths:
+      - 'apps/web/lib/services/chatService.ts'
+      - 'apps/web/components/chat/**'
+      - 'apps/web/pages/chat/**'
+      - 'services/core-service/src/main/java/com/eushop/core/controller/ConversationController.java'
+      - 'services/core-service/src/main/java/com/eushop/core/service/ConversationService.java'
+      - 'services/core-service/src/main/java/com/eushop/core/entity/Conversation.java'
+      - 'services/core-service/src/main/java/com/eushop/core/entity/Message.java'
+      - 'db/migrations/009_chat_enhancements.sql'
+      - '.github/workflows/chat-tests.yml'
+
+jobs:
+  frontend-tests:
+    name: Frontend Chat Tests
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: ./apps/web
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Install pnpm
+        uses: pnpm/action-setup@v2
+        with:
+          version: 8
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Run TypeScript type check
+        run: pnpm type-check
+
+      - name: Run ESLint
+        run: pnpm lint
+
+      - name: Run chat service tests
+        run: pnpm test chatService.test.ts
+
+      - name: Run chat component tests
+        run: pnpm test chatComponents.test.tsx
+
+      - name: Build frontend
+        run: pnpm build
+
+  backend-tests:
+    name: Backend Chat Tests
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: ./services/core-service
+
+    services:
+      postgres:
+        image: postgres:16
+        env:
+          POSTGRES_USER: eushop_test
+          POSTGRES_PASSWORD: eushop_test
+          POSTGRES_DB: eushop_test
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up JDK 17
+        uses: actions/setup-java@v3
+        with:
+          java-version: '17'
+          distribution: 'temurin'
+
+      - name: Run database migrations
+        run: |
+          cd ../../db
+          psql -h localhost -U eushop_test -d eushop_test -f migrations/001_initial_schema.sql
+          psql -h localhost -U eushop_test -d eushop_test -f migrations/002_compliance_fields.sql
+          psql -h localhost -U eushop_test -d eushop_test -f migrations/003_user_enhancements.sql
+          psql -h localhost -U eushop_test -d eushop_test -f migrations/004_food_enhancements.sql
+          psql -h localhost -U eushop_test -d eushop_test -f migrations/005_reviews_materialized_view.sql
+          psql -h localhost -U eushop_test -d eushop_test -f migrations/006_notifications.sql
+          psql -h localhost -U eushop_test -d eushop_test -f migrations/007_search_indexes.sql
+          psql -h localhost -U eushop_test -d eushop_test -f migrations/008_indexes_and_compliance.sql
+          psql -h localhost -U eushop_test -d eushop_test -f migrations/009_chat_enhancements.sql
+        env:
+          PGPASSWORD: eushop_test
+
+      - name: Run backend tests
+        run: ./mvnw test -Dtest=ConversationControllerTest,ConversationServiceTest
+        env:
+          SPRING_DATASOURCE_URL: jdbc:postgresql://localhost:5432/eushop_test
+          SPRING_DATASOURCE_USERNAME: eushop_test
+          SPRING_DATASOURCE_PASSWORD: eushop_test
+
+  integration-tests:
+    name: Integration Tests
+    needs: [frontend-tests, backend-tests]
+    runs-on: ubuntu-latest
+
+    services:
+      postgres:
+        image: postgres:16
+        env:
+          POSTGRES_USER: eushop_test
+          POSTGRES_PASSWORD: eushop_test
+          POSTGRES_DB: eushop_test
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Install pnpm
+        uses: pnpm/action-setup@v2
+        with:
+          version: 8
+
+      - name: Install frontend dependencies
+        run: cd apps/web && pnpm install --frozen-lockfile
+
+      - name: Set up JDK 17
+        uses: actions/setup-java@v3
+        with:
+          java-version: '17'
+          distribution: 'temurin'
+
+      - name: Run database migrations
+        run: |
+          cd db
+          psql -h localhost -U eushop_test -d eushop_test -f migrations/001_initial_schema.sql
+          psql -h localhost -U eushop_test -d eushop_test -f migrations/002_compliance_fields.sql
+          psql -h localhost -U eushop_test -d eushop_test -f migrations/003_user_enhancements.sql
+          psql -h localhost -U eushop_test -d eushop_test -f migrations/004_food_enhancements.sql
+          psql -h localhost -U eushop_test -d eushop_test -f migrations/005_reviews_materialized_view.sql
+          psql -h localhost -U eushop_test -d eushop_test -f migrations/006_notifications.sql
+          psql -h localhost -U eushop_test -d eushop_test -f migrations/007_search_indexes.sql
+          psql -h localhost -U eushop_test -d eushop_test -f migrations/008_indexes_and_compliance.sql
+          psql -h localhost -U eushop_test -d eushop_test -f migrations/009_chat_enhancements.sql
+        env:
+          PGPASSWORD: eushop_test
+
+      - name: Start backend service
+        run: |
+          cd services/core-service
+          ./mvnw spring-boot:run -Dspring-boot.run.profiles=test &
+          sleep 30
+        env:
+          SPRING_DATASOURCE_URL: jdbc:postgresql://localhost:5432/eushop_test
+          SPRING_DATASOURCE_USERNAME: eushop_test
+          SPRING_DATASOURCE_PASSWORD: eushop_test
+
+      - name: Run integration tests
+        run: cd apps/web && pnpm test:integration
+        env:
+          NEXT_PUBLIC_API_URL: http://localhost:3001
+
+  e2e-tests:
+    name: E2E Tests
+    needs: [integration-tests]
+    runs-on: ubuntu-latest
+
+    services:
+      postgres:
+        image: postgres:16
+        env:
+          POSTGRES_USER: eushop_test
+          POSTGRES_PASSWORD: eushop_test
+          POSTGRES_DB: eushop_test
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Install pnpm
+        uses: pnpm/action-setup@v2
+        with:
+          version: 8
+
+      - name: Install frontend dependencies
+        run: cd apps/web && pnpm install --frozen-lockfile
+
+      - name: Set up JDK 17
+        uses: actions/setup-java@v3
+        with:
+          java-version: '17'
+          distribution: 'temurin'
+
+      - name: Run database migrations
+        run: |
+          cd db
+          psql -h localhost -U eushop_test -d eushop_test -f migrations/001_initial_schema.sql
+          psql -h localhost -U eushop_test -d eushop_test -f migrations/002_compliance_fields.sql
+          psql -h localhost -U eushop_test -d eushop_test -f migrations/003_user_enhancements.sql
+          psql -h localhost -U eushop_test -d eushop_test -f migrations/004_food_enhancements.sql
+          psql -h localhost -U eushop_test -d eushop_test -f migrations/005_reviews_materialized_view.sql
+          psql -h localhost -U eushop_test -d eushop_test -f migrations/006_notifications.sql
+          psql -h localhost -U eushop_test -d eushop_test -f migrations/007_search_indexes.sql
+          psql -h localhost -U eushop_test -d eushop_test -f migrations/008_indexes_and_compliance.sql
+          psql -h localhost -U eushop_test -d eushop_test -f migrations/009_chat_enhancements.sql
+        env:
+          PGPASSWORD: eushop_test
+
+      - name: Start backend service
+        run: |
+          cd services/core-service
+          ./mvnw spring-boot:run -Dspring-boot.run.profiles=test &
+          sleep 30
+        env:
+          SPRING_DATASOURCE_URL: jdbc:postgresql://localhost:5432/eushop_test
+          SPRING_DATASOURCE_USERNAME: eushop_test
+          SPRING_DATASOURCE_PASSWORD: eushop_test
+
+      - name: Start frontend
+        run: cd apps/web && pnpm dev &
+        env:
+          NEXT_PUBLIC_API_URL: http://localhost:3001
+
+      - name: Install Playwright
+        run: cd apps/web && pnpm exec playwright install
+
+      - name: Run E2E tests
+        run: cd apps/web && pnpm test:e2e
+        env:
+          NEXT_PUBLIC_API_URL: http://localhost:3001
+
+      - name: Upload test results
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: playwright-report
+          path: apps/web/playwright-report/
+          retention-days: 30
