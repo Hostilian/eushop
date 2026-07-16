@@ -98,6 +98,7 @@ __pycache__/
 # Local agent/session artifacts
 .chat_agent_history
 *.session
+/scratch/
 
 
 # Out-of-scope harvested-credential / scraper artifacts — block re-entry

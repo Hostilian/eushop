@@ -114,9 +114,20 @@ public class ConversationService {
      */
     public boolean isUserInConversation(String userId, String conversationId) {
         Optional<Conversation> conversation = conversationRepository.findById(conversationId);
-        return conversation.map(conv ->
-            conv.getBuyer().getId().equals(userId) || conv.getSeller().getId().equals(userId)
-        ).orElse(false);
+        if (conversation.isEmpty()) {
+            return false;
+        }
+        Conversation existing = conversation.get();
+        boolean directParticipant =
+                existing.getBuyer() != null
+                        && existing.getBuyer().getId().equals(userId)
+                || existing.getSeller() != null
+                        && existing.getSeller().getId().equals(userId);
+        return directParticipant
+                || conversationParticipantRepository
+                        .existsByConversationIdAndUserId(
+                                conversationId,
+                                userId);
     }
 
     /**
