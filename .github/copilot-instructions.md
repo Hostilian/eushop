@@ -13,7 +13,3 @@ Full brief: see [`AGENTS.md`](../../AGENTS.md) at the repo root.
 4. "Sold by [Seller Name]" must be a persistent, non-decorative UI element on every product and cart line (DSA Art. 30(7)).
 5. `AllergenBadge` must always include `aria-label` — never colour alone (WCAG 1.4.1).
 6. No secrets in code. No fake compliance badges. No unverified compliance claims in copy.
-
-## Path-specific rules
-
-See `.github/instructions/` for scoped rules per directory.
