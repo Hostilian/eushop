@@ -1,0 +1,17 @@
+{
+  "migrations": [
+    "001_initial_schema.sql",
+    "002_compliance_fields.sql",
+    "003_consent_log.sql",
+    "004_dac7_reporting.sql",
+    "006_pg_trgm_search_index.sql",
+    "007_add_processed_webhook_events.sql",
+    "008_indexes_and_compliance.sql",
+    "009_android_device_tokens.sql"
+  ],
+  "unsupported": [
+    "005_food_rating_materialized_view.sql",
+    "009_chat_enhancements.sql",
+    "010_group_chat_enhancements.sql"
+  ]
+}

@@ -5,14 +5,16 @@
   "description": "EU Specialty Food Marketplace Platform",
   "private": true,
   "scripts": {
-    "dev": "pnpm --filter apps/web --filter apps/mobile --parallel run dev",
+    "dev": "pnpm --filter @eushop/web run dev",
     "build": "pnpm -r run build",
     "test": "pnpm -r run test",
     "lint": "pnpm -r run lint",
     "docker:up": "docker-compose up -d",
     "docker:down": "docker-compose down",
     "db:migrate": "cd db && npm run migrate",
-    "db:seed": "cd db && npm run seed"
+    "db:seed": "cd db && npm run seed",
+    "preflight": "node db/scripts/preflight.js",
+    "test:setup": "node --test db/scripts/setup.test.js"
   },
   "devDependencies": {
     "typescript": "^5.4.0",

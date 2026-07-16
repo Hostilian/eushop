@@ -1,5 +1,7 @@
 # EUshop — Investor Diligence Memo & Master Implementation Plan
 
+> Historical planning document. Assertions below may be stale. For repository truth verified on 2026-07-16, use `STATUS.md`, `DEVELOPMENT.md`, and `docs/architecture/runtime.md`. GitHub Pages deploys only static web output, and incompatible chat drafts are excluded from standard migrations. This is not legal certification.
+
 **What this is:** A complete, evidence-based, deep-dive audit of the `Hostilian/eushop` repository and business operations, paired with a sequenced, multi-track master implementation plan. This document is designed to transition the company from a prototype with overstated legacy phase docs and incomplete implementation into a genuinely investor-ready, sales-ready, compliance-secured, and pre-seed-ready pan-European marketplace.
 
 **Method:** Checked directly against the current workspace contents (raw SQL migrations, Spring Boot backend source, React page files, Docker configuration, and root project metadata) to establish an objective baseline of what is built versus what the documentation claims.
