@@ -55,11 +55,19 @@ public class SecurityAndControllerTest {
                 org.springframework.data.domain.PageRequest.of(0, 10),
                 0
         );
-        when(foodService.searchFoods(any(), any(), any(), anyInt(), anyInt()))
+        when(foodService.advancedSearch(any(), any(), any(), any(), anyInt(), anyInt()))
                 .thenReturn(emptyPage);
 
         mockMvc.perform(get("/api/foods"))
                 .andExpect(status().isOk());
+    }
+
+    @Test
+    public void testFoodsRejectInvalidPaginationWithActionableError() throws Exception {
+        mockMvc.perform(get("/api/foods").param("size", "0"))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.success").value(false))
+                .andExpect(jsonPath("$.error").value(org.hamcrest.Matchers.containsString("size")));
     }
 
     @Test

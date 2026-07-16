@@ -16,6 +16,10 @@ import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.validation.annotation.Validated;
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.Max;
+import jakarta.validation.constraints.Min;
 
 import com.eushop.core.dto.ApiResponse;
 import com.eushop.core.dto.CreateFoodRequest;
@@ -27,6 +31,7 @@ import com.eushop.core.service.UserService;
 
 @RestController
 @RequestMapping("/api/foods")
+@Validated
 public class FoodController {
 
     private final FoodService foodService;
@@ -39,8 +44,8 @@ public class FoodController {
 
     @GetMapping
     public ResponseEntity<ApiResponse<Page<FoodDTO>>> listFoods(
-            @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "10") int size,
+            @RequestParam(defaultValue = "0") @Min(value = 0, message = "page must be zero or greater") int page,
+            @RequestParam(defaultValue = "10") @Min(value = 1, message = "size must be at least 1") @Max(value = 100, message = "size must be at most 100") int size,
             @RequestParam(required = false) String query,
             @RequestParam(required = false) String country,
             @RequestParam(required = false) String category) {
@@ -73,7 +78,7 @@ public class FoodController {
 
     @PostMapping
     public ResponseEntity<ApiResponse<FoodDTO>> createFood(
-            @RequestBody CreateFoodRequest request,
+            @Valid @RequestBody CreateFoodRequest request,
             @RequestHeader("X-User-Id") String userId) {
 
         // DSA Article 31 — "trader" verification gate.
@@ -113,7 +118,7 @@ public class FoodController {
     @PutMapping("/{id}")
     public ResponseEntity<ApiResponse<FoodDTO>> updateFood(
             @PathVariable String id,
-            @RequestBody CreateFoodRequest request,
+            @Valid @RequestBody CreateFoodRequest request,
             @RequestHeader("X-User-Id") String userId) {
         
         Food existingFood = foodService.getFoodById(id)
@@ -207,8 +212,8 @@ public class FoodController {
             @RequestParam(required = false) String country,
             @RequestParam(required = false) String category,
             @RequestParam(required = false) String allergenFree,
-            @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "10") int size) {
+            @RequestParam(defaultValue = "0") @Min(value = 0, message = "page must be zero or greater") int page,
+            @RequestParam(defaultValue = "10") @Min(value = 1, message = "size must be at least 1") @Max(value = 100, message = "size must be at most 100") int size) {
         
         Page<Food> foods = foodService.advancedSearch(q, country, category, allergenFree, page, size);
         Page<FoodDTO> dtos = foods.map(this::toDTO);

@@ -10,6 +10,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.eushop.core.entity.Order;
+import com.eushop.core.entity.Food;
+import com.eushop.core.dto.CreateOrderRequest;
+import com.eushop.core.repository.FoodRepository;
 import com.eushop.core.repository.OrderRepository;
 
 @Service
@@ -17,19 +20,40 @@ import com.eushop.core.repository.OrderRepository;
 public class OrderService {
 
     private final OrderRepository orderRepository;
+    private final FoodRepository foodRepository;
 
-    public OrderService(OrderRepository orderRepository) {
+    public OrderService(OrderRepository orderRepository, FoodRepository foodRepository) {
         this.orderRepository = orderRepository;
+        this.foodRepository = foodRepository;
     }
 
-    public Order createOrder(Order order) {
-        order.setStatus(Order.OrderStatus.PENDING);
-        if (order.getTotalPrice() != null) {
-            double fee = Math.round(order.getTotalPrice() * 0.15 * 100.0) / 100.0;
-            order.setPlatformFeeEur(fee);
-            order.setSellerPayoutEur(Math.round((order.getTotalPrice() - fee) * 100.0) / 100.0);
+    public Order createOrder(CreateOrderRequest request, String buyerId) {
+        Food food = foodRepository.findById(request.getFoodId())
+                .orElseThrow(() -> new IllegalArgumentException("Food not found"));
+        if (!Boolean.TRUE.equals(food.getAvailable()) || food.getQuantity() == null || food.getQuantity() < request.getQuantity()) {
+            throw new IllegalStateException("Food is unavailable in the requested quantity");
         }
+        if (food.getSellerId().equals(buyerId)) {
+            throw new IllegalArgumentException("Buyers cannot order their own listing");
+        }
+        Order order = new Order();
+        order.setBuyerId(buyerId);
+        order.setSellerId(food.getSellerId());
+        order.setFoodId(food.getId());
+        order.setQuantity(request.getQuantity());
+        order.setMessage(request.getMessage());
+        order.setShippingAddress(request.getShippingAddress());
+        order.setFinderFee(food.getFinderFee());
+        order.setTotalPrice(roundCurrency(food.getPrice() * request.getQuantity()));
+        order.setStatus(Order.OrderStatus.PENDING);
+        double fee = roundCurrency(order.getTotalPrice() * 0.15);
+        order.setPlatformFeeEur(fee);
+        order.setSellerPayoutEur(roundCurrency(order.getTotalPrice() - fee));
         return orderRepository.save(order);
+    }
+
+    private double roundCurrency(double amount) {
+        return Math.round(amount * 100.0) / 100.0;
     }
 
     public Optional<Order> getOrderById(String id) {

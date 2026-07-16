@@ -7,6 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased] — Phase 1 Master Agent Pass
 
+### Fixed (backend commerce resilience)
+- Product listing requests now combine text, country, and category filters instead of silently dropping filters when a text query is present.
+- Food and order request boundaries now validate payloads and pagination limits, returning structured 400 errors for recoverable client mistakes.
+- Order creation now accepts a dedicated buyer request and derives seller, price, fees, and initial state server-side; unavailable and self-owned listings are rejected before persistence.
+- Only a seller may update fulfilment status; payment confirmation remains webhook-driven rather than client-asserted.
+
 ### Added
 - **`packages/compliance/`** — Single source of truth for all regulatory logic.
   - `allergens.ts`: EU 14-allergen list (Reg. 1169/2011 Annex II) and FDA 9-allergen list (FALCPA + FASTER Act) as `as const` arrays with `// COMPLIANCE-REVIEW:` citations.

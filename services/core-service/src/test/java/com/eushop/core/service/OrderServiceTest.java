@@ -1,6 +1,9 @@
 package com.eushop.core.service;
 
 import com.eushop.core.entity.Order;
+import com.eushop.core.entity.Food;
+import com.eushop.core.dto.CreateOrderRequest;
+import com.eushop.core.repository.FoodRepository;
 import com.eushop.core.repository.OrderRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -19,6 +22,8 @@ class OrderServiceTest {
 
     @Mock
     private OrderRepository orderRepository;
+    @Mock
+    private FoodRepository foodRepository;
 
     @InjectMocks
     private OrderService orderService;
@@ -38,14 +43,45 @@ class OrderServiceTest {
 
     @Test
     void createOrder_SetsInitialStatusAndFees() {
-        when(orderRepository.save(any(Order.class))).thenReturn(testOrder);
+        Food food = availableFood();
+        CreateOrderRequest request = orderRequest();
+        when(foodRepository.findById("food_1")).thenReturn(Optional.of(food));
+        when(orderRepository.save(any(Order.class))).thenAnswer(invocation -> invocation.getArgument(0));
 
-        Order created = orderService.createOrder(testOrder);
+        Order created = orderService.createOrder(request, "buyer_1");
 
         assertEquals(Order.OrderStatus.PENDING, created.getStatus());
         assertEquals(15.0, created.getPlatformFeeEur());
         assertEquals(85.0, created.getSellerPayoutEur());
         verify(orderRepository, times(1)).save(testOrder);
+    }
+
+    @Test
+    void createOrder_UnavailableFood_FailsWithoutPersisting() {
+        Food food = availableFood();
+        food.setQuantity(0);
+        when(foodRepository.findById("food_1")).thenReturn(Optional.of(food));
+
+        assertThrows(IllegalStateException.class, () -> orderService.createOrder(orderRequest(), "buyer_1"));
+        verify(orderRepository, never()).save(any(Order.class));
+    }
+
+    private Food availableFood() {
+        Food food = new Food();
+        food.setId("food_1");
+        food.setSellerId("seller_1");
+        food.setAvailable(true);
+        food.setQuantity(10);
+        food.setPrice(50.0);
+        food.setFinderFee(7.5);
+        return food;
+    }
+
+    private CreateOrderRequest orderRequest() {
+        CreateOrderRequest request = new CreateOrderRequest();
+        request.setFoodId("food_1");
+        request.setQuantity(2);
+        return request;
     }
 
     @Test
