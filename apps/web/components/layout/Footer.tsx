@@ -110,7 +110,7 @@ export function Footer() {
         {/* Footer Bottom */}
         <div className="mt-12 border-t border-gray-150 dark:border-gray-800 pt-8 flex flex-col md:flex-row justify-between items-center gap-4 text-xs text-gray-400 dark:text-gray-500">
           <p>
-            &copy; {currentYear} EUshop Marketplace. All rights reserved. Registered and compliant within the EU.
+            &copy; {currentYear} EUshop Marketplace. All rights reserved. Operating within the EU Single Market.
           </p>
           <div className="flex items-center gap-4">
             <span className="flex items-center gap-1">

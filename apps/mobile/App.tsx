@@ -64,10 +64,10 @@ export default function App() {
             headerTintColor: '#FFFFFF',
           })}
         >
-          <Tab.Screen name="Home" component={HomeScreen} />
+          <Tab.Screen name="Home" component={HomeScreen} options={{ headerShown: false }} />
           <Tab.Screen name="Search" component={SearchScreen} />
-          <Tab.Screen name="Messages" component={MessagesScreen} />
-          <Tab.Screen name="Profile" component={ProfileScreen} />
+          <Tab.Screen name="Messages" component={MessagesScreen} options={{ headerShown: false }} />
+          <Tab.Screen name="Profile" component={ProfileScreen} options={{ headerShown: false }} />
           <Tab.Screen
             name="ListingUpload"
             component={ListingUploadScreen}

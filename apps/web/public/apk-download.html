@@ -279,12 +279,12 @@
           </div>
         </div>
 
-        <a href="#" class="download-button" id="download-button">
-          <span>⬇️</span> Download APK
+        <a href="https://github.com/Hostilian/eushop/releases/latest/download/eushop.apk" class="download-button" id="download-button" download>
+          <span>⬇️</span> Download APK (v2.0.0)
         </a>
 
         <div class="version-info">
-          Version 1.0.0-beta | 48.2 MB | Updated July 15, 2026
+          Version 2.0.0 | Android 8.0+ | Updated 2026
         </div>
 
         <div class="requirements">
@@ -365,10 +365,9 @@
   </div>
 
   <script>
-    // Update download button with actual APK URL when available
-    document.getElementById('download-button').addEventListener('click', function(e) {
-      e.preventDefault();
-      alert('APK download will be available once the release build is ready. Check back soon!');
+    // Track download click for analytics
+    document.getElementById('download-button').addEventListener('click', function() {
+      console.log('APK download initiated');
     });
   </script>
 </body>

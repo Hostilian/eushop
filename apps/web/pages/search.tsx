@@ -214,7 +214,7 @@ export default function SearchPage() {
                   setSearchQuery(e.target.value);
                   setPage(1); // Reset page on new search query
                 }}
-                className="w-full px-4 py-2.5 border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-950 rounded-xl focus:ring-2 focus:ring-primary focus:border-transparent text-sm transition"
+                className="w-full px-4 py-2.5 border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-950 rounded-xl focus:ring-2 focus:ring-brand-green focus:border-transparent text-sm transition text-gray-800 dark:text-gray-200"
               />
             </div>
 
@@ -229,7 +229,7 @@ export default function SearchPage() {
                   setSelectedCountry(e.target.value);
                   setPage(1); // Reset page on country change
                 }}
-                className="w-full px-4 py-2.5 border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-950 rounded-xl focus:ring-2 focus:ring-primary focus:border-transparent text-sm transition"
+                className="w-full px-4 py-2.5 border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-950 rounded-xl focus:ring-2 focus:ring-brand-green focus:border-transparent text-sm transition text-gray-800 dark:text-gray-200"
               >
                 {EU_COUNTRIES.map((country) => (
                   <option key={country} value={country}>
@@ -250,7 +250,7 @@ export default function SearchPage() {
                   setSelectedCategory(e.target.value);
                   setPage(1); // Reset page on category change
                 }}
-                className="w-full px-4 py-2.5 border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-950 rounded-xl focus:ring-2 focus:ring-primary focus:border-transparent text-sm transition"
+                className="w-full px-4 py-2.5 border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-950 rounded-xl focus:ring-2 focus:ring-brand-green focus:border-transparent text-sm transition text-gray-800 dark:text-gray-200"
               >
                 {FOOD_CATEGORIES.map((cat) => (
                   <option key={cat} value={cat}>
@@ -271,7 +271,7 @@ export default function SearchPage() {
                   setSelectedAllergen(e.target.value);
                   setPage(1); // Reset page on allergen change
                 }}
-                className="w-full px-4 py-2.5 border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-950 rounded-xl focus:ring-2 focus:ring-primary focus:border-transparent text-sm transition"
+                className="w-full px-4 py-2.5 border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-950 rounded-xl focus:ring-2 focus:ring-brand-green focus:border-transparent text-sm transition text-gray-800 dark:text-gray-200"
               >
                 {EU_ALLERGENS.map((allergen) => (
                   <option key={allergen} value={allergen}>

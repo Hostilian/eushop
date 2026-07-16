@@ -113,7 +113,7 @@ class GlobalErrorBoundary extends Component<
           <button
             onClick={this.handleReset}
             style={{
-              background: '#2563eb',
+              background: '#1e3f20',
               color: 'white',
               border: 'none',
               borderRadius: '0.75rem',
@@ -133,13 +133,10 @@ class GlobalErrorBoundary extends Component<
   }
 }
 
-// ─── Theme + Version initializer (runs once on mount) ────────────────────────
-// Reads stored theme preference and applies dark class.
-// Also handles ?v= URL query param for direct version-link activation
-// (e.g. /eushop/?v=v1 → sets version to v1 instantly)
+// ─── Theme initializer (runs once on mount) ─────────────────────────────────
+// Reads stored theme preference and applies dark class to <html>.
 function ThemeInitializer() {
   React.useEffect(() => {
-    // 1. Apply theme
     try {
       const stored = localStorage.getItem('eushop-theme');
       const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
@@ -150,27 +147,6 @@ function ThemeInitializer() {
       }
     } catch {
       // localStorage unavailable — default to light theme
-    }
-
-    // 2. Handle ?v= version selector from URL (e.g. /?v=v1, /?v=v3, /?v=v6)
-    try {
-      const params = new URLSearchParams(window.location.search);
-      const vParam = params.get('v');
-      // Accepts v1–v19 — covers all Next.js app versions and static folder demos.
-      // Static folder demos (v6–v13, v18, v19) don't use the ?v= system directly
-      // but this regex ensures a ?v=v18 link doesn't silently get dropped.
-      if (vParam && /^v([1-9]|1[0-9])$/.test(vParam)) {
-        localStorage.setItem('eushop-demo-version', vParam);
-        // Dispatch event so VersionSelector and index page react instantly
-        window.dispatchEvent(new Event('demo-version-changed'));
-        // Clean up the ?v= param from the URL bar without navigating
-        params.delete('v');
-        const newSearch = params.toString();
-        const newUrl = window.location.pathname + (newSearch ? '?' + newSearch : '') + window.location.hash;
-        window.history.replaceState({}, '', newUrl);
-      }
-    } catch {
-      // Silently ignore if URL API unavailable
     }
   }, []);
   return null;

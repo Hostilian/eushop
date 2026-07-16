@@ -1,95 +1,77 @@
-# EUshop V20 Shared Design System
+# EUshop V20 Design System
 
-This design system establishes a consistent, premium visual identity for EUshop across the Website, Android app, and iOS app. The design is inspired by high-end consumer tools (Linear, Stripe) combined with a warm, organic culinary aesthetic.
+This document outlines the visual language and component specifications for the **EUshop V20** relaunch. All three platform surfaces (Android, iOS, and Web) must adhere to these tokens to ensure a unified product aesthetic.
 
 ---
 
 ## 🎨 Color Palette
 
-### Brand Colors
-- **Primary (Gourmet Forest Green)**: `#1E3F20`
-  - Used for primary buttons, prominent text, branding marks, and headers. Represents quality, fresh ingredients, and premium food sourcing.
-- **Secondary (Culinary Gold / Warm Amber)**: `#D4A373`
-  - Used for CTAs, notifications, badges, focus states, and highlights. Represents artisanal baking, wheat, honey, and quality verification.
-- **Accents**:
-  - Light Olive: `#7B8F77` - for secondary highlights, toggles, and metadata.
+### Primary & Accent Colors
+*   **Gourmet Forest Green** (`#1E3F20`)
+    *   *Usage:* Primary headers, brand branding, primary call-to-actions, navigation bars.
+*   **Culinary Gold** (`#D4A373`)
+    *   *Usage:* Interactive accents, badges (e.g., "Verified EU Trader"), checkmarks, rating stars, highlighting states.
 
 ### Neutral Colors
-- **Background (Alabaster White / Warm Ivory)**: `#FAF9F6`
-  - Used as the default app/web body background. Creates a soft, gourmet, "artisan menu" feel that is warmer and more premium than sterile cold grays.
-- **Surface (Cream White)**: `#FFFFFF`
-  - Used for cards, sheets, forms, and dialog boxes.
-- **Text (Charcoal Black)**: `#161B19`
-  - Used for body copy and headings, offering high contrast while being softer on the eyes than pure black.
-- **Borders (Warm Stone Gray)**: `#EBE9E1`
-  - Used for structural lines, card borders, and dividing lines.
+*   **Light Mode Background (Warm Ivory)** (`#FAF9F6`)
+    *   *Usage:* Body backgrounds, outer containers.
+*   **Dark Mode Background (Charcoal Black)** (`#161B19`)
+    *   *Usage:* Body backgrounds in dark mode.
+*   **Surface Color (Light Mode)** (`#FFFFFF`)
+    *   *Usage:* Cards, panels, input fields, navigation blocks.
+*   **Surface Color (Dark Mode)** (`#222825`)
+    *   *Usage:* Cards and panels in dark mode.
+*   **Muted Neutral (Warm Stone)** (`#EBE9E1`)
+    *   *Usage:* Grid borders, inactive tabs, dividers.
+*   **Dark Mode Border** (`#313A35`)
+    *   *Usage:* Muted divider lines and borders in dark mode.
 
 ### Semantic Colors
-- **Success**: `#2E7D32` (Forest Success Green)
-- **Danger/Error**: `#B33939` (Terracotta Red)
-- **Warning**: `#E67E22` (Saffron Orange)
+*   **Success:** `#2E7D32` (Emerald Green)
+*   **Danger / Error:** `#B33939` (Terracotta Red)
+*   **Warning:** `#E67E22` (Saffron Orange)
 
 ---
 
-## 🔠 Typography
+## font-family Typography
 
-- **Headings (Display)**: `Outfit`
-  - A clean, geometric sans-serif that balances modern elegance with friendly curves. Use for h1, h2, h3, and hero titles.
-- **Body Copy**: `Inter`
-  - An exceptionally readable sans-serif optimized for small interfaces, listing descriptions, and user inputs.
+### Fonts
+*   **Display Font:** `Outfit` (Geometric sans-serif)
+    *   *Usage:* Titles, headings (`h1`, `h2`, `h3`), hero copy.
+*   **Body Font:** `Inter` (Functional sans-serif)
+    *   *Usage:* Paragraphs, lists, button text, form inputs, tooltips.
 
-### Scale
-- **Display Extra Large**: `3.5rem` / `56px` (h1 Hero)
-- **Display Large**: `2.25rem` / `36px` (h2 Headers)
-- **Display Medium**: `1.5rem` / `24px` (h3 Section Titles)
-- **Body Large**: `1.125rem` / `18px`
-- **Body Regular**: `0.875rem` / `14px`
-- **Caption/Micro**: `0.75rem` / `12px` (Allergens, prices, badges)
-
----
-
-## 📐 Spacing & Grid
-
-We use an **8px grid baseline** for all layouts:
-- Padding / Margins: `4px` (xs), `8px` (sm), `16px` (md), `24px` (lg), `32px` (xl), `48px` (2xl)
-- Mobile safe-area boundaries: `16px` margin.
-- Web container maximum width: `1280px` (`max-w-7xl`).
+### Type Scale
+*   **H1 (Hero Heading):** 36pt / 48px (Bold/Black, letter-spacing: -0.02em)
+*   **H2 (Section Heading):** 24pt / 32px (Bold, letter-spacing: -0.01em)
+*   **H3 (Card Heading):** 16pt / 22px (Semi-Bold)
+*   **Body Text:** 14px (Regular, line-height: 1.6)
+*   **Small / Caption:** 11px (Medium, uppercase for labels / lowercase for descriptions)
 
 ---
 
-## ✨ Motion & Easing
+## 📏 Spacing & Grid
 
-Animations must feel tactile and snappy:
-- **Duration**: `200ms` (hover, fade-ins), `300ms` (slide-ups, panels)
-- **Easing**: `cubic-bezier(0.16, 1, 0.3, 1)` (snappy ease-out, typical of Apple platforms)
-- **Hover Scale**: `scale(1.02)` for cards, buttons.
+We use an 8px base grid system for padding, margins, and borders.
+*   **Extra Small (`xs`):** 4px
+*   **Small (`sm`):** 8px
+*   **Medium (`md`):** 16px
+*   **Large (`lg`):** 24px
+*   **Extra Large (`xl`):** 32px
+*   **Double Extra Large (`xxl`):** 48px
 
 ---
 
-## 📦 Core Components
+## 🧱 Core Components
 
 ### 1. Buttons
-- **Primary**: Gourmet Forest Green background, Alabaster White text. Hover state: opacity `90%`, scale `1.02`.
-- **Secondary**: Alabaster White background, Gourmet Forest Green text, Warm Stone Gray border.
-- **Accent (CTA)**: Culinary Gold background, Charcoal Black text.
+*   **Primary Button:** Background Forest Green, text Ivory, rounded-xl (12px), bold font, slight transition hover scale/opacity.
+*   **Secondary Button:** Transparent background, border Warm Stone, text Charcoal, rounded-xl.
+*   **Accent Button:** Background Culinary Gold, text Forest Green, shadow highlights.
 
 ### 2. Cards
-- Alabaster White or Cream background, rounded `24px` (`rounded-3xl` / `rounded-2xl` on mobile), thin border (`1px solid #EBE9E1`), subtle drop shadow (`shadow-sm`).
+*   **Style:** Rounded-3xl (24px), border-width 1px, background White (light mode) / Charcoal-Surface (dark mode).
+*   **Hover State:** Lift translate-y (-2px) with transition-all duration-300 ease-out.
 
-### 3. Inputs
-- Rounded `12px` (`rounded-xl`), background Alabaster White, border Warm Stone Gray, font size `14px`. On focus: border color shifts to Culinary Gold with a subtle `ring-2` accent.
-
-### 4. Navigation
-- Sticky/floating glassmorphism bar with backdrop blur (`backdrop-blur-md`) and Alabaster/Charcoal gradients depending on dark mode.
-
----
-
-## 🌙 Dark Mode System
-
-- **Background (Charcoal Black)**: `#161B19`
-- **Surface (Dark Slate)**: `#222825`
-- **Text (Alabaster White)**: `#FAF9F6`
-- **Borders (Muted Slate)**: `#313A35`
-- **Primary/Secondary Color Adjustments**:
-  - Primary Green remains `#1E3F20` but is paired with light olive details.
-  - Secondary Gold transitions to a brighter amber `#E5A869` to maintain visual contrast.
+### 3. Badge Indicators
+*   **Verified Badge:** Background Gold (25% opacity), border Gold (30% opacity), text Gold, uppercase tracking-widest, extra small font.

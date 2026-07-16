@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { ScrollView, StyleSheet, Text, View, TextInput, TouchableOpacity, KeyboardAvoidingView, Platform, ActivityIndicator } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import { theme } from '../lib/theme';
 
 // Simulate API fetch
@@ -88,58 +89,60 @@ export default function MessagesScreen() {
 
   if (activeThread && currentThread) {
     return (
-      <KeyboardAvoidingView 
-        style={styles.chatContainer} 
-        behavior={Platform.OS === 'ios' ? 'padding' : undefined}
-        keyboardVerticalOffset={Platform.OS === 'ios' ? 90 : 0}
-      >
-        <View style={styles.chatHeader}>
-          <TouchableOpacity onPress={() => setActiveThread(null)} style={styles.backButton}>
-            <Text style={styles.backText}>← Back</Text>
-          </TouchableOpacity>
-          <View>
-            <Text style={styles.chatTitle}>{currentThread.seller}</Text>
-            <Text style={styles.chatSub}>{currentThread.item}</Text>
+      <SafeAreaView style={styles.container} edges={['top', 'left', 'right']}>
+        <KeyboardAvoidingView 
+          style={styles.chatContainer} 
+          behavior={Platform.OS === 'ios' ? 'padding' : undefined}
+          keyboardVerticalOffset={Platform.OS === 'ios' ? 90 : 0}
+        >
+          <View style={styles.chatHeader}>
+            <TouchableOpacity onPress={() => setActiveThread(null)} style={styles.backButton}>
+              <Text style={styles.backText}>← Back</Text>
+            </TouchableOpacity>
+            <View>
+              <Text style={styles.chatTitle}>{currentThread.seller}</Text>
+              <Text style={styles.chatSub}>{currentThread.item}</Text>
+            </View>
           </View>
-        </View>
 
-        <ScrollView contentContainerStyle={styles.chatMessages} ref={(ref) => ref?.scrollToEnd({ animated: true })}>
-          {currentThread.messages.map((m, idx) => {
-            const isBuyer = m.sender === 'buyer';
-            return (
-              <View 
-                key={idx} 
-                style={[
-                  styles.msgWrapper, 
-                  isBuyer ? styles.msgRight : styles.msgLeft
-                ]}
-              >
-                <View style={[styles.msgBubble, isBuyer ? styles.bubbleRight : styles.bubbleLeft]}>
-                  <Text style={[styles.msgText, isBuyer ? styles.textRight : styles.textLeft]}>{m.text}</Text>
+          <ScrollView contentContainerStyle={styles.chatMessages} ref={(ref) => ref?.scrollToEnd({ animated: true })}>
+            {currentThread.messages.map((m, idx) => {
+              const isBuyer = m.sender === 'buyer';
+              return (
+                <View 
+                  key={idx} 
+                  style={[
+                    styles.msgWrapper, 
+                    isBuyer ? styles.msgRight : styles.msgLeft
+                  ]}
+                >
+                  <View style={[styles.msgBubble, isBuyer ? styles.bubbleRight : styles.bubbleLeft]}>
+                    <Text style={[styles.msgText, isBuyer ? styles.textRight : styles.textLeft]}>{m.text}</Text>
+                  </View>
                 </View>
-              </View>
-            );
-          })}
-        </ScrollView>
+              );
+            })}
+          </ScrollView>
 
-        <View style={styles.chatInputRow}>
-          <TextInput
-            style={styles.chatInput}
-            placeholder="Type your message..."
-            placeholderTextColor={theme.colors.textMuted}
-            value={replyText}
-            onChangeText={setReplyText}
-          />
-          <TouchableOpacity style={styles.sendButton} onPress={handleSendMessage}>
-            <Text style={styles.sendText}>Send</Text>
-          </TouchableOpacity>
-        </View>
-      </KeyboardAvoidingView>
+          <View style={styles.chatInputRow}>
+            <TextInput
+              style={styles.chatInput}
+              placeholder="Type your message..."
+              placeholderTextColor={theme.colors.textMuted}
+              value={replyText}
+              onChangeText={setReplyText}
+            />
+            <TouchableOpacity style={styles.sendButton} onPress={handleSendMessage}>
+              <Text style={styles.sendText}>Send</Text>
+            </TouchableOpacity>
+          </View>
+        </KeyboardAvoidingView>
+      </SafeAreaView>
     );
   }
 
   return (
-    <View style={styles.container}>
+    <SafeAreaView style={styles.container} edges={['top', 'left', 'right']}>
       {loading ? (
         <View style={styles.loadingContainer}>
           <ActivityIndicator size="large" color={theme.colors.primary} />
@@ -181,7 +184,7 @@ export default function MessagesScreen() {
           )}
         </ScrollView>
       )}
-    </View>
+    </SafeAreaView>
   );
 }
 

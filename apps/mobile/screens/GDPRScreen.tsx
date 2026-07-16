@@ -6,7 +6,6 @@ export default function GDPRScreen() {
   const [essential, setEssential] = useState(true);
   const [analytics, setAnalytics] = useState(false);
   const [marketing, setMarketing] = useState(false);
-  const [biometric, setBiometric] = useState(false);
 
   const handleExport = () => {
     Alert.alert(
@@ -100,18 +99,13 @@ export default function GDPRScreen() {
           />
         </View>
 
-        {/* Biometric */}
+        {/* Biometric — placeholder, not yet implemented */}
         <View style={styles.toggleRow}>
           <View style={styles.toggleInfo}>
-            <Text style={styles.toggleTitle}>Biometric Checkout Opt-In</Text>
-            <Text style={styles.toggleDesc}>Enables biometric Face ID / Fingerprint scans to complete orders. Under GDPR Art. 9, this requires explicit consent.</Text>
+            <Text style={styles.toggleTitle}>Biometric Checkout (Coming Soon)</Text>
+            <Text style={styles.toggleDesc}>Face ID / Touch ID checkout is planned for a future release. When available, it will require explicit GDPR Art. 9 consent before activation.</Text>
           </View>
-          <Switch
-            value={biometric}
-            onValueChange={setBiometric}
-            trackColor={{ false: '#767577', true: theme.colors.secondary }}
-            thumbColor={biometric ? theme.colors.primary : '#f4f3f4'}
-          />
+          <Text style={styles.activeLabel}>Not Available</Text>
         </View>
       </View>
     </ScrollView>

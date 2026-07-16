@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View, Alert } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import { theme } from '../lib/theme';
 
 export default function ProfileScreen({ navigation }: any) {
@@ -54,7 +55,7 @@ export default function ProfileScreen({ navigation }: any) {
 
   if (!isLoggedIn) {
     return (
-      <View style={styles.container}>
+      <SafeAreaView style={styles.container} edges={['top', 'left', 'right']}>
         <ScrollView contentContainerStyle={styles.scrollContent}>
           <Text style={styles.title}>Login or Sign Up</Text>
           <Text style={styles.subtitle}>Access your buyer profile or manage your verified merchant listings.</Text>
@@ -90,7 +91,7 @@ export default function ProfileScreen({ navigation }: any) {
   }
 
   return (
-    <View style={styles.container}>
+    <SafeAreaView style={styles.container} edges={['top', 'left', 'right']}>
       <ScrollView contentContainerStyle={styles.scrollContent}>
         {/* User Card */}
         <View style={styles.userCard}>
@@ -233,7 +234,7 @@ export default function ProfileScreen({ navigation }: any) {
           </TouchableOpacity>
         </View>
       </ScrollView>
-    </View>
+    </SafeAreaView>
   );
 }
 

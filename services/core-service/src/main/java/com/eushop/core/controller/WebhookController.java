@@ -70,7 +70,7 @@ public class WebhookController {
                 log.warn("STRIPE_WEBHOOK_SECRET not configured — skipping signature verification (dev mode only)");
                 event = com.stripe.model.Event.GSON.fromJson(payload, Event.class);
             } else {
-                event = Webhook.constructEvent(payload, sigHeader, webhookSecret);
+                event = constructEvent(payload, sigHeader, webhookSecret);
             }
         } catch (SignatureVerificationException e) {
             log.error("Stripe webhook signature verification failed: {}", e.getMessage());
@@ -153,5 +153,9 @@ public class WebhookController {
         } catch (Exception e) {
             log.error("Error processing payment_intent.payment_failed: {}", e.getMessage(), e);
         }
+    }
+
+    Event constructEvent(String payload, String sigHeader, String secret) throws SignatureVerificationException {
+        return Webhook.constructEvent(payload, sigHeader, secret);
     }
 }

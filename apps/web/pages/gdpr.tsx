@@ -25,34 +25,9 @@ export default function GDPRPage() {
     }
     return { analytics: false, marketing: false };
   });
-  const [biometricConsent, setBiometricConsent] = useState(() => {
-    if (typeof window !== 'undefined') {
-      return localStorage.getItem('biometricConsent') === 'true';
-    }
-    return false;
-  });
   const [error, setError] = useState('');
   const [successMsg, setSuccessMsg] = useState('');
   const router = useRouter();
-
-  const handleBiometricChange = async () => {
-    const updated = !biometricConsent;
-    setBiometricConsent(updated);
-    try {
-      localStorage.setItem('biometricConsent', String(updated));
-    } catch (e) {
-      console.error('Failed to save biometric consent to localStorage:', e);
-    }
-    
-    if (user) {
-      try {
-        const currentDate = new Date().toISOString().split('T')[0];
-        await authAPI.recordConsent(user.id, 'biometrics', currentDate, updated);
-      } catch (err) {
-        console.error('Failed to log biometric consent change on server:', err);
-      }
-    }
-  };
 
   useEffect(() => {
     const fetchUser = async () => {
@@ -390,17 +365,12 @@ export default function GDPRPage() {
               />
             </div>
 
-            <div className="flex items-center justify-between p-4 bg-gray-50 dark:bg-gray-950 rounded-xl">
+            <div className="flex items-center justify-between p-4 bg-gray-50 dark:bg-gray-950 rounded-xl opacity-60">
               <div className="max-w-[85%]">
-                <span className="font-semibold block text-sm">Biometric Authentication & Checkout</span>
-                <span className="text-xs text-gray-400 dark:text-gray-500">Allow processing of biometric authentication parameters (Face ID / Touch ID) to facilitate Zero-Step checkout. In accordance with GDPR Article 9 (Special Category Data), this requires your explicit, voluntary opt-in.</span>
+                <span className="font-semibold block text-sm">Biometric Checkout (Coming Soon)</span>
+                <span className="text-xs text-gray-400 dark:text-gray-500">Face ID / Touch ID checkout is planned for a future release. When available, it will require explicit GDPR Art. 9 consent before activation.</span>
               </div>
-              <input
-                type="checkbox"
-                checked={biometricConsent}
-                onChange={handleBiometricChange}
-                className="h-4.5 w-4.5 text-primary focus:ring-primary border-gray-300 dark:border-gray-700 rounded cursor-pointer"
-              />
+              <span className="text-xs font-bold text-gray-400 uppercase">Not Available</span>
             </div>
           </div>
         </div>
