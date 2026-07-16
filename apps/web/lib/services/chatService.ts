@@ -340,6 +340,37 @@ class ChatService {
       return false;
     }
   }
+
+  /**
+   * Edit a message
+   * @param messageId - Message ID
+   * @param newContent - New message content
+   * @returns Promise with success status
+   */
+  async editMessage(messageId: string, newContent: string): Promise<boolean> {
+    try {
+      await apiClient.put(`/api/messages/${messageId}`, { content: newContent });
+      return true;
+    } catch (error) {
+      console.error('Failed to edit message:', error);
+      return false;
+    }
+  }
+
+  /**
+   * Delete a message
+   * @param messageId - Message ID
+   * @returns Promise with success status
+   */
+  async deleteMessage(messageId: string): Promise<boolean> {
+    try {
+      await apiClient.delete(`/api/messages/${messageId}`);
+      return true;
+    } catch (error) {
+      console.error('Failed to delete message:', error);
+      return false;
+    }
+  }
 }
 
 export const chatService = new ChatService();
