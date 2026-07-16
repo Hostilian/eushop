@@ -103,6 +103,32 @@ const ConversationItem: React.FC<{
     return date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
   };
 
+  const getConversationName = () => {
+    if (conversation.isGroup) {
+      return conversation.groupName || 'Group Chat';
+    } else {
+      return conversation.seller.name;
+    }
+  };
+
+  const getConversationDescription = () => {
+    if (conversation.isGroup) {
+      return conversation.lastMessage || conversation.groupDescription || 'Group conversation';
+    } else {
+      return conversation.lastMessage || conversation.subject;
+    }
+  };
+
+  const getConversationAvatar = () => {
+    if (conversation.isGroup) {
+      return '👥';
+    } else if (conversation.food) {
+      return '🍽️';
+    } else {
+      return '👤';
+    }
+  };
+
   return (
     <div
       className={`p-3 rounded-lg cursor-pointer transition-colors ${
@@ -115,17 +141,25 @@ const ConversationItem: React.FC<{
       <div className="flex justify-between items-start">
         <div className="flex-1 min-w-0">
           <div className="flex items-center gap-2">
+            <div className="text-lg">
+              {getConversationAvatar()}
+            </div>
             <h3 className="font-medium text-sm truncate">
-              {conversation.seller.name}
+              {getConversationName()}
             </h3>
-            {conversation.food && (
+            {conversation.isGroup && (
+              <span className="text-xs bg-purple-100 text-purple-800 px-2 py-1 rounded-full truncate">
+                Group
+              </span>
+            )}
+            {conversation.food && !conversation.isGroup && (
               <span className="text-xs bg-green-100 text-green-800 px-2 py-1 rounded-full truncate">
                 {conversation.food.name}
               </span>
             )}
           </div>
           <p className="text-sm text-gray-500 truncate mt-1">
-            {conversation.lastMessage || conversation.subject}
+            {getConversationDescription()}
           </p>
         </div>
         <div className="text-xs text-gray-400 whitespace-nowrap ml-2">

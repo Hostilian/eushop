@@ -216,6 +216,130 @@ class ChatService {
       return [];
     }
   }
+
+  /**
+   * Create a group conversation
+   * @param request - Group creation request
+   * @returns Promise with created group conversation
+   */
+  async createGroupConversation(request: {
+    name: string;
+    description?: string;
+    participantIds: string[];
+    createdBy: string;
+  }): Promise<Conversation | null> {
+    try {
+      const response = await apiClient.post<ApiResponse<Conversation>>(
+        '/api/conversations/group',
+        request
+      );
+      return response.data.data || null;
+    } catch (error) {
+      console.error('Failed to create group conversation:', error);
+      return null;
+    }
+  }
+
+  /**
+   * Get group information
+   * @param conversationId - Conversation ID
+   * @returns Promise with group information
+   */
+  async getGroupInfo(conversationId: string): Promise<{
+    id: string;
+    name: string;
+    description: string;
+    imageUrl?: string;
+    participants: User[];
+    isGroup: boolean;
+    createdBy: string;
+  } | null> {
+    try {
+      const response = await apiClient.get<ApiResponse<any>>(
+        `/api/conversations/${conversationId}/group-info`
+      );
+      return response.data.data || null;
+    } catch (error) {
+      console.error('Failed to get group info:', error);
+      return null;
+    }
+  }
+
+  /**
+   * Update group information
+   * @param conversationId - Conversation ID
+   * @param request - Update request
+   * @returns Promise with updated group information
+   */
+  async updateGroupInfo(
+    conversationId: string,
+    request: { name: string; description?: string }
+  ): Promise<{
+    id: string;
+    name: string;
+    description: string;
+    imageUrl?: string;
+  } | null> {
+    try {
+      const response = await apiClient.put<ApiResponse<any>>(
+        `/api/conversations/${conversationId}/group-info`,
+        request
+      );
+      return response.data.data || null;
+    } catch (error) {
+      console.error('Failed to update group info:', error);
+      return null;
+    }
+  }
+
+  /**
+   * Add participants to a group
+   * @param conversationId - Conversation ID
+   * @param participantIds - Array of user IDs to add
+   * @returns Promise with success status
+   */
+  async addGroupParticipants(conversationId: string, participantIds: string[]): Promise<boolean> {
+    try {
+      await apiClient.post(`/api/conversations/${conversationId}/participants`, {
+        participantIds
+      });
+      return true;
+    } catch (error) {
+      console.error('Failed to add group participants:', error);
+      return false;
+    }
+  }
+
+  /**
+   * Remove participant from a group
+   * @param conversationId - Conversation ID
+   * @param userId - User ID to remove
+   * @returns Promise with success status
+   */
+  async removeGroupParticipant(conversationId: string, userId: string): Promise<boolean> {
+    try {
+      await apiClient.delete(`/api/conversations/${conversationId}/participants/${userId}`);
+      return true;
+    } catch (error) {
+      console.error('Failed to remove group participant:', error);
+      return false;
+    }
+  }
+
+  /**
+   * Leave a group conversation
+   * @param conversationId - Conversation ID
+   * @returns Promise with success status
+   */
+  async leaveGroupConversation(conversationId: string): Promise<boolean> {
+    try {
+      await apiClient.post(`/api/conversations/${conversationId}/leave`);
+      return true;
+    } catch (error) {
+      console.error('Failed to leave group conversation:', error);
+      return false;
+    }
+  }
 }
 
 export const chatService = new ChatService();
