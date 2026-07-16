@@ -105,6 +105,7 @@ export default function PredictiveSearch({ onSearch, onClear }: PredictiveSearch
 
       return () => clearInterval(interval);
     }
+    return undefined;
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [aiState, query]);
 

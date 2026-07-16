@@ -70,12 +70,12 @@ public class ConversationController {
     }
 
     @PostMapping("/{id}/messages")
-    public ResponseEntity<ApiResponse<Conversation>> addMessage(
+    public ResponseEntity<ApiResponse<Message>> addMessage(
             @PathVariable String id,
             @RequestBody MessageRequest request,
             @RequestHeader(value = "X-User-Id", required = false) String userId) {
-        Conversation conversation = conversationService.addMessage(id, userId, request.getContent());
-        return ResponseEntity.ok(ApiResponse.success(conversation, "Message added"));
+        Message message = conversationService.addMessage(id, userId, request.getContent());
+        return ResponseEntity.ok(ApiResponse.success(message, "Message added"));
     }
 
     @GetMapping("/{id}/messages")

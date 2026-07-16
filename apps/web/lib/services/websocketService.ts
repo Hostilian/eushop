@@ -65,13 +65,13 @@ class WebSocketService {
     const socketUrl = this.getWebSocketUrl();
     this.socket = new WebSocket(socketUrl);
 
-    // @ts-ignore - Stomp is loaded via CDN
+    // @ts-expect-error - Stomp is supplied by the host page until the client is migrated.
     this.stompClient = Stomp.over(this.socket);
 
     this.stompClient.connect(
       { Authorization: `Bearer ${token}` },
       () => this.onConnect(),
-      (error: any) => this.onError(error)
+      (error: any) => this.handleConnectionError(error)
     );
   }
 
@@ -197,7 +197,7 @@ class WebSocketService {
   /**
    * Handle connection errors
    */
-  private onError(error: any): void {
+  private handleConnectionError(error: any): void {
     console.error('WebSocket error:', error);
     this.connected = false;
 
@@ -401,6 +401,16 @@ class WebSocketService {
    */
   public offReaction(callback: WebSocketEventCallback): void {
     this.reactionCallbacks = this.reactionCallbacks.filter(cb => cb !== callback);
+  }
+
+  public offConnection(callback: WebSocketEventCallback): void {
+    this.connectionCallbacks = this.connectionCallbacks.filter(
+      cb => cb !== callback
+    );
+  }
+
+  public offError(callback: WebSocketEventCallback): void {
+    this.errorCallbacks = this.errorCallbacks.filter(cb => cb !== callback);
   }
 
   /**

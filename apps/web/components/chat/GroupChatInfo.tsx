@@ -9,6 +9,7 @@ import { Alert } from '../ui/Alert';
 import { chatService } from '../../lib/services/chatService';
 import { useAuth } from '../../lib/auth';
 import { UserAvatar } from '../../components/user/UserAvatar';
+import { UserSearch } from '../../components/user/UserSearch';
 import { User } from '../../lib/types';
 
 interface GroupChatInfoProps {
@@ -70,7 +71,7 @@ export const GroupChatInfo: React.FC<GroupChatInfoProps> = ({
       });
 
       if (updatedInfo) {
-        setGroupInfo(updatedInfo);
+        setGroupInfo({ ...groupInfo, ...updatedInfo });
         setIsEditing(false);
       } else {
         setError('Failed to update group information');
@@ -201,6 +202,7 @@ export const GroupChatInfo: React.FC<GroupChatInfoProps> = ({
             </label>
             {isEditing ? (
               <Input
+                label="Group name"
                 value={editedName}
                 onChange={(e) => setEditedName(e.target.value)}
                 className="w-full"
@@ -282,7 +284,10 @@ export const GroupChatInfo: React.FC<GroupChatInfoProps> = ({
                 <UserSearch
                   onSelect={setNewParticipants}
                   selectedUsers={newParticipants}
-                  excludeUserIds={[user?.id, ...groupInfo.participants.map(p => p.id)]}
+                  excludeUserIds={[
+                    ...(user ? [user.id] : []),
+                    ...groupInfo.participants.map(p => p.id),
+                  ]}
                   placeholder="Search users to add"
                   className="flex-1"
                 />

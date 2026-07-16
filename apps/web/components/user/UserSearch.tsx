@@ -70,6 +70,7 @@ export const UserSearch: React.FC<UserSearchProps> = ({
   return (
     <div className={`relative ${className}`}>
       <Input
+        label="Search users"
         type="text"
         placeholder={placeholder}
         value={query}

@@ -59,8 +59,9 @@ export const MessageSearch: React.FC<MessageSearchProps> = ({
   return (
     <div className="space-y-4">
       <form onSubmit={handleSubmit} className="flex gap-2">
-        <Input
-          type="text"
+      <Input
+        label="Search messages"
+        type="text"
           placeholder="Search messages..."
           value={query}
           onChange={(e) => setQuery(e.target.value)}

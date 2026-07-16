@@ -9,14 +9,9 @@ const nextConfig = {
   // trailingSlash ensures /page -> /page/index.html, required for GitHub Pages static hosting
   trailingSlash: true,
   reactStrictMode: true,
+  transpilePackages: ['@eushop/compliance'],
   images: {
     unoptimized: true,
-  },
-  eslint: {
-    ignoreDuringBuilds: true,
-  },
-  typescript: {
-    ignoreBuildErrors: true,
   },
   env: {
     NEXT_PUBLIC_API_URL: process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000/api',
@@ -26,4 +21,3 @@ const nextConfig = {
 };
 
 module.exports = nextConfig;
-

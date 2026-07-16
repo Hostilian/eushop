@@ -573,6 +573,26 @@ export const authAPI = {
     }
   },
 
+  getCachedProfile: (): User | null => {
+    if (typeof window === 'undefined') {
+      return null;
+    }
+
+    const rawProfile =
+      sessionStorage.getItem('userProfile') ?? localStorage.getItem('user');
+    if (!rawProfile) {
+      return null;
+    }
+
+    try {
+      return JSON.parse(rawProfile) as User;
+    } catch {
+      sessionStorage.removeItem('userProfile');
+      localStorage.removeItem('user');
+      return null;
+    }
+  },
+
   becomeSeller: async (userId: string, data: BecomeSellerRequest): Promise<any> => {
     try {
       const response = await apiClient.put(`/users/${userId}/become-seller`, data);

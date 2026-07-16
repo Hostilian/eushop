@@ -7,7 +7,8 @@ import { PageWrapper } from '../../components/layout/PageWrapper';
 import { AllergenBadge, VerifiedSellerBadge } from '../../components/ui/Badge';
 // COMPLIANCE-REVIEW: EU_ALLERGENS_14 is the single source of truth for allergen names.
 // Import from packages/compliance once workspace resolution is confirmed.
-import { EU_ALLERGENS_14 } from '../../../packages/compliance/src/allergens';
+import { EU_ALLERGENS_14 } from '@eushop/compliance';
+import { StartConversationButton } from '../../components/chat/StartConversationButton';
 
 interface FoodDetail {
   id: string;

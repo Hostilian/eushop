@@ -5,7 +5,7 @@
  */
 
 import { apiClient } from '../api-client';
-import { ApiResponse } from '../types';
+import { ApiResponse, User } from '../types';
 
 export interface Conversation {
   id: string;
@@ -27,6 +27,10 @@ export interface Conversation {
   isActive: boolean;
   createdAt: string;
   updatedAt?: string;
+  isGroup?: boolean;
+  groupName?: string;
+  groupDescription?: string;
+  participants?: User[];
 }
 
 export interface Message {

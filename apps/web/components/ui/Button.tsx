@@ -1,8 +1,14 @@
 
 import * as React from 'react';
 
-type ButtonVariant = 'primary' | 'secondary' | 'ghost' | 'danger';
-type ButtonSize = 'sm' | 'md' | 'lg';
+type ButtonVariant =
+  | 'primary'
+  | 'secondary'
+  | 'outline'
+  | 'ghost'
+  | 'danger'
+  | 'destructive';
+type ButtonSize = 'sm' | 'md' | 'lg' | 'icon';
 
 interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
   variant?: ButtonVariant;
@@ -18,9 +24,13 @@ const variantClasses: Record<ButtonVariant, string> = {
     'bg-brand-green text-white hover:opacity-90 focus-visible:ring-brand-green/50 shadow-sm',
   secondary:
     'bg-white dark:bg-gray-900 text-gray-800 dark:text-gray-200 border border-gray-200 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-800 focus-visible:ring-gray-300 shadow-sm',
+  outline:
+    'bg-transparent text-gray-800 dark:text-gray-200 border border-gray-300 dark:border-gray-600 hover:bg-gray-50 dark:hover:bg-gray-800 focus-visible:ring-gray-300',
   ghost:
     'bg-transparent text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 focus-visible:ring-gray-300',
   danger:
+    'bg-red-600 text-white hover:bg-red-700 focus-visible:ring-red-400 shadow-sm',
+  destructive:
     'bg-red-600 text-white hover:bg-red-700 focus-visible:ring-red-400 shadow-sm',
 };
 
@@ -28,6 +38,7 @@ const sizeClasses: Record<ButtonSize, string> = {
   sm: 'px-3 py-1.5 text-sm gap-1.5',
   md: 'px-4 py-2.5 text-sm gap-2',
   lg: 'px-6 py-3 text-base gap-2.5',
+  icon: 'h-10 w-10 p-0',
 };
 
 /**

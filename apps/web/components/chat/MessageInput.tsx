@@ -7,7 +7,7 @@ import { chatService } from '../../lib/services/chatService';
 import { websocketService } from '../../lib/services/websocketService';
 import { Alert } from '../ui/Alert';
 import { FileAttachment } from './FileAttachment';
-import { Paperclip } from 'lucide-react';
+import { File, X } from 'lucide-react';
 
 interface MessageInputProps {
   conversationId: string;

@@ -5,15 +5,12 @@ import { websocketService } from '../../lib/services/websocketService';
 import { Tooltip } from '../ui/Tooltip';
 
 export const WebSocketStatus: React.FC = () => {
-  const [connected, setConnected] = useState(false);
+  const [connected, setConnected] = useState(() => websocketService.isConnected());
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    // Set initial state
-    setConnected(websocketService.isConnected());
-
     // Register callbacks
-    const handleConnection = (data: any) => {
+    const handleConnection = () => {
       setConnected(true);
       setError(null);
     };

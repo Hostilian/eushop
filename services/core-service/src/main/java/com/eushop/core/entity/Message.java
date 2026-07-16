@@ -1,7 +1,11 @@
 package com.eushop.core.entity;
 
 import java.time.LocalDateTime;
+import java.util.HashMap;
+import java.util.Map;
 
+import org.hibernate.annotations.JdbcTypeCode;
+import org.hibernate.type.SqlTypes;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -38,6 +42,10 @@ public class Message {
 
     @Column(name = "created_at", nullable = false, updatable = false)
     private LocalDateTime createdAt;
+
+    @JdbcTypeCode(SqlTypes.JSON)
+    @Column(name = "metadata", nullable = false, columnDefinition = "jsonb")
+    private Map<String, Object> metadata = new HashMap<>();
 
     public Message() {
     }
@@ -104,5 +112,13 @@ public class Message {
 
     public void setCreatedAt(LocalDateTime createdAt) {
         this.createdAt = createdAt;
+    }
+
+    public Map<String, Object> getMetadata() {
+        return metadata;
+    }
+
+    public void setMetadata(Map<String, Object> metadata) {
+        this.metadata = metadata == null ? new HashMap<>() : metadata;
     }
 }
