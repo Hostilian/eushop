@@ -40,8 +40,8 @@ class WebhookControllerTest {
     @BeforeEach
     void setUp() {
         MockitoAnnotations.openMocks(this);
-        webhookController.webhookSecret = webhookSecret;
-        webhookController.activeProfile = "test";
+        org.springframework.test.util.ReflectionTestUtils.setField(webhookController, "webhookSecret", webhookSecret);
+        org.springframework.test.util.ReflectionTestUtils.setField(webhookController, "activeProfile", "test");
     }
 
     @Test
@@ -65,7 +65,7 @@ class WebhookControllerTest {
     void handleStripeWebhook_InvalidSignature_ReturnsBadRequest() throws Exception {
         // Mock Webhook.constructEvent to throw SignatureVerificationException
         WebhookController spyController = spy(webhookController);
-        doThrow(new SignatureVerificationException("Invalid signature", "sig", "payload"))
+        doThrow(new SignatureVerificationException("Invalid signature", "sig"))
                 .when(spyController).constructEvent(anyString(), anyString(), anyString());
 
         ResponseEntity<String> response = spyController.handleStripeWebhook(validPayload, "invalid-sig");
@@ -86,9 +86,10 @@ class WebhookControllerTest {
         when(mockPaymentIntent.getId()).thenReturn("pi_1");
 
         // Mock Event deserialization
-        Event.Data mockData = mock(Event.Data.class);
-        when(mockEvent.getData()).thenReturn(mockData);
-        when(mockData.getObject()).thenReturn(Optional.of(mockPaymentIntent));
+        com.stripe.model.EventDataObjectDeserializer mockDeserializer = mock(com.stripe.model.EventDataObjectDeserializer.class);
+        when(mockEvent.getDataObjectDeserializer()).thenReturn(mockDeserializer);
+        Optional<com.stripe.model.StripeObject> stripeObjectOptional = Optional.of(mockPaymentIntent);
+        when(mockDeserializer.getObject()).thenReturn(stripeObjectOptional);
 
         // Mock OrderService
         Order mockOrder = new Order();

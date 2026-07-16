@@ -2,6 +2,7 @@ import Link from 'next/link';
 import { useRouter } from 'next/router';
 import { useEffect, useState } from 'react';
 import { foodAPI } from '../../lib/services'; // Updated import
+import { PageWrapper } from '../../components/layout/PageWrapper';
 
 interface FoodDetail {
   id: string;
@@ -233,63 +234,55 @@ export default function FoodDetailPage() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-        <div className="text-center">
-          <div className="inline-block animate-spin rounded-full h-8 w-8 border-b-2 border-primary mb-4"></div>
-          <p className="text-gray-600">Loading food details...</p>
-          <p className="text-gray-400 text-sm mt-2">This may take a moment</p>
-          {/* Graceful degradation: Show a fallback message if loading takes too long */}
-          <div className="mt-4">
-            <button 
-              onClick={() => router.back()}
-              className="text-primary hover:underline text-sm"
-            >
-              ← Go back
-            </button>
+      <PageWrapper>
+        <div className="py-24 flex items-center justify-center">
+          <div className="text-center">
+            <div className="inline-block animate-spin rounded-full h-8 w-8 border-b-2 border-primary mb-4"></div>
+            <p className="text-gray-600 dark:text-gray-400">Loading food details...</p>
+            <p className="text-gray-400 dark:text-gray-500 text-sm mt-2">This may take a moment</p>
+            <div className="mt-4">
+              <button 
+                onClick={() => router.back()}
+                className="text-primary hover:underline text-sm"
+              >
+                ← Go back
+              </button>
+            </div>
           </div>
         </div>
-      </div>
+      </PageWrapper>
     );
   }
 
   if (error || !food) {
     return (
-      <div className="min-h-screen bg-gray-50">
-        <div className="max-w-7xl mx-auto px-4 py-12">
-          <Link href="/search" className="text-primary hover:underline mb-8 inline-block">
+      <PageWrapper>
+        <div className="max-w-7xl mx-auto py-6">
+          <Link href="/search" className="text-primary hover:underline mb-8 inline-block font-semibold">
             ← Back to Search
           </Link>
-          <div className="bg-red-50 border border-red-200 text-red-700 px-6 py-4 rounded-xl">
+          <div className="bg-red-50 dark:bg-red-950/20 border border-red-200 dark:border-red-900/50 text-red-700 dark:text-red-400 px-6 py-4 rounded-xl">
             <p className="font-semibold">{error || 'Food not found'}</p>
             <p className="text-sm mt-2">
               Our service is experiencing temporary issues. You can still browse other products or 
               <Link href="/search" className="text-primary font-semibold ml-1">search for alternatives</Link>.
             </p>
-            {/* Graceful degradation: Provide offline-specific guidance */}
             {!navigator.onLine && (
-              <div className="mt-4 p-3 bg-yellow-50 border border-yellow-200 rounded-lg">
-                <p className="text-yellow-800 text-sm">
+              <div className="mt-4 p-3 bg-yellow-50 dark:bg-yellow-950/20 border border-yellow-200 dark:border-yellow-900/50 rounded-lg">
+                <p className="text-yellow-800 dark:text-yellow-400 text-sm">
                   <strong>Offline mode:</strong> You appear to be offline. Some features may be limited until you reconnect.
                 </p>
               </div>
             )}
           </div>
         </div>
-      </div>
+      </PageWrapper>
     );
   }
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      <nav className="sticky top-0 z-50 bg-white border-b border-gray-100 shadow-sm">
-        <div className="max-w-7xl mx-auto px-4 py-4">
-          <Link href="/" className="text-3xl font-extrabold text-primary tracking-tight flex items-center gap-2">
-            <span className="text-secondary">🌿</span> EUshop
-          </Link>
-        </div>
-      </nav>
-
-      <div className="max-w-7xl mx-auto px-4 py-12">
+    <PageWrapper>
+      <div className="max-w-7xl mx-auto py-6">
         <Link href="/search" className="text-primary hover:underline mb-6 inline-block font-semibold">
           ← Back to Search
         </Link>
@@ -432,6 +425,6 @@ export default function FoodDetailPage() {
           </div>
         </div>
       </div>
-    </div>
+    </PageWrapper>
   );
 }

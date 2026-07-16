@@ -37,8 +37,8 @@ public class FoodServiceTest {
         mockFood.setPrice(24.99);
         mockFood.setCountry("BE");
         mockFood.setCategory("Chocolates");
-        mockFood.setAllergens(Arrays.asList("Milk", "Nuts"));
-        mockFood.setDietaryRestrictions(Arrays.asList("Vegetarian", "Gluten-Free"));
+        mockFood.setAllergens("[\"Milk\", \"Nuts\"]");
+        mockFood.setDietaryRestrictions("[\"Vegetarian\", \"Gluten-Free\"]");
         mockFood.setViewCount(5);
         mockFood.setAvailable(true);
     }
@@ -79,8 +79,8 @@ public class FoodServiceTest {
         updateDetails.setCategory("Gifts");
         updateDetails.setPrice(29.99);
         updateDetails.setCountry("BE");
-        updateDetails.setAllergens(Arrays.asList("Nuts"));
-        updateDetails.setDietaryRestrictions(Arrays.asList("Vegan"));
+        updateDetails.setAllergens("[\"Nuts\"]");
+        updateDetails.setDietaryRestrictions("[\"Vegan\"]");
 
         Food updated = foodService.updateFood("food-123", updateDetails);
 
@@ -88,8 +88,8 @@ public class FoodServiceTest {
         assertEquals("Updated Chocolates", updated.getName());
         assertEquals("Updated Description", updated.getDescription());
         assertEquals(29.99, updated.getPrice());
-        assertEquals(Arrays.asList("Nuts"), updated.getAllergens());
-        assertEquals(Arrays.asList("Vegan"), updated.getDietaryRestrictions());
+        assertEquals("[\"Nuts\"]", updated.getAllergens());
+        assertEquals("[\"Vegan\"]", updated.getDietaryRestrictions());
         verify(foodRepository, times(1)).findById("food-123");
         verify(foodRepository, times(1)).save(mockFood);
     }
@@ -101,8 +101,8 @@ public class FoodServiceTest {
         Food created = foodService.createFood(mockFood, "seller-999");
 
         assertNotNull(created);
-        assertEquals(Arrays.asList("Milk", "Nuts"), created.getAllergens());
-        assertEquals(Arrays.asList("Vegetarian", "Gluten-Free"), created.getDietaryRestrictions());
+        assertEquals("[\"Milk\", \"Nuts\"]", created.getAllergens());
+        assertEquals("[\"Vegetarian\", \"Gluten-Free\"]", created.getDietaryRestrictions());
         verify(foodRepository, times(1)).save(mockFood);
     }
 

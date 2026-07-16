@@ -341,7 +341,7 @@ function SandboxTester() {
         <button
           onClick={handleSend}
           disabled={sending}
-          className="bg-blue-600 hover:bg-blue-700 text-white rounded-xl text-xs font-bold transition md:col-span-1 py-2 uppercase"
+          className="bg-brand-green hover:opacity-90 text-white rounded-xl text-xs font-bold transition md:col-span-1 py-2 uppercase"
         >
           {sending ? 'Sending...' : 'Send Call'}
         </button>
@@ -385,14 +385,14 @@ export default function DeveloperDocs({ statusContent, devContent, auditContent,
     <div className="min-h-screen bg-gray-50 text-gray-800 font-sans flex flex-col">
       <nav className="bg-white border-b border-gray-150 py-4 px-6 shadow-sm sticky top-0 z-50">
         <div className="max-w-7xl mx-auto flex justify-between items-center">
-          <Link href="/" className="text-2xl font-extrabold text-primary flex items-center gap-2">
+          <Link href="/" className="text-2xl font-extrabold text-brand-green flex items-center gap-2">
             <span className="text-secondary">🌿</span> EUshop
           </Link>
           <div className="flex items-center gap-3">
             <span className="text-xs font-bold px-2.5 py-1 bg-blue-50 border border-blue-100 text-blue-700 rounded-full">
               Developer Portal
             </span>
-            <Link href="/" className="text-xs font-bold text-gray-500 hover:text-primary transition">
+            <Link href="/" className="text-xs font-bold text-gray-500 hover:text-brand-green transition">
               Storefront
             </Link>
           </div>
@@ -409,7 +409,7 @@ export default function DeveloperDocs({ statusContent, devContent, auditContent,
               <button
                 onClick={() => setActiveDoc('status')}
                 className={`w-full text-left px-3 py-2 rounded-xl text-xs font-bold transition ${
-                  activeDoc === 'status' ? 'bg-blue-50 text-blue-600' : 'text-gray-600 hover:bg-gray-50'
+                  activeDoc === 'status' ? 'bg-brand-green/10 text-brand-green' : 'text-gray-600 hover:bg-gray-50'
                 }`}
               >
                 STATUS.md
@@ -417,7 +417,7 @@ export default function DeveloperDocs({ statusContent, devContent, auditContent,
               <button
                 onClick={() => setActiveDoc('dev')}
                 className={`w-full text-left px-3 py-2 rounded-xl text-xs font-bold transition ${
-                  activeDoc === 'dev' ? 'bg-blue-50 text-blue-600' : 'text-gray-600 hover:bg-gray-50'
+                  activeDoc === 'dev' ? 'bg-brand-green/10 text-brand-green' : 'text-gray-600 hover:bg-gray-50'
                 }`}
               >
                 DEVELOPMENT.md
@@ -425,7 +425,7 @@ export default function DeveloperDocs({ statusContent, devContent, auditContent,
               <button
                 onClick={() => setActiveDoc('audit')}
                 className={`w-full text-left px-3 py-2 rounded-xl text-xs font-bold transition ${
-                  activeDoc === 'audit' ? 'bg-blue-50 text-blue-600' : 'text-gray-600 hover:bg-gray-50'
+                  activeDoc === 'audit' ? 'bg-brand-green/10 text-brand-green' : 'text-gray-600 hover:bg-gray-50'
                 }`}
               >
                 Investor Diligence Plan
@@ -433,7 +433,7 @@ export default function DeveloperDocs({ statusContent, devContent, auditContent,
               <button
                 onClick={() => setActiveDoc('api')}
                 className={`w-full text-left px-3 py-2 rounded-xl text-xs font-bold transition ${
-                  activeDoc === 'api' ? 'bg-blue-50 text-blue-600' : 'text-gray-600 hover:bg-gray-50'
+                  activeDoc === 'api' ? 'bg-brand-green/10 text-brand-green' : 'text-gray-600 hover:bg-gray-50'
                 }`}
               >
                 API_REFERENCE.md
@@ -475,7 +475,7 @@ export default function DeveloperDocs({ statusContent, devContent, auditContent,
                   href="https://github.com"
                   target="_blank"
                   rel="noreferrer"
-                  className="text-primary hover:underline font-bold"
+                  className="text-brand-green hover:underline font-bold"
                 >
                   Improve this page.
                 </a>

@@ -3,7 +3,6 @@ import Link from 'next/link';
 import { useRouter } from 'next/router';
 import { authAPI, User } from '../../lib/services';
 import { Button } from '../ui/Button';
-import VersionSelector from './VersionSelector';
 
 export function Navbar() {
   // Since User interface is removed from services.ts, we use 'any' for now.
@@ -98,29 +97,29 @@ export function Navbar() {
     <header className="sticky top-0 z-50 w-full border-b border-gray-100 bg-white/85 backdrop-blur-md transition-colors dark:border-gray-800 dark:bg-gray-950/85">
       <div className="mx-auto flex max-w-7xl h-16 items-center justify-between px-4 sm:px-6 lg:px-8">
         {/* Brand Logo */}
-        <Link href="/" className="flex items-center gap-2 font-display text-2xl font-extrabold text-primary dark:text-blue-400">
-          <span className="text-secondary dark:text-green-400 text-3xl">🌿</span>
-          <span className="tracking-tight text-brand-dark dark:text-white">EU<span className="text-primary dark:text-blue-400">shop</span></span>
+        <Link href="/" className="flex items-center gap-2 font-display text-2xl font-extrabold">
+          <span className="text-3xl">🌿</span>
+          <span className="tracking-tight text-brand-dark dark:text-white">EU<span className="text-brand-green dark:text-brand-gold">shop</span></span>
         </Link>
 
         {/* Desktop Navigation */}
         <nav className="hidden md:flex items-center gap-8 text-sm font-semibold text-gray-700 dark:text-gray-300">
-          <Link href="/" className="transition hover:text-primary dark:hover:text-blue-400">
+          <Link href="/" className="transition hover:text-brand-green dark:hover:text-brand-gold">
             Home
           </Link>
-          <Link href="/search" className="transition hover:text-primary dark:hover:text-blue-400">
+          <Link href="/search" className="transition hover:text-brand-green dark:hover:text-brand-gold">
             Browse Food
           </Link>
-          <Link href="/android" className="transition hover:text-primary dark:hover:text-blue-400 font-bold text-blue-500 dark:text-blue-400 flex items-center gap-1">
+          <Link href="/become-seller" className="transition hover:text-brand-green dark:hover:text-brand-gold">
+            Sell with Us
+          </Link>
+          <Link href="/android" className="transition hover:opacity-80 font-bold text-brand-green dark:text-brand-gold flex items-center gap-1">
             <span>📱</span> Get the App
           </Link>
         </nav>
 
         {/* Action Buttons */}
         <div className="flex items-center gap-4">
-          {/* Version Switcher */}
-          <VersionSelector />
-
           {/* Dark Mode Toggle */}
           <button
             onClick={toggleTheme}

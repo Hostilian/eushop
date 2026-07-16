@@ -55,7 +55,7 @@ class UserControllerTest {
         ResponseEntity<ApiResponse<Void>> response = userController.deleteAccount("user_1", "user_2");
 
         assertEquals(HttpStatus.FORBIDDEN, response.getStatusCode());
-        assertEquals("Cannot delete other user's account", response.getBody().getMessage());
+        assertEquals("Cannot delete other user's account", response.getBody().getError());
         verify(userService, never()).anonymiseUser(anyString());
     }
 
@@ -79,7 +79,7 @@ class UserControllerTest {
         ResponseEntity<ApiResponse<Map<String, Object>>> response = userController.exportAccount("user_1", "user_2");
 
         assertEquals(HttpStatus.FORBIDDEN, response.getStatusCode());
-        assertEquals("Cannot export other user's data", response.getBody().getMessage());
+        assertEquals("Cannot export other user's data", response.getBody().getError());
         verify(userService, never()).exportUserData(anyString());
     }
 }

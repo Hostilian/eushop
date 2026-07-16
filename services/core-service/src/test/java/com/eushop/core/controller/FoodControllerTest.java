@@ -73,7 +73,7 @@ class FoodControllerTest {
         ResponseEntity<ApiResponse<FoodDTO>> response = foodController.createFood(foodRequest, "buyer_1");
 
         assertEquals(HttpStatus.FORBIDDEN, response.getStatusCode());
-        assertEquals("Only sellers may create listings. Please complete seller registration.", response.getBody().getMessage());
+        assertEquals("Only sellers may create listings. Please complete seller registration.", response.getBody().getError());
     }
 
     @Test
@@ -83,7 +83,7 @@ class FoodControllerTest {
         ResponseEntity<ApiResponse<FoodDTO>> response = foodController.createFood(foodRequest, "seller_1");
 
         assertEquals(HttpStatus.FORBIDDEN, response.getStatusCode());
-        assertEquals("DSA_VERIFICATION_REQUIRED: Your seller account is pending admin verification. You will be notified when your KYC check is complete.", response.getBody().getMessage());
+        assertEquals("DSA_VERIFICATION_REQUIRED: Your seller account is pending admin verification. You will be notified when your KYC check is complete.", response.getBody().getError());
     }
 
     @Test
@@ -109,6 +109,6 @@ class FoodControllerTest {
         ResponseEntity<ApiResponse<FoodDTO>> response = foodController.createFood(foodRequest, "nonexistent");
 
         assertEquals(HttpStatus.UNAUTHORIZED, response.getStatusCode());
-        assertEquals("User not found", response.getBody().getMessage());
+        assertEquals("User not found", response.getBody().getError());
     }
 }

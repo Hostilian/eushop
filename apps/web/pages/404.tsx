@@ -95,7 +95,7 @@ export default function NotFoundPage() {
 
           <div className="flex flex-wrap justify-center gap-3">
             <Link href="/">
-              <button className="bg-primary text-white px-6 py-3 rounded-xl font-bold hover:opacity-90 transition text-sm">
+              <button className="bg-brand-green text-white px-6 py-3 rounded-xl font-bold hover:opacity-90 transition text-sm">
                 ← Return Home
               </button>
             </Link>

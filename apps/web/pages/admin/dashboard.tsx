@@ -2,6 +2,7 @@ import { useState, useEffect, useMemo } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/router';
 import { foodAPI, FoodItem, authAPI, User } from '../../lib/services';
+import { PageWrapper } from '../../components/layout/PageWrapper';
 
 interface SellerApplication {
   id: string;
@@ -284,39 +285,28 @@ export default function AdminDashboard() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center font-sans">
-        <div className="text-center">
-          <div className="inline-block animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
-          <p className="text-gray-500 mt-4">Loading system logs...</p>
+      <PageWrapper>
+        <div className="py-24 flex items-center justify-center">
+          <div className="text-center">
+            <div className="inline-block animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
+            <p className="text-gray-500 dark:text-gray-400 mt-4">Loading system logs...</p>
+          </div>
         </div>
-      </div>
+      </PageWrapper>
     );
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 text-gray-800 font-sans">
-      {/* Top Header */}
-      <nav className="bg-white border-b border-gray-150 py-4 px-6 shadow-sm">
-        <div className="max-w-6xl mx-auto flex justify-between items-center">
-          <Link href="/" className="text-2xl font-extrabold text-primary flex items-center gap-2">
-            <span className="text-secondary">🌿</span> EUshop
-          </Link>
-          <div className="flex items-center gap-3">
-            <span className="text-xs font-bold px-2.5 py-1 bg-indigo-50 border border-indigo-100 text-indigo-700 rounded-full">
-              Operator Panel
-            </span>
-            <Link href="/" className="text-xs font-bold text-gray-500 hover:text-primary transition">
-              View Shop
-            </Link>
+    <PageWrapper>
+      <main className="max-w-6xl mx-auto py-6">
+        <div className="flex justify-between items-center mb-8 bg-white dark:bg-gray-900 p-6 rounded-3xl border border-gray-150 dark:border-gray-800 shadow-sm animate-slide-up">
+          <div>
+            <h1 className="text-xl font-black text-brand-dark dark:text-white font-display">Moderation Desk</h1>
+            <p className="text-xs text-gray-500 dark:text-gray-400">Conduct KYB verifications, review food products, monitor orders, and inspect waitlist signups.</p>
           </div>
-        </div>
-      </nav>
-
-      {/* Main Container */}
-      <main className="max-w-6xl mx-auto px-6 py-12">
-        <div className="mb-8">
-          <h1 className="text-3xl font-black text-brand-dark mb-2 font-display">Moderation Desk</h1>
-          <p className="text-xs text-gray-500">Conduct KYB verifications, review food products, monitor orders, and inspect earlywaitlist signups.</p>
+          <span className="text-xs font-bold px-2.5 py-1.5 bg-indigo-50 border border-indigo-100 dark:bg-indigo-950/20 dark:border-indigo-900/60 text-indigo-700 dark:text-indigo-400 rounded-full">
+            Operator Panel
+          </span>
         </div>
 
         {/* Tab Buttons */}
@@ -531,6 +521,6 @@ export default function AdminDashboard() {
           </div>
         )}
       </main>
-    </div>
+    </PageWrapper>
   );
 }

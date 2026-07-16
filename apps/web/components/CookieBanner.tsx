@@ -96,7 +96,7 @@ export default function CookieBanner() {
             </button>
             <button
               onClick={handleAcceptAll}
-              className="px-5 py-2.5 bg-primary text-white font-semibold rounded-lg hover:opacity-90 transition text-sm"
+              className="px-5 py-2.5 bg-brand-green text-white font-semibold rounded-lg hover:opacity-90 transition text-sm"
             >
               Accept All
             </button>
@@ -153,7 +153,7 @@ export default function CookieBanner() {
             <div className="md:col-span-3 flex justify-end">
               <button
                 onClick={handleSaveCustom}
-                className="px-5 py-2 bg-primary text-white font-bold rounded-lg hover:opacity-90 transition text-xs"
+                className="px-5 py-2 bg-brand-green text-white font-bold rounded-lg hover:opacity-90 transition text-xs"
               >
                 Save My Settings
               </button>

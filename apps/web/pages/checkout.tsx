@@ -2,7 +2,8 @@ import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { loadStripe } from '@stripe/stripe-js';
 import { Elements, CardElement, useStripe, useElements } from '@stripe/react-stripe-js';
-import { paymentAPI, orderAPI, foodAPI, authAPI, User } from '../lib/services'; // Updated import
+import { PageWrapper } from '../components/layout/PageWrapper';
+import { paymentAPI, orderAPI, foodAPI, authAPI, User } from '../lib/services';
 
 const stripePromise = loadStripe(process.env.NEXT_PUBLIC_STRIPE_PUBLIC_KEY || 'pk_test_51MockPublicKeyForCheckoutCompilationOnly');
 
@@ -168,7 +169,7 @@ function CheckoutForm() {
 
   if (orderPlaced) {
     return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center font-sans text-gray-800 p-4">
+      <div className="min-h-screen bg-gray-50 dark:bg-gray-950 flex items-center justify-center font-sans text-gray-800 dark:text-gray-200 p-4">
         <div className="max-w-md w-full bg-white p-8 rounded-2xl border border-gray-100 shadow-xl text-center">
           <div className="w-16 h-16 bg-success/10 rounded-full flex items-center justify-center mx-auto mb-6 border border-success/20">
             <span className="text-3xl text-success font-bold">✓</span>
@@ -193,20 +194,9 @@ function CheckoutForm() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 text-gray-800 font-sans">
-      <nav className="bg-white border-b border-gray-100 py-4 px-6 shadow-sm">
-        <div className="max-w-7xl mx-auto flex justify-between items-center">
-          <Link href="/" className="text-2xl font-extrabold text-primary flex items-center gap-2">
-            <span className="text-secondary">🌿</span> EUshop
-          </Link>
-          <Link href="/cart" className="text-sm font-semibold text-gray-500 hover:text-primary transition">
-            Back to Cart
-          </Link>
-        </div>
-      </nav>
-
-      <main className="max-w-5xl mx-auto px-6 py-12">
-        <h1 className="text-3xl font-extrabold text-brand-dark mb-8 font-display">Secure Checkout</h1>
+    <PageWrapper>
+      <div className="max-w-5xl mx-auto py-6">
+        <h1 className="text-3xl font-extrabold text-brand-dark dark:text-white mb-8 font-display">Secure Checkout</h1>
 
         {errorMessage && (
           <div className="mb-6 p-4 bg-danger/10 border border-danger/20 text-danger rounded-xl text-sm font-medium">
@@ -383,7 +373,7 @@ function CheckoutForm() {
               <button
                 type="submit"
                 disabled={loading || !stripe || cartItems.length === 0}
-                className="w-full bg-primary text-white py-3.5 rounded-xl font-bold hover:opacity-95 shadow-md shadow-primary/10 transition disabled:bg-gray-300 disabled:shadow-none disabled:cursor-not-allowed text-sm flex items-center justify-center gap-2"
+                className="w-full bg-brand-green text-white py-3.5 rounded-xl font-bold hover:opacity-95 shadow-md shadow-brand-green/10 transition disabled:bg-gray-300 disabled:shadow-none disabled:cursor-not-allowed text-sm flex items-center justify-center gap-2"
               >
                 {loading ? (
                   <>
@@ -397,14 +387,8 @@ function CheckoutForm() {
             </div>
           </div>
         </form>
-      </main>
-
-      <footer className="bg-brand-dark text-gray-400 py-12 border-t border-gray-800 mt-20">
-        <div className="max-w-7xl mx-auto px-4 text-center text-sm">
-          <p>&copy; {new Date().getFullYear()} EUshop. All rights reserved.</p>
-        </div>
-      </footer>
-    </div>
+      </div>
+    </PageWrapper>
   );
 }
 

@@ -84,7 +84,7 @@ export function ProductCard({
         {/* Name */}
         <Link
           href={`/food/${id}`}
-          className="font-bold text-gray-900 dark:text-gray-100 text-base leading-snug hover:text-primary dark:hover:text-blue-400 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary rounded"
+          className="font-bold text-gray-900 dark:text-gray-100 text-base leading-snug hover:text-brand-green dark:hover:text-brand-gold transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green rounded"
         >
           {name}
         </Link>
@@ -130,7 +130,7 @@ export function ProductCard({
           <button
             onClick={() => onAddToCart?.(id)}
             aria-label={`Add ${name} to cart`}
-            className="bg-primary text-white px-3 py-2 rounded-xl text-sm font-semibold hover:bg-primary/90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 transition-colors duration-150"
+            className="bg-brand-green text-white px-3 py-2 rounded-xl text-sm font-semibold hover:opacity-90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green focus-visible:ring-offset-2 transition-colors duration-150"
           >
             Add to cart
           </button>
