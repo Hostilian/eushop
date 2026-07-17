@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { chatService } from '../../lib/services/chatService';
 import { Input } from '../ui/Input';
 import { Button } from '../ui/Button';
@@ -21,20 +21,7 @@ export const MessageSearch: React.FC<MessageSearchProps> = ({
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  useEffect(() => {
-    if (!query.trim()) {
-      setResults([]);
-      return;
-    }
-
-    const searchTimeout = setTimeout(() => {
-      performSearch();
-    }, 500);
-
-    return () => clearTimeout(searchTimeout);
-  }, [query, conversationId]);
-
-  const performSearch = async () => {
+  const performSearch = useCallback(async () => {
     try {
       setLoading(true);
       setError(null);
@@ -47,27 +34,49 @@ export const MessageSearch: React.FC<MessageSearchProps> = ({
     } finally {
       setLoading(false);
     }
-  };
+  }, [query, conversationId]);
+
+  // Clear results when query becomes empty (asynchronously to avoid synchronous setState in effect)
+  useEffect(() => {
+    if (!query.trim()) {
+      setTimeout(() => {
+        setResults([]);
+      }, 0);
+    }
+  }, [query]);
+
+  // Set up debounce for search when query is not empty
+  useEffect(() => {
+    if (query.trim()) {
+      const handler = setTimeout(() => {
+        performSearch();
+      }, 500);
+      return () => clearTimeout(handler);
+    }
+  }, [query, performSearch]);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (query.trim()) {
       performSearch();
+    } else {
+      // If query is empty, we already cleared results via the above effect, but we can also clear immediately if needed.
+      setResults([]);
     }
   };
 
   return (
     <div className="space-y-4">
       <form onSubmit={handleSubmit} className="flex gap-2">
-      <Input
-        label="Search messages"
-        type="text"
+        <Input
+          label="Search messages"
+          type="text"
           placeholder="Search messages..."
           value={query}
           onChange={(e) => setQuery(e.target.value)}
           className="flex-1"
         />
-        <Button type="submit" disabled={!query.trim() || loading}>
+        <Button type="submit" disabled={loading}>
           {loading ? 'Searching...' : 'Search'}
         </Button>
       </form>

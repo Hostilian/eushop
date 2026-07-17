@@ -7,10 +7,24 @@ export default function AppDownloadPortal() {
   const [activeTab, setActiveTab] = useState<'android' | 'ios'>('android');
 
   useEffect(() => {
-    // Automatically select tab based on hash
-    if (typeof window !== 'undefined' && window.location.hash === '#ios') {
-      setActiveTab('ios');
-    }
+    // Check hash on mount and whenever hash changes
+    const handleHashChange = () => {
+      if (typeof window !== 'undefined' && window.location.hash === '#ios') {
+        setActiveTab('ios');
+      } else if (typeof window !== 'undefined') {
+        setActiveTab('android');
+      }
+    };
+
+    // Check on initial load
+    handleHashChange();
+
+    // Listen for hash changes
+    window.addEventListener('hashchange', handleHashChange);
+    
+    return () => {
+      window.removeEventListener('hashchange', handleHashChange);
+    };
   }, []);
 
   return (
@@ -297,7 +311,7 @@ export default function AppDownloadPortal() {
             </div>
             <div>
               <span className="font-bold text-brand-dark dark:text-white block">Storage Requirement</span>
-              <span className="text-xs text-gray-500 mt-1 block">45 MB for installation &amp; database package</span>
+              <span className="text-xs text-gray-500 mt-1 block">45 MB for installation & database package</span>
             </div>
           </div>
         </section>
