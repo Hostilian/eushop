@@ -11,28 +11,33 @@ export const ChatHeader: React.FC = () => {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    if (!user?.id) return;
+    let cleanup: () => void = () => {};
+    if (!user?.id) {
+      // No-op
+    } else {
+      const loadUnreadCount = async () => {
+        try {
+          setLoading(true);
+          // This is a simplified approach - in a real app, you'd get the count from a dedicated endpoint
+          // For now, we'll just check if there are any active conversations
+          const conversations = await chatService.getConversations(user.id);
+          setUnreadCount(conversations.length);
+        } catch (err) {
+          console.error('Failed to load unread count:', err);
+          setUnreadCount(0);
+        } finally {
+          setLoading(false);
+        }
+      };
 
-    const loadUnreadCount = async () => {
-      try {
-        setLoading(true);
-        // This is a simplified approach - in a real app, you'd get the count from a dedicated endpoint
-        // For now, we'll just check if there are any active conversations
-        const conversations = await chatService.getConversations(user.id);
-        setUnreadCount(conversations.length);
-      } catch (err) {
-        console.error('Failed to load unread count:', err);
-        setUnreadCount(0);
-      } finally {
-        setLoading(false);
-      }
-    };
+      loadUnreadCount();
 
-    loadUnreadCount();
+      // Poll for updates every 30 seconds
+      const interval = setInterval(loadUnreadCount, 30000);
+      cleanup = () => clearInterval(interval);
+    }
 
-    // Poll for updates every 30 seconds
-    const interval = setInterval(loadUnreadCount, 30000);
-    return () => clearInterval(interval);
+    return cleanup;
   }, [user?.id]);
 
   if (!user || loading) {

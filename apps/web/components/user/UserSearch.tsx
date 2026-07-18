@@ -42,17 +42,20 @@ export const UserSearch: React.FC<UserSearchProps> = ({
   }, [query, excludeUserIds, maxResults]);
 
   useEffect(() => {
+    let cleanup: () => void = () => {};
     if (!query.trim()) {
       // Use setTimeout to avoid synchronous state update in effect
       setTimeout(() => {
         setResults([]);
       }, 0);
-      return;
+    } else {
+      const handler = setTimeout(() => {
+        performSearch();
+      }, 300);
+      cleanup = () => clearTimeout(handler);
     }
-    const handler = setTimeout(() => {
-      performSearch();
-    }, 300);
-    return () => clearTimeout(handler);
+
+    return cleanup;
   }, [query, performSearch]);
 
   const handleSelectUser = (user: User) => {
