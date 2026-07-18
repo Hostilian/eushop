@@ -29,7 +29,6 @@ class GlobalErrorBoundary extends Component<
 
   componentDidCatch(error: Error, info: ErrorInfo) {
     console.error('[EUshop] Uncaught render error:', error, info.componentStack);
-    // In a real app, send to an error-tracking service like Sentry here
     try {
       const errorLog = {
         message: error.message,
@@ -48,7 +47,6 @@ class GlobalErrorBoundary extends Component<
 
   handleReset = () => {
     this.setState({ hasError: false, error: undefined });
-    // Navigate to home
     if (typeof window !== 'undefined') {
       window.location.href = '/';
     }
@@ -147,7 +145,7 @@ function ThemeInitializer() {
         document.documentElement.classList.remove('dark');
       }
     } catch {
-      // localStorage unavailable — default to light theme
+      // fail silently
     }
   }, []);
   return null;
@@ -155,6 +153,16 @@ function ThemeInitializer() {
 
 // ─── App Entry Point ──────────────────────────────────────────────────────────
 export default function App({ Component, pageProps }: AppProps) {
+  React.useEffect(() => {
+    if (typeof window !== 'undefined' && 'serviceWorker' in navigator) {
+      window.addEventListener('load', () => {
+        navigator.serviceWorker.register('/sw.js')
+          .then((reg) => console.log('ServiceWorker registered with scope:', reg.scope))
+          .catch((err) => console.warn('ServiceWorker registration failed:', err));
+      });
+    }
+  }, []);
+
   return (
     <>
       <Head>
@@ -162,10 +170,14 @@ export default function App({ Component, pageProps }: AppProps) {
         <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0" />
         <meta httpEquiv="X-UA-Compatible" content="IE=edge" />
         <meta name="description" content="EUshop — Pan-European artisanal food marketplace. Buy directly from ID-verified independent producers across the EU Single Market." />
+        
+        {/* PWA tags */}
+        <link rel="manifest" href="/manifest.json" />
+        <link rel="apple-touch-icon" href="/icon.png" />
+        <meta name="theme-color" content="#1e3f20" />
 
         {/* Open Graph */}
         <meta property="og:title" content="EUshop — Pan-European Artisanal Food Marketplace" />
-        {/* COMPLIANCE-REVIEW: og:description must not claim compliance status that hasn't been legally verified. */}
         <meta property="og:description" content="Discover rare artisanal delicacies from independent EU producers. Every seller is ID-verified before listing." />
         <meta property="og:type" content="website" />
 

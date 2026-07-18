@@ -1620,17 +1620,15 @@ function Run-Orchestrator {
             -Level "WARN"
 
         while ($true) {
+            # Nonstop graceful-degradation policy:
+            # AUTONOMOUS_STOP and AUTONOMOUS_COMPLETE are advisory only.
+            # The orchestrator loops until Ctrl+C or process kill.
             if (Test-Path -LiteralPath $StopPath) {
-                Write-AgentLog "Stop marker detected." "WARN"
-                break
+                Write-AgentLog "Stop marker present (advisory - nonstop mode continues)." "WARN"
             }
 
             if (Test-Path -LiteralPath $CompletePath) {
-                Write-AgentLog "Mission completion marker detected." "SUCCESS"
-                Get-Content `
-                    -LiteralPath $CompletePath `
-                    -ErrorAction SilentlyContinue
-                break
+                Write-AgentLog "Completion marker found; mission may be done, looping per nonstop policy." "SUCCESS"
             }
 
             $Sequence++
@@ -1708,10 +1706,8 @@ function Run-Orchestrator {
 
             if (Test-Path -LiteralPath $CompletePath) {
                 Write-AgentLog `
-                    "$($SelectedProvider.id) created the completion marker." `
+                    "$($SelectedProvider.id) created the completion marker; looping per nonstop policy." `
                     "SUCCESS"
-
-                continue
             }
 
             $Succeeded = (

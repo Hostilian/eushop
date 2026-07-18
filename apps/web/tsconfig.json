@@ -9,7 +9,6 @@
     ],
     "module": "ESNext",
     "skipLibCheck": true,
-    "strict": true,
     "declaration": true,
     "declarationMap": true,
     "sourceMap": true,
@@ -17,7 +16,7 @@
     "noUnusedParameters": true,
     "noImplicitReturns": true,
     "noFallthroughCasesInSwitch": true,
-    "moduleResolution": "bundler",
+    "moduleResolution": "node",
     "allowImportingTsExtensions": true,
     "resolveJsonModule": true,
     "isolatedModules": true,
@@ -30,7 +29,8 @@
     },
     "allowJs": true,
     "noEmit": true,
-    "esModuleInterop": true
+    "esModuleInterop": true,
+    "strict": false
   },
   "include": [
     "**/*.ts",

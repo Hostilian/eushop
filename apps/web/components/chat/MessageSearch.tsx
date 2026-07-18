@@ -53,6 +53,7 @@ export const MessageSearch: React.FC<MessageSearchProps> = ({
       }, 500);
       return () => clearTimeout(handler);
     }
+    return undefined;
   }, [query, performSearch]);
 
   const handleSubmit = (e: React.FormEvent) => {
@@ -73,7 +74,7 @@ export const MessageSearch: React.FC<MessageSearchProps> = ({
           type="text"
           placeholder="Search messages..."
           value={query}
-          onChange={(e) => setQuery(e.target.value)}
+          onChange={(e: React.ChangeEvent<HTMLInputElement>) => setQuery(e.target.value)}
           className="flex-1"
         />
         <Button type="submit" disabled={loading}>

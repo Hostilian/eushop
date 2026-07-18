@@ -53,21 +53,12 @@ public interface FoodRepository extends JpaRepository<Food, String> {
 
     Long countByAvailableTrue();
 
-    @Query(value = "SELECT * FROM foods WHERE available = true AND " +
-           "(:query IS NULL OR :query = '' OR " +
-           " name ILIKE CONCAT('%', :query, '%') OR " +
-           " description ILIKE CONCAT('%', :query, '%')) AND " +
-           "(:country IS NULL OR :country = '' OR country = :country) AND " +
-           "(:category IS NULL OR :category = '' OR category = :category) AND " +
-           "(:allergenFree IS NULL OR :allergenFree = '' OR NOT (allergens::jsonb @> CAST(CONCAT('[\"', :allergenFree, '\"]') AS jsonb)))",
-           countQuery = "SELECT COUNT(*) FROM foods WHERE available = true AND " +
-           "(:query IS NULL OR :query = '' OR " +
-           " name ILIKE CONCAT('%', :query, '%') OR " +
-           " description ILIKE CONCAT('%', :query, '%')) AND " +
-           "(:country IS NULL OR :country = '' OR country = :country) AND " +
-           "(:category IS NULL OR :category = '' OR category = :category) AND " +
-           "(:allergenFree IS NULL OR :allergenFree = '' OR NOT (allergens::jsonb @> CAST(CONCAT('[\"', :allergenFree, '\"]') AS jsonb)))",
-           nativeQuery = true)
+    @EntityGraph(attributePaths = {"seller"})
+    @Query("SELECT f FROM Food f WHERE f.available = true AND " +
+           "(:query IS NULL OR :query = '' OR LOWER(f.name) LIKE LOWER(CONCAT('%', :query, '%')) OR LOWER(f.description) LIKE LOWER(CONCAT('%', :query, '%'))) AND " +
+           "(:country IS NULL OR :country = '' OR f.country = :country) AND " +
+           "(:category IS NULL OR :category = '' OR f.category = :category) AND " +
+           "(:allergenFree IS NULL OR :allergenFree = '' OR LOWER(CAST(f.allergens as string)) NOT LIKE LOWER(CONCAT('%', :allergenFree, '%')))")
     Page<Food> advancedSearch(
             @Param("query") String query,
             @Param("country") String country,

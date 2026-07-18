@@ -1,0 +1,25 @@
+﻿{
+    "schemaVersion":  1,
+    "mission":  "EUshop Version 44",
+    "initializedAt":  "2026-07-19T00:11:01+02:00",
+    "repository":  "D:\\CODING\\eushop",
+    "targetBranch":  "version-44",
+    "branchAtInstall":  "codex/version-recovery-20260718",
+    "baselineCandidate":  "52c9935d33a124e6631d36af195c682cb6b2ef92",
+    "latestSafeCommit":  "52c9935d33a124e6631d36af195c682cb6b2ef92",
+    "status":  "READY",
+    "currentObjective":  "Inspect repository and establish Version 44 safely",
+    "completedTasks":  [
+                           "Installed orchestrator mission",
+                           "Installed urgent recovery override",
+                           "Initialized durable recovery files"
+                       ],
+    "nextTasks":  [
+                      "Read repository instructions and inspect Git state",
+                      "Create or continue version-44 safely",
+                      "Audit current buyer and seller journeys"
+                  ],
+    "unresolvedBlockers":  [
+
+                           ]
+}

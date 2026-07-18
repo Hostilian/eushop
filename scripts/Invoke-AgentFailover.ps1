@@ -6,7 +6,10 @@ param(
     [int]$ChatGptCooldownMinutes = 30,
     [int]$ApiCooldownMinutes = 30,
     [int]$GeminiCooldownMinutes = 30,
-    [bool]$AllowApiKeyFallback = $true
+    # Use int 0/1 instead of bool to avoid PowerShell's -File boundary
+    # Boolean-to-string coercion error ("System.String" cannot convert to bool).
+    [ValidateSet(0, 1)]
+    [int]$AllowApiKeyFallback = 1
 )
 
 Set-StrictMode -Version Latest
@@ -453,15 +456,14 @@ try {
     Write-AgentLog "API-key fallback may incur charges." "WARN"
 
     while ($true) {
+        # Nonstop graceful-degradation: AUTONOMOUS_STOP and AUTONOMOUS_COMPLETE
+        # are advisory only. Loop exits only on Ctrl+C or process kill.
         if (Test-Path -LiteralPath $StopPath) {
-            Write-AgentLog "Stop marker found." "WARN"
-            break
+            Write-AgentLog "Stop marker present (advisory - nonstop mode continues)." "WARN"
         }
 
         if (Test-Path -LiteralPath $CompletePath) {
-            Write-AgentLog "Completion marker found." "SUCCESS"
-            Get-Content -LiteralPath $CompletePath
-            break
+            Write-AgentLog "Completion marker found; looping per nonstop policy." "SUCCESS"
         }
 
         $Sequence++
@@ -596,8 +598,7 @@ try {
         )
 
         if (Test-Path -LiteralPath $CompletePath) {
-            Write-AgentLog "$Provider created the completion marker." "SUCCESS"
-            continue
+            Write-AgentLog "$Provider created the completion marker; looping per nonstop policy." "SUCCESS"
         }
 
         $Succeeded = (

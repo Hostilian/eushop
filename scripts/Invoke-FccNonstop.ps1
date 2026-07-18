@@ -63,7 +63,8 @@ Set-Location -LiteralPath $ProjectPath
 $ClaudeDirectory = Join-Path $ProjectPath ".claude"
 $LogDirectory = Join-Path $ClaudeDirectory "runner-logs"
 $CompletePath = Join-Path $ClaudeDirectory "AUTONOMOUS_COMPLETE"
-$StopPath = Join-Path $ClaudeDirectory "AUTONOMOUS_STOP"
+# AUTONOMOUS_STOP is intentionally NOT used as a hard stop in nonstop mode.
+# The loop runs until Ctrl+C or the process is killed.
 $LockPath = Join-Path $ClaudeDirectory "AUTONOMOUS_RUNNER.lock"
 
 New-Item -ItemType Directory -Path $LogDirectory -Force | Out-Null
@@ -133,20 +134,13 @@ $ConsecutiveFailures = 0
 try {
     Write-RunnerLog "STDIN-based autonomous watchdog started."
     Write-RunnerLog "fcc-work arguments are intentionally avoided because its CMD wrapper discards them."
-    Write-RunnerLog "Press Ctrl+C or create $StopPath to stop safely."
+    Write-RunnerLog "Press Ctrl+C or kill the process to stop (nonstop mode - stop marker is ignored)."
 
     while ($true) {
-        if (Test-Path -LiteralPath $StopPath) {
-            Write-RunnerLog "Stop marker detected. Exiting cleanly." "WARN"
-            break
-        }
-
+        # Nonstop mode: do not break on AUTONOMOUS_STOP or AUTONOMOUS_COMPLETE.
+        # The loop only exits on Ctrl+C or explicit process kill.
         if (Test-Path -LiteralPath $CompletePath) {
-            Write-RunnerLog "Completion marker detected." "SUCCESS"
-            Get-Content `
-                -LiteralPath $CompletePath `
-                -ErrorAction SilentlyContinue
-            break
+            Write-RunnerLog "Completion marker found; mission may be done, but continuing to loop per nonstop policy." "SUCCESS"
         }
 
         $InvocationNumber++
@@ -213,27 +207,17 @@ try {
             "(?i)Input must be provided either through stdin or as a prompt argument"
 
         if (Test-Path -LiteralPath $CompletePath) {
-            Write-RunnerLog "Claude created the completion marker." "SUCCESS"
-            continue
-        }
-
-        if (Test-Path -LiteralPath $StopPath) {
-            Write-RunnerLog "Stop marker appeared during invocation." "WARN"
-            continue
+            Write-RunnerLog "Claude created the completion marker; looping for next invocation." "SUCCESS"
         }
 
         if ($InputFailure) {
             Write-RunnerLog `
-                "The FCC launcher still did not receive stdin. See $InvocationLog" `
-                "ERROR"
-
-            Write-RunnerLog `
-                "Stopping instead of retrying a permanent interface error." `
-                "ERROR"
-
-            break
+                "stdin not received by FCC launcher (see $InvocationLog); will retry after backoff." `
+                "WARN"
+            # Do NOT break — graceful degradation keeps retrying.
         }
-        elseif ($RateLimited) {
+
+        if ($RateLimited) {
             $ConsecutiveFailures++
             Write-RunnerLog `
                 "Provider rate limit detected; repository state is preserved." `

@@ -5,9 +5,9 @@ BEGIN;
 
 -- 1. Add participants table for many-to-many relationship
 CREATE TABLE conversation_participants (
-  id VARCHAR(64) PRIMARY KEY,
-  conversation_id VARCHAR(64) NOT NULL REFERENCES conversations(id) ON DELETE CASCADE,
-  user_id VARCHAR(64) NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  conversation_id UUID NOT NULL REFERENCES conversations(id) ON DELETE CASCADE,
+  user_id UUID NOT NULL REFERENCES users(id) ON DELETE CASCADE,
   joined_at TIMESTAMP NOT NULL DEFAULT NOW(),
   role VARCHAR(20) DEFAULT 'member', -- 'member', 'admin', 'owner'
   UNIQUE(conversation_id, user_id)
@@ -22,7 +22,7 @@ ALTER TABLE conversations ADD COLUMN IF NOT EXISTS is_group BOOLEAN DEFAULT FALS
 ALTER TABLE conversations ADD COLUMN IF NOT EXISTS group_name VARCHAR(255);
 ALTER TABLE conversations ADD COLUMN IF NOT EXISTS group_description TEXT;
 ALTER TABLE conversations ADD COLUMN IF NOT EXISTS group_image_url VARCHAR(512);
-ALTER TABLE conversations ADD COLUMN IF NOT EXISTS created_by VARCHAR(64) REFERENCES users(id);
+ALTER TABLE conversations ADD COLUMN IF NOT EXISTS created_by UUID REFERENCES users(id);
 
 -- 4. Migrate existing conversations to the new structure
 INSERT INTO conversation_participants (id, conversation_id, user_id, role)
@@ -63,7 +63,7 @@ BEFORE DELETE ON conversations
 FOR EACH ROW EXECUTE FUNCTION update_conversation_participants();
 
 -- 7. Add function to check if user is in conversation
-CREATE OR REPLACE FUNCTION is_user_in_conversation(user_id VARCHAR, conversation_id VARCHAR)
+CREATE OR REPLACE FUNCTION is_user_in_conversation(user_id UUID, conversation_id UUID)
 RETURNS BOOLEAN AS $$
 BEGIN
   RETURN EXISTS (
@@ -75,8 +75,8 @@ END;
 $$ LANGUAGE plpgsql;
 
 -- 8. Add function to get other users in conversation
-CREATE OR REPLACE FUNCTION get_other_users_in_conversation(user_id VARCHAR, conversation_id VARCHAR)
-RETURNS TABLE(other_user_id VARCHAR) AS $$
+CREATE OR REPLACE FUNCTION get_other_users_in_conversation(user_id UUID, conversation_id UUID)
+RETURNS TABLE(other_user_id UUID) AS $$
 BEGIN
   RETURN QUERY
   SELECT cp.user_id FROM conversation_participants cp
