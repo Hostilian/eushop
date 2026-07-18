@@ -1,4 +1,5 @@
 import apiClient from './api-client';
+import { withFallback } from './degradation';
 
 export interface FoodItem {
   id: string;
@@ -316,6 +317,26 @@ const saveLocalUsers = (users: User[]) => {
   localStorage.setItem('local_users', JSON.stringify(users));
 };
 
+// Demo data provider for food search/getTrending/getById
+const getDemoFoods = (query?: string, country?: string, page: number = 1, size: number = 20, category?: string, allergenFree?: string): FoodItem[] => {
+  let allFoods = [...fallbackTrendingFoods]; // Use only the built-in demo data, not user-added local foods
+  if (query) {
+    const q = query.toLowerCase();
+    allFoods = allFoods.filter(f => f.name.toLowerCase().includes(q) || f.description.toLowerCase().includes(q) || (f.category && f.category.toLowerCase().includes(q)));
+  }
+  if (country) {
+    allFoods = allFoods.filter(f => f.country.toLowerCase() === country.toLowerCase());
+  }
+  if (category) {
+    allFoods = allFoods.filter(f => f.category && f.category.toLowerCase() === category.toLowerCase());
+  }
+  if (allergenFree) {
+    allFoods = allFoods.filter(f => !f.allergens || !f.allergens.some(a => a.toLowerCase() === allergenFree.toLowerCase()));
+  }
+  const start = (page - 1) * size;
+  return allFoods.slice(start, start + size);
+};
+
 // -------------------------------------------------------------
 // API SERVICES IMPLEMENTATION WITH AUTOMATIC FALLBACKS
 // -------------------------------------------------------------
@@ -362,66 +383,79 @@ export const foodAPI = {
       return allFoods.slice(start, start + size);
     }
 
-    try {
-      const params = new URLSearchParams();
-      if (query) params.append('q', query);
-      if (country) params.append('country', country);
-      if (category) params.append('category', category);
-      if (allergenFree) params.append('allergenFree', allergenFree);
-      params.append('page', (page - 1).toString());
-      params.append('size', size.toString());
+    // Non-static mode: use withFallback for resilient API calls
+    return withFallback<FoodItem[]>(
+      async () => {
+        const params = new URLSearchParams();
+        if (query) params.append('q', query);
+        if (country) params.append('country', country);
+        if (category) params.append('category', category);
+        if (allergenFree) params.append('allergenFree', allergenFree);
+        params.append('page', (page - 1).toString());
+        params.append('size', size.toString());
 
-      const response = await apiClient.get('/foods/search', { params, ...config });
-      return response.data.data?.content || response.data.content || response.data;
-    } catch (e) {
-      if (!shouldUseMock()) {
-        throw e;
-      }
-      console.warn('foodAPI.search failed. Falling back to local database simulation.');
-      let allFoods = getLocalFoods();
-      
-      if (query) {
-        const q = query.toLowerCase();
-        allFoods = allFoods.filter(f => f.name.toLowerCase().includes(q) || f.description.toLowerCase().includes(q) || (f.category && f.category.toLowerCase().includes(q)));
-      }
-      if (country) {
-        allFoods = allFoods.filter(f => f.country.toLowerCase() === country.toLowerCase());
-      }
-      if (category) {
-        allFoods = allFoods.filter(f => f.category && f.category.toLowerCase() === category.toLowerCase());
-      }
-      if (allergenFree) {
-        allFoods = allFoods.filter(f => !f.allergens || !f.allergens.some(a => a.toLowerCase() === allergenFree.toLowerCase()));
-      }
-      
-      const start = (page - 1) * size;
-      return allFoods.slice(start, start + size);
-    }
+        const response = await apiClient.get('/foods/search', { params, ...config });
+        return response.data.data?.content || response.data.content || response.data;
+      },
+      `food-search-${JSON.stringify({query, country, page, size, category, allergenFree})}`,
+      () => getDemoFoods(query, country, page, size, category, allergenFree),
+      { cacheDurationMs: 5 * 60 * 1000, demoDataTimeoutMs: 5000 }
+    );
   },
 
   getById: async (id: string, config?: any): Promise<FoodItem> => {
-    try {
-      const response = await apiClient.get(`/foods/${id}`, config);
-      return response.data;
-    } catch (e) {
-      if (!shouldUseMock()) throw e;
-      console.warn(`foodAPI.getById(${id}) failed. Falling back to local database simulation.`);
-      const allFoods = getLocalFoods();
-      const found = allFoods.find(f => f.id === id);
-      if (!found) throw new Error('Food details not found in simulated database');
-      return found;
+    if (isStaticMode()) {
+      try {
+        const response = await apiClient.get(`/foods/${id}`, config);
+        return response.data;
+      } catch (e) {
+        if (!shouldUseMock()) throw e;
+        console.warn(`foodAPI.getById(${id}) failed. Falling back to local database simulation.`);
+        const allFoods = getLocalFoods();
+        const found = allFoods.find(f => f.id === id);
+        if (!found) throw new Error('Food details not found in simulated database');
+        return found;
+      }
     }
+
+    // Non-static mode: use withFallback for resilient API calls
+    return withFallback<FoodItem>(
+      async () => {
+        const response = await apiClient.get(`/foods/${id}`, config);
+        return response.data;
+      },
+      `food-getById-${id}`,
+      () => {
+        const demoFood = fallbackTrendingFoods.find(f => f.id === id);
+        if (!demoFood) throw new Error('Demo food not found');
+        return demoFood;
+      },
+      { cacheDurationMs: 10 * 60 * 1000, demoDataTimeoutMs: 5000 }
+    );
   },
 
   getTrending: async (): Promise<FoodItem[]> => {
-    try {
-      const response = await apiClient.get('/foods/trending');
-      return response.data;
-    } catch (e) {
-      if (!shouldUseMock()) throw e;
-      console.warn('foodAPI.getTrending failed. Falling back to local database simulation.');
-      return getLocalFoods().slice(0, 3);
+    if (isStaticMode()) {
+      try {
+        const response = await apiClient.get('/foods/trending');
+        return response.data;
+      } catch (e) {
+        if (!shouldUseMock()) throw e;
+        console.warn('foodAPI.getTrending failed. Falling back to local database simulation.');
+        return getLocalFoods().slice(0, 3);
+      }
     }
+
+    // Non-static mode: use withFallback for resilient API calls
+    return withFallback<FoodItem[]>(
+      async () => {
+        const response = await apiClient.get('/foods/trending');
+        return response.data;
+      },
+      'food-getTrending',
+      () => getDemoFoods(undefined, undefined, 1, 3), // Trending: first 3 items, no filters
+      { cacheDurationMs: 30 * 60 * 1000, demoDataTimeoutMs: 5000 }
+    );
   },
 
   syncCart: async (cartItems: any[]): Promise<any> => {
@@ -445,7 +479,7 @@ export const foodAPI = {
         verified: true
       }
     };
-    
+
     try {
       const response = await apiClient.post('/foods', newItem);
       return response.data;
@@ -487,7 +521,7 @@ export const authAPI = {
         users.push(matched);
         saveLocalUsers(users);
       }
-      
+
       const payload: LoginResponse = {
         message: 'Mock login successful',
         user: matched
@@ -514,7 +548,7 @@ export const authAPI = {
       if (users.some(u => u.email === email)) {
         throw new Error('Email is already registered');
       }
-      
+
       const newUser: User = {
         id: `usr-${Date.now()}`,
         email,
@@ -527,7 +561,7 @@ export const authAPI = {
       };
       users.push(newUser);
       saveLocalUsers(users);
-      
+
       const payload: SignupResponse = {
         message: 'Mock signup successful',
         user: newUser
@@ -601,7 +635,7 @@ export const authAPI = {
     } catch (e) {
       if (!shouldUseMock()) throw e;
       console.warn('authAPI.becomeSeller failed. Recording seller application locally.');
-      
+
       // Update local application registry
       saveLocalSeller({
         userId,
@@ -631,7 +665,7 @@ export const authAPI = {
         sessionStorage.setItem('userProfile', JSON.stringify(updated));
         window.dispatchEvent(new Event('auth-changed'));
       }
-      
+
       return { success: true, message: 'Simulated seller registration registered' };
     }
   },
@@ -727,7 +761,7 @@ export const orderAPI = {
       const profile = authAPI.getCachedProfile();
       const allFoods = getLocalFoods();
       const foodItem = allFoods.find(f => f.id === order.foodId);
-      
+
       const newOrder = {
         foodId: order.foodId,
         productName: foodItem?.name || 'Artisanal Delicacy',
@@ -741,7 +775,7 @@ export const orderAPI = {
         status: 'PROCESSING',
         stripePaymentIntentId: order.stripePaymentIntentId || `pi_mock_${Date.now()}`
       };
-      
+
       saveLocalOrder(newOrder);
       return newOrder;
     }
