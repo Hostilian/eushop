@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useCallback } from 'react';
-import { Input } from '../ui/Input';
+import { Input } from '@/components/ui/Input';
 import { User } from '../../lib/types';
 import { userService } from '../../lib/services/userService';
 import { UserAvatar } from './UserAvatar';
@@ -43,6 +43,7 @@ export const UserSearch: React.FC<UserSearchProps> = ({
 
   useEffect(() => {
     if (!query.trim()) {
+      // Use setTimeout to avoid synchronous state update in effect
       setTimeout(() => {
         setResults([]);
       }, 0);
