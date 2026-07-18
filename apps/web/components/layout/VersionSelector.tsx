@@ -1,32 +1,17 @@
 import { useEffect, useState, useRef } from 'react';
 import { useRouter } from 'next/router';
-import { VERSION_SELECTOR_OPTIONS, VersionCatalogueEntry } from '@/data/version-catalog';
-
-interface VersionOption {
-  key: string;
-  name: string;
-  badge: string;
-  desc: string;
-  path: string;
-  color: string;
-}
-
-// Map VersionCatalogueEntry to VersionOption format expected by the component
-const VERSIONS: VersionOption[] = VERSION_SELECTOR_OPTIONS.map((entry): VersionOption => ({
-  key: entry.key,
-  name: entry.name,
-  badge: entry.badge,
-  desc: entry.description,
-  path: entry.path,
-  color: entry.accentClass
-}));
+import {
+  VERSION_SELECTOR_OPTIONS,
+  VersionCatalogueEntry,
+  CatalogueEntryKind
+} from '@/data/version-catalog';
 
 export default function VersionSelector() {
   const [activeVersion, setActiveVersion] = useState(() => {
     if (typeof window !== 'undefined') {
-      return localStorage.getItem('eushop-demo-version') || 'v20';
+      return localStorage.getItem('eushop-demo-version') || 'current';
     }
-    return 'v20';
+    return 'current';
   });
   const [open, setOpen] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
@@ -35,7 +20,7 @@ export default function VersionSelector() {
   useEffect(() => {
     // 1. Event listener for changes from other tabs or actions
     const handleVersionChange = () => {
-      const current = localStorage.getItem('eushop-demo-version') || 'v20';
+      const current = localStorage.getItem('eushop-demo-version') || 'current';
       setActiveVersion(current);
     };
 
@@ -55,7 +40,7 @@ export default function VersionSelector() {
     };
   }, []);
 
-  const handleSelect = (option: VersionOption) => {
+  const handleSelect = (option: VersionCatalogueEntry) => {
     localStorage.setItem('eushop-demo-version', option.key);
     setActiveVersion(option.key);
     setOpen(false);
@@ -63,18 +48,21 @@ export default function VersionSelector() {
     // Dispatch global event
     window.dispatchEvent(new Event('demo-version-changed'));
 
-    // Handle static HTML folders (v3, v6-v19)
-    if (['v3', 'v6', 'v7', 'v8', 'v9', 'v10', 'v11', 'v12', 'v13', 'v14', 'v15', 'v16', 'v17', 'v18', 'v19'].includes(option.key)) {
+    // Handle navigation based on entry kind
+    if (option.kind === 'historical-snapshot') {
+      // For historical snapshots, navigate directly to the path
       window.location.assign((router.basePath || '') + option.path);
-      return;
+    } else {
+      // For application views, use Next.js routing
+      if (option.path === '/' && router.pathname !== '/') {
+        router.push('/');
+      } else if (option.path !== '/' && router.pathname !== option.path) {
+        router.push(option.path);
+      }
     }
-
-    // Next.js client-side routing for application views (buyer-view, seller-view, etc.)
-    // Note: Application views are handled via localStorage and page-specific logic,
-    // not direct routing in this component
   };
 
-  const currentOpt = VERSIONS.find(v => v.key === activeVersion) || VERSIONS[0];
+  const currentOpt = VERSION_SELECTOR_OPTIONS.find(v => v.key === activeVersion) || VERSION_SELECTOR_OPTIONS[0];
 
   return (
     <div className="relative z-50 font-sans" ref={dropdownRef}>
@@ -92,7 +80,9 @@ export default function VersionSelector() {
 
         <div>
           <p className="text-[10px] uppercase tracking-wider font-bold text-gray-400 dark:text-gray-500 leading-none mb-0.5">Active Face</p>
-          <p className="text-xs font-semibold text-gray-800 dark:text-gray-200 leading-none">{currentOpt.name.split(' - ')[0]}</p>
+          <p className="text-xs font-semibold text-gray-800 dark:text-gray-200 leading-none">
+            {currentOpt.name.split(' - ')[0]}
+          </p>
         </div>
 
         <svg
@@ -114,12 +104,21 @@ export default function VersionSelector() {
           </div>
 
           <div className="space-y-1" role="listbox">
-            {VERSIONS.map((v) => {
-              const isSelected = v.key === activeVersion;
+            {VERSION_SELECTOR_OPTIONS.map((option) => {
+              const isSelected = option.key === activeVersion;
+
+              // Determine badge color based on kind
+              let badgeClass = 'bg-gray-100 text-gray-800';
+              if (option.kind === 'current-application') {
+                badgeClass = 'bg-emerald-100 text-emerald-800';
+              } else if (option.kind === 'application-view') {
+                badgeClass = 'bg-blue-100 text-blue-800';
+              }
+
               return (
                 <button
-                  key={v.key}
-                  onClick={() => handleSelect(v)}
+                  key={option.key}
+                  onClick={() => handleSelect(option)}
                   className={`w-full text-left p-2.5 rounded-xl transition duration-150 flex gap-3 items-start ${
                     isSelected
                       ? 'bg-gray-50 dark:bg-gray-900 border border-gray-100 dark:border-gray-800 shadow-inner'
@@ -128,17 +127,17 @@ export default function VersionSelector() {
                   role="option"
                   aria-selected={isSelected}
                 >
-                  <div className={`mt-0.5 text-[9px] font-extrabold px-1.5 py-0.5 rounded border tracking-wider bg-gradient-to-br ${v.color} shadow-sm shrink-0`}>
-                    {v.badge}
+                  <div className={`mt-0.5 text-[9px] font-extrabold px-1.5 py-0.5 rounded border tracking-wider ${badgeClass} shadow-sm shrink-0`}>
+                    {option.badge}
                   </div>
                   <div>
                     <h4 className="text-xs font-bold text-brand-dark dark:text-white flex items-center gap-1.5">
-                      {v.name}
+                      {option.name}
                       {isSelected && (
                         <span className="text-[10px] text-emerald-500">●</span>
                       )}
                     </h4>
-                    <p className="text-[11px] text-gray-500 dark:text-gray-400 mt-0.5 leading-relaxed">{v.desc}</p>
+                    <p className="text-[11px] text-gray-500 dark:text-gray-400 mt-0.5 leading-relaxed">{option.description}</p>
                   </div>
                 </button>
               );
