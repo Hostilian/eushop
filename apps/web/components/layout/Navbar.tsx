@@ -1,13 +1,21 @@
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/router';
-import { authAPI, User } from '../../lib/services';
+import { authAPI } from '../../lib/services';
+import { Badge } from '../ui/Badge';
+
+// Define User type locally since it's removed from services.ts
+interface User {
+  id?: string;
+  name?: string;
+  email?: string;
+  [key: string]: any;
+}
+
 import { Button } from '../ui/Button';
 
 export function Navbar() {
-  // Since User interface is removed from services.ts, we use 'any' for now.
-  // A proper User interface might need to be defined locally or from another source if authentication is re-implemented.
-  const [user, setUser] = useState<any | null>(null);
+  const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(false); // Set to false as user loading is disabled
   const [isDark, setIsDark] = useState(() => {
     if (typeof window !== 'undefined') {
@@ -108,14 +116,20 @@ export function Navbar() {
             Home
           </Link>
           <Link href="/search" className="transition hover:text-brand-green dark:hover:text-brand-gold">
-            Browse Food
+            Browse Products
           </Link>
           <Link href="/become-seller" className="transition hover:text-brand-green dark:hover:text-brand-gold">
             Sell with Us
           </Link>
-          <Link href="/android" className="transition hover:opacity-80 font-bold text-brand-green dark:text-brand-gold flex items-center gap-1">
-            <span>📱</span> Get the App
-          </Link>
+          {/* Trust Badges Section */}
+          <div className="flex items-center gap-2 text-xs">
+            <Badge variant="outline" className="border-brand-green text-brand-green dark:border-brand-gold dark:text-brand-gold">
+              GDPR Compliant
+            </Badge>
+            <Badge variant="outline" className="border-brand-green text-brand-green dark:border-brand-gold dark:text-brand-gold">
+              Verified Sellers
+            </Badge>
+          </div>
         </nav>
 
         {/* Action Buttons */}
@@ -134,7 +148,7 @@ export function Navbar() {
             ) : (
               // Moon icon
               <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z" />
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 008.354-5.646z" />
               </svg>
             )}
           </button>
@@ -157,7 +171,7 @@ export function Navbar() {
             ) : user ? (
               <div className="flex items-center gap-3">
                 <span className="text-sm font-semibold text-gray-700 dark:text-gray-300">
-                  Hi, {user.name.split(' ')[0]}
+                  Hi, {user.name?.split(' ')[0] || ''}
                 </span>
                 <Button variant="secondary" size="sm" onClick={handleLogout}>
                   Logout
@@ -207,16 +221,24 @@ export function Navbar() {
             onClick={() => setMobileMenuOpen(false)}
             className="block px-3 py-2 rounded-lg text-base font-semibold text-gray-700 hover:bg-gray-50 dark:text-gray-300 dark:hover:bg-gray-900"
           >
-            Browse Food
+            Browse Products
           </Link>
           <Link
-            href="/android"
+            href="/become-seller"
             onClick={() => setMobileMenuOpen(false)}
-            className="block px-3 py-2 rounded-lg text-base font-bold text-blue-500 hover:bg-gray-50 dark:text-blue-400 dark:hover:bg-gray-900"
+            className="block px-3 py-2 rounded-lg text-base font-semibold text-gray-700 hover:bg-gray-50 dark:text-gray-300 dark:hover:bg-gray-900"
           >
-            📱 Get the App
+            Sell with Us
           </Link>
-
+          {/* Trust Badges in Mobile Menu */}
+          <div className="flex flex-col gap-1 pt-4 border-t border-gray-100 dark:border-gray-800">
+            <Badge variant="outline" className="w-fit border-brand-green text-brand-green dark:border-brand-gold dark:text-brand-gold">
+              GDPR Compliant
+            </Badge>
+            <Badge variant="outline" className="w-fit border-brand-green text-brand-green dark:border-brand-gold dark:text-brand-gold">
+              Verified Sellers
+            </Badge>
+          </div>
           <div className="pt-4 border-t border-gray-100 dark:border-gray-800 flex flex-col gap-2">
             {/* User Auth Buttons - Modified for mobile menu */}
             {user ? (
