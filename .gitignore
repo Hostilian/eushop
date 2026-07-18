@@ -108,3 +108,20 @@ __pycache__/
 custom_keys.json
 *_api_keys_guide.txt
 puter-ai-test/
+
+# Hermes/FCC agent state (contains provider health, not secrets, but keep local)
+.agent-state/
+
+# Backup files created by repair scripts
+*.backup-*
+*.bak
+
+# Accidental shell artifact directories
+The content you provided for `apps/
+
+# Accidental Windows device file
+nul
+
+# Script backups
+scripts/*.backup-*
+scripts/*.backup-stdin-*

@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useCallback } from 'react';
-import { Input } from '@/components/ui/Input';
+import { Input } from '../ui/Input';
 import { User } from '../../lib/types';
 import { userService } from '../../lib/services/userService';
 import { UserAvatar } from './UserAvatar';
