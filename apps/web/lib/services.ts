@@ -295,28 +295,6 @@ const saveLocalSeller = (application: any) => {
   }
 };
 
-const getLocalUsers = (): User[] => {
-  if (typeof window === 'undefined') return [];
-  try {
-    const raw = localStorage.getItem('local_users');
-    if (!raw) {
-      const defaultUsers: User[] = [
-        { id: '1', email: 'demo@eushop.local', name: 'Demo User', country: 'DE', role: 'ADMIN', kycVerified: true, emailVerified: true, selfCertifiedCompliant: true }
-      ];
-      localStorage.setItem('local_users', JSON.stringify(defaultUsers));
-      return defaultUsers;
-    }
-    return JSON.parse(raw);
-  } catch {
-    return [];
-  }
-};
-
-const saveLocalUsers = (users: User[]) => {
-  if (typeof window === 'undefined') return;
-  localStorage.setItem('local_users', JSON.stringify(users));
-};
-
 // Demo data provider for food search/getTrending/getById
 const getDemoFoods = (query?: string, country?: string, page: number = 1, size: number = 20, category?: string, allergenFree?: string): FoodItem[] => {
   let allFoods = [...fallbackTrendingFoods]; // Use only the built-in demo data, not user-added local foods
@@ -494,117 +472,40 @@ export const foodAPI = {
 
 export const authAPI = {
   login: async (email: string, password: string): Promise<LoginResponse> => {
-    try {
-      const response = await apiClient.post('/auth/login', { email, password });
-      if (response.data.user) {
-        sessionStorage.setItem('userProfile', JSON.stringify(response.data.user));
-        localStorage.setItem('user', JSON.stringify(response.data.user));
-      }
-      return response.data;
-    } catch (e) {
-      if (!shouldUseMock()) throw e;
-      console.warn('authAPI.login failed. Simulating local session.');
-      const users = getLocalUsers();
-      let matched = users.find(u => u.email === email);
-      if (!matched) {
-        // Auto-register a default account if it doesn't exist to ease testing
-        matched = {
-          id: `usr-${Date.now()}`,
-          email,
-          name: email.split('@')[0].toUpperCase(),
-          country: 'DE',
-          role: email.includes('admin') ? 'ADMIN' : 'BUYER',
-          kycVerified: true,
-          emailVerified: true,
-          selfCertifiedCompliant: true
-        };
-        users.push(matched);
-        saveLocalUsers(users);
-      }
-
-      const payload: LoginResponse = {
-        message: 'Mock login successful',
-        user: matched
-      };
-      sessionStorage.setItem('userProfile', JSON.stringify(matched));
-      localStorage.setItem('user', JSON.stringify(matched));
+    const response = await apiClient.post('/auth/login', { email, password });
+    if (response.data.user) {
+      sessionStorage.setItem('userProfile', JSON.stringify(response.data.user));
       window.dispatchEvent(new Event('auth-changed'));
-      return payload;
     }
+    return response.data;
   },
 
   signup: async (email: string, password: string, name: string, country: string): Promise<SignupResponse> => {
-    try {
-      const response = await apiClient.post('/auth/signup', { email, password, name, country });
-      if (response.data.user) {
-        sessionStorage.setItem('userProfile', JSON.stringify(response.data.user));
-        localStorage.setItem('user', JSON.stringify(response.data.user));
-      }
-      return response.data;
-    } catch (e) {
-      if (!shouldUseMock()) throw e;
-      console.warn('authAPI.signup failed. Simulating local signup.');
-      const users = getLocalUsers();
-      if (users.some(u => u.email === email)) {
-        throw new Error('Email is already registered');
-      }
-
-      const newUser: User = {
-        id: `usr-${Date.now()}`,
-        email,
-        name,
-        country,
-        role: email.includes('admin') ? 'ADMIN' : 'BUYER',
-        kycVerified: true,
-        emailVerified: true,
-        selfCertifiedCompliant: true
-      };
-      users.push(newUser);
-      saveLocalUsers(users);
-
-      const payload: SignupResponse = {
-        message: 'Mock signup successful',
-        user: newUser
-      };
-      sessionStorage.setItem('userProfile', JSON.stringify(newUser));
-      localStorage.setItem('user', JSON.stringify(newUser));
+    const response = await apiClient.post('/auth/signup', { email, password, name, country });
+    if (response.data.user) {
+      sessionStorage.setItem('userProfile', JSON.stringify(response.data.user));
       window.dispatchEvent(new Event('auth-changed'));
-      return payload;
     }
+    return response.data;
   },
 
   logout: async (): Promise<void> => {
     try {
       await apiClient.post('/auth/logout');
-    } catch (e) {
-      if (!shouldUseMock()) throw e;
-      console.warn('authAPI.logout network call failed. Performing client-side logout.');
     } finally {
       sessionStorage.removeItem('userProfile');
-      localStorage.removeItem('user');
       localStorage.removeItem('cart');
       window.dispatchEvent(new Event('auth-changed'));
     }
   },
 
   getCurrentUser: async (config?: any): Promise<User | null> => {
-    try {
-      const response = await apiClient.get('/auth/me', config);
-      const user = response.data.data;
-      if (user) {
-        sessionStorage.setItem('userProfile', JSON.stringify(user));
-        localStorage.setItem('user', JSON.stringify(user));
-      }
-      return user ?? null;
-    } catch (e) {
-      if (!shouldUseMock()) throw e;
-      // Return local storage profile if offline/api down
-      if (typeof window !== 'undefined') {
-        const raw = localStorage.getItem('user');
-        return raw ? JSON.parse(raw) as User : null;
-      }
-      return null;
+    const response = await apiClient.get('/auth/me', config);
+    const user = response.data.data;
+    if (user) {
+      sessionStorage.setItem('userProfile', JSON.stringify(user));
     }
+    return user ?? null;
   },
 
   getCachedProfile: (): User | null => {
@@ -612,8 +513,7 @@ export const authAPI = {
       return null;
     }
 
-    const rawProfile =
-      sessionStorage.getItem('userProfile') ?? localStorage.getItem('user');
+    const rawProfile = sessionStorage.getItem('userProfile');
     if (!rawProfile) {
       return null;
     }
@@ -622,111 +522,37 @@ export const authAPI = {
       return JSON.parse(rawProfile) as User;
     } catch {
       sessionStorage.removeItem('userProfile');
-      localStorage.removeItem('user');
       return null;
     }
   },
 
   becomeSeller: async (userId: string, data: BecomeSellerRequest): Promise<any> => {
-    try {
-      const response = await apiClient.put(`/users/${userId}/become-seller`, data);
-      sessionStorage.removeItem('userProfile');
-      return response.data;
-    } catch (e) {
-      if (!shouldUseMock()) throw e;
-      console.warn('authAPI.becomeSeller failed. Recording seller application locally.');
-
-      // Update local application registry
-      saveLocalSeller({
-        userId,
-        name: data.businessName || 'Artisanal Merchant',
-        email: data.phone || 'seller@eushop.local',
-        country: data.country || 'EU',
-        taxId: data.taxId,
-        vatNumber: data.vatNumber,
-        tradeRegisterNumber: data.tradeRegisterNumber,
-        address: `${data.addressStreet}, ${data.addressCity}, ${data.addressPostalCode}`,
-        selfCertified: data.selfCertifiedCompliant
-      });
-
-      // Instantly mark local user as SELLER for demo responsiveness
-      const currentUser = authAPI.getCachedProfile();
-      if (currentUser && currentUser.id === userId) {
-        const updated = {
-          ...currentUser,
-          role: 'SELLER' as const,
-          selfCertifiedCompliant: data.selfCertifiedCompliant,
-          taxId: data.taxId,
-          vatNumber: data.vatNumber,
-          tradeRegisterNumber: data.tradeRegisterNumber,
-          address: `${data.addressStreet}, ${data.addressCity}, ${data.addressPostalCode}`
-        };
-        localStorage.setItem('user', JSON.stringify(updated));
-        sessionStorage.setItem('userProfile', JSON.stringify(updated));
-        window.dispatchEvent(new Event('auth-changed'));
-      }
-
-      return { success: true, message: 'Simulated seller registration registered' };
-    }
+    // COMPLIANCE-REVIEW: the server must enforce DSA trader-data completeness
+    // and KYBC review; the browser must never grant or simulate seller status.
+    const response = await apiClient.put(`/users/${userId}/become-seller`, data);
+    sessionStorage.removeItem('userProfile');
+    return response.data;
   },
 
   exportUserData: async (userId: string): Promise<any> => {
-    try {
-      const response = await apiClient.get(`/users/${userId}/export`, {
-        headers: { 'X-User-Id': userId }
-      });
-      return response.data.data;
-    } catch (e) {
-      if (!shouldUseMock()) throw e;
-      console.warn('authAPI.exportUserData failed. Generating client-side export.');
-      const user = authAPI.getCachedProfile();
-      const orders = getLocalOrders().filter(o => o.buyerEmail === user?.email);
-      return {
-        userProfile: user,
-        ordersList: orders,
-        exportedAt: new Date().toISOString(),
-        gdprRegulatoryNotice: 'This is an export of data stored in your local browser sandbox.'
-      };
-    }
+    const response = await apiClient.get(`/users/${userId}/export`);
+    return response.data.data;
   },
 
   deleteAccount: async (userId: string): Promise<any> => {
-    try {
-      const response = await apiClient.delete(`/users/${userId}/account`, {
-        headers: { 'X-User-Id': userId }
-      });
-      sessionStorage.removeItem('userProfile');
-      localStorage.removeItem('user');
-      return response.data;
-    } catch (e) {
-      if (!shouldUseMock()) throw e;
-      console.warn('authAPI.deleteAccount failed. Clearing local data sandbox.');
-      sessionStorage.removeItem('userProfile');
-      localStorage.removeItem('user');
-      localStorage.removeItem('cart');
-      const users = getLocalUsers().filter(u => u.id !== userId);
-      saveLocalUsers(users);
-      window.dispatchEvent(new Event('auth-changed'));
-      return { success: true };
-    }
+    const response = await apiClient.delete(`/users/${userId}/account`);
+    sessionStorage.removeItem('userProfile');
+    window.dispatchEvent(new Event('auth-changed'));
+    return response.data;
   },
 
   recordConsent: async (userId: string, consentType: string, consentVersion: string, granted: boolean): Promise<any> => {
-    try {
-      const response = await apiClient.post(`/users/${userId}/consent`, {
-        consentType,
-        consentVersion,
-        granted
-      }, {
-        headers: { 'X-User-Id': userId }
-      });
-      return response.data;
-    } catch (e) {
-      if (!shouldUseMock()) throw e;
-      console.warn('authAPI.recordConsent failed. Storing consent locally.');
-      localStorage.setItem(`consent_${consentType}`, JSON.stringify({ granted, version: consentVersion, timestamp: new Date().toISOString() }));
-      return { success: true };
-    }
+    const response = await apiClient.post(`/users/${userId}/consent`, {
+      consentType,
+      consentVersion,
+      granted
+    });
+    return response.data;
   },
 };
 

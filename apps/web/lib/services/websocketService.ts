@@ -55,13 +55,8 @@ class WebSocketService {
   private connect(): void {
     if (typeof window === 'undefined') return;
 
-    const token = this.getAuthToken();
-    if (!token) {
-      console.warn('No auth token available for WebSocket connection');
-      return;
-    }
-
-    // Use SockJS for fallback support
+    // The browser includes the HttpOnly session cookie in the WebSocket
+    // handshake. Client JavaScript must never read or forward that cookie.
     const socketUrl = this.getWebSocketUrl();
     this.socket = new WebSocket(socketUrl);
 
@@ -69,7 +64,7 @@ class WebSocketService {
     this.stompClient = Stomp.over(this.socket);
 
     this.stompClient.connect(
-      { Authorization: `Bearer ${token}` },
+      {},
       () => this.onConnect(),
       (error: any) => this.handleConnectionError(error)
     );
@@ -86,21 +81,6 @@ class WebSocketService {
     const host = apiUrl.replace(/^https?:\/\//, '');
 
     return `${wsProtocol}//${host}/ws`;
-  }
-
-  /**
-   * Get authentication token
-   */
-  private getAuthToken(): string | null {
-    if (typeof window === 'undefined') return null;
-
-    // Get token from cookies (HTTP-only cookie)
-    const cookieMatch = document.cookie.match(/token=([^;]+)/);
-    if (cookieMatch) {
-      return cookieMatch[1];
-    }
-
-    return null;
   }
 
   /**

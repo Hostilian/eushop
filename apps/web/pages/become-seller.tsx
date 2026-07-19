@@ -248,9 +248,8 @@ export default function BecomeSeller() {
         country: formData.country,
         phone: formData.phone,
       });
-      const updated = { ...user, role: 'SELLER' as const };
-      setUser(updated);
-      localStorage.setItem('user', JSON.stringify(updated));
+      const refreshedUser = await authAPI.getCurrentUser();
+      if (refreshedUser) setUser(refreshedUser);
       alert('Application submitted! Your merchant profile is pending admin review.');
     } catch (err: any) {
       setError(err.response?.data?.message || err.message || 'Submission failed. Please try again.');
