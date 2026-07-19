@@ -6,6 +6,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.eushop.core.entity.Review;
 
@@ -43,4 +44,14 @@ public interface ReviewRepository extends JpaRepository<Review, String> {
 
     @Query("SELECT COUNT(r) FROM Review r WHERE r.sellerId = :sellerId")
     Long getReviewCountBySeller(@Param("sellerId") String sellerId);
+
+    /**
+     * GDPR Article 17 — Right to Erasure.
+     * Clears PII from reviews (comment, highlights, improvements) for a given user.
+     * Called when a user exercises their right to be forgotten (as reviewer or seller).
+     */
+    @Transactional
+    @Modifying
+    @Query("UPDATE Review r SET r.comment = NULL, r.highlights = NULL, r.improvements = NULL WHERE r.reviewerId = :userId OR r.sellerId = :userId")
+    void updateReviewPiiWhereReviewerIdOrSellerId(@Param("userId") String userId);
 }

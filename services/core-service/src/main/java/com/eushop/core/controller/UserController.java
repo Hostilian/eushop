@@ -12,8 +12,9 @@ import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-import java.util.Map;
+
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 import com.eushop.core.dto.ApiResponse;
@@ -52,7 +53,7 @@ public class UserController {
     @GetMapping
     public ResponseEntity<ApiResponse<UserDTO>> getCurrentUser(
             @RequestHeader("X-User-Id") String userId) {
-        
+
         return userService.getUserById(userId)
                 .map(user -> {
                     userService.updateLastLogin(userId);
@@ -68,41 +69,25 @@ public class UserController {
                 .stream()
                 .map(this::toDTO)
                 .collect(Collectors.toList());
-        
+
         return ResponseEntity.ok(ApiResponse.success(sellers));
     }
 
-    @GetMapping("/sellers/country/{country}")
+    @GetMapping("/sellers/{country}")
     public ResponseEntity<ApiResponse<List<UserDTO>>> getSellersByCountry(@PathVariable String country) {
         List<UserDTO> sellers = userService.getSellersByCountry(country)
                 .stream()
                 .map(this::toDTO)
                 .collect(Collectors.toList());
-        
+
         return ResponseEntity.ok(ApiResponse.success(sellers));
-    }
-
-    @PostMapping("/{id}/become-seller")
-    public ResponseEntity<ApiResponse<UserDTO>> becomeSeller(
-            @PathVariable String id,
-            @RequestHeader("X-User-Id") String userId,
-            @Valid @RequestBody BecomeSellerRequest request) {
-        
-        if (!id.equals(userId)) {
-            return ResponseEntity.status(HttpStatus.FORBIDDEN)
-                    .body(ApiResponse.error("Cannot update other user"));
-        }
-
-        User user = userService.becomeSeller(id, request);
-        
-        return ResponseEntity.ok(ApiResponse.success(toDTO(user), "Now a seller"));
     }
 
     @GetMapping("/all")
     public ResponseEntity<ApiResponse<List<UserDTO>>> getAllUsers(
             @RequestHeader(value = "X-User-Role", required = false) String userRole,
             @RequestParam(required = false) String role) {
-        
+
         if (!"ADMIN".equalsIgnoreCase(userRole)) {
             return ResponseEntity.status(HttpStatus.FORBIDDEN)
                     .body(ApiResponse.error("Only admins can list users"));
@@ -119,12 +104,28 @@ public class UserController {
         return ResponseEntity.ok(ApiResponse.success(dtos));
     }
 
-    @PostMapping("/{id}/verify")
+    @PostMapping("/{id}/become-seller")
+    public ResponseEntity<ApiResponse<UserDTO>> becomeSeller(
+            @PathVariable String id,
+            @RequestHeader("X-User-Id") String userId,
+            @Valid @RequestBody BecomeSellerRequest request) {
+
+        if (!id.equals(userId)) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN)
+                    .body(ApiResponse.error("Cannot update other user"));
+        }
+
+        User user = userService.becomeSeller(id, request);
+
+        return ResponseEntity.ok(ApiResponse.success(toDTO(user), "Now a seller"));
+    }
+
+    @GetMapping("/{id}/verify")
     public ResponseEntity<ApiResponse<UserDTO>> verifySeller(
             @PathVariable String id,
             @RequestHeader(value = "X-User-Role", required = false) String userRole,
             @RequestParam boolean verified) {
-        
+
         if (!"ADMIN".equalsIgnoreCase(userRole)) {
             return ResponseEntity.status(HttpStatus.FORBIDDEN)
                     .body(ApiResponse.error("Only admins can verify sellers"));
@@ -138,28 +139,43 @@ public class UserController {
     public ResponseEntity<ApiResponse<Void>> deleteAccount(
             @PathVariable String id,
             @RequestHeader("X-User-Id") String userId) {
-        
+
         if (!id.equals(userId)) {
             return ResponseEntity.status(HttpStatus.FORBIDDEN)
                     .body(ApiResponse.error("Cannot delete other user's account"));
         }
-        
+
         userService.anonymiseUser(id);
         return ResponseEntity.ok(ApiResponse.success(null, "Account successfully anonymised (GDPR erasure completed)"));
+    }
+
+    // NEW: GDPR Art. 17 erasure endpoint
+    @DeleteMapping("/{id}/erase")
+    public ResponseEntity<ApiResponse<Void>> eraseUserData(
+            @PathVariable String id,
+            @RequestHeader("X-User-Id") String userId) {
+
+        if (!id.equals(userId)) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN)
+                    .body(ApiResponse.error("Cannot erase other user's data"));
+        }
+
+        userService.anonymiseUser(id);
+        return ResponseEntity.ok(ApiResponse.success(null, "User data erased (GDPR Article 17 - Right to be Forgotten)"));
     }
 
     @GetMapping("/{id}/export")
     public ResponseEntity<ApiResponse<Map<String, Object>>> exportAccount(
             @PathVariable String id,
             @RequestHeader("X-User-Id") String userId) {
-        
+
         if (!id.equals(userId)) {
             return ResponseEntity.status(HttpStatus.FORBIDDEN)
                     .body(ApiResponse.error("Cannot export other user's data"));
         }
-        
+
         Map<String, Object> data = userService.exportUserData(id);
-        return ResponseEntity.ok(ApiResponse.success(data, "User data exported successfully (GDPR portability)"));
+        return ResponseEntity.ok(ApiResponse.success(data, "User data exported successfully (GSDportability)"));
     }
 
     @PostMapping("/{id}/consent")
@@ -168,23 +184,23 @@ public class UserController {
             @RequestHeader("X-User-Id") String userId,
             @RequestBody Map<String, Object> requestBody,
             jakarta.servlet.http.HttpServletRequest request) {
-        
+
         if (!id.equals(userId)) {
             return ResponseEntity.status(HttpStatus.FORBIDDEN)
                     .body(ApiResponse.error("Cannot record consent for other user"));
         }
-        
+
         String consentType = (String) requestBody.get("consentType");
         String consentVersion = (String) requestBody.get("consentVersion");
         Boolean granted = (Boolean) requestBody.get("granted");
-        
+
         if (consentType == null || consentVersion == null || granted == null) {
             return ResponseEntity.badRequest().body(ApiResponse.error("Missing required consent fields"));
         }
-        
+
         String ip = request.getRemoteAddr();
         String userAgent = request.getHeader("User-Agent");
-        
+
         userService.recordConsent(id, consentType, consentVersion, granted, ip, userAgent);
         return ResponseEntity.ok(ApiResponse.success(null, "Consent logged successfully"));
     }
@@ -211,4 +227,3 @@ public class UserController {
         dto.setSelfCertifiedCompliant(user.getSelfCertifiedCompliant());
         return dto;
     }
-}

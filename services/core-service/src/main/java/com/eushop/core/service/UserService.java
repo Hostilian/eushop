@@ -11,17 +11,38 @@ import com.eushop.core.entity.User;
 import com.eushop.core.entity.ConsentLog;
 import com.eushop.core.repository.UserRepository;
 import com.eushop.core.repository.ConsentLogRepository;
+import com.eushop.core.repository.OrderRepository;
+import com.eushop.core.repository.ReviewRepository;
+import com.eushop.core.repository.ConversationRepository;
+import com.eushop.core.repository.MessageRepository;
 
+/**
+ * UserService handles user-related business logic including GDPR compliance
+ * operations for data erasure (Article 17) and data portability (Article 20).
+ */
 @Service
 @Transactional
 public class UserService {
 
     private final UserRepository userRepository;
     private final ConsentLogRepository consentLogRepository;
+    private final OrderRepository orderRepository;
+    private final ReviewRepository reviewRepository;
+    private final ConversationRepository conversationRepository;
+    private final MessageRepository messageRepository;
 
-    public UserService(UserRepository userRepository, ConsentLogRepository consentLogRepository) {
+    public UserService(UserRepository userRepository,
+                       ConsentLogRepository consentLogRepository,
+                       OrderRepository orderRepository,
+                       ReviewRepository reviewRepository,
+                       ConversationRepository conversationRepository,
+                       MessageRepository messageRepository) {
         this.userRepository = userRepository;
         this.consentLogRepository = consentLogRepository;
+        this.orderRepository = orderRepository;
+        this.reviewRepository = reviewRepository;
+        this.conversationRepository = conversationRepository;
+        this.messageRepository = messageRepository;
     }
 
     public User createUser(String email, String name, String country, String auth0Sub) {
@@ -69,14 +90,6 @@ public class UserService {
         return userRepository.save(user);
     }
 
-    public List<User> getTopSellers() {
-        return userRepository.findTopSellers();
-    }
-
-    public List<User> getSellersByCountry(String country) {
-        return userRepository.findSellersByCountry(country);
-    }
-
     public User becomeSeller(String userId, com.eushop.core.dto.BecomeSellerRequest request) {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new IllegalArgumentException("User not found"));
@@ -119,6 +132,9 @@ public class UserService {
      * <p>After anonymisation the user can no longer log in (email is wiped),
      * but historical order/transaction data is preserved for the legally-required
      * minimum retention period.
+     * <p>
+     * This method also anonymizes/PII-clears related data in orders, reviews,
+     * conversations, and messages to ensure comprehensive GDPR compliance.
      */
     @Transactional
     public void anonymiseUser(String userId) {
@@ -139,6 +155,19 @@ public class UserService {
         user.setAddressPostalCode(null);
         // Preserve: id, role, country (needed for DAC7), kycVerified, aggregate stats
         userRepository.save(user);
+
+        // Anonymize/PII-clear related data
+
+        // Clear PII in orders: message and shipping_address
+        orderRepository.updateOrderPiiWhereBuyerIdOrSellerId(userId);
+
+        // Clear PII in reviews: comment, highlights, improvements
+        reviewRepository.updateReviewPiiWhereReviewerIdOrSellerId(userId);
+
+        // Clear PII in conversations: subject, last_message, group_name, group_description
+        // Clear PII in messages: content, attachments
+        conversationRepository.updateConversationPiiWhereBuyerIdOrSellerId(userId);
+        messageRepository.updateMessagePiiWhereSenderId(userId);
     }
 
     /**
