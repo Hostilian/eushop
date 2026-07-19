@@ -1,5 +1,11 @@
 # Changelog
 
+## [Unreleased] - Test and VAT audit coverage (2026-07-19)
+
+### Added
+- Added checkout VAT, allergen disclosure, seller-onboarding, GDPR erasure cascade, and order VAT response regression coverage.
+- Added nullable per-order VAT audit fields and migration 013 so finalized checkout can retain the destination-rate calculation shown to the buyer.
+
 ## [Unreleased] — Autonomous continuation (2026-07-19)
 
 ### Changed

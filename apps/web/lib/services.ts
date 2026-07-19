@@ -65,6 +65,8 @@ export interface CreateOrderRequest {
   sellerId: string;
   quantity: number;
   totalPrice: number;
+  vatRate?: number;
+  vatAmount?: number;
   finderFee: number;
   shippingAddress: string;
   message: string;
@@ -595,6 +597,8 @@ export const orderAPI = {
         sellerName: foodItem?.seller?.name || 'Local Seller',
         quantity: order.quantity,
         totalPrice: order.totalPrice,
+        vatRate: order.vatRate,
+        vatAmount: order.vatAmount,
         finderFee: order.finderFee,
         shippingAddress: order.shippingAddress,
         buyerEmail: profile?.email || 'guest@eushop.local',

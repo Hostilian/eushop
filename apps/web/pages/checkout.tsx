@@ -172,11 +172,15 @@ function CheckoutForm() {
       const shippingAddressStr = `${formData.address}, ${formData.postalCode} ${formData.city}, ${formData.country}`;
       
       await Promise.all(cartItems.map(async (item) => {
+        const lineVat = calculateFoodVat(item.price * item.quantity, formData.country);
         const orderPayload = {
           foodId: item.id,
           sellerId: item.sellerId || 'seller_belgium@eushop.local',
           quantity: item.quantity,
           totalPrice: item.price * item.quantity,
+          // COMPLIANCE-REVIEW: VAT rate source = packages/compliance/src/vat.ts
+          vatRate: lineVat.rate,
+          vatAmount: lineVat.vatAmountEur,
           finderFee: (item.finderFee || 5.00) * item.quantity,
           shippingAddress: shippingAddressStr,
           message: 'Order placed securely via web portal',

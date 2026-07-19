@@ -57,6 +57,17 @@ public class Order {
     @Column(nullable = false)
     private Double totalPrice;
 
+    // COMPLIANCE-REVIEW: The source rate is packages/compliance/src/vat.ts.
+    // These nullable fields are an audit snapshot, not a tax-compliance
+    // certification; server-side invoice validation still requires tax review.
+    @Min(value = 0, message = "VAT rate must be positive")
+    @Column(name = "vat_rate")
+    private Double vatRate;
+
+    @Min(value = 0, message = "VAT amount must be positive")
+    @Column(name = "vat_amount_eur")
+    private Double vatAmount;
+
     @Min(value = 0, message = "Finder fee must be positive")
     @Column(nullable = false)
     private Double finderFee;
