@@ -94,15 +94,10 @@ class WebSocketService {
   private getAuthToken(): string | null {
     if (typeof window === 'undefined') return null;
 
-    // Try to get token from cookies (HTTP-only cookie)
+    // Get token from cookies (HTTP-only cookie)
     const cookieMatch = document.cookie.match(/token=([^;]+)/);
     if (cookieMatch) {
       return cookieMatch[1];
-    }
-
-    // Fallback to localStorage (should not be used in production)
-    if (localStorage.getItem('token')) {
-      return localStorage.getItem('token');
     }
 
     return null;
