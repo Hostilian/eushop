@@ -30,10 +30,9 @@ export default function DashboardPage() {
   const handleLogout = async () => {
     try {
       await authAPI.logout();
-    } catch {
-      localStorage.removeItem('user');
+    } finally {
+      router.push('/');
     }
-    router.push('/');
   };
 
   if (loading) {

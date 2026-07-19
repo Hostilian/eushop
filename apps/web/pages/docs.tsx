@@ -3,6 +3,7 @@ import Link from 'next/link';
 import fs from 'fs';
 import path from 'path';
 import { PageWrapper } from '../components/layout/PageWrapper';
+import { authAPI } from '../lib/services';
 
 interface DocsProps {
   statusContent: string;
@@ -254,10 +255,10 @@ function SandboxTester() {
           allergens: ['Milk', 'Soy', 'Nuts']
         }, null, 2));
       } else if (endpoint === '/auth/me') {
-        const user = localStorage.getItem('user');
+        const user = await authAPI.getCurrentUser().catch(() => null);
         if (user) {
           setResponseCode(200);
-          setResponseBody(JSON.stringify({ status: 'SUCCESS', data: JSON.parse(user) }, null, 2));
+          setResponseBody(JSON.stringify({ status: 'SUCCESS', data: user }, null, 2));
         } else {
           setResponseCode(401);
           setResponseBody(JSON.stringify({ status: 'ERROR', message: 'Unauthorized. No active session cookie found.' }, null, 2));
@@ -272,7 +273,7 @@ function SandboxTester() {
           status: 'requires_payment_method'
         }, null, 2));
       } else if (endpoint === '/orders') {
-        const user = localStorage.getItem('user');
+        const user = await authAPI.getCurrentUser().catch(() => null);
         if (user) {
           setResponseCode(200);
           setResponseBody(JSON.stringify({
@@ -283,7 +284,7 @@ function SandboxTester() {
               productName: 'Artisanal Belgian Chocolates',
               quantity: 1,
               totalPrice: 24.99,
-              buyerEmail: JSON.parse(user).email,
+              buyerEmail: user.email,
               status: 'PROCESSING'
             }
           }, null, 2));

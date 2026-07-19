@@ -79,27 +79,7 @@ const TabButton = ({ id, label, count, activeTab, onClick }: TabButtonProps) => 
 
 export default function AdminDashboard() {
   const router = useRouter();
-  const [adminUser, setAdminUser] = useState<User | null>(() => {
-    if (typeof window !== 'undefined') {
-      const userData = safeParseJSON<User | null>('user', null);
-      if (userData) return userData;
-      const mockAdmin: User = {
-        id: 'admin-1',
-        email: 'admin@eushop.local',
-        name: 'Administrator',
-        country: 'BE',
-        role: 'ADMIN',
-        kycVerified: true,
-        emailVerified: true,
-        selfCertifiedCompliant: true
-      };
-      try {
-        localStorage.setItem('user', JSON.stringify(mockAdmin));
-      } catch {}
-      return mockAdmin;
-    }
-    return null;
-  });
+  const [adminUser, setAdminUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
   const [activeTab, setActiveTab] = useState<'sellers' | 'listings' | 'orders' | 'waitlist'>('sellers');
 
@@ -204,38 +184,38 @@ export default function AdminDashboard() {
   );
 
   useEffect(() => {
-    // Load listings and resolve loading status
-    const fetchListings = async () => {
+    const authorizeAndLoadListings = async () => {
       try {
+        const user = await authAPI.getCurrentUser();
+        if (!user || user.role !== 'ADMIN') {
+          await router.replace('/login?redirect=/admin/dashboard');
+          return;
+        }
+        setAdminUser(user);
         const all = await foodAPI.search(undefined, undefined, 1, 100);
         setListings(all);
       } catch (err) {
         console.error(err);
+        await router.replace('/login?redirect=/admin/dashboard');
       } finally {
         setLoading(false);
       }
     };
-    fetchListings();
-  }, []);
+    void authorizeAndLoadListings();
+  }, [router]);
 
   const handleApproveSeller = (appId: string) => {
+    // COMPLIANCE-REVIEW: this demo-only status is not KYBC verification.
+    // Production approval must be persisted and audit-logged by the server.
     const updatedSellers = sellers.map(s => {
       if (s.id === appId) {
-        // Upgrade role of matching user in user database simulation
-        const users = safeParseJSON<User[]>('local_users', []);
-        const userIdx = users.findIndex(u => u.email === s.email);
-        if (userIdx > -1) {
-          users[userIdx].role = 'SELLER';
-          users[userIdx].kycVerified = true;
-          localStorage.setItem('local_users', JSON.stringify(users));
-        }
         return { ...s, status: 'VERIFIED' as const };
       }
       return s;
     });
     setSellers(updatedSellers);
     localStorage.setItem('seller_applications', JSON.stringify(updatedSellers));
-    alert('Merchant application approved and role updated to SELLER.');
+    alert('Demo application status updated. No seller role was granted.');
   };
 
   const handleRejectSeller = (appId: string) => {
@@ -295,6 +275,8 @@ export default function AdminDashboard() {
       </PageWrapper>
     );
   }
+
+  if (!adminUser) return null;
 
   return (
     <PageWrapper>
