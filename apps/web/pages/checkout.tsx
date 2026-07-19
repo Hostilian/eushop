@@ -4,8 +4,26 @@ import { loadStripe } from '@stripe/stripe-js';
 import { Elements, CardElement, useStripe, useElements } from '@stripe/react-stripe-js';
 import { PageWrapper } from '../components/layout/PageWrapper';
 import { paymentAPI, orderAPI, foodAPI, authAPI, User } from '../lib/services';
+import {
+  calculateFoodVat,
+  EU_FOOD_VAT_RATES,
+  OSS_THRESHOLD_EUR,
+} from '@eushop/compliance';
 
 const stripePromise = loadStripe(process.env.NEXT_PUBLIC_STRIPE_PUBLIC_KEY || 'pk_test_51MockPublicKeyForCheckoutCompilationOnly');
+
+const EU_COUNTRY_NAMES: Record<string, string> = {
+  AT: 'Austria', BE: 'Belgium', BG: 'Bulgaria', HR: 'Croatia', CY: 'Cyprus',
+  CZ: 'Czech Republic', DK: 'Denmark', EE: 'Estonia', FI: 'Finland', FR: 'France',
+  DE: 'Germany', GR: 'Greece', HU: 'Hungary', IE: 'Ireland', IT: 'Italy',
+  LV: 'Latvia', LT: 'Lithuania', LU: 'Luxembourg', MT: 'Malta', NL: 'Netherlands',
+  PL: 'Poland', PT: 'Portugal', RO: 'Romania', SK: 'Slovakia', SI: 'Slovenia',
+  ES: 'Spain', SE: 'Sweden',
+};
+
+const VAT_COUNTRY_OPTIONS = Object.keys(EU_FOOD_VAT_RATES).sort((left, right) =>
+  EU_COUNTRY_NAMES[left].localeCompare(EU_COUNTRY_NAMES[right])
+);
 
 interface CartItem {
   id: string;
@@ -30,7 +48,7 @@ function CheckoutForm() {
     address: '',
     city: '',
     postalCode: '',
-    country: 'DE',
+    country: '',
     acceptTerms: false
   });
 
@@ -48,6 +66,9 @@ function CheckoutForm() {
           setFormData(prev => ({
             ...prev,
             email: currentUser.email,
+            country: EU_FOOD_VAT_RATES[currentUser.country.toUpperCase()] !== undefined
+              ? currentUser.country.toUpperCase()
+              : '',
             // Potentially pre-fill name/address if available on user object
           }));
         }
@@ -93,13 +114,16 @@ function CheckoutForm() {
   }, []);
 
   const subtotal = cartItems.reduce((acc, item) => acc + item.price * item.quantity, 0);
-  // COMPLIANCE-REVIEW: VAT must be calculated per destination country using getFoodVatRate
-  // from @eushop/compliance. Using 0.15 here is a placeholder — this is NOT a real VAT rate.
-  // Wire formData.country -> getFoodVatRate(formData.country) before production.
-  const vatRate = 0.15;
-  const vat = subtotal * vatRate;
+  // COMPLIANCE-REVIEW: VAT rate source = packages/compliance/src/vat.ts
+  // Catalog prices are treated as VAT-exclusive here. A tax advisor must confirm
+  // product classification, shipping treatment, and invoice rounding before launch.
+  const vatCalculation = formData.country
+    ? calculateFoodVat(subtotal, formData.country)
+    : { rate: 0, vatAmountEur: 0, grossAmountEur: subtotal };
+  const vatRate = vatCalculation.rate;
+  const vat = vatCalculation.vatAmountEur;
   const shipping = subtotal > 0 ? 9.99 : 0;
-  const grandTotal = subtotal + vat + shipping;
+  const grandTotal = vatCalculation.grossAmountEur + shipping;
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -284,18 +308,17 @@ function CheckoutForm() {
               <div className="mt-4">
                 <label className="block text-xs font-bold text-gray-600 mb-1.5 uppercase">EU Country (Logistics Restricted to EU Single Market)</label>
                 <select
+                  required
                   className="w-full px-4 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary text-sm"
                   onChange={e => setFormData({ ...formData, country: e.target.value })}
                   value={formData.country}
                 >
-                  <option value="AT">Austria</option>
-                  <option value="BE">Belgium</option>
-                  <option value="DE">Germany</option>
-                  <option value="FR">France</option>
-                  <option value="IT">Italy</option>
-                  <option value="NL">Netherlands</option>
-                  <option value="ES">Spain</option>
-                  <option value="CZ">Czech Republic</option>
+                  <option value="" disabled>Select destination country</option>
+                  {VAT_COUNTRY_OPTIONS.map(countryCode => (
+                    <option key={countryCode} value={countryCode}>
+                      {EU_COUNTRY_NAMES[countryCode]}
+                    </option>
+                  ))}
                 </select>
               </div>
             </div>
@@ -346,9 +369,12 @@ function CheckoutForm() {
                   <span>{subtotal.toFixed(2)} €</span>
                 </div>
                 <div className="flex justify-between">
-                  {/* COMPLIANCE-REVIEW: Replace with real destination-country VAT rate */}
-                  <span>VAT (rate by destination country)</span>
-                  <span>{vat.toFixed(2)} €</span>
+                  <span>
+                    VAT {formData.country
+                      ? `(${(vatRate * 100).toLocaleString(undefined, { maximumFractionDigits: 1 })}% · ${formData.country})`
+                      : '(select destination)'}
+                  </span>
+                  <span data-testid="checkout-vat-amount">{vat.toFixed(2)} €</span>
                 </div>
                 <div className="flex justify-between">
                   <span>Shipping</span>
@@ -360,6 +386,12 @@ function CheckoutForm() {
                 <span>Grand Total</span>
                 <span>{grandTotal.toFixed(2)} €</span>
               </div>
+
+              <p className="-mt-2 mb-6 text-[10px] leading-relaxed text-gray-400" data-testid="oss-threshold-note">
+                OSS threshold reference: {OSS_THRESHOLD_EUR.toLocaleString('en-IE', {
+                  style: 'currency', currency: 'EUR', maximumFractionDigits: 0,
+                })} in annual cross-border sales. Final VAT treatment depends on seller and product facts and requires tax review.
+              </p>
 
               <div className="mb-6">
                 <label className="flex items-start cursor-pointer">

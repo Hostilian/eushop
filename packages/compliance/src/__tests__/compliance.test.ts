@@ -20,8 +20,8 @@ import { EU_ALLERGENS_14 } from '../allergens';
 // ─── DAC7 threshold edge cases ────────────────────────────────────────────────
 
 describe('isDAC7Reportable', () => {
-  it('excludes a seller with exactly 30 transactions and exactly €2,000', () => {
-    expect(isDAC7Reportable(30, 2_000)).toBe(false);
+  it('reports a seller with exactly 30 transactions', () => {
+    expect(isDAC7Reportable(30, 2_000)).toBe(true);
   });
 
   it('reports a seller with 31 transactions even if consideration is below threshold', () => {
@@ -42,7 +42,7 @@ describe('isDAC7Reportable', () => {
 
   it('thresholds are driven by DAC7_THRESHOLDS constants, not magic numbers', () => {
     // Exactly at threshold — excluded
-    expect(isDAC7Reportable(DAC7_THRESHOLDS.maxTransactions, DAC7_THRESHOLDS.maxConsiderationEur)).toBe(false);
+    expect(isDAC7Reportable(DAC7_THRESHOLDS.maxTransactions, DAC7_THRESHOLDS.maxConsiderationEur)).toBe(true);
     // One over on transactions — reportable
     expect(isDAC7Reportable(DAC7_THRESHOLDS.maxTransactions + 1, 0)).toBe(true);
     // One over on consideration — reportable

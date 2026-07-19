@@ -96,6 +96,34 @@ export function getFoodVatRate(destinationCountryIso2: string): number {
   return rate;
 }
 
+export interface FoodVatCalculation {
+  rate: number;
+  vatAmountEur: number;
+  grossAmountEur: number;
+}
+
+/**
+ * Calculates destination-country VAT for a VAT-exclusive food subtotal.
+ * Monetary values are rounded to cents for display and payment totals.
+ *
+ * COMPLIANCE-REVIEW: Confirm whether production invoices must round per line
+ * or per invoice, and whether delivery charges share the food item's VAT rate.
+ */
+export function calculateFoodVat(
+  netAmountEur: number,
+  destinationCountryIso2: string,
+): FoodVatCalculation {
+  if (!Number.isFinite(netAmountEur) || netAmountEur < 0) {
+    throw new RangeError('VAT-exclusive amount must be a non-negative finite number');
+  }
+
+  const rate = getFoodVatRate(destinationCountryIso2);
+  const vatAmountEur = Math.round((netAmountEur * rate + Number.EPSILON) * 100) / 100;
+  const grossAmountEur = Math.round((netAmountEur + vatAmountEur + Number.EPSILON) * 100) / 100;
+
+  return { rate, vatAmountEur, grossAmountEur };
+}
+
 /**
  * Determines whether a seller has crossed the OSS threshold and must switch
  * to destination-country VAT reporting.
@@ -116,7 +144,7 @@ export function isDAC7Reportable(
   totalConsiderationEur: number,
 ): boolean {
   return (
-    transactionCount > DAC7_THRESHOLDS.maxTransactions ||
+    transactionCount >= DAC7_THRESHOLDS.maxTransactions ||
     totalConsiderationEur > DAC7_THRESHOLDS.maxConsiderationEur
   );
 }
