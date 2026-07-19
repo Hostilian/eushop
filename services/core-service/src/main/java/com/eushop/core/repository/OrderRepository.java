@@ -8,9 +8,11 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.eushop.core.entity.Order;
 
@@ -65,4 +67,14 @@ public interface OrderRepository extends JpaRepository<Order, String> {
     List<Map<String, Object>> calculateDac7AggregatesForYear(
             @Param("startOfYear") LocalDateTime startOfYear,
             @Param("endOfYear") LocalDateTime endOfYear);
+
+    /**
+     * GDPR Article 17 — Right to Erasure.
+     * Clears PII from orders (message and shipping_address) for a given user.
+     * Called when a user exercises their right to be forgotten.
+     */
+    @Transactional
+    @Modifying
+    @Query("UPDATE Order o SET o.message = NULL, o.shippingAddress = NULL WHERE o.buyerId = :userId OR o.sellerId = :userId")
+    void updateOrderPiiWhereBuyerIdOrSellerId(@Param("userId") String userId);
 }
