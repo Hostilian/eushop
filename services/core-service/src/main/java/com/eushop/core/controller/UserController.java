@@ -149,7 +149,7 @@ public class UserController {
         return ResponseEntity.ok(ApiResponse.success(null, "Account successfully anonymised (GDPR erasure completed)"));
     }
 
-    // NEW: GDPR Art. 17 erasure endpoint
+    // COMPLIANCE-REVIEW: verify erasure cascades to all subprocessors
     @DeleteMapping("/{id}/erase")
     public ResponseEntity<ApiResponse<Void>> eraseUserData(
             @PathVariable String id,
@@ -227,3 +227,4 @@ public class UserController {
         dto.setSelfCertifiedCompliant(user.getSelfCertifiedCompliant());
         return dto;
     }
+}

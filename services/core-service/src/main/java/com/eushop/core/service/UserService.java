@@ -90,6 +90,14 @@ public class UserService {
         return userRepository.save(user);
     }
 
+    public List<User> getTopSellers() {
+        return userRepository.findTopSellers();
+    }
+
+    public List<User> getSellersByCountry(String country) {
+        return userRepository.findSellersByCountry(country);
+    }
+
     public User becomeSeller(String userId, com.eushop.core.dto.BecomeSellerRequest request) {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new IllegalArgumentException("User not found"));

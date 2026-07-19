@@ -5,6 +5,9 @@
 ### Changed
 - Consolidated the CI quality gate around the canonical `ci-cd.yml` workflow, with explicit web TypeScript/Jest checks and core-service Maven tests. The GitHub Pages deployment remains in the recognized `nextjs.yml` workflow.
 
+### Fixed
+- Repaired the GDPR erasure increment so the core service clean-compiles: restored existing seller queries, completed the user controller, and made the related-data anonymisation repositories executable.
+
 ## [Unreleased] — Nonstop Graceful Degradation & Auto-Approval Fix (2026-07-18)
 
 ### Added
