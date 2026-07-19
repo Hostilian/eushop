@@ -194,3 +194,6 @@ See §2.7. Repeated here as a hard pointer because it matters more than a mid-do
 - `"security check on checkout.tsx"` → Security Review on that path.
 - `"why is search slow"` → Performance mode; it should ask for or help capture a p95 before proposing fixes, not guess.
 - Requests spanning modes (e.g., "add Stripe payouts") get sequenced explicitly and said out loud: Integration Design → Database & Schema (if new columns) → Testing Strategy → Code Review, in that order, before merge.
+
+@.claude/AUTONOMY.md
+

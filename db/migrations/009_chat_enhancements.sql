@@ -28,28 +28,26 @@ COMMENT ON COLUMN conversations.retention_policy IS 'standard: 3 years, gdpr_era
 
 -- 4. Create consent log entries for existing conversations
 -- This ensures we have a record of data processing consent
-INSERT INTO consent_logs (
+INSERT INTO consent_log (
     user_id,
-    action,
-    entity_type,
-    entity_id,
-    consent_given,
-    ip_address,
-    user_agent,
+    consent_type,
+    consent_version,
+    granted,
+    ip_hash,
+    user_agent_hash,
     created_at
 )
 SELECT
     buyer_id,
     'chat_data_processing',
-    'conversation',
-    id,
+    '1.0',
     TRUE,
-    '127.0.0.1',
-    'system:migration',
+    'a0b6593d9e814072382f7c0062a4d35e16541604a11f26e2a2c161111624d35e',
+    'f7d6a5a8a649ce45f5a898a1a3b17c9135a50785a210d7e6822a10682236a282',
     NOW()
 FROM conversations
-WHERE data_processing_consent = FALSE
-ON CONFLICT (user_id, action, entity_type, entity_id) DO NOTHING;
+WHERE data_processing_consent = FALSE;
+
 
 -- Update existing conversations to mark consent as given
 UPDATE conversations SET

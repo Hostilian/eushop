@@ -103,14 +103,16 @@ export default function Home() {
         <div className="max-w-4xl mx-auto space-y-6">
           <div className="inline-flex items-center gap-2 text-[10px] uppercase tracking-widest font-extrabold px-4 py-1.5 rounded-full bg-brand-gold/25 text-brand-gold border border-brand-gold/30">
             <span className="w-1.5 h-1.5 rounded-full bg-brand-gold animate-ping" />
-            Pan-European Artisanal Marketplace
+            European Specialty Food Marketplace
           </div>
           <h1 className="text-4xl sm:text-5xl md:text-6xl font-black text-white tracking-tight leading-tight font-display">
-            Exquisite Artisanal Foods{' '}
-            <span className="text-brand-gold">Delivered Pan-EU</span>
+            EUshop helps people discover and buy{' '}
+            <span className="text-brand-gold">authentic regional foods</span>
+            from European sellers
           </h1>
           <p className="text-sm sm:text-base text-gray-300 max-w-2xl mx-auto leading-relaxed">
-            Connect directly with ID-verified independent producers across the EU Single Market. Full allergen disclosure and transparent pricing on every listing.
+            Discover specialty foods from independent producers across the EU Single Market.
+            Allergen information transparent, prices clear, and seller identities verified.
           </p>
           <div className="flex justify-center gap-4 pt-4">
             <a href="#explore" className="px-6 py-3 border border-brand-gold bg-brand-gold text-brand-green hover:opacity-90 font-bold rounded-xl text-sm transition shadow-lg shadow-brand-gold/10">

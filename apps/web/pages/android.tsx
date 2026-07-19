@@ -5,12 +5,48 @@ import { useState, useEffect } from 'react';
 
 export default function AppDownloadPortal() {
   const [activeTab, setActiveTab] = useState<'android' | 'ios'>('android');
+  const [deferredPrompt, setDeferredPrompt] = useState<any>(null);
+  const [showInstallBtn, setShowInstallBtn] = useState(false);
 
   useEffect(() => {
-    // Automatically select tab based on hash
-    if (typeof window !== 'undefined' && window.location.hash === '#ios') {
-      setActiveTab('ios');
-    }
+    const handleBeforeInstallPrompt = (e: Event) => {
+      e.preventDefault();
+      setDeferredPrompt(e);
+      setShowInstallBtn(true);
+    };
+    window.addEventListener('beforeinstallprompt', handleBeforeInstallPrompt);
+    return () => {
+      window.removeEventListener('beforeinstallprompt', handleBeforeInstallPrompt);
+    };
+  }, []);
+
+  const handleInstallPWA = async () => {
+    if (!deferredPrompt) return;
+    deferredPrompt.prompt();
+    await deferredPrompt.userChoice;
+    setDeferredPrompt(null);
+    setShowInstallBtn(false);
+  };
+
+  useEffect(() => {
+    // Check hash on mount and whenever hash changes
+    const handleHashChange = () => {
+      if (typeof window !== 'undefined' && window.location.hash === '#ios') {
+        setActiveTab('ios');
+      } else if (typeof window !== 'undefined') {
+        setActiveTab('android');
+      }
+    };
+
+    // Check on initial load
+    handleHashChange();
+
+    // Listen for hash changes
+    window.addEventListener('hashchange', handleHashChange);
+    
+    return () => {
+      window.removeEventListener('hashchange', handleHashChange);
+    };
   }, []);
 
   return (
@@ -173,6 +209,14 @@ export default function AppDownloadPortal() {
                 >
                   Download Android APK (Direct Link)
                 </a>
+                {showInstallBtn && (
+                  <button 
+                    onClick={handleInstallPWA}
+                    className="inline-flex items-center justify-center px-6 py-3 border border-brand-green/30 dark:border-brand-gold/30 text-sm font-bold rounded-xl text-brand-green dark:text-brand-gold bg-transparent hover:bg-gray-50 dark:hover:bg-gray-800 transition shadow-lg"
+                  >
+                    ✨ Install Web App (PWA)
+                  </button>
+                )}
               </div>
 
               <div className="pt-6 border-t border-gray-150 dark:border-gray-800">
@@ -297,7 +341,7 @@ export default function AppDownloadPortal() {
             </div>
             <div>
               <span className="font-bold text-brand-dark dark:text-white block">Storage Requirement</span>
-              <span className="text-xs text-gray-500 mt-1 block">45 MB for installation &amp; database package</span>
+              <span className="text-xs text-gray-500 mt-1 block">45 MB for installation & database package</span>
             </div>
           </div>
         </section>

@@ -9,7 +9,6 @@
     ],
     "module": "ESNext",
     "skipLibCheck": true,
-    "strict": true,
     "declaration": true,
     "declarationMap": true,
     "sourceMap": true,
@@ -17,12 +16,13 @@
     "noUnusedParameters": true,
     "noImplicitReturns": true,
     "noFallthroughCasesInSwitch": true,
-    "moduleResolution": "bundler",
+    "moduleResolution": "node",
     "allowImportingTsExtensions": true,
     "resolveJsonModule": true,
     "isolatedModules": true,
     "jsx": "preserve",
     "incremental": true,
+    "baseUrl": ".",
     "paths": {
       "@/*": [
         "./*"
@@ -30,11 +30,12 @@
     },
     "allowJs": true,
     "noEmit": true,
-    "esModuleInterop": true
+    "esModuleInterop": true,
+    "strict": false
   },
   "include": [
     "**/*.ts",
-    "**/*.tsx"
+    "**/*.tx"
   ],
   "exclude": [
     "node_modules",

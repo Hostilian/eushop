@@ -7,14 +7,25 @@ CREATE TABLE IF NOT EXISTS users (
     email VARCHAR(255) UNIQUE NOT NULL,
     password_hash VARCHAR(255),
     name VARCHAR(255) NOT NULL,
+    auth0_sub VARCHAR(255) UNIQUE,
     country VARCHAR(100),
     role VARCHAR(50) DEFAULT 'buyer',
     verified BOOLEAN DEFAULT FALSE,
+    kyc_verified BOOLEAN DEFAULT FALSE,
+    email_verified BOOLEAN DEFAULT FALSE,
+    profile_bio VARCHAR(500),
+    profile_image_url VARCHAR(255),
+    average_rating FLOAT DEFAULT 5.0,
+    review_count INT DEFAULT 0,
+    completed_orders INT DEFAULT 0,
+    tax_id VARCHAR(255),
+    last_login_at TIMESTAMP,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
 CREATE INDEX idx_users_email ON users(email);
+CREATE INDEX idx_users_auth0_sub ON users(auth0_sub);
 CREATE INDEX idx_users_country ON users(country);
 CREATE INDEX idx_users_role ON users(role);
 
@@ -30,13 +41,17 @@ CREATE TABLE IF NOT EXISTS foods (
     category VARCHAR(100),
     price DECIMAL(10, 2) NOT NULL,
     currency VARCHAR(3) DEFAULT 'EUR',
-    quantity_available INT DEFAULT 0,
-    finder_fee_amount DECIMAL(10, 2),
+    quantity INT DEFAULT 0,
+    finder_fee DECIMAL(10, 2),
     images JSONB DEFAULT '[]',
     dietary_restrictions JSONB DEFAULT '[]',
     allergens JSONB DEFAULT '[]',
-    is_active BOOLEAN DEFAULT TRUE,
+    available BOOLEAN DEFAULT TRUE,
     visibility VARCHAR(50) DEFAULT 'public',
+    average_rating FLOAT DEFAULT 5.0,
+    review_count INT DEFAULT 0,
+    sales_count INT DEFAULT 0,
+    view_count INT DEFAULT 0,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
@@ -44,7 +59,7 @@ CREATE TABLE IF NOT EXISTS foods (
 CREATE INDEX idx_foods_seller_id ON foods(seller_id);
 CREATE INDEX idx_foods_country ON foods(country);
 CREATE INDEX idx_foods_category ON foods(category);
-CREATE INDEX idx_foods_is_active ON foods(is_active);
+CREATE INDEX idx_foods_available ON foods(available);
 
 -- Migration: 003_create_food_requests_table.sql
 -- Description: Create food requests table for buyers seeking specific items
@@ -78,6 +93,7 @@ CREATE TABLE IF NOT EXISTS orders (
     status VARCHAR(50) DEFAULT 'pending',
     shipping_address JSONB,
     tracking_number VARCHAR(255),
+    message VARCHAR(500),
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     shipped_at TIMESTAMP,
     delivered_at TIMESTAMP,
@@ -93,10 +109,20 @@ CREATE INDEX idx_orders_status ON orders(status);
 
 CREATE TABLE IF NOT EXISTS conversations (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-    participant_1_id UUID NOT NULL REFERENCES users(id),
-    participant_2_id UUID NOT NULL REFERENCES users(id),
+    buyer_id UUID NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+    seller_id UUID NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+    food_id UUID REFERENCES foods(id) ON DELETE SET NULL,
+    subject VARCHAR(255),
+    last_message TEXT,
     last_message_at TIMESTAMP,
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+    is_active BOOLEAN DEFAULT TRUE,
+    is_group BOOLEAN DEFAULT FALSE,
+    group_name VARCHAR(255),
+    group_description TEXT,
+    group_image_url VARCHAR(255),
+    created_by UUID,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
 CREATE TABLE IF NOT EXISTS messages (
@@ -119,6 +145,7 @@ CREATE INDEX idx_messages_is_read ON messages(is_read);
 
 CREATE TABLE IF NOT EXISTS reviews (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    food_id UUID NOT NULL REFERENCES foods(id) ON DELETE CASCADE,
     seller_id UUID NOT NULL REFERENCES users(id) ON DELETE CASCADE,
     reviewer_id UUID NOT NULL REFERENCES users(id) ON DELETE CASCADE,
     order_id UUID REFERENCES orders(id),
@@ -130,6 +157,7 @@ CREATE TABLE IF NOT EXISTS reviews (
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
+CREATE INDEX idx_reviews_food_id ON reviews(food_id);
 CREATE INDEX idx_reviews_seller_id ON reviews(seller_id);
 CREATE INDEX idx_reviews_reviewer_id ON reviews(reviewer_id);
 CREATE INDEX idx_reviews_verified_purchase ON reviews(verified_purchase);
@@ -143,7 +171,7 @@ CREATE TABLE IF NOT EXISTS notifications (
     type VARCHAR(50) NOT NULL,
     title VARCHAR(255),
     message TEXT,
-    data JSONB,
+    related_id UUID,
     is_read BOOLEAN DEFAULT FALSE,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );

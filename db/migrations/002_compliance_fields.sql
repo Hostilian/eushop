@@ -12,12 +12,12 @@ ALTER TABLE users ADD COLUMN IF NOT EXISTS address_postal_code VARCHAR(20);
 ALTER TABLE users ADD COLUMN IF NOT EXISTS self_certified_compliant BOOLEAN DEFAULT FALSE;
 
 -- Ensure a unique constraint exists on email so that ON CONFLICT seed operations work correctly
-ALTER TABLE users ADD CONSTRAINT IF NOT EXISTS unique_users_email UNIQUE (email);
+ALTER TABLE users ADD CONSTRAINT unique_users_email UNIQUE (email);
 
 -- Ensure allergens column exists before enforcing not‑null constraint
-ALTER TABLE foods ADD COLUMN IF NOT EXISTS allergens TEXT;
+ALTER TABLE foods ADD COLUMN IF NOT EXISTS allergens JSONB DEFAULT '[]';
 -- Replace any remaining NULL allergens with a fallback value so the NOT NULL constraint can be applied
-UPDATE foods SET allergens = '' WHERE allergens IS NULL;
+UPDATE foods SET allergens = '[]' WHERE allergens IS NULL;
 
 -- Enforce description and allergens to be mandatory in foods for EU consumer labeling
 ALTER TABLE foods ALTER COLUMN allergens SET NOT NULL;

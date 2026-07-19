@@ -110,6 +110,7 @@ public class FoodController {
                 .body(ApiResponse.success(toDTO(created), "Food created successfully"));
     }
 
+
     @PutMapping("/{id}")
     public ResponseEntity<ApiResponse<FoodDTO>> updateFood(
             @PathVariable String id,
@@ -122,6 +123,17 @@ public class FoodController {
         if (!existingFood.getSellerId().equals(userId)) {
             return ResponseEntity.status(HttpStatus.FORBIDDEN)
                     .body(ApiResponse.error("Only seller can update this food"));
+        }
+
+        // DSA Article 31 — "trader" verification gate for updates
+        var seller = userService.getUserById(userId).orElse(null);
+        if (seller == null) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+                    .body(ApiResponse.error("User not found"));
+        }
+        if (!Boolean.TRUE.equals(seller.getKycVerified())) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN)
+                    .body(ApiResponse.error("DSA_VERIFICATION_REQUIRED: Your seller account is pending admin verification. You cannot update listings."));
         }
 
         Food food = new Food();

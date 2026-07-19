@@ -38,8 +38,14 @@ interface FoodDetail {
 function sanitizeHTML(str: string): string {
   if (!str) return '';
   return str.replace(/[&<>"']/g, (m) => {
-    const map: Record<string, string> = { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#x27;' };
-    return map[m] || m;
+    switch (m) {
+      case '&': return '&';
+      case '<': return '<';
+      case '>': return '>';
+      case '"': return '"';
+      case "'": return "'";
+      default: return m;
+    }
   });
 }
 
@@ -53,18 +59,40 @@ export default function FoodDetailPage() {
   const [addingToCart, setAddingToCart] = useState(false);
 
   useEffect(() => {
-    if (!id) return;
-    const idStr = id as string;
-    if (!/^[a-zA-Z0-9-_]{1,64}$/.test(idStr)) {
-      setError('Invalid product ID.');
-      setLoading(false);
-      return;
+    let isCancelled = false;
+
+    if (!id) {
+      // If no ID, set loading to false and return
+      setTimeout(() => {
+        if (!isCancelled) {
+          setLoading(false);
+        }
+      }, 0);
+      return () => {
+        isCancelled = true;
+      };
     }
+
+    const idStr = id as string;
+    // Validate ID format
+    if (!/^[a-zA-Z0-9-_]{1,64}$/.test(idStr)) {
+      setTimeout(() => {
+        if (!isCancelled) {
+          setError('Invalid product ID.');
+          setLoading(false);
+        }
+      }, 0);
+      return () => {
+        isCancelled = true;
+      };
+    }
+
     const controller = new AbortController();
     const timeoutId = setTimeout(() => controller.abort(), 10000);
 
     foodAPI.getById(idStr, { signal: controller.signal })
       .then((result: any) => {
+        if (isCancelled) return;
         if (!result?.id || !result?.name || typeof result?.price !== 'number') {
           throw new Error('Invalid product data');
         }
@@ -93,20 +121,30 @@ export default function FoodDetailPage() {
           qualityScheme: result.qualityScheme,
           qualitySchemeVerified: Boolean(result.qualitySchemeVerified),
         });
+        setLoading(false);
       })
       .catch((err: any) => {
+        if (isCancelled) return;
         if (err.name === 'AbortError') {
-          setError('Request timed out. Please try again.');
+          setTimeout(() => {
+            setError('Request timed out. Please try again.');
+            setLoading(false);
+          }, 0);
         } else {
-          setError('Could not load this product. Try searching for alternatives.');
+          setTimeout(() => {
+            setError('Could not load this product. Try searching for alternatives.');
+            setLoading(false);
+          }, 0);
         }
       })
       .finally(() => {
-        setLoading(false);
         clearTimeout(timeoutId);
       });
 
-    return () => { controller.abort(); clearTimeout(timeoutId); };
+    return () => {
+      isCancelled = true;
+      controller.abort();
+    };
   }, [id]);
 
   const handleAddToCart = () => {

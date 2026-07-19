@@ -1,0 +1,329 @@
+export type CatalogueEntryKind =
+  | 'current-application'
+  | 'application-view'
+  | 'historical-snapshot';
+
+export type SnapshotLineage =
+  | 'recovered-prototype'
+  | 'core-theme-variant'
+  | 'marketplace-concept';
+
+export interface VersionCatalogueEntry {
+  key: string;
+  name: string;
+  shortName: string;
+  badge: string;
+  description: string;
+  path: string;
+  kind: CatalogueEntryKind;
+  accentClass: string;
+  lineage?: SnapshotLineage;
+  introducedIn?: string;
+  lastIntegratedIn?: string;
+}
+
+export const CURRENT_APPLICATION: VersionCatalogueEntry = {
+  key: 'current',
+  name: 'Current integrated application',
+  shortName: 'Current',
+  badge: 'CURRENT',
+  description:
+    'The active Next.js application. Feature availability depends on the configured backend and runtime services.',
+  path: '/',
+  kind: 'current-application',
+  accentClass:
+    'from-emerald-700 to-amber-600 border-amber-300 text-emerald-800 dark:text-emerald-300',
+};
+
+export const APPLICATION_VIEWS: readonly VersionCatalogueEntry[] = [
+  {
+    key: 'buyer-view',
+    name: 'Buyer marketplace view',
+    shortName: 'Buyer',
+    badge: 'VIEW',
+    description:
+      'The current storefront route for browsing demo or API-backed catalogue data.',
+    path: '/',
+    kind: 'application-view',
+    accentClass:
+      'from-emerald-500 to-green-600 border-green-200 text-green-700',
+  },
+  {
+    key: 'seller-view',
+    name: 'Seller onboarding view',
+    shortName: 'Seller',
+    badge: 'VIEW',
+    description:
+      'The current seller onboarding route. Legal and tax outcomes still require qualified human review.',
+    path: '/become-seller',
+    kind: 'application-view',
+    accentClass:
+      'from-amber-500 to-orange-600 border-orange-200 text-orange-700',
+  },
+  {
+    key: 'operator-view',
+    name: 'Operator dashboard view',
+    shortName: 'Operator',
+    badge: 'VIEW',
+    description:
+      'The current administrative demonstration route; authorization must be validated with the backend.',
+    path: '/admin/dashboard',
+    kind: 'application-view',
+    accentClass:
+      'from-purple-500 to-indigo-600 border-indigo-200 text-indigo-700',
+  },
+  {
+    key: 'documentation-view',
+    name: 'Project documentation view',
+    shortName: 'Docs',
+    badge: 'VIEW',
+    description:
+      'Repository-backed project documentation. Status statements should be checked against source and tests.',
+    path: '/docs',
+    kind: 'application-view',
+    accentClass:
+      'from-blue-500 to-cyan-600 border-blue-200 text-blue-700',
+  },
+];
+
+export const HISTORICAL_SNAPSHOTS: readonly VersionCatalogueEntry[] = [
+  {
+    key: 'v3',
+    name: 'V3 - Recovered core prototype',
+    shortName: 'V3',
+    badge: 'RECOVERED',
+    description:
+      'Recovered static prototype in the Cursor/Antigravity lineage, with later navigation repairs.',
+    path: '/v3/',
+    kind: 'historical-snapshot',
+    lineage: 'recovered-prototype',
+    introducedIn: 'd08148c9',
+    lastIntegratedIn: '0020e35f',
+    accentClass:
+      'from-slate-500 to-slate-700 border-slate-300 text-slate-700 dark:text-slate-300',
+  },
+  {
+    key: 'v6',
+    name: 'V6 - Base static prototype',
+    shortName: 'V6',
+    badge: 'BASE',
+    description:
+      'Base static catalogue, listing, and request prototype used by the subsequent theme variants.',
+    path: '/v6/',
+    kind: 'historical-snapshot',
+    lineage: 'recovered-prototype',
+    introducedIn: '4d4b5c27',
+    lastIntegratedIn: '0020e35f',
+    accentClass:
+      'from-gray-500 to-slate-600 border-slate-200 text-slate-700 dark:text-slate-300',
+  },
+  {
+    key: 'v7',
+    name: 'V7 - Emerald theme',
+    shortName: 'V7',
+    badge: 'THEME',
+    description: 'Emerald visual variant of the shared static prototype.',
+    path: '/v7/',
+    kind: 'historical-snapshot',
+    lineage: 'core-theme-variant',
+    introducedIn: '4d4b5c27',
+    lastIntegratedIn: '0020e35f',
+    accentClass:
+      'from-teal-500 to-emerald-600 border-teal-200 text-teal-700',
+  },
+  {
+    key: 'v8',
+    name: 'V8 - Midnight theme',
+    shortName: 'V8',
+    badge: 'THEME',
+    description: 'Dark midnight visual variant of the shared static prototype.',
+    path: '/v8/',
+    kind: 'historical-snapshot',
+    lineage: 'core-theme-variant',
+    introducedIn: '4d4b5c27',
+    lastIntegratedIn: '0020e35f',
+    accentClass:
+      'from-slate-700 to-slate-900 border-slate-600 text-slate-300',
+  },
+  {
+    key: 'v9',
+    name: 'V9 - Rose theme',
+    shortName: 'V9',
+    badge: 'THEME',
+    description: 'Rose visual variant of the shared static prototype.',
+    path: '/v9/',
+    kind: 'historical-snapshot',
+    lineage: 'core-theme-variant',
+    introducedIn: '4d4b5c27',
+    lastIntegratedIn: '0020e35f',
+    accentClass:
+      'from-rose-400 to-rose-600 border-rose-300 text-rose-800',
+  },
+  {
+    key: 'v10',
+    name: 'V10 - Platinum theme',
+    shortName: 'V10',
+    badge: 'THEME',
+    description: 'Platinum visual variant of the shared static prototype.',
+    path: '/v10/',
+    kind: 'historical-snapshot',
+    lineage: 'core-theme-variant',
+    introducedIn: 'd08148c9',
+    lastIntegratedIn: '0020e35f',
+    accentClass:
+      'from-slate-300 to-slate-500 border-slate-200 text-slate-700',
+  },
+  {
+    key: 'v11',
+    name: 'V11 - Forest theme',
+    shortName: 'V11',
+    badge: 'THEME',
+    description: 'Forest-green visual variant of the shared static prototype.',
+    path: '/v11/',
+    kind: 'historical-snapshot',
+    lineage: 'core-theme-variant',
+    introducedIn: 'd08148c9',
+    lastIntegratedIn: '0020e35f',
+    accentClass:
+      'from-emerald-600 to-green-800 border-green-200 text-green-700',
+  },
+  {
+    key: 'v12',
+    name: 'V12 - Terracotta theme',
+    shortName: 'V12',
+    badge: 'THEME',
+    description: 'Terracotta visual variant of the shared static prototype.',
+    path: '/v12/',
+    kind: 'historical-snapshot',
+    lineage: 'core-theme-variant',
+    introducedIn: 'd08148c9',
+    lastIntegratedIn: '0020e35f',
+    accentClass:
+      'from-orange-400 to-amber-600 border-orange-200 text-orange-700',
+  },
+  {
+    key: 'v13',
+    name: 'V13 - Lavender theme',
+    shortName: 'V13',
+    badge: 'THEME',
+    description: 'Lavender visual variant of the shared static prototype.',
+    path: '/v13/',
+    kind: 'historical-snapshot',
+    lineage: 'core-theme-variant',
+    introducedIn: 'd08148c9',
+    lastIntegratedIn: '0020e35f',
+    accentClass:
+      'from-purple-400 to-indigo-600 border-purple-200 text-purple-700',
+  },
+  {
+    key: 'v14',
+    name: 'V14 - White modern theme',
+    shortName: 'V14',
+    badge: 'THEME',
+    description:
+      'White modern markup and styling layered over the shared static application logic and data.',
+    path: '/v14/',
+    kind: 'historical-snapshot',
+    lineage: 'core-theme-variant',
+    introducedIn: '84fe48fc',
+    lastIntegratedIn: '0020e35f',
+    accentClass:
+      'from-gray-100 to-gray-300 border-gray-300 text-gray-800',
+  },
+  {
+    key: 'v15',
+    name: 'V15 - Azure theme',
+    shortName: 'V15',
+    badge: 'THEME',
+    description:
+      'Azure visual variant of the V14 markup, preserved at its actual /v15/ snapshot path.',
+    path: '/v15/',
+    kind: 'historical-snapshot',
+    lineage: 'core-theme-variant',
+    introducedIn: '3f44c710',
+    lastIntegratedIn: '0020e35f',
+    accentClass:
+      'from-sky-400 to-blue-700 border-sky-200 text-sky-800',
+  },
+  {
+    key: 'v16',
+    name: 'V16 - Cherry blossom theme',
+    shortName: 'V16',
+    badge: 'THEME',
+    description: 'Cherry-blossom visual variant of the shared static prototype.',
+    path: '/v16/',
+    kind: 'historical-snapshot',
+    lineage: 'core-theme-variant',
+    introducedIn: '84fe48fc',
+    lastIntegratedIn: '0020e35f',
+    accentClass:
+      'from-pink-400 to-pink-600 border-pink-200 text-pink-700',
+  },
+  {
+    key: 'v17',
+    name: 'V17 - Royal gold theme',
+    shortName: 'V17',
+    badge: 'THEME',
+    description: 'Gold visual variant of the shared static prototype.',
+    path: '/v17/',
+    kind: 'historical-snapshot',
+    lineage: 'core-theme-variant',
+    introducedIn: '84fe48fc',
+    lastIntegratedIn: '0020e35f',
+    accentClass:
+      'from-amber-400 to-amber-600 border-amber-200 text-amber-800',
+  },
+  {
+    key: 'v18',
+    name: 'V18 - Auction marketplace concept',
+    shortName: 'V18',
+    badge: 'CONCEPT',
+    description:
+      'Independent auction-oriented static marketplace concept with bids, ratings, and a watchlist.',
+    path: '/v18/',
+    kind: 'historical-snapshot',
+    lineage: 'marketplace-concept',
+    introducedIn: '7057bb84',
+    lastIntegratedIn: '1c3d86cc',
+    accentClass:
+      'from-blue-500 to-blue-700 border-blue-200 text-blue-700',
+  },
+  {
+    key: 'v19',
+    name: 'V19 - Catalogue marketplace concept',
+    shortName: 'V19',
+    badge: 'CONCEPT',
+    description:
+      'Independent catalogue-oriented static marketplace concept with dense navigation and a local cart.',
+    path: '/v19/',
+    kind: 'historical-snapshot',
+    lineage: 'marketplace-concept',
+    introducedIn: '7057bb84',
+    lastIntegratedIn: '1c3d86cc',
+    accentClass:
+      'from-amber-500 to-orange-600 border-amber-200 text-amber-800',
+  },
+];
+
+export const VERSION_SELECTOR_OPTIONS: readonly VersionCatalogueEntry[] = [
+  CURRENT_APPLICATION,
+  ...HISTORICAL_SNAPSHOTS,
+];
+
+export const EXPECTED_HISTORICAL_VERSION_KEYS = [
+  'v3',
+  'v6',
+  'v7',
+  'v8',
+  'v9',
+  'v10',
+  'v11',
+  'v12',
+  'v13',
+  'v14',
+  'v15',
+  'v16',
+  'v17',
+  'v18',
+  'v19',
+] as const;

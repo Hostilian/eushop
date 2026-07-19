@@ -1,0 +1,27 @@
+{
+    "schemaVersion":  1,
+    "mission":  "EUshop Version 44",
+    "initializedAt":  "2026-07-19T00:11:01+02:00",
+    "repository":  "D:\\CODING\\eushop",
+    "targetBranch":  "version-44",
+    "branchAtInstall":  "codex/version-recovery-20260718",
+    "baselineCandidate":  "52c9935d33a124e6631d36af195c682cb6b2ef92",
+    "latestSafeCommit":  "929327f0e6f24db80fa90cda67ae7e545530e771",
+    "status":  "READY",
+    "currentObjective":  "Audit buyer, seller and static GitHub Pages journeys to understand current implementation and identify improvements needed for Version 44",
+    "completedTasks":  [
+                           "Installed orchestrator mission",
+                           "Installed urgent recovery override",
+                           "Initialized durable recovery files",
+                           "Added shared degradation utilities and error isolation",
+                           "Refactored VersionSelector to use version catalogue data"
+                       ],
+    "nextTasks":  [
+                      "Audit buyer, seller and static GitHub Pages journeys",
+                      "Add deterministic search and filtering",
+                      "Clarify homepage product narrative"
+                  ],
+    "unresolvedBlockers":  [
+
+                           ]
+}

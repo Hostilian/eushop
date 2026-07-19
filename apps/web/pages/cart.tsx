@@ -1,5 +1,5 @@
 import Link from 'next/link';
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import { PageWrapper } from '../components/layout/PageWrapper';
 
 interface CartItem {
@@ -20,18 +20,15 @@ const getFoodImage = (foodName: string) => {
 };
 
 export default function CartPage() {
-  const [cartItems, setCartItems] = useState<CartItem[]>([]);
-
-  useEffect(() => {
+  const [cartItems, setCartItems] = useState<CartItem[]>(() => {
+    if (typeof window === 'undefined') return [];
     try {
       const saved = localStorage.getItem('cart');
-      if (saved) {
-        setCartItems(JSON.parse(saved));
-      }
+      return saved ? JSON.parse(saved) : [];
     } catch {
-      setCartItems([]);
+      return [];
     }
-  }, []);
+  });
 
   const persist = (items: CartItem[]) => {
     setCartItems(items);
@@ -113,7 +110,9 @@ export default function CartPage() {
             </div>
 
             <div className="bg-white dark:bg-gray-900 rounded-2xl border border-gray-100 dark:border-gray-800 p-6 h-fit shadow-sm">
-              <h2 className="text-xl font-bold text-brand-dark dark:text-white mb-6 font-display">Order Summary</h2>
+              <h2 className="text-xl font-bold text-brand-dark dark:text-white mb-6 font-display">
+                Order Summary
+              </h2>
               <div className="space-y-4 mb-6">
                 <div className="flex justify-between text-gray-600 dark:text-gray-400 text-sm">
                   <span>Subtotal</span>

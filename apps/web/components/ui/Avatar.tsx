@@ -18,7 +18,9 @@ export function Avatar({
 export function AvatarImage(
   props: React.ImgHTMLAttributes<HTMLImageElement>
 ) {
-  return <img className="h-full w-full object-cover" {...props} />;
+  // Ensure alt is present; if not provided, default to empty string for decorative images
+  const { alt = '', ...imgProps } = props;
+  return <img alt={alt} className="h-full w-full object-cover" {...imgProps} />;
 }
 
 export function AvatarFallback({

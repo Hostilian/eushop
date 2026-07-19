@@ -1,3 +1,5 @@
+"use client";
+
 import React, { useState, useEffect, useCallback } from 'react';
 import { Input } from '../ui/Input';
 import { User } from '../../lib/types';
@@ -41,21 +43,23 @@ export const UserSearch: React.FC<UserSearchProps> = ({
     }
   }, [query, excludeUserIds, maxResults]);
 
+  // Clear results when query becomes empty (asynchronously to avoid synchronous setState in effect)
   useEffect(() => {
-    let cleanup: () => void = () => {};
     if (!query.trim()) {
-      // Use setTimeout to avoid synchronous state update in effect
       setTimeout(() => {
         setResults([]);
       }, 0);
-    } else {
+    }
+  }, [query]);
+
+  // Set up debounce for search when query is not empty
+  useEffect(() => {
+    if (query.trim()) {
       const handler = setTimeout(() => {
         performSearch();
       }, 300);
-      cleanup = () => clearTimeout(handler);
+      return () => clearTimeout(handler);
     }
-
-    return cleanup;
   }, [query, performSearch]);
 
   const handleSelectUser = (user: User) => {
@@ -95,7 +99,9 @@ export const UserSearch: React.FC<UserSearchProps> = ({
             return (
               <div
                 key={user.id}
-                className={`p-2 hover:bg-gray-50 cursor-pointer flex items-center gap-2 ${isSelected ? 'bg-blue-50' : ''}`}
+                className={`p-2 hover:bg-gray-50 cursor-pointer flex items-center gap-2 ${
+                  isSelected ? 'bg-blue-50' : ''
+                }`}
                 onClick={() => handleSelectUser(user)}
               >
                 <UserAvatar name={user.name} src={user.avatar} size="sm" />
