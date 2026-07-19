@@ -175,7 +175,7 @@ public class UserController {
         }
 
         Map<String, Object> data = userService.exportUserData(id);
-        return ResponseEntity.ok(ApiResponse.success(data, "User data exported successfully (GDPR portability)"));
+        return ResponseEntity.ok(ApiResponse.success(data, "User data exported successfully (GSDportability)"));
     }
 
     @PostMapping("/{id}/consent")
@@ -227,4 +227,3 @@ public class UserController {
         dto.setSelfCertifiedCompliant(user.getSelfCertifiedCompliant());
         return dto;
     }
-}
