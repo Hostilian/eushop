@@ -13,6 +13,7 @@ interface User {
 }
 
 import { Button } from '../ui/Button';
+import VersionSelector from './VersionSelector';
 
 export function Navbar() {
   const [user, setUser] = useState<User | null>(null);
@@ -134,6 +135,9 @@ export function Navbar() {
 
         {/* Action Buttons */}
         <div className="flex items-center gap-4">
+          {/* Version Selector */}
+          <VersionSelector />
+
           {/* Dark Mode Toggle */}
           <button
             onClick={toggleTheme}

@@ -14,15 +14,7 @@ export const metadata = {
   description: 'Explore the historical versions and current views of the Eushop application',
 };
 
-export const getStaticProps: GetStaticProps = async () => {
-  return {
-    props: {
-      // Data is already available at build time from the catalogue
-    },
-    // Re-generate the page once per day if the catalogue data changes
-    revalidate: 86400, // 24 hours
-  };
-};
+
 
 export default function VersionsPage() {
   return (
