@@ -175,7 +175,7 @@ public class UserController {
         }
 
         Map<String, Object> data = userService.exportUserData(id);
-        return ResponseEntity.ok(ApiResponse.success(data, "User data exported successfully (GSDportability)"));
+        return ResponseEntity.ok(ApiResponse.success(data, "User data exported successfully (GDPR portability)"));
     }
 
     @PostMapping("/{id}/consent")
