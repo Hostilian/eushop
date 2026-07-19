@@ -1280,10 +1280,8 @@ function Invoke-Provider {
                         -LogPath $LogPath `
                         -Action {
                             & $Path `
-                                --approval-mode=yolo `
-                                --skip-trust `
+                                --yolo `
                                 --sandbox=false `
-                                --output-format=text `
                                 -p $Prompt
                         }
                 }
@@ -1655,8 +1653,8 @@ function Run-Orchestrator {
                 Save-ProviderState -State $State
                 Save-OfflineCheckpoint -Sequence $Sequence
 
-                $SleepSeconds = 1800 + (
-                    Get-Random -Minimum 0 -Maximum 181
+                $SleepSeconds = 120 + (
+                    Get-Random -Minimum 0 -Maximum 31
                 )
 
                 Write-AgentLog `

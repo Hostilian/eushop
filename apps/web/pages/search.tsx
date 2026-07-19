@@ -49,6 +49,8 @@ export default function SearchPage() {
   const [selectedCountry, setSelectedCountry] = useState('');
   const [selectedCategory, setSelectedCategory] = useState('');
   const [selectedAllergen, setSelectedAllergen] = useState('');
+  const [minPrice, setMinPrice] = useState<number | null>(null);
+  const [maxPrice, setMaxPrice] = useState<number | null>(null);
   const [foods, setFoods] = useState<FoodItem[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -67,7 +69,7 @@ export default function SearchPage() {
   const performSearch = useCallback(async () => {
     setLoading(true);
     setError(null);
-    
+
     // Graceful degradation: If offline, immediately use cached results
     if (!navigator.onLine) {
       try {
@@ -85,13 +87,13 @@ export default function SearchPage() {
       }
       // No cache available offline or cache read failed
       setFoods([
-        { 
-          id: 'offline-fallback', 
-          name: 'Offline Mode', 
-          country: 'EU', 
-          price: 0.00, 
-          description: 'You are currently offline. Search results are limited to cached data. Please reconnect to see the latest products.', 
-          sellerId: 'system-offline' 
+        {
+          id: 'offline-fallback',
+          name: 'Offline Mode',
+          country: 'EU',
+          price: 0.00,
+          description: 'You are currently offline. Search results are limited to cached data. Please reconnect to see the latest products.',
+          sellerId: 'system-offline'
         },
       ]);
       setLoading(false);
@@ -101,7 +103,7 @@ export default function SearchPage() {
     try {
       const controller = new AbortController();
       const timeoutId = setTimeout(() => controller.abort(), SEARCH_TIMEOUT_MS);
-      
+
       const result: any = await foodAPI.search(
         searchQuery,
         selectedCountry,
@@ -109,10 +111,12 @@ export default function SearchPage() {
         PAGE_SIZE,
         selectedCategory,
         selectedAllergen,
+        minPrice,
+        maxPrice,
         { signal: controller.signal }
       );
       clearTimeout(timeoutId);
-      
+
       // Ensure result is an array of FoodItem
       const foodsArray = Array.isArray(result) ? result : (result?.data || result?.foods || []);
       setFoods(foodsArray);
@@ -127,13 +131,13 @@ export default function SearchPage() {
     } catch (err: any) {
       console.error('Search failed:', err);
       setError('Search service is temporarily unavailable. Please try again later.');
-      
+
       // Graceful degradation: Use cached results from localStorage if available and fresh
       try {
         const cachedResults = localStorage.getItem('search_fallback');
         const cachedTimestamp = localStorage.getItem('search_fallback_timestamp');
         const isCacheFresh = cachedTimestamp && (Date.now() - Number(cachedTimestamp)) < CACHE_FRESHNESS_MS;
-        
+
         if (cachedResults && isCacheFresh) {
           const parsed = JSON.parse(cachedResults);
           if (Array.isArray(parsed) && parsed.length > 0) {
@@ -144,13 +148,13 @@ export default function SearchPage() {
       } catch (cacheError) {
         console.warn('Could not read cached search results during error fallback:', cacheError);
       }
-      
+
       // Ultimate fallback: show minimal data
       setFoods([]);
     } finally {
       setLoading(false);
     }
-  }, [searchQuery, selectedCountry, selectedCategory, selectedAllergen, page]);
+  }, [searchQuery, selectedCountry, selectedCategory, selectedAllergen, minPrice, maxPrice, page]);
 
   useEffect(() => {
     const delayTimer = setTimeout(() => {
@@ -200,7 +204,7 @@ export default function SearchPage() {
 
         {/* Filter Bar */}
         <div className="bg-white dark:bg-gray-900 border border-gray-150 dark:border-gray-800 rounded-3xl p-6 shadow-sm mb-10">
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-6 gap-6">
             <div>
               <label htmlFor="search-input" className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">
                 Search Listings
@@ -279,6 +283,46 @@ export default function SearchPage() {
                   </option>
                 ))}
               </select>
+            </div>
+
+            <div>
+              <label htmlFor="min-price" className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">
+                Min Price (€)
+              </label>
+              <input
+                id="min-price"
+                type="number"
+                min="0"
+                step="0.01"
+                placeholder="Min"
+                value={minPrice ?? ''}
+                onChange={(e) => {
+                  const value = e.target.value;
+                  setMinPrice(value === '' ? null : parseFloat(value));
+                  setPage(1); // Reset page on price change
+                }}
+                className="w-full px-4 py-2.5 border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-950 rounded-xl focus:ring-2 focus:ring-brand-green focus:border-transparent text-sm transition text-gray-800 dark:text-gray-200"
+              />
+            </div>
+
+            <div>
+              <label htmlFor="max-price" className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">
+                Max Price (€)
+              </label>
+              <input
+                id="max-price"
+                type="number"
+                min="0"
+                step="0.01"
+                placeholder="Max"
+                value={maxPrice ?? ''}
+                onChange={(e) => {
+                  const value = e.target.value;
+                  setMaxPrice(value === '' ? null : parseFloat(value));
+                  setPage(1); // Reset page on price change
+                }}
+                className="w-full px-4 py-2.5 border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-950 rounded-xl focus:ring-2 focus:ring-brand-green focus:border-transparent text-sm transition text-gray-800 dark:text-gray-200"
+              />
             </div>
           </div>
         </div>
