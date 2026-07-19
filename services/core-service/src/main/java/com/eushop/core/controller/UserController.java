@@ -161,7 +161,9 @@ public class UserController {
         }
 
         userService.anonymiseUser(id);
-        return ResponseEntity.ok(ApiResponse.success(null, "User data erased (GDPR Article 17 - Right to be Forgotten)"));
+        return ResponseEntity.ok(ApiResponse.success(
+                null,
+                "Erasure request processed for EUshop core records; subprocessor erasure requires separate verification"));
     }
 
     @GetMapping("/{id}/export")
