@@ -52,7 +52,8 @@ jobs:
           restore-keys: ${{ runner.os }}-pnpm-
       - run: pnpm install --prefer-frozen-lockfile
       - run: pnpm --filter "@eushop/web" run lint
-      - run: pnpm --filter "@eushop/web" run type-check
+      - name: Type-check web application
+        run: pnpm --filter "@eushop/web" exec tsc --noEmit
 
   # ─── 2. Compliance Engine Tests (HIGHEST PRIORITY — must not be skipped) ──
   compliance-tests:
@@ -103,7 +104,8 @@ jobs:
           key: ${{ runner.os }}-pnpm-${{ hashFiles('**/pnpm-lock.yaml') }}
           restore-keys: ${{ runner.os }}-pnpm-
       - run: pnpm install --prefer-frozen-lockfile
-      - run: pnpm --filter "@eushop/web" run test --ci --coverage
+      - name: Run web Jest tests
+        run: pnpm --filter "@eushop/web" exec jest --ci --coverage
       - uses: actions/upload-artifact@v4
         if: always()
         with:
@@ -111,10 +113,24 @@ jobs:
           path: apps/web/coverage/
 
   # ─── 4. Build ─────────────────────────────────────────────────────────────
+  core-service-tests:
+    name: Core-service Maven Tests
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-java@v4
+        with:
+          java-version: '17'
+          distribution: 'temurin'
+          cache: maven
+      - name: Run core-service tests
+        working-directory: services/core-service
+        run: ./mvnw test
+
   build:
     name: Build Static Export
     runs-on: ubuntu-latest
-    needs: [compliance-tests, web-tests]
+    needs: [compliance-tests, web-tests, core-service-tests]
     steps:
       - uses: actions/checkout@v4
       - uses: pnpm/action-setup@v4

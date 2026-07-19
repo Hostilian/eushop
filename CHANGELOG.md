@@ -1,5 +1,10 @@
 # Changelog
 
+## [Unreleased] — Autonomous continuation (2026-07-19)
+
+### Changed
+- Consolidated the CI quality gate around the canonical `ci-cd.yml` workflow, with explicit web TypeScript/Jest checks and core-service Maven tests. The GitHub Pages deployment remains in the recognized `nextjs.yml` workflow.
+
 ## [Unreleased] — Nonstop Graceful Degradation & Auto-Approval Fix (2026-07-18)
 
 ### Added
