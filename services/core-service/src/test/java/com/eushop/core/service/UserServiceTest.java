@@ -14,6 +14,10 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 import com.eushop.core.entity.User;
 import com.eushop.core.entity.ConsentLog;
+import com.eushop.core.repository.ConversationRepository;
+import com.eushop.core.repository.MessageRepository;
+import com.eushop.core.repository.OrderRepository;
+import com.eushop.core.repository.ReviewRepository;
 import com.eushop.core.repository.UserRepository;
 import com.eushop.core.repository.ConsentLogRepository;
 
@@ -25,6 +29,18 @@ public class UserServiceTest {
 
     @Mock
     private ConsentLogRepository consentLogRepository;
+
+    @Mock
+    private OrderRepository orderRepository;
+
+    @Mock
+    private ReviewRepository reviewRepository;
+
+    @Mock
+    private ConversationRepository conversationRepository;
+
+    @Mock
+    private MessageRepository messageRepository;
 
     @InjectMocks
     private UserService userService;
@@ -127,6 +143,14 @@ public class UserServiceTest {
 
     @Test
     void testAnonymiseUser_Success() {
+        mockUser.setProfileBio("A personal seller biography");
+        mockUser.setProfileImageUrl("https://cdn.example.test/profile.jpg");
+        mockUser.setTaxId("FR-TAX-123");
+        mockUser.setVatNumber("FR123456789");
+        mockUser.setTradeRegisterNumber("RCS-123");
+        mockUser.setAddressStreet("1 Rue du Test");
+        mockUser.setAddressCity("Paris");
+        mockUser.setAddressPostalCode("75001");
         when(userRepository.findById("test-uuid")).thenReturn(Optional.of(mockUser));
         when(userRepository.save(any(User.class))).thenAnswer(invocation -> invocation.getArgument(0));
 
@@ -135,10 +159,31 @@ public class UserServiceTest {
         assertTrue(mockUser.getEmail().startsWith("deleted_"));
         assertEquals("[Deleted User]", mockUser.getName());
         assertNull(mockUser.getAuth0Sub());
+        assertNull(mockUser.getProfileBio());
+        assertNull(mockUser.getProfileImageUrl());
         assertNull(mockUser.getTaxId());
+        assertNull(mockUser.getVatNumber());
+        assertNull(mockUser.getTradeRegisterNumber());
+        assertNull(mockUser.getAddressStreet());
+        assertNull(mockUser.getAddressCity());
+        assertNull(mockUser.getAddressPostalCode());
         
         verify(userRepository, times(1)).findById("test-uuid");
         verify(userRepository, times(1)).save(mockUser);
+        verify(orderRepository).updateOrderPiiWhereBuyerIdOrSellerId("test-uuid");
+        verify(reviewRepository).updateReviewPiiWhereReviewerIdOrSellerId("test-uuid");
+        verify(conversationRepository).updateConversationPiiWhereBuyerIdOrSellerId("test-uuid");
+        verify(messageRepository).updateMessagePiiWhereSenderId("test-uuid");
+    }
+
+    @Test
+    void testAnonymiseUser_UserNotFoundDoesNotRunCascade() {
+        when(userRepository.findById("missing-user")).thenReturn(Optional.empty());
+
+        assertThrows(IllegalArgumentException.class, () -> userService.anonymiseUser("missing-user"));
+
+        verify(userRepository, never()).save(any(User.class));
+        verifyNoInteractions(orderRepository, reviewRepository, conversationRepository, messageRepository);
     }
 
     @Test
