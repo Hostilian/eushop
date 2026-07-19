@@ -112,7 +112,7 @@ export default function Home() {
           </h1>
           <p className="text-sm sm:text-base text-gray-300 max-w-2xl mx-auto leading-relaxed">
             Discover specialty foods from independent producers across the EU Single Market.
-            Allergen information transparent, prices clear, and seller identities verified.
+            Allergen information is shown before purchase, prices are clear, and each listing displays the seller identity supplied by the marketplace API.
           </p>
           <div className="flex justify-center gap-4 pt-4">
             <a href="#explore" className="px-6 py-3 border border-brand-gold bg-brand-gold text-brand-green hover:opacity-90 font-bold rounded-xl text-sm transition shadow-lg shadow-brand-gold/10">

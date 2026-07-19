@@ -20,6 +20,10 @@ export function Footer() {
             <p className="text-xs font-semibold text-primary dark:text-blue-400 flex items-center gap-1">
               <span>🇪🇺</span> EU Single Market Trade Only
             </p>
+            {/* COMPLIANCE-REVIEW: DSA Art. 30 requires persistent seller identity display. */}
+            <p className="text-xs leading-relaxed max-w-xs text-gray-500 dark:text-gray-400">
+              EUshop provides the marketplace. The “Sold by [seller name]” disclosure identifies the trader offering a product.
+            </p>
           </div>
 
           {/* Navigation Links */}

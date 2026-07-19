@@ -372,9 +372,10 @@ export default function SearchPage() {
                   imageUrl={getFoodImage(food.name)}
                   allergens={food.allergens || []}
                   seller={{
-                    name: food.seller?.name || 'Producer',
-                    rating: food.seller?.rating || 5.0,
-                    verified: food.seller?.verified ?? true,
+                    // COMPLIANCE-REVIEW: A missing trader name must not be replaced with a fabricated identity.
+                    name: food.seller?.name || 'Seller identity unavailable',
+                    rating: food.seller?.rating ?? 0,
+                    verified: food.seller?.verified === true,
                   }}
                   onAddToCart={handleAddToCart}
                 />

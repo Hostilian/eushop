@@ -44,8 +44,9 @@ export function Badge({ children, variant = 'neutral', size = 'sm', icon }: Badg
 // ─── Specialised variants ─────────────────────────────────────────────────────
 
 /**
- * Renders a DSA-compliant "Verified EU Trader" badge.
+ * Renders a "Verified EU Trader" badge from the stored KYC state.
  * Must only be shown when user.kycVerified === true.
+ * COMPLIANCE-REVIEW: Confirm that the stored verification state is backed by current trader evidence.
  */
 export function VerifiedSellerBadge() {
   return (

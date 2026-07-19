@@ -8,6 +8,11 @@ const baseProduct = {
   description: 'A test food listing',
   price: 12.5,
   country: 'BE',
+  seller: {
+    name: 'Test Chocolatier',
+    rating: 4.8,
+    verified: true,
+  },
 };
 
 describe('product allergen disclosure', () => {
@@ -31,5 +36,22 @@ describe('product allergen disclosure', () => {
     render(<ProductCard {...baseProduct} allergens={[]} />);
 
     expect(screen.queryByLabelText('Contains allergens:')).not.toBeInTheDocument();
+  });
+});
+
+describe('product seller identity', () => {
+  it('renders the seller name as an always-visible, non-decorative disclosure', () => {
+    render(<ProductCard {...baseProduct} />);
+
+    const sellerIdentity = screen.getByLabelText('Sold by Test Chocolatier');
+    expect(sellerIdentity).toBeVisible();
+    expect(sellerIdentity).toHaveTextContent('Sold by Test Chocolatier');
+    expect(sellerIdentity).not.toHaveClass('hidden');
+  });
+
+  it('does not fabricate a seller identity when seller data is absent', () => {
+    render(<ProductCard {...baseProduct} seller={undefined} />);
+
+    expect(screen.getByLabelText('Sold by Seller identity unavailable')).toBeVisible();
   });
 });

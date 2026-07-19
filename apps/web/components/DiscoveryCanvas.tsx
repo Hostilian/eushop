@@ -1,6 +1,6 @@
 import { useState, useRef, useEffect } from 'react';
 import { FoodItem } from '../lib/services';
-import { Badge, VerifiedSellerBadge } from './ui/Badge';
+import { VerifiedSellerBadge } from './ui/Badge';
 
 interface DiscoveryCanvasProps {
   products: FoodItem[];
@@ -87,9 +87,9 @@ export default function DiscoveryCanvas({ products, onQuickCheckout, isLoading }
     return (
       <div className="w-full py-20 px-8 text-center bg-gray-50/50 dark:bg-gray-950/20 rounded-3xl border border-gray-200/50 dark:border-gray-800">
         <span className="text-4xl">🔍</span>
-        <h3 className="text-base font-bold text-gray-800 dark:text-white mt-4">No compliant foods found</h3>
+        <h3 className="text-base font-bold text-gray-800 dark:text-white mt-4">No foods found</h3>
         <p className="text-xs text-gray-500 mt-2 max-w-sm mx-auto leading-relaxed">
-          The AI engine filtered out all items. Try searching for a broader term, or reset the search to view all listings.
+          Try searching for a broader term, or reset the search to view all listings.
         </p>
       </div>
     );
@@ -159,6 +159,7 @@ export default function DiscoveryCanvas({ products, onQuickCheckout, isLoading }
           {/* Dynamic Nodes Container */}
           <div className="absolute inset-0 z-10 p-8">
             {products.slice(0, 8).map((product, idx) => {
+              const sellerName = product.seller?.name?.trim() || 'Seller identity unavailable';
               // Pre-calculate custom float offsets and coordinates so they stay consistent
               const angle = (idx * 2 * Math.PI) / Math.min(products.length, 8);
               const radiusX = 28 + (idx % 2 ? 6 : 0); // % radius width
@@ -240,6 +241,15 @@ export default function DiscoveryCanvas({ products, onQuickCheckout, isLoading }
                     </div>
                   </div>
 
+                  {/* COMPLIANCE-REVIEW: DSA Art. 30 requires persistent seller identity display. */}
+                  <p
+                    className="pointer-events-none absolute left-1/2 top-full z-30 mt-1 w-24 -translate-x-1/2 break-words rounded-md bg-white/95 px-1 py-0.5 text-center text-[8px] font-medium leading-tight text-gray-800 shadow-sm dark:bg-gray-950/95 dark:text-gray-100"
+                    aria-label={`Sold by ${sellerName}`}
+                    data-testid="seller-identity"
+                  >
+                    Sold by {sellerName}
+                  </p>
+
                   {/* Glassmorphic Hover Details Panel */}
                   {isHovered && (
                     <div
@@ -259,16 +269,12 @@ export default function DiscoveryCanvas({ products, onQuickCheckout, isLoading }
                         {product.description}
                       </p>
 
-                      {/* Compliance Indicators */}
+                      {/* Seller identity and verification supplied by the API */}
                       <div className="space-y-1.5 pt-2 border-t border-gray-100 dark:border-gray-900">
-                        <div className="flex items-center gap-1.5 text-[10px] text-emerald-600 dark:text-emerald-400 font-semibold">
-                          <span className="text-xs">✓</span>
-                          <span>DSA KYBC Verified Trader</span>
-                        </div>
-                        <div className="flex items-center gap-1.5 text-[10px] text-blue-600 dark:text-blue-400 font-semibold">
-                          <span className="text-xs">⚖</span>
-                          <span>DAC7 Tax Declared (OSS VAT)</span>
-                        </div>
+                        <p className="text-[10px] text-gray-600 dark:text-gray-300" aria-label={`Sold by ${sellerName}`}>
+                          Sold by <strong>{sellerName}</strong>
+                        </p>
+                        {product.seller?.verified && <VerifiedSellerBadge />}
 
                         {product.allergens && product.allergens.length > 0 && (
                           <div className="flex flex-wrap gap-1 mt-2">
@@ -331,6 +337,7 @@ export default function DiscoveryCanvas({ products, onQuickCheckout, isLoading }
           >
             {products.map((product, idx) => {
               const bgImg = getFoodImage(product.name);
+              const sellerName = product.seller?.name?.trim() || 'Seller identity unavailable';
               return (
                 <div
                   key={product.id}
@@ -385,18 +392,24 @@ export default function DiscoveryCanvas({ products, onQuickCheckout, isLoading }
                         {product.name}
                       </h3>
 
+                      {/* COMPLIANCE-REVIEW: DSA Art. 30 requires persistent seller identity display. */}
+                      <p
+                        className="mt-1 text-[11px] text-gray-600 dark:text-gray-300"
+                        aria-label={`Sold by ${sellerName}`}
+                        data-testid="seller-identity"
+                      >
+                        Sold by <strong>{sellerName}</strong>
+                      </p>
+
                       {/* Description */}
                       <p className="text-[11px] text-gray-500 dark:text-gray-400 mt-2 leading-relaxed line-clamp-3">
                         {product.description}
                       </p>
                     </div>
 
-                    {/* Compliance & Allergens row */}
+                    {/* Verification state and allergens */}
                     <div className="space-y-2.5 pt-3 border-t border-gray-100 dark:border-gray-900">
-                      <div className="flex items-center gap-1 text-[10px] text-emerald-600 dark:text-emerald-400 font-bold">
-                        <span className="text-xs">✓</span>
-                        <span>DSA KYBC Approved</span>
-                      </div>
+                      {product.seller?.verified && <VerifiedSellerBadge />}
 
                       {product.allergens && product.allergens.length > 0 && (
                         <div className="flex flex-wrap gap-1">

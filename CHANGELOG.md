@@ -1,5 +1,13 @@
 # Changelog
 
+## [Unreleased] - Persistent seller identity (2026-07-19)
+
+### Changed
+- Added an always-rendered “Sold by [seller name]” disclosure to buyer-facing food cards, discovery and quick-checkout surfaces, plus a sticky seller disclosure on food detail pages.
+- Removed fabricated seller-name, rating, and verification fallbacks from search results; missing trader identity is now exposed for operational/legal review.
+- Removed unconditional DSA/DAC7 status labels from discovery cards; verification is displayed only when explicitly supplied by the API.
+- Clarified in the footer that EUshop provides the marketplace while each listing identifies the trader offering the product.
+
 ## [Unreleased] - Test and VAT audit coverage (2026-07-19)
 
 ### Added
