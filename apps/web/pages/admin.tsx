@@ -21,10 +21,9 @@ export default function AdminPage() {
   const setSessionTimeout = () => {
     clearSessionTimeout();
     sessionTimeoutRef.current = setTimeout(() => {
-      // Clear local storage and redirect to login
-      localStorage.removeItem('userSession');
-      sessionStorage.clear();
-      router.push('/login?session=expired&redirect=/admin');
+      void authAPI.logout().finally(() => {
+        router.push('/login?session=expired&redirect=/admin');
+      });
     }, 15 * 60 * 1000); // 15 minutes
   };
 
@@ -36,20 +35,6 @@ export default function AdminPage() {
   useEffect(() => {
     const checkAdminAccess = async () => {
       try {
-        // Security: Check for session in localStorage first
-        const sessionData = localStorage.getItem('userSession');
-        if (sessionData) {
-          try {
-            const parsed = JSON.parse(sessionData);
-            if (parsed.expires && Date.now() > parsed.expires) {
-              localStorage.removeItem('userSession');
-              throw new Error('Session expired');
-            }
-          } catch {
-            localStorage.removeItem('userSession');
-          }
-        }
-
         // Security: Add timeout for the API call
         const controller = new AbortController();
         const timeoutId = setTimeout(() => controller.abort(), 10000);
@@ -72,13 +57,6 @@ export default function AdminPage() {
           
           setIsAuthorized(true);
           
-          // Security: Store session with expiration
-          localStorage.setItem('userSession', JSON.stringify({
-            userId: currentUser.id,
-            role: currentUser.role,
-            expires: Date.now() + 15 * 60 * 1000 // 15 minutes
-          }));
-          
           // Set up session timeout
           setSessionTimeout();
           
@@ -100,21 +78,6 @@ export default function AdminPage() {
         // Graceful degradation: Provide user-friendly error messages with offline detection
         if (!navigator.onLine) {
           setError('You appear to be offline. Please check your internet connection and try again.');
-          // In offline mode, allow viewing cached admin data if available
-          try {
-            const cachedSession = localStorage.getItem('userSession');
-            if (cachedSession) {
-              const parsed = JSON.parse(cachedSession);
-              if (parsed.role === 'admin' && parsed.expires > Date.now()) {
-                setIsAuthorized(true);
-                setLoading(false);
-                router.replace('/admin/dashboard');
-                return;
-              }
-            }
-          } catch (cacheError) {
-            console.warn('Could not use cached session:', cacheError);
-          }
         } else if (error.name === 'AbortError') {
           setError('Request timed out. Please check your connection and try again.');
         } else if (error.message?.includes('Network')) {
