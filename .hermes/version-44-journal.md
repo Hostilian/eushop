@@ -1,5 +1,13 @@
 # Version 44 Hermes Recovery Journal
 
+## [2026-07-20 11:42 UTC] Task 8 validated
+- **Branch**: `feat/reliability-degradation-engine`
+- **Commit**: `d456f490` (following initial implementation `5904e37c`)
+- **Delivered**: abortable timeout presets, keyed circuit breakers, safe fallback sequencing, and typed `live`/`cache`/`demo`/`local`/`offline` origin results exposed by food services.
+- **Compliance/data safety**: raw provider errors and raw search text are not persisted or exposed; this change implements reliability structure and makes no legal-compliance claim.
+- **Verification**: web TypeScript passed; 10 Jest suites / 74 tests passed; ESLint passed with zero errors and three pre-existing `<img>` warnings.
+- **Next**: Task 9 on `feat/error-boundaries`.
+
 ## [2026-07-20 11:15 UTC] Session Continuation
 - **Status**: Tasks 1 through 7 completed and merged into `main` (SHA `f44eedaa`).
 - **Watchdog**: `scripts/EUshop-Agent-Watchdog.ps1` installed and committed.

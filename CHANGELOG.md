@@ -1,5 +1,11 @@
 # Changelog
 
+## [Unreleased] — Region error containment (2026-07-20)
+
+### Changed
+- Replaced raw browser-persisted render diagnostics with reusable error boundaries around navigation, marketplace, product, cart, seller-onboarding, and account regions.
+- Added accessible Retry, Load Demo Catalogue, and Back to Marketplace recovery actions so a failed region does not render a blank screen.
+
 ## [Unreleased] — Centralized reliability engine (2026-07-20)
 
 ### Added

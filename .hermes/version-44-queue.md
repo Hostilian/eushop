@@ -11,7 +11,7 @@
 - [x] TASK 7 — DSA Art. 30 "Sold by" persistent UI element on food pages (`feat/dsa-sold-by`) [MERGED TO MAIN]
 
 ## Phase 3 — Version 44 Reliability Architecture & Graceful Degradation (Modes A–I)
-- [ ] TASK 8 — Centralized Reliability & Degradation Engine (`apps/web/lib/degradation.ts`)
+- [x] TASK 8 — Centralized Reliability & Degradation Engine (`apps/web/lib/degradation.ts`) — validated at `d456f490`
   - Implement request timeout wrappers (interactive search: 3-5s, product data: 5-8s, auth: 8-12s, payment: 10-15s, background: 15-30s).
   - Implement circuit breaker pattern with origin markers (`live`, `cache`, `demo`, `local`, `offline`).
   - Safe error reporting and fallback state dispatch without leaking sensitive API endpoints or tokens.

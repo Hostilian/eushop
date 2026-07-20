@@ -1,166 +1,51 @@
 import type { AppProps } from 'next/app';
 import Head from 'next/head';
-import React, { Component, ErrorInfo, ReactNode } from 'react';
+import React from 'react';
 import '../globals.css';
 import CookieBanner from '../components/CookieBanner';
+import ErrorBoundary, { type ErrorRegion } from '../components/common/ErrorBoundary';
 import { AuthProvider } from '../lib/auth';
 
-// ─── Global Error Boundary ────────────────────────────────────────────────────
-// Catches any unhandled React errors and renders a user-friendly fallback
-// instead of a blank/crashed screen. This is the top-level resilience layer.
-
-interface ErrorBoundaryState {
-  hasError: boolean;
-  error?: Error;
+function getPageRegion(pathname: string): ErrorRegion {
+  if (pathname === '/' || pathname === '/search') return 'marketplace';
+  if (pathname.startsWith('/food/')) return 'product-details';
+  if (pathname === '/cart' || pathname === '/checkout') return 'cart';
+  if (pathname === '/become-seller') return 'seller-onboarding';
+  if (
+    pathname === '/dashboard' ||
+    pathname === '/gdpr' ||
+    pathname === '/login' ||
+    pathname === '/signup' ||
+    pathname.startsWith('/admin')
+  ) return 'account-controls';
+  return 'page';
 }
 
-class GlobalErrorBoundary extends Component<
-  { children: ReactNode },
-  ErrorBoundaryState
-> {
-  constructor(props: { children: ReactNode }) {
-    super(props);
-    this.state = { hasError: false };
-  }
-
-  static getDerivedStateFromError(error: Error): ErrorBoundaryState {
-    return { hasError: true, error };
-  }
-
-  componentDidCatch(error: Error, info: ErrorInfo) {
-    console.error('[EUshop] Uncaught render error:', error, info.componentStack);
-    try {
-      const errorLog = {
-        message: error.message,
-        stack: error.stack,
-        componentStack: info.componentStack,
-        timestamp: new Date().toISOString(),
-      };
-      const existing = JSON.parse(localStorage.getItem('eushop_error_log') || '[]');
-      existing.unshift(errorLog);
-      // Keep last 20 errors only
-      localStorage.setItem('eushop_error_log', JSON.stringify(existing.slice(0, 20)));
-    } catch {
-      // localStorage may not be available — fail silently
-    }
-  }
-
-  handleReset = () => {
-    this.setState({ hasError: false, error: undefined });
-    if (typeof window !== 'undefined') {
-      window.location.href = '/';
-    }
-  };
-
-  render() {
-    if (this.state.hasError) {
-      return (
-        <div
-          style={{
-            minHeight: '100vh',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            flexDirection: 'column',
-            fontFamily: 'Inter, system-ui, sans-serif',
-            padding: '2rem',
-            background: 'linear-gradient(135deg, #fff5f5 0%, #fff 50%, #f0f9ff 100%)',
-            textAlign: 'center',
-          }}
-        >
-          <div style={{ fontSize: '3rem', marginBottom: '1rem' }}>🛡️</div>
-          <h1
-            style={{
-              fontSize: '1.5rem',
-              fontWeight: 800,
-              color: '#1a1a2e',
-              marginBottom: '0.5rem',
-            }}
-          >
-            Something went wrong
-          </h1>
-          <p
-            style={{
-              color: '#6b7280',
-              maxWidth: '400px',
-              marginBottom: '1.5rem',
-              fontSize: '0.875rem',
-              lineHeight: 1.6,
-            }}
-          >
-            EUshop encountered an unexpected error. Your local data is safe.
-            You can continue using the marketplace by returning to the home page.
-          </p>
-          {process.env.NODE_ENV === 'development' && this.state.error && (
-            <pre
-              style={{
-                background: '#fee2e2',
-                border: '1px solid #fca5a5',
-                borderRadius: '0.5rem',
-                padding: '1rem',
-                fontSize: '0.7rem',
-                color: '#7f1d1d',
-                maxWidth: '600px',
-                overflow: 'auto',
-                textAlign: 'left',
-                marginBottom: '1.5rem',
-              }}
-            >
-              {this.state.error.message}
-            </pre>
-          )}
-          <button
-            onClick={this.handleReset}
-            style={{
-              background: '#1e3f20',
-              color: 'white',
-              border: 'none',
-              borderRadius: '0.75rem',
-              padding: '0.75rem 2rem',
-              fontSize: '0.875rem',
-              fontWeight: 700,
-              cursor: 'pointer',
-            }}
-          >
-            ← Return to Home
-          </button>
-        </div>
-      );
-    }
-
-    return this.props.children;
-  }
-}
-
-// ─── Theme initializer (runs once on mount) ─────────────────────────────────
-// Reads stored theme preference and applies dark class to <html>.
 function ThemeInitializer() {
   React.useEffect(() => {
     try {
-      const stored = localStorage.getItem('eushop-theme');
+      const stored = window.localStorage.getItem('eushop-theme');
       const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
-      if (stored === 'dark' || (!stored && prefersDark)) {
-        document.documentElement.classList.add('dark');
-      } else {
-        document.documentElement.classList.remove('dark');
-      }
+      document.documentElement.classList.toggle('dark', stored === 'dark' || (!stored && prefersDark));
     } catch {
-      // fail silently
+      // Theme storage is optional; the default theme remains usable.
     }
   }, []);
   return null;
 }
 
-// ─── App Entry Point ──────────────────────────────────────────────────────────
-export default function App({ Component, pageProps }: AppProps) {
+export default function App({ Component, pageProps, router }: AppProps) {
   React.useEffect(() => {
-    if (typeof window !== 'undefined' && 'serviceWorker' in navigator) {
-      window.addEventListener('load', () => {
-        navigator.serviceWorker.register('/sw.js')
-          .then((reg) => console.log('ServiceWorker registered with scope:', reg.scope))
-          .catch((err) => console.warn('ServiceWorker registration failed:', err));
+    if (!('serviceWorker' in navigator)) return undefined;
+
+    const registerServiceWorker = () => {
+      navigator.serviceWorker.register('/sw.js').catch(() => {
+        // Offline caching is optional and must not interrupt the page.
       });
-    }
+    };
+
+    window.addEventListener('load', registerServiceWorker);
+    return () => window.removeEventListener('load', registerServiceWorker);
   }, []);
 
   return (
@@ -169,19 +54,22 @@ export default function App({ Component, pageProps }: AppProps) {
         <meta charSet="UTF-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0" />
         <meta httpEquiv="X-UA-Compatible" content="IE=edge" />
-        <meta name="description" content="EUshop — Pan-European artisanal food marketplace. Buy directly from ID-verified independent producers across the EU Single Market." />
-        
-        {/* PWA tags */}
+        <meta
+          name="description"
+          content="EUshop — Pan-European artisanal food marketplace connecting buyers with independent producers across the EU Single Market."
+        />
+
         <link rel="manifest" href="/manifest.json" />
         <link rel="apple-touch-icon" href="/icon.png" />
         <meta name="theme-color" content="#1e3f20" />
 
-        {/* Open Graph */}
         <meta property="og:title" content="EUshop — Pan-European Artisanal Food Marketplace" />
-        <meta property="og:description" content="Discover rare artisanal delicacies from independent EU producers. Every seller is ID-verified before listing." />
+        <meta
+          property="og:description"
+          content="Discover regional foods from independent European producers with trader information on each listing."
+        />
         <meta property="og:type" content="website" />
 
-        {/* Security headers via meta tags */}
         <meta name="referrer" content="strict-origin-when-cross-origin" />
         <meta name="robots" content="noindex, follow" />
         <meta name="frame-options" content="DENY" />
@@ -189,12 +77,16 @@ export default function App({ Component, pageProps }: AppProps) {
 
       <ThemeInitializer />
 
-      <AuthProvider>
-        <GlobalErrorBoundary>
-          <Component {...pageProps} />
-          <CookieBanner />
-        </GlobalErrorBoundary>
-      </AuthProvider>
+      <ErrorBoundary region="page" resetKey={router.asPath}>
+        <AuthProvider>
+          <ErrorBoundary region={getPageRegion(router.pathname)} resetKey={router.asPath}>
+            <Component {...pageProps} />
+          </ErrorBoundary>
+          <ErrorBoundary region="page" compact resetKey={router.asPath}>
+            <CookieBanner />
+          </ErrorBoundary>
+        </AuthProvider>
+      </ErrorBoundary>
     </>
   );
 }
