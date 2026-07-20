@@ -33,7 +33,7 @@ describe('homepage clarity narrative', () => {
 
     expect(screen.getByRole('heading', {
       level: 1,
-      name: 'EUshop helps people discover and buy authentic regional foods directly from verified European sellers.',
+      name: 'Buy authentic regional foods from European sellers.',
     })).toBeInTheDocument();
     expect(screen.getAllByRole('link', { name: 'Explore Marketplace' })[0])
       .toHaveAttribute('href', '/search');
