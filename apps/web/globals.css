@@ -16,6 +16,9 @@
   
   --color-surface: #ffffff;
   --color-border: #ebe9e1;
+
+  --color-green-200: #c6f6d5;
+  --color-green-900: #1c4532;
   
   --font-display: 'Outfit', 'Inter', sans-serif;
   --font-body: 'Inter', sans-serif;
@@ -54,5 +57,3 @@ body {
 h1, h2, h3, h4, h5, h6 {
   font-family: var(--font-display);
 }
-
-

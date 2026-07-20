@@ -36,6 +36,13 @@ const config: Config = {
           800: 'var(--color-gray-900)',   // Charcoal Black text
           900: '#161b19',
         },
+        green: {
+          200: 'var(--color-green-200)',
+          900: 'var(--color-green-900)',
+        },
+        yellow: {
+          500: '#f59e0b',
+        },
         // Brand palette
         brand: {
           green:  '#1e3f20',
@@ -76,4 +83,3 @@ const config: Config = {
 };
 
 export default config;
-
