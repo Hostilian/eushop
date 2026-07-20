@@ -11,14 +11,15 @@ export const SUPPORTED_LOCALES: Array<{ code: SupportedLanguage; label: string; 
 ];
 
 export function LocaleSwitcher() {
-  const [currentLocale, setCurrentLocale] = useState<SupportedLanguage>('en');
-
-  useEffect(() => {
-    const saved = localStorage.getItem('eushop_locale') as SupportedLanguage;
-    if (saved && SUPPORTED_LOCALES.some(l => l.code === saved)) {
-      setCurrentLocale(saved);
+  const [currentLocale, setCurrentLocale] = useState<SupportedLanguage>(() => {
+    if (typeof window !== 'undefined') {
+      const saved = localStorage.getItem('eushop_locale') as SupportedLanguage;
+      if (saved && SUPPORTED_LOCALES.some(l => l.code === saved)) {
+        return saved;
+      }
     }
-  }, []);
+    return 'en';
+  });
 
   const handleLocaleChange = (code: SupportedLanguage) => {
     setCurrentLocale(code);
