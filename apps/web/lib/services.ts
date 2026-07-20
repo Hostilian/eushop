@@ -1,5 +1,9 @@
 import apiClient from './api-client';
-import { withFallback } from './degradation';
+import {
+  REQUEST_TIMEOUT_MS,
+  type DegradationResult,
+  withFallback,
+} from './degradation';
 
 export interface FoodItem {
   id: string;
@@ -334,6 +338,146 @@ const shouldUseMock = (): boolean => {
   return isStaticMode(); // Removed mock auth fallback — Auth0 is now the only provider
 };
 
+function asLocalResult<T>(data: T): DegradationResult<T> {
+  return { data, origin: 'local', degraded: true };
+}
+
+function filterFoods(
+  foods: FoodItem[],
+  query?: string,
+  country?: string,
+  page = 1,
+  size = 20,
+  category?: string,
+  allergenFree?: string,
+): FoodItem[] {
+  let filtered = [...foods];
+  if (query) {
+    const normalizedQuery = query.toLowerCase();
+    filtered = filtered.filter(food =>
+      food.name.toLowerCase().includes(normalizedQuery) ||
+      food.description.toLowerCase().includes(normalizedQuery) ||
+      food.category?.toLowerCase().includes(normalizedQuery),
+    );
+  }
+  if (country) {
+    filtered = filtered.filter(food => food.country.toLowerCase() === country.toLowerCase());
+  }
+  if (category) {
+    filtered = filtered.filter(food => food.category?.toLowerCase() === category.toLowerCase());
+  }
+  if (allergenFree) {
+    filtered = filtered.filter(food =>
+      !food.allergens?.some(allergen => allergen.toLowerCase() === allergenFree.toLowerCase()),
+    );
+  }
+
+  const start = (page - 1) * size;
+  return filtered.slice(start, start + size);
+}
+
+/** Keeps free-text search terms out of browser storage keys. */
+function getSearchCacheKey(value: string): string {
+  let hash = 2_166_136_261;
+  for (let index = 0; index < value.length; index += 1) {
+    hash ^= value.charCodeAt(index);
+    hash = Math.imul(hash, 16_777_619);
+  }
+  return `food-search-${(hash >>> 0).toString(16)}`;
+}
+
+async function searchFoodsWithOrigin(
+  query?: string,
+  country?: string,
+  page = 1,
+  size = 20,
+  category?: string,
+  allergenFree?: string,
+  config?: any,
+): Promise<DegradationResult<FoodItem[]>> {
+  if (isStaticMode()) {
+    return asLocalResult(filterFoods(
+      getLocalFoods(),
+      query,
+      country,
+      page,
+      size,
+      category,
+      allergenFree,
+    ));
+  }
+
+  const cacheDescriptor = JSON.stringify({ query, country, page, size, category, allergenFree });
+  return withFallback<FoodItem[]>(
+    async signal => {
+      const params = new URLSearchParams();
+      if (query) params.append('q', query);
+      if (country) params.append('country', country);
+      if (category) params.append('category', category);
+      if (allergenFree) params.append('allergenFree', allergenFree);
+      params.append('page', (page - 1).toString());
+      params.append('size', size.toString());
+
+      const response = await apiClient.get('/foods/search', { ...config, params, signal });
+      return response.data.data?.content || response.data.content || response.data;
+    },
+    getSearchCacheKey(cacheDescriptor),
+    () => getDemoFoods(query, country, page, size, category, allergenFree),
+    {
+      apiTimeoutMs: REQUEST_TIMEOUT_MS.interactive,
+      cacheDurationMs: 5 * 60 * 1000,
+      demoDataTimeoutMs: REQUEST_TIMEOUT_MS.product,
+    },
+  );
+}
+
+async function getFoodByIdWithOrigin(
+  id: string,
+  config?: any,
+): Promise<DegradationResult<FoodItem>> {
+  if (isStaticMode()) {
+    const found = getLocalFoods().find(food => food.id === id);
+    if (!found) throw new Error('Food details are unavailable.');
+    return asLocalResult(found);
+  }
+
+  return withFallback<FoodItem>(
+    async signal => {
+      const response = await apiClient.get(`/foods/${id}`, { ...config, signal });
+      return response.data;
+    },
+    `food-getById-${id}`,
+    () => {
+      const demoFood = fallbackTrendingFoods.find(food => food.id === id);
+      if (!demoFood) throw new Error('Demonstration food was not found.');
+      return demoFood;
+    },
+    {
+      apiTimeoutMs: REQUEST_TIMEOUT_MS.product,
+      cacheDurationMs: 10 * 60 * 1000,
+      demoDataTimeoutMs: REQUEST_TIMEOUT_MS.product,
+    },
+  );
+}
+
+async function getTrendingFoodsWithOrigin(): Promise<DegradationResult<FoodItem[]>> {
+  if (isStaticMode()) return asLocalResult(getLocalFoods().slice(0, 3));
+
+  return withFallback<FoodItem[]>(
+    async signal => {
+      const response = await apiClient.get('/foods/trending', { signal });
+      return response.data;
+    },
+    'food-getTrending',
+    () => getDemoFoods(undefined, undefined, 1, 3),
+    {
+      apiTimeoutMs: REQUEST_TIMEOUT_MS.product,
+      cacheDurationMs: 30 * 60 * 1000,
+      demoDataTimeoutMs: REQUEST_TIMEOUT_MS.product,
+    },
+  );
+}
+
 export const foodAPI = {
   search: async (
     query?: string,
@@ -343,103 +487,26 @@ export const foodAPI = {
     category?: string,
     allergenFree?: string,
     config?: any
-  ): Promise<FoodItem[]> => {
-    if (isStaticMode()) {
-      let allFoods = getLocalFoods();
-      if (query) {
-        const q = query.toLowerCase();
-        allFoods = allFoods.filter(f => f.name.toLowerCase().includes(q) || f.description.toLowerCase().includes(q) || (f.category && f.category.toLowerCase().includes(q)));
-      }
-      if (country) {
-        allFoods = allFoods.filter(f => f.country.toLowerCase() === country.toLowerCase());
-      }
-      if (category) {
-        allFoods = allFoods.filter(f => f.category && f.category.toLowerCase() === category.toLowerCase());
-      }
-      if (allergenFree) {
-        allFoods = allFoods.filter(f => !f.allergens || !f.allergens.some(a => a.toLowerCase() === allergenFree.toLowerCase()));
-      }
-      const start = (page - 1) * size;
-      return allFoods.slice(start, start + size);
-    }
+  ): Promise<FoodItem[]> => (await searchFoodsWithOrigin(
+    query,
+    country,
+    page,
+    size,
+    category,
+    allergenFree,
+    config,
+  )).data,
 
-    // Non-static mode: use withFallback for resilient API calls
-    const result = await withFallback<FoodItem[]>(
-      async () => {
-        const params = new URLSearchParams();
-        if (query) params.append('q', query);
-        if (country) params.append('country', country);
-        if (category) params.append('category', category);
-        if (allergenFree) params.append('allergenFree', allergenFree);
-        params.append('page', (page - 1).toString());
-        params.append('size', size.toString());
+  searchWithOrigin: searchFoodsWithOrigin,
 
-        const response = await apiClient.get('/foods/search', { params, ...config });
-        return response.data.data?.content || response.data.content || response.data;
-      },
-      `food-search-${JSON.stringify({query, country, page, size, category, allergenFree})}`,
-      () => getDemoFoods(query, country, page, size, category, allergenFree),
-      { cacheDurationMs: 5 * 60 * 1000, demoDataTimeoutMs: 5000 }
-    );
-    return result.data;
-  },
+  getById: async (id: string, config?: any): Promise<FoodItem> =>
+    (await getFoodByIdWithOrigin(id, config)).data,
 
-  getById: async (id: string, config?: any): Promise<FoodItem> => {
-    if (isStaticMode()) {
-      try {
-        const response = await apiClient.get(`/foods/${id}`, config);
-        return response.data;
-      } catch (e) {
-        if (!shouldUseMock()) throw e;
-        console.warn(`foodAPI.getById(${id}) failed. Falling back to local database simulation.`);
-        const allFoods = getLocalFoods();
-        const found = allFoods.find(f => f.id === id);
-        if (!found) throw new Error('Food details not found in simulated database');
-        return found;
-      }
-    }
+  getByIdWithOrigin: getFoodByIdWithOrigin,
 
-    // Non-static mode: use withFallback for resilient API calls
-    const result = await withFallback<FoodItem>(
-      async () => {
-        const response = await apiClient.get(`/foods/${id}`, config);
-        return response.data;
-      },
-      `food-getById-${id}`,
-      () => {
-        const demoFood = fallbackTrendingFoods.find(f => f.id === id);
-        if (!demoFood) throw new Error('Demo food not found');
-        return demoFood;
-      },
-      { cacheDurationMs: 10 * 60 * 1000, demoDataTimeoutMs: 5000 }
-    );
-    return result.data;
-  },
+  getTrending: async (): Promise<FoodItem[]> => (await getTrendingFoodsWithOrigin()).data,
 
-  getTrending: async (): Promise<FoodItem[]> => {
-    if (isStaticMode()) {
-      try {
-        const response = await apiClient.get('/foods/trending');
-        return response.data;
-      } catch (e) {
-        if (!shouldUseMock()) throw e;
-        console.warn('foodAPI.getTrending failed. Falling back to local database simulation.');
-        return getLocalFoods().slice(0, 3);
-      }
-    }
-
-    // Non-static mode: use withFallback for resilient API calls
-    const result = await withFallback<FoodItem[]>(
-      async () => {
-        const response = await apiClient.get('/foods/trending');
-        return response.data;
-      },
-      'food-getTrending',
-      () => getDemoFoods(undefined, undefined, 1, 3), // Trending: first 3 items, no filters
-      { cacheDurationMs: 30 * 60 * 1000, demoDataTimeoutMs: 5000 }
-    );
-    return result.data;
-  },
+  getTrendingWithOrigin: getTrendingFoodsWithOrigin,
 
   syncCart: async (cartItems: any[]): Promise<any> => {
     try {

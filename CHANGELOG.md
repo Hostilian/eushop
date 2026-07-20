@@ -1,5 +1,11 @@
 # Changelog
 
+## [Unreleased] — Centralized reliability engine (2026-07-20)
+
+### Added
+- Added reusable request deadlines, abort signals, per-provider circuit breakers, and typed `live`/`cache`/`demo`/`local`/`offline` origin markers for resilient web data loading.
+- Added safe fallback sequencing that avoids surfacing raw provider errors or request details to users.
+
 ## [Unreleased] — Persistent seller identity & DSA Art. 30 (2026-07-19)
 
 ### Changed
