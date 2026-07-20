@@ -2,30 +2,18 @@ import apiClient from './api-client';
 import {
   REQUEST_TIMEOUT_MS,
   type DegradationResult,
+  type StatusOrigin,
   withFallback,
 } from './degradation';
 import { removeSafeStorage } from './storageSafety';
+import {
+  findDemonstrationProduct,
+  getDemonstrationCatalogue,
+  searchDemonstrationCatalogue,
+} from '../services/demo-catalog';
+import type { FoodItem } from '../data/demo-products';
 
-export interface FoodItem {
-  id: string;
-  name: string;
-  country: string;
-  price: number;
-  description: string;
-  imageUrl?: string;
-  sellerId: string;
-  finderFee?: number;
-  category?: string;
-  dietaryRestrictions?: string[];
-  allergens?: string[];
-  images?: string[];
-  seller?: {
-    id: string;
-    name: string;
-    rating: number;
-    verified: boolean;
-  };
-}
+export type { FoodItem } from '../data/demo-products';
 
 export interface User {
   id: string;
@@ -87,148 +75,7 @@ export interface PaymentIntentResponse {
 // STATIC MOCK DATABASE FOR OFFLINE / STATIC MODE DEGRADATION
 // -------------------------------------------------------------
 
-export const fallbackTrendingFoods: FoodItem[] = [
-  {
-    id: '1',
-    name: 'Artisanal Belgian Chocolates',
-    country: 'Belgium',
-    price: 24.99,
-    description: 'Fine handmade pralines and truffles crafted by master chocolatiers in Brussels using 100% cocoa butter.',
-    sellerId: 'seller_belgium@eushop.local',
-    category: 'Chocolate',
-    allergens: ['Milk', 'Soya', 'Nuts'],
-    dietaryRestrictions: ['Vegetarian'],
-    images: ['/images/belgian_chocolates.png'],
-    imageUrl: '/images/belgian_chocolates.png',
-    seller: { id: 'seller_belgium@eushop.local', name: 'Brussels Praline Co.', rating: 4.9, verified: true }
-  },
-  {
-    id: '2',
-    name: 'Aceto Balsamico Tradizionale',
-    country: 'Italy',
-    price: 49.99,
-    description: 'Authentic aged balsamic vinegar of Modena DOP, matured in oak casks for rich complex flavors.',
-    sellerId: 'seller_italy@eushop.local',
-    category: 'Condiment',
-    allergens: ['Sulphur dioxide and sulphites'],
-    dietaryRestrictions: ['Vegan', 'Gluten-Free'],
-    images: ['/images/italian_olive_oil.png'],
-    imageUrl: '/images/italian_olive_oil.png',
-    seller: { id: 'seller_italy@eushop.local', name: 'Modena Olive & Vineyards', rating: 4.8, verified: true }
-  },
-  {
-    id: '3',
-    name: 'Spanish Manchego Cheese DOP',
-    country: 'Spain',
-    price: 29.99,
-    description: 'Cured sheep milk cheese from the La Mancha region, matured for 12 months with a firm, nutty flavor.',
-    sellerId: 'seller_spain@eushop.local',
-    category: 'Cheese',
-    allergens: ['Milk'],
-    dietaryRestrictions: ['Vegetarian', 'Gluten-Free'],
-    images: ['/images/spanish_manchego.png'],
-    imageUrl: '/images/spanish_manchego.png',
-    seller: { id: 'seller_spain@eushop.local', name: 'Queserías de la Mancha', rating: 4.7, verified: true }
-  },
-  {
-    id: '4',
-    name: 'German Black Forest Ham',
-    country: 'Germany',
-    price: 18.99,
-    description: 'Traditional smoked ham cured with pine needles and cold-smoked in the Black Forest region.',
-    sellerId: 'seller_germany@eushop.local',
-    category: 'Charcuterie',
-    allergens: [],
-    dietaryRestrictions: ['Gluten-Free'],
-    images: ['/images/german_delicatessen.png'],
-    imageUrl: '/images/german_delicatessen.png',
-    seller: { id: 'seller_germany@eushop.local', name: 'Schwarzwald Metzgerei', rating: 4.6, verified: true }
-  },
-  {
-    id: '5',
-    name: 'French Camembert de Normandie',
-    country: 'France',
-    price: 14.50,
-    description: 'Creamy, rich raw milk cheese crafted in Normandy, with a bloomy rind and earthy aroma.',
-    sellerId: 'seller_france@eushop.local',
-    category: 'Cheese',
-    allergens: ['Milk'],
-    dietaryRestrictions: ['Vegetarian', 'Gluten-Free'],
-    images: ['/images/spanish_manchego.png'],
-    imageUrl: '/images/spanish_manchego.png',
-    seller: { id: 'seller_france@eushop.local', name: 'Normandie Fromagerie', rating: 4.9, verified: true }
-  },
-  {
-    id: '6',
-    name: 'Greek Kalamata Olive Oil',
-    country: 'Greece',
-    price: 22.00,
-    description: 'First cold-pressed extra virgin olive oil made from hand-picked Kalamata olives.',
-    sellerId: 'seller_greece@eushop.local',
-    category: 'Condiment',
-    allergens: [],
-    dietaryRestrictions: ['Vegan', 'Gluten-Free'],
-    images: ['/images/italian_olive_oil.png'],
-    imageUrl: '/images/italian_olive_oil.png',
-    seller: { id: 'seller_greece@eushop.local', name: 'Peloponnese Olives', rating: 4.8, verified: true }
-  },
-  {
-    id: '7',
-    name: 'Austrian Sachertorte',
-    country: 'Austria',
-    price: 34.00,
-    description: 'Classic Viennese double-layer chocolate cake with apricot jam filling and dark chocolate glaze.',
-    sellerId: 'seller_austria@eushop.local',
-    category: 'Pastry',
-    allergens: ['Cereals containing gluten', 'Eggs', 'Milk'],
-    dietaryRestrictions: ['Vegetarian'],
-    images: ['/images/belgian_chocolates.png'],
-    imageUrl: '/images/belgian_chocolates.png',
-    seller: { id: 'seller_austria@eushop.local', name: 'Vienna Royal Bakery', rating: 4.7, verified: true }
-  },
-  {
-    id: '8',
-    name: 'Portuguese Pastéis de Nata',
-    country: 'Portugal',
-    price: 12.00,
-    description: 'Box of 6 traditional egg tart pastries dusted with cinnamon and powdered sugar.',
-    sellerId: 'seller_portugal@eushop.local',
-    category: 'Pastry',
-    allergens: ['Cereals containing gluten', 'Eggs', 'Milk'],
-    dietaryRestrictions: ['Vegetarian'],
-    images: ['/images/belgian_chocolates.png'],
-    imageUrl: '/images/belgian_chocolates.png',
-    seller: { id: 'seller_portugal@eushop.local', name: 'Lisbon Pastry Hub', rating: 4.9, verified: true }
-  },
-  {
-    id: '9',
-    name: 'Dutch Aged Gouda Cheese',
-    country: 'Netherlands',
-    price: 26.50,
-    description: 'Rich, crumbly cow milk cheese aged for 24 months with sweet butterscotch flavor crystals.',
-    sellerId: 'seller_netherlands@eushop.local',
-    category: 'Cheese',
-    allergens: ['Milk'],
-    dietaryRestrictions: ['Vegetarian', 'Gluten-Free'],
-    images: ['/images/spanish_manchego.png'],
-    imageUrl: '/images/spanish_manchego.png',
-    seller: { id: 'seller_netherlands@eushop.local', name: 'Gouda Masters', rating: 4.8, verified: true }
-  },
-  {
-    id: '10',
-    name: 'Italian Prosciutto di Parma',
-    country: 'Italy',
-    price: 32.00,
-    description: 'Dry-cured ham sliced paper-thin, aged 18 months, with sweet delicate texture.',
-    sellerId: 'seller_italy@eushop.local',
-    category: 'Charcuterie',
-    allergens: [],
-    dietaryRestrictions: ['Gluten-Free'],
-    images: ['/images/german_delicatessen.png'],
-    imageUrl: '/images/german_delicatessen.png',
-    seller: { id: 'seller_italy@eushop.local', name: 'Emilia-Romagna Meats', rating: 4.9, verified: true }
-  }
-];
+export const fallbackTrendingFoods: FoodItem[] = getDemonstrationCatalogue();
 
 // Helper functions for client-side public catalogue simulation.
 const volatileLocalFoods: FoodItem[] = [];
@@ -273,25 +120,21 @@ const saveLocalSeller = (application: any) => {
   });
 };
 
-// Demo data provider for food search/getTrending/getById
-const getDemoFoods = (query?: string, country?: string, page: number = 1, size: number = 20, category?: string, allergenFree?: string): FoodItem[] => {
-  let allFoods = [...fallbackTrendingFoods]; // Use only the built-in demo data, not user-added local foods
-  if (query) {
-    const q = query.toLowerCase();
-    allFoods = allFoods.filter(f => f.name.toLowerCase().includes(q) || f.description.toLowerCase().includes(q) || (f.category && f.category.toLowerCase().includes(q)));
-  }
-  if (country) {
-    allFoods = allFoods.filter(f => f.country.toLowerCase() === country.toLowerCase());
-  }
-  if (category) {
-    allFoods = allFoods.filter(f => f.category && f.category.toLowerCase() === category.toLowerCase());
-  }
-  if (allergenFree) {
-    allFoods = allFoods.filter(f => !f.allergens || !f.allergens.some(a => a.toLowerCase() === allergenFree.toLowerCase()));
-  }
-  const start = (page - 1) * size;
-  return allFoods.slice(start, start + size);
-};
+const getDemoFoods = (
+  query?: string,
+  country?: string,
+  page = 1,
+  size = 20,
+  category?: string,
+  allergenFree?: string,
+): FoodItem[] => searchDemonstrationCatalogue({
+  query,
+  country,
+  page,
+  size,
+  category,
+  allergenFree,
+});
 
 // -------------------------------------------------------------
 // API SERVICES IMPLEMENTATION WITH AUTOMATIC FALLBACKS
@@ -310,8 +153,8 @@ const shouldUseMock = (): boolean => {
   return isStaticMode(); // Removed mock auth fallback — Auth0 is now the only provider
 };
 
-function asLocalResult<T>(data: T): DegradationResult<T> {
-  return { data, origin: 'local', degraded: true };
+function asDegradedResult<T>(data: T, origin: StatusOrigin): DegradationResult<T> {
+  return { data, origin, degraded: origin !== 'live' };
 }
 
 function filterFoods(
@@ -368,15 +211,21 @@ async function searchFoodsWithOrigin(
   config?: any,
 ): Promise<DegradationResult<FoodItem[]>> {
   if (isStaticMode()) {
-    return asLocalResult(filterFoods(
-      getLocalFoods(),
-      query,
-      country,
-      page,
-      size,
-      category,
-      allergenFree,
-    ));
+    if (volatileLocalFoods.length > 0) {
+      return asDegradedResult(filterFoods(
+        getLocalFoods(),
+        query,
+        country,
+        page,
+        size,
+        category,
+        allergenFree,
+      ), 'local');
+    }
+    return asDegradedResult(
+      getDemoFoods(query, country, page, size, category, allergenFree),
+      'demo',
+    );
   }
 
   const cacheDescriptor = JSON.stringify({ query, country, page, size, category, allergenFree });
@@ -408,9 +257,11 @@ async function getFoodByIdWithOrigin(
   config?: any,
 ): Promise<DegradationResult<FoodItem>> {
   if (isStaticMode()) {
-    const found = getLocalFoods().find(food => food.id === id);
-    if (!found) throw new Error('Food details are unavailable.');
-    return asLocalResult(found);
+    const localFood = volatileLocalFoods.find(food => food.id === id);
+    if (localFood) return asDegradedResult(localFood, 'local');
+    const demoFood = findDemonstrationProduct(id);
+    if (!demoFood) throw new Error('Food details are unavailable.');
+    return asDegradedResult(demoFood, 'demo');
   }
 
   return withFallback<FoodItem>(
@@ -420,7 +271,7 @@ async function getFoodByIdWithOrigin(
     },
     `food-getById-${id}`,
     () => {
-      const demoFood = fallbackTrendingFoods.find(food => food.id === id);
+      const demoFood = findDemonstrationProduct(id);
       if (!demoFood) throw new Error('Demonstration food was not found.');
       return demoFood;
     },
@@ -433,7 +284,12 @@ async function getFoodByIdWithOrigin(
 }
 
 async function getTrendingFoodsWithOrigin(): Promise<DegradationResult<FoodItem[]>> {
-  if (isStaticMode()) return asLocalResult(getLocalFoods().slice(0, 3));
+  if (isStaticMode()) {
+    if (volatileLocalFoods.length > 0) {
+      return asDegradedResult(getLocalFoods().slice(0, 3), 'local');
+    }
+    return asDegradedResult(getDemoFoods(undefined, undefined, 1, 3), 'demo');
+  }
 
   return withFallback<FoodItem[]>(
     async signal => {

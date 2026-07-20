@@ -2,6 +2,7 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { useState } from 'react';
 import { AllergenBadge, VerifiedSellerBadge } from './Badge';
+import type { StatusOrigin } from '../../lib/degradation';
 
 export interface ProductCardProps {
   id: string;
@@ -19,6 +20,7 @@ export interface ProductCardProps {
   averageRating?: number;
   reviewCount?: number;
   onAddToCart?: (id: string) => void;
+  origin?: StatusOrigin;
 }
 
 /**
@@ -83,6 +85,11 @@ export function ProductCard({
           <span aria-label={`Origin: ${country}`} role="img">
             {countryFlag}
           </span>
+          {origin === 'demo' && (
+            <span className="text-xs bg-green-100 text-green-800 rounded-full px-1.5 py-0.5">
+              Demo
+            </span>
+          )}
           <span className="sr-only">{country}</span>
         </div>
       </Link>
@@ -94,6 +101,11 @@ export function ProductCard({
           <span className="text-xs text-gray-500 dark:text-gray-400 font-medium flex items-center gap-1">
             <span aria-label={`Origin: ${country}`}>{countryFlag}</span>
             {country}
+            {origin === 'demo' && (
+              <span className="ml-2 bg-green-100 text-green-800 text-xs rounded-full px-1.5 py-0.5">
+                Demo
+              </span>
+            )}
           </span>
           {seller?.verified && <VerifiedSellerBadge />}
         </div>

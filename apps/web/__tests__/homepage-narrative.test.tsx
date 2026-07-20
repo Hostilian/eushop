@@ -6,7 +6,13 @@ jest.mock('../components/layout/PageWrapper', () => ({
 }));
 
 jest.mock('../components/ui/ProductCard', () => ({
-  ProductCard: ({ name }: { name: string }) => <article>{name}</article>,
+  ProductCard: ({
+    name,
+    ...rest
+  }: {
+    name: string;
+    [key: string]: any;
+  }) => <article>{name}</article>,
 }));
 
 jest.mock('../lib/services', () => {

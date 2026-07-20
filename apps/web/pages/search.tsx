@@ -3,8 +3,10 @@ import { PageWrapper } from '../components/layout/PageWrapper';
 import { ProductCard } from '../components/ui/ProductCard';
 import { ProductCardSkeleton } from '../components/ui/Skeleton';
 import { foodAPI, FoodItem } from '../lib/services';
+import type { StatusOrigin } from '../lib/degradation';
 import { Button } from '../components/ui/Button';
 import { readCart, writeCart } from '../lib/storageSafety';
+import { EU_ALLERGENS_14 } from '@eushop/compliance';
 
 // --- Constants for better readability and maintainability ---
 const PAGE_SIZE = 20;
@@ -22,9 +24,15 @@ const FOOD_CATEGORIES = [
   '', 'Chocolate', 'Cheese', 'Wine', 'Charcuterie', 'Candy', 'Biscuit', 'Sweet', 'Savory', 'Drink', 'Condiment', 'Dairy', 'Pastry', 'Noodle'
 ];
 
-const EU_ALLERGENS = [
-  '', 'Celery', 'Cereals containing gluten', 'Crustaceans', 'Eggs', 'Fish', 'Lupin', 'Milk', 'Molluscs', 'Mustard', 'Nuts', 'Peanuts', 'Sesame seeds', 'Soya', 'Sulphur dioxide and sulphites'
-];
+const EU_ALLERGENS = ['', ...EU_ALLERGENS_14];
+
+const ORIGIN_LABEL: Record<StatusOrigin, string> = {
+  live: 'Live marketplace catalogue',
+  cache: 'Recently loaded catalogue',
+  demo: 'Demonstration catalogue',
+  local: 'Local catalogue',
+  offline: 'Offline catalogue',
+};
 
 // Mapping for food images based on keywords
 const FOOD_IMAGE_MAP: { [key: string]: string } = {
@@ -54,6 +62,7 @@ export default function SearchPage() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [page, setPage] = useState(1);
+  const [catalogueOrigin, setCatalogueOrigin] = useState<StatusOrigin | null>(null);
 
   const getFoodImage = (foodName: string): string | undefined => {
     const nameLower = foodName.toLowerCase();
@@ -82,9 +91,11 @@ export default function SearchPage() {
       if (minPrice !== null) foodsArray = foodsArray.filter(food => food.price >= minPrice);
       if (maxPrice !== null) foodsArray = foodsArray.filter(food => food.price <= maxPrice);
       setFoods(foodsArray);
+      setCatalogueOrigin(result.origin);
     } catch {
       setError('Search service is temporarily unavailable. Please try again later.');
       setFoods([]);
+      setCatalogueOrigin('offline');
     } finally {
       setLoading(false);
     }
@@ -134,8 +145,19 @@ export default function SearchPage() {
           Find Specialty Foods Across the EU
         </h1>
         <p className="text-sm text-gray-600 dark:text-gray-400 mb-8 max-w-2xl leading-relaxed">
-          Search trusted marketplace listings by name or country and discover small-batch products from verified European sellers.
+          Search marketplace listings by name or country and compare seller identity, origin, and food information before choosing an item.
         </p>
+
+        {catalogueOrigin && (
+          <p
+            className="mb-6 w-fit rounded-full border border-gray-200 bg-gray-50 px-3 py-1 text-xs font-semibold text-gray-600 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300"
+            role="status"
+            aria-live="polite"
+          >
+            {ORIGIN_LABEL[catalogueOrigin]}
+            {catalogueOrigin === 'demo' && ' · Illustrative products, prices, traders, and label data'}
+          </p>
+        )}
 
         {/* Filter Bar */}
         <div className="bg-white dark:bg-gray-900 border border-gray-150 dark:border-gray-800 rounded-3xl p-6 shadow-sm mb-10">
@@ -304,7 +326,7 @@ export default function SearchPage() {
                   description={food.description || ''}
                   price={food.price}
                   country={food.country}
-                  imageUrl={getFoodImage(food.name)}
+                  imageUrl={food.imageUrl ?? getFoodImage(food.name)}
                   allergens={food.allergens || []}
                   seller={{
                     // COMPLIANCE-REVIEW: A missing trader name must not be replaced with a fabricated identity.
@@ -313,6 +335,7 @@ export default function SearchPage() {
                     verified: food.seller?.verified === true,
                   }}
                   onAddToCart={handleAddToCart}
+                  origin={catalogueOrigin}
                 />
               ))}
             </div>

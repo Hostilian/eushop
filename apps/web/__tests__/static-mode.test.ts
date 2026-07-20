@@ -12,17 +12,18 @@ describe('Static Mode Graceful Degradation', () => {
     process.env = originalEnv;
   });
 
-  it('correctly detects static mode and returns mock data without network requests', async () => {
+  it('detects static mode and identifies bundled data as demonstration data', async () => {
     process.env.NEXT_PUBLIC_STATIC_MODE = 'true';
     
     // Verify static mode is active
     expect(isStaticMode()).toBe(true);
 
-    // Call search with mock mode enabled
-    const foods = await foodAPI.search();
+    const result = await foodAPI.searchWithOrigin();
     
-    expect(foods).toBeDefined();
-    expect(foods.length).toBeGreaterThan(0);
-    expect(foods[0].name).toBe('Artisanal Belgian Chocolates');
+    expect(result.origin).toBe('demo');
+    expect(result.degraded).toBe(true);
+    expect(result.data).toHaveLength(12);
+    expect(result.data[0].name).toBe('Belgian Hazelnut Pralines');
+    expect(result.data[0].isDemo).toBe(true);
   });
 });

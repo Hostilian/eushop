@@ -220,6 +220,7 @@ export default function Home() {
               allergens={food.allergens ?? []}
               seller={food.seller}
               onAddToCart={handleAddToCart}
+              origin={catalogueOrigin}
             />
           ))}
         </div>

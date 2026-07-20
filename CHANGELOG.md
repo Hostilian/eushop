@@ -1,5 +1,15 @@
 # Changelog
 
+## [Unreleased] — Bundled demonstration catalogue (2026-07-20)
+
+### Added
+- Added one typed, bundled catalogue of 12 fictional demonstration listings spanning regional foods from 12 EU countries, with canonical Annex II allergen categories and illustrative Article 14/Article 9 disclosure fields.
+- Added explicit catalogue-origin notices to marketplace results and demonstration notices to product details so fallback records cannot be mistaken for live offers.
+
+### Changed
+- Replaced duplicated and certification-like fallback records with a single demo service whose traders, prices, origin statements, recipes, and nutrition values are clearly unverified.
+- Corrected FIC field references in the shared product schema and added operator, origin, use, durability, and energy-kJ fields needed by the disclosure UI.
+
 ## [Unreleased] — Homepage clarity story (2026-07-20)
 
 ### Changed
