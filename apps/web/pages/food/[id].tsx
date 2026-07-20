@@ -258,6 +258,14 @@ export default function FoodDetailPage() {
           <meta name="twitter:title" content={`${food.name} — EUshop`} />
           <meta name="twitter:description" content={`${food.name} from ${food.country}. ${food.description.slice(0, 120)}`} />
           {food.images && food.images[0] && <meta name="twitter:image" content={food.images[0]} />}
+          {/* Multilingual i18n hreflang link tags for EU Single Market (Task 69) */}
+          <link rel="alternate" hrefLang="en" href={`https://hostilian.github.io/eushop/food/${food.id}?lang=en`} />
+          <link rel="alternate" hrefLang="de" href={`https://hostilian.github.io/eushop/food/${food.id}?lang=de`} />
+          <link rel="alternate" hrefLang="fr" href={`https://hostilian.github.io/eushop/food/${food.id}?lang=fr`} />
+          <link rel="alternate" hrefLang="it" href={`https://hostilian.github.io/eushop/food/${food.id}?lang=it`} />
+          <link rel="alternate" hrefLang="es" href={`https://hostilian.github.io/eushop/food/${food.id}?lang=es`} />
+          <link rel="alternate" hrefLang="cs" href={`https://hostilian.github.io/eushop/food/${food.id}?lang=cs`} />
+          <link rel="alternate" hrefLang="x-default" href={`https://hostilian.github.io/eushop/food/${food.id}`} />
           {jsonLd && (
             <script
               type="application/ld+json"

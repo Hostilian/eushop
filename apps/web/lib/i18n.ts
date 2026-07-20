@@ -130,3 +130,31 @@ export function translateAllergen(allergen: EUAllergen | string, lang: Supported
   }
   return allergen;
 }
+
+export const FORM_VALIDATION_I18N: Record<string, Record<SupportedLanguage, string>> = {
+  required_field: {
+    en: 'This field is required under EU consumer rules.',
+    de: 'Dieses Feld ist nach EU-Verbraucherschutzvorschriften erforderlich.',
+    fr: 'Ce champ est obligatoire selon les règles européennes.',
+    it: 'Questo campo è obbligatorio ai sensi delle norme UE.',
+    es: 'Este campo es obligatorio según las normas de la UE.',
+    cs: 'Toto pole je povinné podle předpisů EU na ochranu spotřebitele.',
+  },
+  invalid_vat: {
+    en: 'Please enter a valid EU VAT ID (e.g. DE123456789).',
+    de: 'Bitte geben Sie eine gültige EU-USt-IdNr. ein (z. B. DE123456789).',
+    fr: 'Veuillez saisir un numéro de TVA UE valide.',
+    it: 'Inserisci un numero di partita IVA UE valido.',
+    es: 'Introduzca un número de IVA de la UE válido.',
+    cs: 'Zadejte platné DIČ EU (např. CZ12345678).',
+  },
+  invalid_email: {
+    en: 'Please enter a valid email address.',
+    de: 'Bitte geben Sie eine gültige E-Mail-Adresse ein.',
+    fr: 'Veuillez saisir une adresse e-mail valide.',
+    it: 'Inserisci un indirizzo email valido.',
+    es: 'Introduzca una dirección de correo electrónico válida.',
+    cs: 'Zadejte platnou e-mailovou adresu.',
+  },
+};
+
