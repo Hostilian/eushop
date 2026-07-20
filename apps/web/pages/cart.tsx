@@ -1,6 +1,7 @@
 import Link from 'next/link';
 import { useState } from 'react';
 import { PageWrapper } from '../components/layout/PageWrapper';
+import { readCart, writeCart } from '../lib/storageSafety';
 
 interface CartItem {
   id: string;
@@ -21,18 +22,12 @@ const getFoodImage = (foodName: string) => {
 
 export default function CartPage() {
   const [cartItems, setCartItems] = useState<CartItem[]>(() => {
-    if (typeof window === 'undefined') return [];
-    try {
-      const saved = localStorage.getItem('cart');
-      return saved ? JSON.parse(saved) : [];
-    } catch {
-      return [];
-    }
+    return readCart();
   });
 
   const persist = (items: CartItem[]) => {
     setCartItems(items);
-    localStorage.setItem('cart', JSON.stringify(items));
+    writeCart(items);
     window.dispatchEvent(new Event('cart-updated'));
   };
 

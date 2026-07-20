@@ -9,6 +9,7 @@ import { AllergenBadge, VerifiedSellerBadge } from '../../components/ui/Badge';
 // Import from packages/compliance once workspace resolution is confirmed.
 import { EU_ALLERGENS_14 } from '@eushop/compliance';
 import { StartConversationButton } from '../../components/chat/StartConversationButton';
+import { readCart, writeCart } from '../../lib/storageSafety';
 
 interface FoodDetail {
   id: string;
@@ -27,10 +28,16 @@ interface FoodDetail {
   netQuantity?: string;
   storageInstructions?: string;
   nutritionPer100g?: {
-    energyKcal: number; fatG: number; saturatedFatG: number;
+    energyKj?: number; energyKcal: number; fatG: number; saturatedFatG: number;
     carbohydrateG: number; sugarsG: number; proteinG: number; saltG: number;
   };
+  instructionsForUse?: string;
+  originStatement?: string;
+  durabilityInformation?: string;
+  foodBusinessOperator?: { name: string; address: string };
   isPrepacked?: boolean;
+  isDemo?: boolean;
+  informationStatus?: 'illustrative-unverified';
   qualityScheme?: 'PDO' | 'PGI' | 'TSG';
   qualitySchemeVerified?: boolean;
 }
@@ -116,8 +123,17 @@ export default function FoodDetailPage() {
           ingredients: result.ingredients ? sanitizeHTML(result.ingredients) : undefined,
           netQuantity: result.netQuantity ? sanitizeHTML(result.netQuantity) : undefined,
           storageInstructions: result.storageInstructions ? sanitizeHTML(result.storageInstructions) : undefined,
+          instructionsForUse: result.instructionsForUse ? sanitizeHTML(result.instructionsForUse) : undefined,
+          originStatement: result.originStatement ? sanitizeHTML(result.originStatement) : undefined,
+          durabilityInformation: result.durabilityInformation ? sanitizeHTML(result.durabilityInformation) : undefined,
+          foodBusinessOperator: result.foodBusinessOperator ? {
+            name: sanitizeHTML(result.foodBusinessOperator.name || ''),
+            address: sanitizeHTML(result.foodBusinessOperator.address || ''),
+          } : undefined,
           nutritionPer100g: result.nutritionPer100g || undefined,
           isPrepacked: result.isPrepacked !== false,
+          isDemo: result.isDemo === true,
+          informationStatus: result.informationStatus,
           qualityScheme: result.qualityScheme,
           qualitySchemeVerified: Boolean(result.qualitySchemeVerified),
         });
@@ -152,16 +168,15 @@ export default function FoodDetailPage() {
     if (!Number.isInteger(quantity) || quantity < 1 || quantity > 100) return;
     setAddingToCart(true);
     try {
-      let cart: any[] = [];
-      try { cart = JSON.parse(localStorage.getItem('cart') || '[]'); } catch { cart = []; }
-      if (!Array.isArray(cart)) cart = [];
+      const cart = readCart();
       const idx = cart.findIndex((i: any) => i?.id === food.id);
       if (idx > -1) {
         cart[idx].quantity = Math.min(100, cart[idx].quantity + quantity);
       } else {
         cart.push({ id: food.id, name: food.name, country: food.country, price: food.price, quantity, sellerId: food.seller?.id || '' });
       }
-      localStorage.setItem('cart', JSON.stringify(cart.slice(0, 50)));
+      const result = writeCart(cart);
+      if (!result.ok) throw new Error('Cart storage is unavailable.');
       window.dispatchEvent(new Event('cart-updated'));
       router.push('/cart');
     } catch {
@@ -297,6 +312,15 @@ export default function FoodDetailPage() {
             {/* Description */}
             <p className="text-sm text-gray-700 dark:text-gray-300 leading-relaxed">{food.description}</p>
 
+            {food.isDemo && (
+              <aside
+                className="rounded-xl border border-sky-200 bg-sky-50 p-3 text-xs leading-5 text-sky-900 dark:border-sky-900 dark:bg-sky-950/40 dark:text-sky-200"
+                role="status"
+              >
+                <strong>Demonstration catalogue.</strong> Product, price, trader, origin, recipe, and nutrition values are illustrative and unverified. This is not a live offer.
+              </aside>
+            )}
+
             {/* ─── FIC Art. 14 Pre-Purchase Disclosure Block ─────────────────────
                 EU Reg. 1169/2011 Art. 14: For prepacked food sold at distance,
                 ALL mandatory food information must be available before purchase.
@@ -319,7 +343,7 @@ export default function FoodDetailPage() {
                   </div>
                 ) : (
                   <p className="text-xs text-gray-500 dark:text-gray-400">
-                    No major EU-regulated allergens declared by the seller. If you have allergies, contact the seller before ordering.
+                    No Annex II allergens are declared in this record. This is not an allergen-free claim; check the package and contact the seller before ordering.
                   </p>
                 )}
               </div>
@@ -348,6 +372,28 @@ export default function FoodDetailPage() {
                 </div>
               )}
 
+              {food.instructionsForUse && (
+                <div>
+                  <h3 className="text-xs font-bold text-gray-600 dark:text-gray-400 uppercase mb-1">Instructions for use</h3>
+                  <p className="text-xs text-gray-700 dark:text-gray-300">{food.instructionsForUse}</p>
+                </div>
+              )}
+
+              {food.originStatement && (
+                <div>
+                  <h3 className="text-xs font-bold text-gray-600 dark:text-gray-400 uppercase mb-1">Origin / provenance statement</h3>
+                  <p className="text-xs text-gray-700 dark:text-gray-300">{food.originStatement}</p>
+                </div>
+              )}
+
+              {food.foodBusinessOperator && (
+                <div>
+                  <h3 className="text-xs font-bold text-gray-600 dark:text-gray-400 uppercase mb-1">Food business operator</h3>
+                  <p className="text-xs text-gray-700 dark:text-gray-300">{food.foodBusinessOperator.name}</p>
+                  <p className="text-xs text-gray-700 dark:text-gray-300">{food.foodBusinessOperator.address}</p>
+                </div>
+              )}
+
               {/* Nutrition */}
               {food.nutritionPer100g && (
                 <div>
@@ -355,7 +401,7 @@ export default function FoodDetailPage() {
                   <table className="w-full text-xs text-gray-700 dark:text-gray-300 border-collapse">
                     <tbody>
                       {[
-                        ['Energy', `${food.nutritionPer100g.energyKcal} kcal`],
+                        ['Energy', `${food.nutritionPer100g.energyKj ? `${food.nutritionPer100g.energyKj} kJ / ` : ''}${food.nutritionPer100g.energyKcal} kcal`],
                         ['Fat', `${food.nutritionPer100g.fatG}g`],
                         ['of which saturates', `${food.nutritionPer100g.saturatedFatG}g`],
                         ['Carbohydrate', `${food.nutritionPer100g.carbohydrateG}g`],
@@ -374,9 +420,14 @@ export default function FoodDetailPage() {
               )}
 
               {/* Best-before note */}
-              <p className="text-[10px] text-gray-400 dark:text-gray-500 leading-relaxed">
-                Best-before / use-by date will be provided at delivery per EU Reg. 1169/2011 Art. 14(1)(b).
+              <p className="text-[10px] text-gray-500 dark:text-gray-400 leading-relaxed">
+                {food.durabilityInformation || 'Best-before / use-by information must be available on the item at delivery.'}
               </p>
+              {food.informationStatus === 'illustrative-unverified' && (
+                <p className="text-[10px] font-semibold text-sky-800 dark:text-sky-300">
+                  COMPLIANCE-REVIEW required: this disclosure demonstrates field placement and does not certify a food label or listing.
+                </p>
+              )}
             </section>
 
             {/* Dietary restrictions */}

@@ -64,23 +64,36 @@ export type Seller = z.infer<typeof SellerSchema>;
  */
 export const ProductSchema = z.object({
   id: z.string(),
+  /** EU FIC 1169/2011 Art. 9(1)(a): name of the food */
   name: z.string().min(1),
   sellerId: z.string(),
-  /** EU FIR 1169/2011 Art. 9(1)(b): country of origin / place of provenance */
+  /** EU FIC 1169/2011 Art. 9(1)(i): country of origin / place of provenance when required */
   countryIso2: z.string().length(2),
-  /** EU FIR 1169/2011 Art. 9(1)(b): full ingredient list in descending weight order */
+  /** EU FIC 1169/2011 Art. 9(1)(b): full ingredient list in descending weight order */
   ingredients: z.string().optional(),
-  /** EU FIR 1169/2011 Annex II: 14 regulated allergens as structured fields */
+  /** EU FIC 1169/2011 Annex II: 14 regulated allergen categories as structured fields */
   allergens: z.array(AllergenSchema),
-  /** EU FIR 1169/2011 Art. 9(1)(e): net quantity */
+  /** EU FIC 1169/2011 Art. 9(1)(e): net quantity */
   netQuantity: z.string().optional(),
-  /** EU FIR 1169/2011 Art. 9(1)(f): best-before / use-by date (may wait until delivery) */
+  /** EU FIC 1169/2011 Art. 9(1)(f): best-before / use-by date (may wait until delivery for distance sales) */
   bestBeforeDate: z.string().optional(),
-  /** EU FIR 1169/2011 Art. 9(1)(j): storage instructions */
+  /** Static/demo-safe explanation when the batch-specific date is not known pre-purchase. */
+  durabilityInformation: z.string().optional(),
+  /** EU FIC 1169/2011 Art. 9(1)(g): special storage / conditions of use */
   storageInstructions: z.string().optional(),
-  /** EU FIR 1169/2011 Art. 9(1)(h): nutrition declaration per 100g/100ml */
+  /** EU FIC 1169/2011 Art. 9(1)(j): instructions where appropriate use would otherwise be difficult */
+  instructionsForUse: z.string().optional(),
+  /** EU FIC 1169/2011 Art. 9(1)(h): responsible food business operator */
+  foodBusinessOperator: z.object({
+    name: z.string().min(1),
+    address: z.string().min(1),
+  }).optional(),
+  /** Seller-supplied origin/provenance wording; whether it is mandatory depends on Art. 26 and product context. */
+  originStatement: z.string().optional(),
+  /** EU FIC 1169/2011 Art. 9(1)(l): nutrition declaration per 100g/100ml */
   nutritionPer100g: z
     .object({
+      energyKj: z.number().optional(),
       energyKcal: z.number(),
       fatG: z.number(),
       saturatedFatG: z.number(),

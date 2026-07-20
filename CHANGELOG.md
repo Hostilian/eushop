@@ -1,5 +1,43 @@
 # Changelog
 
+## [Unreleased] — Bundled demonstration catalogue (2026-07-20)
+
+### Added
+- Added one typed, bundled catalogue of 12 fictional demonstration listings spanning regional foods from 12 EU countries, with canonical Annex II allergen categories and illustrative Article 14/Article 9 disclosure fields.
+- Added explicit catalogue-origin notices to marketplace results and demonstration notices to product details so fallback records cannot be mistaken for live offers.
+
+### Changed
+- Replaced duplicated and certification-like fallback records with a single demo service whose traders, prices, origin statements, recipes, and nutrition values are clearly unverified.
+- Corrected FIC field references in the shared product schema and added operator, origin, use, durability, and energy-kJ fields needed by the disclosure UI.
+
+## [Unreleased] — Homepage clarity story (2026-07-20)
+
+### Changed
+- Rebuilt the homepage around one marketplace value proposition, primary Explore Marketplace and Sell on EUshop actions, a three-step buyer journey, and a factual trust layer.
+- Removed competing mobile-app, AI-search, and regulatory-certification narratives from the homepage; featured foods now disclose whether their data is live, cached, bundled, demonstration, or offline.
+
+## [Unreleased] — Browser storage safety (2026-07-20)
+
+### Added
+- Added a versioned browser-storage handler with runtime validation, legacy migration, corrupt-entry reset, byte limits, quota classification, SSR guards, and sensitive key/value rejection.
+
+### Changed
+- Migrated cart persistence to the safe schema and moved API response caches, demo orders, demo seller applications, and custom demo listings to memory-only storage.
+- Stopped persisting full user profiles in `sessionStorage`; cookie-authenticated server responses now populate memory only.
+- Added one-time cleanup for legacy browser keys that could contain account, seller tax/contact, order, waitlist, or listing data.
+
+## [Unreleased] — Region error containment (2026-07-20)
+
+### Changed
+- Replaced raw browser-persisted render diagnostics with reusable error boundaries around navigation, marketplace, product, cart, seller-onboarding, and account regions.
+- Added accessible Retry, Load Demo Catalogue, and Back to Marketplace recovery actions so a failed region does not render a blank screen.
+
+## [Unreleased] — Centralized reliability engine (2026-07-20)
+
+### Added
+- Added reusable request deadlines, abort signals, per-provider circuit breakers, and typed `live`/`cache`/`demo`/`local`/`offline` origin markers for resilient web data loading.
+- Added safe fallback sequencing that avoids surfacing raw provider errors or request details to users.
+
 ## [Unreleased] — Persistent seller identity & DSA Art. 30 (2026-07-19)
 
 ### Changed

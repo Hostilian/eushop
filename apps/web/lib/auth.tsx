@@ -20,13 +20,17 @@ interface AuthContextValue {
 const AuthContext = createContext<AuthContextValue | undefined>(undefined);
 
 export function AuthProvider({ children }: { children: React.ReactNode }) {
-  const [user, setUser] = useState<User | null>(() => authAPI.getCachedProfile());
-  const [loading, setLoading] = useState(false);
+  const [user, setUser] = useState<User | null>(null);
+  const [loading, setLoading] = useState(true);
 
   const refresh = useCallback(async () => {
     setLoading(true);
     try {
-      setUser(authAPI.getCachedProfile());
+      // COMPLIANCE-REVIEW: account data stays in memory and is refreshed from
+      // the cookie-authenticated server; it is not persisted in browser storage.
+      setUser(await authAPI.getCurrentUser());
+    } catch {
+      setUser(null);
     } finally {
       setLoading(false);
     }
@@ -38,12 +42,12 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   }, []);
 
   useEffect(() => {
-    const syncUser = () => setUser(authAPI.getCachedProfile());
+    const initialRefresh = window.setTimeout(() => { void refresh(); }, 0);
+    const syncUser = () => { void refresh(); };
     window.addEventListener('auth-changed', syncUser);
-    window.addEventListener('storage', syncUser);
     return () => {
+      window.clearTimeout(initialRefresh);
       window.removeEventListener('auth-changed', syncUser);
-      window.removeEventListener('storage', syncUser);
     };
   }, [refresh]);
 

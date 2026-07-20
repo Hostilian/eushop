@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import ErrorBoundary from '../common/ErrorBoundary';
 import { Navbar } from './Navbar';
 import { Footer } from './Footer';
 
@@ -36,7 +37,9 @@ export function PageWrapper({ children, className = '' }: PageWrapperProps) {
   
   return (
     <div className="min-h-screen bg-gray-50 text-gray-900 flex flex-col font-sans transition-colors duration-200 dark:bg-gray-950 dark:text-gray-100">
-      <Navbar />
+      <ErrorBoundary region="navigation" compact>
+        <Navbar />
+      </ErrorBoundary>
       
       {/* Graceful degradation: Offline indicator with actionable info */}
       {!isOnline && (

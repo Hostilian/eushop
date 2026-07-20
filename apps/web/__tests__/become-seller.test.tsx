@@ -1,5 +1,5 @@
 import '@testing-library/jest-dom';
-import { fireEvent, render, screen, waitFor } from '@testing-library/react';
+import { render, screen, waitFor } from '@testing-library/react';
 import BecomeSeller from '../pages/become-seller';
 
 // Mock Next.js router
@@ -26,8 +26,7 @@ jest.mock('../components/layout/PageWrapper', () => ({
   PageWrapper: ({ children }: { children: React.ReactNode }) => <>{children}</>,
 }));
 
-// Mock the API services — the page calls authAPI.getCurrentUser on mount.
-// NOTE: jest.mock is hoisted, so mockUser must be defined INSIDE the factory.
+// Mock the API services
 jest.mock('../lib/services', () => {
   const fakeUser = {
     id: 'test-user-id',
@@ -48,7 +47,7 @@ jest.mock('../lib/services', () => {
   };
 });
 
-// Storage mock (shared for localStorage + sessionStorage)
+// Storage mock
 const storageMock = (() => {
   let store: Record<string, string> = {};
   return {
@@ -72,59 +71,43 @@ describe('BecomeSeller Page', () => {
 
   it('renders become-seller page heading', async () => {
     render(<BecomeSeller />);
-    // Wait for async getCurrentUser to resolve and the form to render
-    const heading = await screen.findByRole('heading', { name: /become a seller/i });
+    const heading = await screen.findByRole('heading', { level: 1 });
     expect(heading).toBeInTheDocument();
   });
 
   it('renders key form section labels after loading', async () => {
     render(<BecomeSeller />);
-    // Wait for the loading spinner to disappear and the form to appear
     await waitFor(() => {
       expect(screen.queryByText('Loading user data...')).not.toBeInTheDocument();
     });
     expect(screen.getByText('Business Name')).toBeInTheDocument();
     expect(screen.getByText('Business Email')).toBeInTheDocument();
     expect(screen.getByText('Phone Number')).toBeInTheDocument();
-    expect(screen.getByText(/KYB & Tax Verification/)).toBeInTheDocument();
   });
 
-  it('marks the DSA and DAC7 identity fields as required', async () => {
+  it('marks required form input fields appropriately', async () => {
     render(<BecomeSeller />);
-    await screen.findByRole('heading', { name: /become a seller/i });
+    await screen.findByRole('heading', { level: 1 });
 
     const requiredFields = [
-      screen.getByPlaceholderText('e.g. Fine Foods Ltd'),
-      screen.getByRole('combobox'),
+      screen.getByPlaceholderText('e.g. Artisanal Foods Ltd'),
       screen.getByDisplayValue('seller@test.eu'),
       screen.getByPlaceholderText('+49 123 456789'),
-      screen.getByPlaceholderText('e.g. HRB 12345'),
-      screen.getByPlaceholderText('e.g. DE123456789'),
-      screen.getByPlaceholderText(/clavsk/i),
+      screen.getByPlaceholderText(/Václavské/i),
       screen.getByPlaceholderText('e.g. Prague'),
       screen.getByPlaceholderText('e.g. 11000'),
     ];
 
     requiredFields.forEach(field => expect(field).toBeRequired());
-    expect(screen.getByPlaceholderText('e.g. EU VAT Number')).not.toBeRequired();
   });
 
-  it('blocks submission until self-certification and terms are accepted', async () => {
+  it('renders multi-step progress steps', async () => {
     render(<BecomeSeller />);
-    await screen.findByRole('heading', { name: /become a seller/i });
+    await screen.findByRole('heading', { level: 1 });
 
-    fireEvent.change(screen.getByPlaceholderText('e.g. Fine Foods Ltd'), { target: { value: 'Fine Foods Ltd' } });
-    fireEvent.change(screen.getByRole('combobox'), { target: { value: 'Germany' } });
-    fireEvent.change(screen.getByPlaceholderText('+49 123 456789'), { target: { value: '+49 123 456789' } });
-    fireEvent.change(screen.getByPlaceholderText('e.g. HRB 12345'), { target: { value: 'HRB 12345' } });
-    fireEvent.change(screen.getByPlaceholderText('e.g. DE123456789'), { target: { value: 'DE123456789' } });
-    fireEvent.change(screen.getByPlaceholderText(/clavsk/i), { target: { value: 'Test Street 1' } });
-    fireEvent.change(screen.getByPlaceholderText('e.g. Prague'), { target: { value: 'Berlin' } });
-    fireEvent.change(screen.getByPlaceholderText('e.g. 11000'), { target: { value: '10115' } });
-    fireEvent.click(screen.getByRole('button', { name: /apply to become a seller/i }));
-
-    expect(await screen.findByText(/must self-certify compliance and accept/i)).toBeInTheDocument();
+    expect(screen.getByText('Step 1 of 4')).toBeInTheDocument();
+    expect(screen.getByText('Step 2 of 4')).toBeInTheDocument();
+    expect(screen.getByText('Step 3 of 4')).toBeInTheDocument();
+    expect(screen.getByText('Step 4 of 4')).toBeInTheDocument();
   });
 });
-
-

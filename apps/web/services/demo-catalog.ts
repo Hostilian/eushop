@@ -1,60 +1,59 @@
-// CLASSIC SAFE GROUND: STATIC SAMPLE DEMONSTRATION CATALOG IMPLEMENTATION
-// EUshop Version 44 Core Milestone
+import {
+  DEMO_PRODUCTS,
+  type DemoProduct,
+} from '../data/demo-products';
 
-export const DEMO_CATALOG = [
-  // MOCK DATA WITH REALISTIC ELEMENTS
-  {
-    id: "demo-berlin-bear-honey",
-    name: "Demonstration Berlin Bear Honey",
-    origin: "Berlin, Germany [DEMO]",
-    seller: "Berliner Bärenmilch GmbH",
-    productStory: "First-generation family beekeeping in Berlin's Grünerstadt district. All-natural harvesting with EU PGI certification.",
-    price: {
-      value: 8,
-      currency: "EUR",
-      quantity: "75cl jar"
-    },
-    priceString: "€8.99",
-    image: "/images/demo/honey-placeholder.svg",
-    category: "Honey",
-    allergenInfo: "Contains natural bee pollen",
-    dietary: "Vegetarian",
-    shipping: {
-      baseEuro: 4.99,
-      freeThresholdEuro: 25
-    },
-    rating: 4.9,
-    certifications: ["© EU Research Bear Honey Pilot Project"]
-  },
-  {
-    id: "demo-copenhagen-smoked-pork-chop",
-    name: "København Smoked Pork Chop",
-    origin: "Copenhagen, Denmark [DEMO]",
-    seller: "Porkhuset Tysksted",
-    productStory: "Traditional Danish smoked pork recipe from 1902, using locally raised cattle. Natural ash wood smoking process.",
-    price: {
-      value: 14.99,
-      currency: "EUR",
-      quantity: "450g pack"
-    },
-    priceString: "€14.99",
-    image: "/images/demo/pork-placeholder.svg",
-    category: "Meat",
-    allergenInfo: "Organic pork",
-    dietary: "Non-vegetarian",
-    shipping: {
-      baseEuro: 3.99,
-      freeThresholdEuro: 20
-    },
-    rating: 4.7,
-    certifications: ["© Danish Agricultural Standards"]
-  }
-];
-
-export function getDemonstrationCatalogue() {
-  return DEMO_CATALOG;
+export interface DemoCatalogueQuery {
+  query?: string;
+  country?: string;
+  page?: number;
+  size?: number;
+  category?: string;
+  allergenFree?: string;
 }
 
-export function verifyDemoMode() {
-  console.warn('Demonstration Mode Active: Marketplace data is static for testing');
+const normalise = (value?: string): string => value?.trim().toLocaleLowerCase('en') ?? '';
+
+export function getDemonstrationCatalogue(): DemoProduct[] {
+  return DEMO_PRODUCTS.map(product => ({ ...product }));
+}
+
+export function findDemonstrationProduct(id: string): DemoProduct | undefined {
+  const product = DEMO_PRODUCTS.find(item => item.id === id);
+  return product ? { ...product } : undefined;
+}
+
+export function searchDemonstrationCatalogue({
+  query,
+  country,
+  page = 1,
+  size = 20,
+  category,
+  allergenFree,
+}: DemoCatalogueQuery = {}): DemoProduct[] {
+  const searchTerm = normalise(query);
+  const countryTerm = normalise(country);
+  const categoryTerm = normalise(category);
+  const excludedAllergen = normalise(allergenFree);
+
+  const filtered = DEMO_PRODUCTS.filter(product => {
+    const matchesSearch = !searchTerm || [
+      product.name,
+      product.description,
+      product.category,
+      product.originStatement,
+    ].some(value => normalise(value).includes(searchTerm));
+    const matchesCountry = !countryTerm || normalise(product.country) === countryTerm;
+    const matchesCategory = !categoryTerm || normalise(product.category) === categoryTerm;
+    const excludesAllergen = !excludedAllergen || !product.allergens.some(
+      allergen => normalise(allergen) === excludedAllergen,
+    );
+
+    return matchesSearch && matchesCountry && matchesCategory && excludesAllergen;
+  });
+
+  const safePage = Math.max(1, Math.floor(page));
+  const safeSize = Math.min(100, Math.max(1, Math.floor(size)));
+  const start = (safePage - 1) * safeSize;
+  return filtered.slice(start, start + safeSize).map(product => ({ ...product }));
 }

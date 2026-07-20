@@ -9,6 +9,7 @@ import {
   EU_FOOD_VAT_RATES,
   OSS_THRESHOLD_EUR,
 } from '@eushop/compliance';
+import { readCart, writeCart } from '../lib/storageSafety';
 
 const stripePromise = loadStripe(process.env.NEXT_PUBLIC_STRIPE_PUBLIC_KEY || 'pk_test_51MockPublicKeyForCheckoutCompilationOnly');
 
@@ -78,11 +79,8 @@ function CheckoutForm() {
     };
     fetchUser();
 
-    const savedCart = localStorage.getItem('cart');
-    if (savedCart) {
-      try {
-        const items: CartItem[] = JSON.parse(savedCart);
-        
+    const items: CartItem[] = readCart();
+    if (items.length > 0) {
         // Fetch detailed information to populate sellerId and finderFee
         const fetchDetails = async () => {
           const detailed = await Promise.all(items.map(async (item) => {
@@ -107,9 +105,6 @@ function CheckoutForm() {
         };
 
         fetchDetails();
-      } catch (error) {
-        console.error('Failed to parse cart:', error);
-      }
     }
   }, []);
 
@@ -190,7 +185,7 @@ function CheckoutForm() {
       }));
 
       // 4. Clear cart & show confirmation
-      localStorage.setItem('cart', '[]');
+      writeCart([]);
       setOrderPlaced(true);
     } catch (err: any) {
       setErrorMessage(err.message || 'An unexpected error occurred during payment.');

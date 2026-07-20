@@ -48,16 +48,6 @@ const getStatusStyles = (status: string): string => {
   return styles[status] || 'bg-gray-50 border-gray-200 text-gray-700';
 };
 
-// Safe localStorage parser to reduce duplication and improve error handling
-const safeParseJSON = <T,>(key: string, defaultValue: T): T => {
-  try {
-    const item = localStorage.getItem(key);
-    return item ? JSON.parse(item) : defaultValue;
-  } catch {
-    return defaultValue;
-  }
-};
-
 interface TabButtonProps {
   id: 'sellers' | 'listings' | 'orders' | 'waitlist';
   label: string;
@@ -83,11 +73,9 @@ export default function AdminDashboard() {
   const [loading, setLoading] = useState(true);
   const [activeTab, setActiveTab] = useState<'sellers' | 'listings' | 'orders' | 'waitlist'>('sellers');
 
-  const [sellers, setSellers] = useState<SellerApplication[]>(() => {
-    if (typeof window !== 'undefined') {
-      const storedSellers = safeParseJSON<SellerApplication[]>('seller_applications', []);
-      if (storedSellers.length > 0) return storedSellers;
-      const defaultSellers: SellerApplication[] = [
+  // COMPLIANCE-REVIEW: these synthetic records exercise the admin layout only;
+  // they are not KYBC evidence, DAC7 records, or legal verification decisions.
+  const [sellers, setSellers] = useState<SellerApplication[]>(() => [
         {
           id: 'app-1',
           name: 'Gourmet Iberico S.L.',
@@ -124,20 +112,9 @@ export default function AdminDashboard() {
           selfCertified: true,
           status: 'VERIFIED',
         }
-      ];
-      try {
-        localStorage.setItem('seller_applications', JSON.stringify(defaultSellers));
-      } catch {}
-      return defaultSellers;
-    }
-    return [];
-  });
+      ]);
   const [listings, setListings] = useState<FoodItem[]>([]);
-  const [orders, setOrders] = useState<OrderRecord[]>(() => {
-    if (typeof window !== 'undefined') {
-      const storedOrders = safeParseJSON<OrderRecord[]>('orders', []);
-      if (storedOrders.length > 0) return storedOrders;
-      const defaultOrders: OrderRecord[] = [
+  const [orders, setOrders] = useState<OrderRecord[]>(() => [
         {
           id: 'order-1',
           buyerEmail: 'buyer_germany@eushop.local',
@@ -156,26 +133,11 @@ export default function AdminDashboard() {
           status: 'PROCESSING',
           createdAt: new Date(Date.now() - 1 * 24 * 60 * 60 * 1000).toISOString()
         }
-      ];
-      try {
-        localStorage.setItem('orders', JSON.stringify(defaultOrders));
-      } catch {}
-      return defaultOrders;
-    }
-    return [];
-  });
-  const [waitlist, setWaitlist] = useState<string[]>(() => {
-    if (typeof window !== 'undefined') {
-      const storedWaitlist = safeParseJSON<string[]>('waitlist_emails', []);
-      if (storedWaitlist.length > 0) return storedWaitlist;
-      const defaultEmails = ['investor1@earlystage.vc', 'venture.lead@pan-eu.fund'];
-      try {
-        localStorage.setItem('waitlist_emails', JSON.stringify(defaultEmails));
-      } catch {}
-      return defaultEmails;
-    }
-    return [];
-  });
+      ]);
+  const [waitlist, setWaitlist] = useState<string[]>(() => [
+    'investor1@earlystage.vc',
+    'venture.lead@pan-eu.fund',
+  ]);
 
   // Memoized computed values for performance
   const pendingSellersCount = useMemo(() => 
@@ -214,7 +176,6 @@ export default function AdminDashboard() {
       return s;
     });
     setSellers(updatedSellers);
-    localStorage.setItem('seller_applications', JSON.stringify(updatedSellers));
     alert('Demo application status updated. No seller role was granted.');
   };
 
@@ -226,22 +187,11 @@ export default function AdminDashboard() {
       return s;
     });
     setSellers(updatedSellers);
-    localStorage.setItem('seller_applications', JSON.stringify(updatedSellers));
   };
 
   const handleRemoveListing = (foodId: string) => {
-    const localFoods = safeParseJSON<FoodItem[]>('local_foods', []);
-    if (localFoods.length > 0) {
-      const filtered = localFoods.filter(f => f.id !== foodId);
-      localStorage.setItem('local_foods', JSON.stringify(filtered));
-      // Update local UI state
-      setListings(prev => prev.filter(f => f.id !== foodId));
-      alert('Listing removed from simulated database.');
-    } else {
-      // It is a static trending food, remove from local UI only
-      setListings(prev => prev.filter(f => f.id !== foodId));
-      alert('Removed from active dashboard view.');
-    }
+    setListings(prev => prev.filter(f => f.id !== foodId));
+    alert('Removed from this demo dashboard view. No server listing was changed.');
   };
 
   const handleUpdateOrderStatus = (orderId: string, nextStatus: string) => {
@@ -252,13 +202,11 @@ export default function AdminDashboard() {
       return o;
     });
     setOrders(updatedOrders);
-    localStorage.setItem('orders', JSON.stringify(updatedOrders));
     alert(`Order status updated to ${nextStatus}.`);
   };
 
   const handleClearWaitlist = () => {
     if (confirm('Clear waitlist emails?')) {
-      localStorage.setItem('waitlist_emails', '[]');
       setWaitlist([]);
     }
   };
