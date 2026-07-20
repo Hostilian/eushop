@@ -1,5 +1,35 @@
 # Changelog
 
+## [Unreleased] — Continuous Optimization Loop #7 (2026-07-20)
+
+### Added
+- **Vision AI Food Label Scanner Prototype**: Created `scripts/scan_food_label.py` supporting multilingual ingredient text extraction and automated Regulation (EU) No 1169/2011 Annex II allergen detection across 6 languages (EN, DE, FR, IT, ES, CS).
+- **Key Daemon Watchdog Installation**: Re-registered `EushopKeyDaemon` and `EushopKeyDaemonWatchdog` via `scripts/install_daemon.ps1` for non-stop LLM key pool resilience and automatic recovery.
+
+## [Unreleased] — Continuous Optimization Loop #6 (2026-07-20)
+
+### Added
+- **Mobile Navigation & Compliance Audit**: Verified Expo tab navigation setup in `apps/mobile/App.tsx` connecting shared compliance screens (`GDPRScreen`, `CheckoutScreen`, `SearchScreen`).
+- **Static Export Deployment**: Successfully compiled and exported 21/21 static HTML pages (`pnpm --filter web build`) targeting `https://hostilian.github.io/eushop/`.
+
+## [Unreleased] — Continuous Optimization Loop #5 (2026-07-20)
+
+### Added
+- **Multi-Language EU Allergen i18n Engine**: Created `apps/web/lib/i18n.ts` providing official translations for all 14 EU Annex II food allergens across 6 primary EU Single Market languages (EN, DE, FR, IT, ES, CS) aligned with Reg. 1169/2011.
+
+## [Unreleased] — Continuous Optimization Loop #4 (2026-07-20)
+
+### Added
+- **Cold-Chain Packaging & Transport Disclosure**: Added `thermalCategory` (`ambient`, `chilled_2_8C`, `frozen_minus_18C`) to `ProductSchema` in `packages/types/src/index.ts` and rendered cold-chain shipping disclosures on food detail pages (`apps/web/pages/food/[id].tsx`).
+
+## [Unreleased] — Continuous Optimization Loop #3 (2026-07-20)
+
+### Added
+- **Master YC Expansion Roadmap**: Expanded project roadmap in `implementation_plan.md` and `task.md` synthesizing all 11 development phases, compliance directives (EU Omnibus, DSA Art. 30, DAC7, GDPR, FIR 1169/2011), cold-chain shipping logistics, 24 EU language localization, and AI vision label scanning.
+
+### Fixed
+- **SSR Window Guard**: Added `typeof window !== 'undefined'` checks to `localStorage` helper functions in `apps/web/pages/become-seller.tsx` to eliminate prerendering ReferenceErrors during static page builds.
+
 ## [Unreleased] — Continuous Optimization Loop #2 (2026-07-20)
 
 ### Added

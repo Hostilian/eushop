@@ -128,6 +128,11 @@ export const ProductSchema = z.object({
    * separate GPSR fields (manufacturer, responsible person, safety warnings).
    */
   productType: z.enum(['food', 'non-food']).default('food'),
+  /**
+   * Thermal packaging requirement for food transport & cold-chain shipping.
+   * Ambient (15-25°C), Chilled (2-8°C), or Frozen (-18°C).
+   */
+  thermalCategory: z.enum(['ambient', 'chilled_2_8C', 'frozen_minus_18C']).default('ambient'),
 });
 
 export type Product = z.infer<typeof ProductSchema>;

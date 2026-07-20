@@ -72,6 +72,7 @@ const INITIAL_FORM_DATA: FormData = {
 };
 
 function getFormDataFromStorage(): FormData | null {
+  if (typeof window === 'undefined') return null;
   try {
     const saved = localStorage.getItem('eushop-seller-draft');
     return saved ? JSON.parse(saved) : null;
@@ -82,6 +83,7 @@ function getFormDataFromStorage(): FormData | null {
 }
 
 function saveFormDataToStorage(data: FormData) {
+  if (typeof window === 'undefined') return;
   try {
     localStorage.setItem('eushop-seller-draft', JSON.stringify(data));
   } catch (e) {
@@ -90,6 +92,7 @@ function saveFormDataToStorage(data: FormData) {
 }
 
 function clearFormDataFromStorage() {
+  if (typeof window === 'undefined') return;
   try {
     localStorage.removeItem('eushop-seller-draft');
   } catch (e) {

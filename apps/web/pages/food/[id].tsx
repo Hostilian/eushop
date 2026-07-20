@@ -377,6 +377,17 @@ export default function FoodDetailPage() {
                 </div>
               )}
 
+              {/* Cold-Chain Shipping & Thermal Packaging */}
+              <div>
+                <h3 className="text-xs font-bold text-gray-600 dark:text-gray-400 uppercase mb-1">Cold-Chain Logistics & Packaging</h3>
+                <p className="text-xs text-gray-700 dark:text-gray-300 flex items-center gap-2">
+                  <span className="inline-block px-2 py-0.5 rounded bg-emerald-100 dark:bg-emerald-950 text-emerald-800 dark:text-emerald-200 font-semibold text-[11px]">
+                    ❄️ Temperature Controlled
+                  </span>
+                  <span>Insulated thermal packaging with eco-friendly gel refrigerants (2–8°C EU food transport standard).</span>
+                </p>
+              </div>
+
               {food.instructionsForUse && (
                 <div>
                   <h3 className="text-xs font-bold text-gray-600 dark:text-gray-400 uppercase mb-1">Instructions for use</h3>
