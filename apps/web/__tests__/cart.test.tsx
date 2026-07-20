@@ -2,6 +2,10 @@ import '@testing-library/jest-dom';
 import { render, screen } from '@testing-library/react';
 import CartPage from '../pages/cart';
 
+jest.mock('../components/layout/PageWrapper', () => ({
+  PageWrapper: ({ children }: { children: React.ReactNode }) => <>{children}</>,
+}));
+
 // Mock localStorage
 const localStorageMock = (() => {
   let store: Record<string, string> = {};
@@ -30,17 +34,14 @@ describe('CartPage Component', () => {
 
   it('renders cart page header', () => {
     render(<CartPage />);
-    const heading = screen.getByRole('heading', { name: /your shopping cart/i });
+    const heading = screen.getByRole('heading', { level: 1, name: /^your cart$/i });
     expect(heading).toBeInTheDocument();
   });
 
-  it('populates with mock data if localStorage is empty', () => {
+  it('renders the empty state if localStorage is empty', () => {
     render(<CartPage />);
-    // Under mock defaults, it populates: Belgian Chocolates and Italian Balsamic
-    const firstItem = screen.getByText('Belgian Chocolates');
-    const secondItem = screen.getByText('Italian Balsamic');
-    expect(firstItem).toBeInTheDocument();
-    expect(secondItem).toBeInTheDocument();
+    expect(screen.getByRole('heading', { name: /your cart is empty/i })).toBeInTheDocument();
+    expect(screen.getByRole('link', { name: /browse foods/i })).toHaveAttribute('href', '/search');
   });
 
   it('calculates the correct subtotal', () => {

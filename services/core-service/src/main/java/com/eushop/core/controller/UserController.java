@@ -149,7 +149,7 @@ public class UserController {
         return ResponseEntity.ok(ApiResponse.success(null, "Account successfully anonymised (GDPR erasure completed)"));
     }
 
-    // NEW: GDPR Art. 17 erasure endpoint
+    // COMPLIANCE-REVIEW: verify erasure cascades to all subprocessors
     @DeleteMapping("/{id}/erase")
     public ResponseEntity<ApiResponse<Void>> eraseUserData(
             @PathVariable String id,
@@ -161,7 +161,9 @@ public class UserController {
         }
 
         userService.anonymiseUser(id);
-        return ResponseEntity.ok(ApiResponse.success(null, "User data erased (GDPR Article 17 - Right to be Forgotten)"));
+        return ResponseEntity.ok(ApiResponse.success(
+                null,
+                "Erasure request processed for EUshop core records; subprocessor erasure requires separate verification"));
     }
 
     @GetMapping("/{id}/export")
@@ -175,7 +177,7 @@ public class UserController {
         }
 
         Map<String, Object> data = userService.exportUserData(id);
-        return ResponseEntity.ok(ApiResponse.success(data, "User data exported successfully (GSDportability)"));
+        return ResponseEntity.ok(ApiResponse.success(data, "User data exported successfully (GDPR portability)"));
     }
 
     @PostMapping("/{id}/consent")
@@ -227,3 +229,4 @@ public class UserController {
         dto.setSelfCertifiedCompliant(user.getSelfCertifiedCompliant());
         return dto;
     }
+}

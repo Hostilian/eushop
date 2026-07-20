@@ -179,9 +179,13 @@ export default function ZeroStepCheckout({ product, isOpen, onClose }: ZeroStepC
                 {product.category || 'Artisanal Food'}
               </span>
               <h4 className="text-sm font-extrabold text-brand-dark dark:text-white uppercase truncate mt-0.5">{product.name}</h4>
-              {/* DSA Art. 30(7): "Sold by" must be a persistent, non-decorative element */}
-              <p className="text-[11px] text-gray-500 dark:text-gray-400 mt-1 flex items-center gap-1.5">
-                <span>Sold by {product.seller?.name || 'Independent Producer'}</span>
+              {/* COMPLIANCE-REVIEW: DSA Art. 30 requires persistent seller identity display. */}
+              <p
+                className="text-[11px] text-gray-500 dark:text-gray-400 mt-1 flex items-center gap-1.5"
+                aria-label={`Sold by ${product.seller?.name?.trim() || 'Seller identity unavailable'}`}
+                data-testid="seller-identity"
+              >
+                <span>Sold by {product.seller?.name?.trim() || 'Seller identity unavailable'}</span>
                 {product.seller?.verified && (
                   <span className="text-emerald-500 font-bold" aria-label="Verified EU Trader">✓</span>
                 )}

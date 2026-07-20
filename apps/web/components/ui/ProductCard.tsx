@@ -43,6 +43,7 @@ export function ProductCard({
 }: ProductCardProps) {
   const countryFlag = country ? getCountryFlag(country) : '🇪🇺';
   const ratingDisplay = averageRating ? averageRating.toFixed(1) : null;
+  const sellerName = seller?.name?.trim() || 'Seller identity unavailable';
 
   return (
     <article
@@ -73,7 +74,7 @@ export function ProductCard({
 
       {/* Content */}
       <div className="p-4 flex flex-col gap-3 flex-1">
-        {/* Country + seller */}
+        {/* Country + verification state */}
         <div className="flex items-center justify-between">
           <span className="text-xs text-gray-500 dark:text-gray-400 font-medium flex items-center gap-1">
             <span aria-label={`Origin: ${country}`}>{countryFlag}</span>
@@ -81,6 +82,16 @@ export function ProductCard({
           </span>
           {seller?.verified && <VerifiedSellerBadge />}
         </div>
+
+        {/* COMPLIANCE-REVIEW: DSA Art. 30 requires persistent seller identity display. */}
+        <p
+          className="flex flex-wrap items-baseline gap-1 text-xs text-gray-600 dark:text-gray-300"
+          aria-label={`Sold by ${sellerName}`}
+          data-testid="seller-identity"
+        >
+          <span>Sold by </span>
+          <span className="font-bold text-gray-900 dark:text-gray-100">{sellerName}</span>
+        </p>
 
         {/* Name */}
         <Link

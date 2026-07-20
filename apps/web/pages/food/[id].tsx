@@ -283,10 +283,14 @@ export default function FoodDetailPage() {
               <span className="text-xs text-gray-400 dark:text-gray-500">incl. VAT (rate confirmed at checkout)</span>
             </div>
 
-            {/* DSA Art. 30(7): Sold by — persistent, non-decorative */}
-            <div className="flex items-center gap-2 p-3 bg-gray-50 dark:bg-gray-900 rounded-xl border border-gray-100 dark:border-gray-800">
+            {/* COMPLIANCE-REVIEW: DSA Art. 30 requires persistent seller identity display. */}
+            <div
+              className="sticky top-20 z-20 flex items-center gap-2 p-3 bg-gray-50 dark:bg-gray-900 rounded-xl border border-gray-200 dark:border-gray-700 shadow-sm"
+              aria-label={`Sold by ${food.seller?.name?.trim() || 'Seller identity unavailable'}`}
+              data-testid="seller-identity"
+            >
               <span className="text-xs text-gray-500 dark:text-gray-400">Sold by</span>
-              <span className="text-sm font-bold text-gray-800 dark:text-gray-200">{food.seller?.name || 'Seller information pending'}</span>
+              <span className="text-sm font-bold text-gray-800 dark:text-gray-200">{food.seller?.name?.trim() || 'Seller identity unavailable'}</span>
               {food.seller?.verified && <VerifiedSellerBadge />}
             </div>
 
@@ -415,7 +419,7 @@ export default function FoodDetailPage() {
             {food.seller?.id && <div className="mt-4">
               <StartConversationButton
                 sellerId={food.seller?.id || ''}
-                sellerName={food.seller?.name || 'Seller'}
+                sellerName={food.seller?.name?.trim() || 'Seller identity unavailable'}
                 foodId={food.id}
                 foodName={food.name}
                 className="w-full bg-white text-brand-dark border border-gray-200 hover:bg-gray-50 py-3 rounded-xl font-bold transition text-sm"

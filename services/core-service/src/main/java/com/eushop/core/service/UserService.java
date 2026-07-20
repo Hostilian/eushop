@@ -90,6 +90,14 @@ public class UserService {
         return userRepository.save(user);
     }
 
+    public List<User> getTopSellers() {
+        return userRepository.findTopSellers();
+    }
+
+    public List<User> getSellersByCountry(String country) {
+        return userRepository.findSellersByCountry(country);
+    }
+
     public User becomeSeller(String userId, com.eushop.core.dto.BecomeSellerRequest request) {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new IllegalArgumentException("User not found"));
@@ -134,7 +142,8 @@ public class UserService {
      * minimum retention period.
      * <p>
      * This method also anonymizes/PII-clears related data in orders, reviews,
-     * conversations, and messages to ensure comprehensive GDPR compliance.
+     * conversations, and messages in EUshop's core database. This does not certify
+     * completion by external subprocessors.
      */
     @Transactional
     public void anonymiseUser(String userId) {
@@ -153,7 +162,9 @@ public class UserService {
         user.setAddressStreet(null);
         user.setAddressCity(null);
         user.setAddressPostalCode(null);
-        // Preserve: id, role, country (needed for DAC7), kycVerified, aggregate stats
+        // COMPLIANCE-REVIEW: Confirm the statutory retention basis and minimisation period
+        // before retaining country, role, KYC state, or aggregate seller statistics after erasure.
+        // The stable id is retained only to preserve referential integrity in core records.
         userRepository.save(user);
 
         // Anonymize/PII-clear related data

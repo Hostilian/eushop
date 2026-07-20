@@ -10,13 +10,41 @@ import { ChatContainer } from '../components/chat/ChatContainer';
 import { StartConversationButton } from '../components/chat/StartConversationButton';
 import { useAuth } from '../lib/auth';
 import { chatService } from '../lib/services/chatService';
+import { websocketService } from '../lib/services/websocketService';
 
 // Mock the dependencies
 jest.mock('../lib/auth');
 jest.mock('../lib/services/chatService');
+jest.mock('../lib/services/websocketService', () => ({
+  websocketService: {
+    sendReadReceipt: jest.fn().mockResolvedValue(undefined),
+    onMessage: jest.fn(),
+    onTyping: jest.fn(),
+    onRead: jest.fn(),
+    onReaction: jest.fn(),
+    offMessage: jest.fn(),
+    offTyping: jest.fn(),
+    offRead: jest.fn(),
+    offReaction: jest.fn(),
+    sendTyping: jest.fn().mockResolvedValue(undefined),
+    sendMessage: jest.fn().mockResolvedValue(undefined),
+    sendReaction: jest.fn().mockResolvedValue(undefined),
+    isConnected: jest.fn().mockReturnValue(true),
+    onConnection: jest.fn(),
+    onError: jest.fn(),
+    offConnection: jest.fn(),
+    offError: jest.fn(),
+  },
+}));
+
+const mockRouterPush = jest.fn();
+jest.mock('next/router', () => ({
+  useRouter: () => ({ push: mockRouterPush }),
+}));
 
 const mockUseAuth = useAuth as jest.Mock;
 const mockChatService = chatService as jest.Mocked<typeof chatService>;
+const mockWebSocketService = websocketService as jest.Mocked<typeof websocketService>;
 
 const mockUser = {
   id: 'user-1',
@@ -76,7 +104,7 @@ describe('Chat Components', () => {
     it('should render loading state', () => {
       mockChatService.getConversations.mockImplementation(() => new Promise(() => {}));
       render(<ConversationList onSelectConversation={jest.fn()} />);
-      expect(screen.getByText(/loading conversations/i)).toBeInTheDocument();
+      expect(screen.getAllByRole('status', { name: /loading/i }).length).toBeGreaterThan(0);
     });
 
     it('should render conversations', async () => {
@@ -113,7 +141,7 @@ describe('Chat Components', () => {
     it('should render loading state', () => {
       mockChatService.getMessages.mockImplementation(() => new Promise(() => {}));
       render(<MessageList conversationId="conv-1" />);
-      expect(screen.getByText(/loading/i)).toBeInTheDocument();
+      expect(screen.getAllByRole('status', { name: /loading/i }).length).toBeGreaterThan(0);
     });
 
     it('should render messages', async () => {
@@ -161,7 +189,7 @@ describe('Chat Components', () => {
     });
 
     it('should show error when sending fails', async () => {
-      mockChatService.sendMessage.mockRejectedValue(new Error('Failed'));
+      mockWebSocketService.sendMessage.mockRejectedValueOnce(new Error('Failed'));
       render(<MessageInput conversationId="conv-1" />);
 
       const input = screen.getByPlaceholderText(/type your message/i);
@@ -211,8 +239,6 @@ describe('Chat Components', () => {
   describe('StartConversationButton', () => {
     it('should redirect to login when user is not authenticated', () => {
       mockUseAuth.mockReturnValue({ user: null, loading: false });
-      const mockRouter = { push: jest.fn() };
-      jest.mock('next/router', () => ({ useRouter: () => mockRouter }));
 
       render(
         <StartConversationButton
@@ -224,7 +250,7 @@ describe('Chat Components', () => {
       const button = screen.getByText('Message Seller');
       fireEvent.click(button);
 
-      expect(mockRouter.push).toHaveBeenCalledWith('/login');
+      expect(mockRouterPush).toHaveBeenCalledWith('/login');
     });
 
     it('should open dialog when user is authenticated', () => {
@@ -238,7 +264,7 @@ describe('Chat Components', () => {
       const button = screen.getByText('Message Seller');
       fireEvent.click(button);
 
-      expect(screen.getByText(/start conversation/i)).toBeInTheDocument();
+      expect(screen.getByRole('dialog')).toBeInTheDocument();
     });
   });
 });
