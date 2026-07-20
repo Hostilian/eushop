@@ -364,7 +364,7 @@ export const foodAPI = {
     }
 
     // Non-static mode: use withFallback for resilient API calls
-    return withFallback<FoodItem[]>(
+    const result = await withFallback<FoodItem[]>(
       async () => {
         const params = new URLSearchParams();
         if (query) params.append('q', query);
@@ -381,6 +381,7 @@ export const foodAPI = {
       () => getDemoFoods(query, country, page, size, category, allergenFree),
       { cacheDurationMs: 5 * 60 * 1000, demoDataTimeoutMs: 5000 }
     );
+    return result.data;
   },
 
   getById: async (id: string, config?: any): Promise<FoodItem> => {
@@ -399,7 +400,7 @@ export const foodAPI = {
     }
 
     // Non-static mode: use withFallback for resilient API calls
-    return withFallback<FoodItem>(
+    const result = await withFallback<FoodItem>(
       async () => {
         const response = await apiClient.get(`/foods/${id}`, config);
         return response.data;
@@ -412,6 +413,7 @@ export const foodAPI = {
       },
       { cacheDurationMs: 10 * 60 * 1000, demoDataTimeoutMs: 5000 }
     );
+    return result.data;
   },
 
   getTrending: async (): Promise<FoodItem[]> => {
@@ -427,7 +429,7 @@ export const foodAPI = {
     }
 
     // Non-static mode: use withFallback for resilient API calls
-    return withFallback<FoodItem[]>(
+    const result = await withFallback<FoodItem[]>(
       async () => {
         const response = await apiClient.get('/foods/trending');
         return response.data;
@@ -436,6 +438,7 @@ export const foodAPI = {
       () => getDemoFoods(undefined, undefined, 1, 3), // Trending: first 3 items, no filters
       { cacheDurationMs: 30 * 60 * 1000, demoDataTimeoutMs: 5000 }
     );
+    return result.data;
   },
 
   syncCart: async (cartItems: any[]): Promise<any> => {
