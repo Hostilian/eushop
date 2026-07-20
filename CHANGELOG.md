@@ -3,6 +3,13 @@
 ## [Unreleased] — Continuous Optimization Loop #8 (2026-07-21)
 
 ### Added
+- **Legal Compliance Deep Dive (Phase 11)**:
+  - Created statutory Impressum / Legal Notice page (`apps/web/pages/impressum.tsx`) under § 5 TMG / DSA Art. 30 with 100% statement/branch test coverage (`apps/web/__tests__/impressum.test.tsx`).
+  - Audited Privacy Policy (`apps/web/pages/privacy.tsx`) against GDPR Art. 13 requirements, adding ÚOOÚ supervisory authority contact details and data retention schedules.
+  - Audited Terms of Service (`apps/web/pages/terms.tsx`) adding statutory 14-day EU right of withdrawal and 24-month defect liability disclosures.
+  - Audited PCI DSS payment security compliance in `apps/web/pages/checkout.tsx` (Stripe Elements iFrame isolation).
+  - Verified persistent DSA Art. 30 "Sold by [Seller Name]" UI disclosures on `ProductCard.tsx` and product detail pages.
+  - Added Regulation (EU) 2023/988 (GPSR) non-food product safety fields (`gpsrManufacturer`, `gpsrResponsiblePerson`, `gpsrSafetyWarnings`) to `@eushop/types` and rendered them on `apps/web/pages/food/[id].tsx`.
 - **Reusable Breadcrumb & Structured Navigation**: Created `apps/web/components/layout/Breadcrumb.tsx` with WCAG 2.2 AA keyboard accessibility and Schema.org `BreadcrumbList` JSON-LD markup for SEO.
 - **Hierarchical Category & Product Routes**: Added `/products/[id].tsx` and `/category/[slug].tsx` routes rendering category product listings and detail pages with full breadcrumb trails.
 - **End-to-End Cart & Search Tests**: Added cart checkout navigation test in `apps/web/__tests__/cart.test.tsx` and fixed `allergenFree` query handling in `apps/web/services/demo-catalog.ts`.
