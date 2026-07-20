@@ -158,6 +158,7 @@ export class CircuitBreaker {
 }
 
 const circuitBreakers = new Map<string, CircuitBreaker>();
+const responseCache = new Map<string, CacheEntry<unknown>>();
 
 function getCircuitBreaker(
   key: string,
@@ -180,44 +181,23 @@ export function resetCircuitBreakers(): void {
   circuitBreakers.clear();
 }
 
+export function resetDegradationState(): void {
+  circuitBreakers.clear();
+  responseCache.clear();
+}
+
 function getCachedData<T>(key: string, maxAgeMs: number): T | null {
-  if (typeof window === 'undefined') return null;
-
-  try {
-    const raw = window.localStorage.getItem(key);
-    if (!raw) return null;
-
-    const parsed = JSON.parse(raw) as Partial<CacheEntry<T>>;
-    if (!Number.isFinite(parsed.timestamp) || !('data' in parsed)) {
-      window.localStorage.removeItem(key);
-      return null;
-    }
-
-    if (Date.now() - Number(parsed.timestamp) > maxAgeMs) {
-      window.localStorage.removeItem(key);
-      return null;
-    }
-
-    return parsed.data as T;
-  } catch {
-    try {
-      window.localStorage.removeItem(key);
-    } catch {
-      // Storage can be unavailable in privacy modes. Falling through is safe.
-    }
+  const cached = responseCache.get(key);
+  if (!cached) return null;
+  if (Date.now() - cached.timestamp > maxAgeMs) {
+    responseCache.delete(key);
     return null;
   }
+  return cached.data as T;
 }
 
 function setCachedData<T>(key: string, data: T): void {
-  if (typeof window === 'undefined') return;
-
-  try {
-    const entry: CacheEntry<T> = { data, timestamp: Date.now() };
-    window.localStorage.setItem(key, JSON.stringify(entry));
-  } catch {
-    // Cache writes are optional and must never fail the live request.
-  }
+  responseCache.set(key, { data, timestamp: Date.now() });
 }
 
 function isBrowserOffline(explicitValue?: boolean): boolean {

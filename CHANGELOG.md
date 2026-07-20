@@ -1,5 +1,15 @@
 # Changelog
 
+## [Unreleased] — Browser storage safety (2026-07-20)
+
+### Added
+- Added a versioned browser-storage handler with runtime validation, legacy migration, corrupt-entry reset, byte limits, quota classification, SSR guards, and sensitive key/value rejection.
+
+### Changed
+- Migrated cart persistence to the safe schema and moved API response caches, demo orders, demo seller applications, and custom demo listings to memory-only storage.
+- Stopped persisting full user profiles in `sessionStorage`; cookie-authenticated server responses now populate memory only.
+- Added one-time cleanup for legacy browser keys that could contain account, seller tax/contact, order, waitlist, or listing data.
+
 ## [Unreleased] — Region error containment (2026-07-20)
 
 ### Changed

@@ -1,6 +1,7 @@
 import axios, { AxiosInstance, AxiosRequestConfig, InternalAxiosRequestConfig } from 'axios';
 import axiosRetry, { isNetworkOrIdempotentRequestError } from 'axios-retry';
 import API_CONFIG from './config';
+import { removeSafeStorage } from './storageSafety';
 
 // Generate a correlation ID for each request
 const generateCorrelationId = (): string => {
@@ -52,7 +53,7 @@ apiClient.interceptors.response.use(
   (error) => {
     if (error.response?.status === 401) {
       if (typeof window !== 'undefined') {
-        sessionStorage.removeItem('userProfile');
+        removeSafeStorage('userProfile', 'session');
       }
       if (typeof window !== 'undefined' && window.location.pathname !== '/login') {
         window.location.href = '/login';

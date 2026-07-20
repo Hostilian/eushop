@@ -4,10 +4,9 @@ import { ProductCard } from '../components/ui/ProductCard';
 import { ProductCardSkeleton } from '../components/ui/Skeleton';
 import { foodAPI, FoodItem } from '../lib/services';
 import { Button } from '../components/ui/Button';
+import { readCart, writeCart } from '../lib/storageSafety';
 
 // --- Constants for better readability and maintainability ---
-const SEARCH_TIMEOUT_MS = 8000; // 8-second timeout for API calls
-const CACHE_FRESHNESS_MS = 30 * 60 * 1000; // 30 minutes for cache freshness
 const PAGE_SIZE = 20;
 const DEBOUNCE_DELAY_MS = 400;
 
@@ -70,86 +69,21 @@ export default function SearchPage() {
     setLoading(true);
     setError(null);
 
-    // Graceful degradation: If offline, immediately use cached results
-    if (!navigator.onLine) {
-      try {
-        const cachedResults = localStorage.getItem('search_fallback');
-        if (cachedResults) {
-          const parsed = JSON.parse(cachedResults);
-          if (Array.isArray(parsed) && parsed.length > 0) {
-            setFoods(parsed);
-            setLoading(false);
-            return;
-          }
-        }
-      } catch (cacheError) {
-        console.warn('Could not read cached search results while offline:', cacheError);
-      }
-      // No cache available offline or cache read failed
-      setFoods([
-        {
-          id: 'offline-fallback',
-          name: 'Offline Mode',
-          country: 'EU',
-          price: 0.00,
-          description: 'You are currently offline. Search results are limited to cached data. Please reconnect to see the latest products.',
-          sellerId: 'system-offline'
-        },
-      ]);
-      setLoading(false);
-      return;
-    }
-
     try {
-      const controller = new AbortController();
-      const timeoutId = setTimeout(() => controller.abort(), SEARCH_TIMEOUT_MS);
-
-      const result: any = await foodAPI.search(
+      const result = await foodAPI.searchWithOrigin(
         searchQuery,
         selectedCountry,
         page,
         PAGE_SIZE,
         selectedCategory,
         selectedAllergen,
-        minPrice,
-        maxPrice,
-        { signal: controller.signal }
       );
-      clearTimeout(timeoutId);
-
-      // Ensure result is an array of FoodItem
-      const foodsArray = Array.isArray(result) ? result : (result?.data || result?.foods || []);
+      let foodsArray = result.data;
+      if (minPrice !== null) foodsArray = foodsArray.filter(food => food.price >= minPrice);
+      if (maxPrice !== null) foodsArray = foodsArray.filter(food => food.price <= maxPrice);
       setFoods(foodsArray);
-
-      // Cache successful results for graceful degradation
-      try {
-        localStorage.setItem('search_fallback', JSON.stringify(foodsArray));
-        localStorage.setItem('search_fallback_timestamp', Date.now().toString());
-      } catch (cacheError) {
-        console.warn('Could not cache search results:', cacheError);
-      }
-    } catch (err: any) {
-      console.error('Search failed:', err);
+    } catch {
       setError('Search service is temporarily unavailable. Please try again later.');
-
-      // Graceful degradation: Use cached results from localStorage if available and fresh
-      try {
-        const cachedResults = localStorage.getItem('search_fallback');
-        const cachedTimestamp = localStorage.getItem('search_fallback_timestamp');
-        const isCacheFresh = cachedTimestamp && (Date.now() - Number(cachedTimestamp)) < CACHE_FRESHNESS_MS;
-
-        if (cachedResults && isCacheFresh) {
-          const parsed = JSON.parse(cachedResults);
-          if (Array.isArray(parsed) && parsed.length > 0) {
-            setFoods(parsed);
-            return;
-          }
-        }
-      } catch (cacheError) {
-        console.warn('Could not read cached search results during error fallback:', cacheError);
-      }
-
-      // Ultimate fallback: show minimal data
       setFoods([]);
     } finally {
       setLoading(false);
@@ -166,7 +100,7 @@ export default function SearchPage() {
 
   const handleAddToCart = (id: string) => {
     try {
-      const cart = JSON.parse(localStorage.getItem('cart') || '[]');
+      const cart = readCart();
       const existingItemIndex = cart.findIndex((item: any) => item.id === id);
 
       if (existingItemIndex > -1) {
@@ -185,7 +119,8 @@ export default function SearchPage() {
           });
         }
       }
-      localStorage.setItem('cart', JSON.stringify(cart));
+      const result = writeCart(cart);
+      if (!result.ok) throw new Error('Cart storage is unavailable.');
       window.dispatchEvent(new Event('cart-updated')); // Notify other components about cart change
     } catch (e) {
       console.error('Failed to add to cart:', e);

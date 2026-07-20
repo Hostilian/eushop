@@ -3,7 +3,7 @@ import {
   CircuitBreakerState,
   CircuitOpenError,
   RequestTimeoutError,
-  resetCircuitBreakers,
+  resetDegradationState,
   withFallback,
   withTimeout,
 } from '../lib/degradation';
@@ -11,7 +11,7 @@ import {
 describe('degradation engine', () => {
   beforeEach(() => {
     window.localStorage.clear();
-    resetCircuitBreakers();
+    resetDegradationState();
   });
 
   it('returns live data with an honest origin marker and caches it', async () => {
@@ -23,14 +23,13 @@ describe('degradation engine', () => {
     );
 
     expect(result).toEqual({ data: ['live'], origin: 'live', degraded: false });
-    expect(window.localStorage.getItem('test-live')).toContain('live');
+    expect(window.localStorage.length).toBe(0);
   });
 
   it('uses a fresh cache before demonstration data when the provider fails', async () => {
-    window.localStorage.setItem('test-cache', JSON.stringify({
-      data: ['cached'],
-      timestamp: Date.now(),
-    }));
+    await withFallback(async () => ['cached'], 'test-cache', () => ['demo'], {
+      isOffline: false,
+    });
 
     const demoProvider = jest.fn(() => ['demo']);
     const result = await withFallback(

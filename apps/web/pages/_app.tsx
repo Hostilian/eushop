@@ -5,6 +5,7 @@ import '../globals.css';
 import CookieBanner from '../components/CookieBanner';
 import ErrorBoundary, { type ErrorRegion } from '../components/common/ErrorBoundary';
 import { AuthProvider } from '../lib/auth';
+import { purgeUnsafeLegacyStorage } from '../lib/storageSafety';
 
 function getPageRegion(pathname: string): ErrorRegion {
   if (pathname === '/' || pathname === '/search') return 'marketplace';
@@ -35,6 +36,10 @@ function ThemeInitializer() {
 }
 
 export default function App({ Component, pageProps, router }: AppProps) {
+  React.useEffect(() => {
+    purgeUnsafeLegacyStorage();
+  }, []);
+
   React.useEffect(() => {
     if (!('serviceWorker' in navigator)) return undefined;
 

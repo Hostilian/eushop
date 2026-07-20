@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/router';
 import { authAPI } from '../../lib/services';
+import { readCart } from '../../lib/storageSafety';
 import { Badge } from '../ui/Badge';
 
 // Define User type locally since it's removed from services.ts
@@ -27,12 +28,7 @@ export function Navbar() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [cartCount, setCartCount] = useState(() => {
     if (typeof window !== 'undefined') {
-      try {
-        const cart = JSON.parse(localStorage.getItem('cart') || '[]');
-        return cart.reduce((total: number, item: any) => total + (item.quantity || 1), 0);
-      } catch {
-        return 0;
-      }
+      return readCart().reduce((total, item) => total + item.quantity, 0);
     }
     return 0;
   });
@@ -57,13 +53,8 @@ export function Navbar() {
 
     // 2. Read cart count and listen to cart changes
     const updateCartCount = () => {
-      try {
-        const cart = JSON.parse(localStorage.getItem('cart') || '[]');
-        const count = cart.reduce((total: number, item: any) => total + (item.quantity || 1), 0);
-        setCartCount(count);
-      } catch {
-        setCartCount(0);
-      }
+      const cart = readCart();
+      setCartCount(cart.reduce((total, item) => total + item.quantity, 0));
     };
 
     // Listen for custom storage events or cart updates

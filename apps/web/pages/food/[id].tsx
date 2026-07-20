@@ -9,6 +9,7 @@ import { AllergenBadge, VerifiedSellerBadge } from '../../components/ui/Badge';
 // Import from packages/compliance once workspace resolution is confirmed.
 import { EU_ALLERGENS_14 } from '@eushop/compliance';
 import { StartConversationButton } from '../../components/chat/StartConversationButton';
+import { readCart, writeCart } from '../../lib/storageSafety';
 
 interface FoodDetail {
   id: string;
@@ -152,16 +153,15 @@ export default function FoodDetailPage() {
     if (!Number.isInteger(quantity) || quantity < 1 || quantity > 100) return;
     setAddingToCart(true);
     try {
-      let cart: any[] = [];
-      try { cart = JSON.parse(localStorage.getItem('cart') || '[]'); } catch { cart = []; }
-      if (!Array.isArray(cart)) cart = [];
+      const cart = readCart();
       const idx = cart.findIndex((i: any) => i?.id === food.id);
       if (idx > -1) {
         cart[idx].quantity = Math.min(100, cart[idx].quantity + quantity);
       } else {
         cart.push({ id: food.id, name: food.name, country: food.country, price: food.price, quantity, sellerId: food.seller?.id || '' });
       }
-      localStorage.setItem('cart', JSON.stringify(cart.slice(0, 50)));
+      const result = writeCart(cart);
+      if (!result.ok) throw new Error('Cart storage is unavailable.');
       window.dispatchEvent(new Event('cart-updated'));
       router.push('/cart');
     } catch {

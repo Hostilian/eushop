@@ -4,6 +4,7 @@ import {
   type DegradationResult,
   withFallback,
 } from './degradation';
+import { removeSafeStorage } from './storageSafety';
 
 export interface FoodItem {
   id: string;
@@ -229,76 +230,47 @@ export const fallbackTrendingFoods: FoodItem[] = [
   }
 ];
 
-// Helper functions for client-side storage simulation
+// Helper functions for client-side public catalogue simulation.
+const volatileLocalFoods: FoodItem[] = [];
+
 const getLocalFoods = (): FoodItem[] => {
-  if (typeof window === 'undefined') return fallbackTrendingFoods;
-  try {
-    const raw = localStorage.getItem('local_foods');
-    const parsed = raw ? JSON.parse(raw) : [];
-    return [...fallbackTrendingFoods, ...parsed];
-  } catch {
-    return fallbackTrendingFoods;
-  }
+  return [...fallbackTrendingFoods, ...volatileLocalFoods];
 };
 
 const saveLocalFood = (item: FoodItem) => {
   if (typeof window === 'undefined') return;
-  try {
-    const raw = localStorage.getItem('local_foods');
-    const parsed = raw ? JSON.parse(raw) : [];
-    parsed.push(item);
-    localStorage.setItem('local_foods', JSON.stringify(parsed));
-  } catch (e) {
-    console.error('Failed to save local food listing:', e);
-  }
+  // COMPLIANCE-REVIEW: a demo listing may include trader personal data and is
+  // therefore kept in memory only. Server persistence requires the KYBC gate.
+  volatileLocalFoods.push(item);
 };
 
-const getLocalOrders = (): any[] => {
-  if (typeof window === 'undefined') return [];
-  try {
-    const raw = localStorage.getItem('orders');
-    return raw ? JSON.parse(raw) : [];
-  } catch {
-    return [];
-  }
-};
+const volatileOrders: any[] = [];
+const volatileSellerApplications: any[] = [];
+
+const getLocalOrders = (): any[] => volatileOrders;
 
 const saveLocalOrder = (order: any) => {
   if (typeof window === 'undefined') return;
-  try {
-    const raw = localStorage.getItem('orders');
-    const parsed = raw ? JSON.parse(raw) : [];
-    parsed.push({ ...order, id: `order-${Date.now()}-${Math.random().toString(36).substr(2, 5)}`, createdAt: new Date().toISOString() });
-    localStorage.setItem('orders', JSON.stringify(parsed));
-  } catch (e) {
-    console.error('Failed to save local order:', e);
-  }
+  // COMPLIANCE-REVIEW: demo orders stay in memory to avoid persisting buyer
+  // addresses/messages. Production order retention belongs to the server.
+  volatileOrders.push({
+    ...order,
+    id: `order-${Date.now()}-${Math.random().toString(36).slice(2, 7)}`,
+    createdAt: new Date().toISOString(),
+  });
 };
 
-const getLocalSellers = (): any[] => {
-  if (typeof window === 'undefined') return [];
-  try {
-    const raw = localStorage.getItem('seller_applications');
-    return raw ? JSON.parse(raw) : [];
-  } catch {
-    return [];
-  }
-};
+const getLocalSellers = (): any[] => volatileSellerApplications;
 
 const saveLocalSeller = (application: any) => {
   if (typeof window === 'undefined') return;
-  try {
-    const raw = localStorage.getItem('seller_applications');
-    const parsed = raw ? JSON.parse(raw) : [];
-    parsed.push({
-      ...application,
-      id: `app-${Date.now()}`,
-      status: 'PENDING'
-    });
-    localStorage.setItem('seller_applications', JSON.stringify(parsed));
-  } catch (e) {
-    console.error('Failed to save local seller application:', e);
-  }
+  // COMPLIANCE-REVIEW: DSA/DAC7 intake data must not be browser-persisted.
+  // This volatile preview is not a submission or KYBC verification record.
+  volatileSellerApplications.push({
+    ...application,
+    id: `app-${Date.now()}`,
+    status: 'PREVIEW_ONLY',
+  });
 };
 
 // Demo data provider for food search/getTrending/getById
@@ -542,11 +514,13 @@ export const foodAPI = {
   }
 };
 
+let currentUserProfile: User | null = null;
+
 export const authAPI = {
   login: async (email: string, password: string): Promise<LoginResponse> => {
     const response = await apiClient.post('/auth/login', { email, password });
     if (response.data.user) {
-      sessionStorage.setItem('userProfile', JSON.stringify(response.data.user));
+      currentUserProfile = response.data.user;
       window.dispatchEvent(new Event('auth-changed'));
     }
     return response.data;
@@ -555,7 +529,7 @@ export const authAPI = {
   signup: async (email: string, password: string, name: string, country: string): Promise<SignupResponse> => {
     const response = await apiClient.post('/auth/signup', { email, password, name, country });
     if (response.data.user) {
-      sessionStorage.setItem('userProfile', JSON.stringify(response.data.user));
+      currentUserProfile = response.data.user;
       window.dispatchEvent(new Event('auth-changed'));
     }
     return response.data;
@@ -565,8 +539,9 @@ export const authAPI = {
     try {
       await apiClient.post('/auth/logout');
     } finally {
-      sessionStorage.removeItem('userProfile');
-      localStorage.removeItem('cart');
+      currentUserProfile = null;
+      removeSafeStorage('userProfile', 'session');
+      removeSafeStorage('cart');
       window.dispatchEvent(new Event('auth-changed'));
     }
   },
@@ -574,35 +549,18 @@ export const authAPI = {
   getCurrentUser: async (config?: any): Promise<User | null> => {
     const response = await apiClient.get('/auth/me', config);
     const user = response.data.data;
-    if (user) {
-      sessionStorage.setItem('userProfile', JSON.stringify(user));
-    }
+    currentUserProfile = user ?? null;
     return user ?? null;
   },
 
-  getCachedProfile: (): User | null => {
-    if (typeof window === 'undefined') {
-      return null;
-    }
-
-    const rawProfile = sessionStorage.getItem('userProfile');
-    if (!rawProfile) {
-      return null;
-    }
-
-    try {
-      return JSON.parse(rawProfile) as User;
-    } catch {
-      sessionStorage.removeItem('userProfile');
-      return null;
-    }
-  },
+  getCachedProfile: (): User | null => currentUserProfile,
 
   becomeSeller: async (userId: string, data: BecomeSellerRequest): Promise<any> => {
     // COMPLIANCE-REVIEW: the server must enforce DSA trader-data completeness
     // and KYBC review; the browser must never grant or simulate seller status.
     const response = await apiClient.put(`/users/${userId}/become-seller`, data);
-    sessionStorage.removeItem('userProfile');
+    currentUserProfile = null;
+    removeSafeStorage('userProfile', 'session');
     return response.data;
   },
 
@@ -613,7 +571,8 @@ export const authAPI = {
 
   deleteAccount: async (userId: string): Promise<any> => {
     const response = await apiClient.delete(`/users/${userId}/account`);
-    sessionStorage.removeItem('userProfile');
+    currentUserProfile = null;
+    removeSafeStorage('userProfile', 'session');
     window.dispatchEvent(new Event('auth-changed'));
     return response.data;
   },
@@ -745,7 +704,6 @@ export const orderAPI = {
       const idx = orders.findIndex(o => o.id === orderId);
       if (idx > -1) {
         orders[idx].status = status;
-        localStorage.setItem('orders', JSON.stringify(orders));
         return orders[idx];
       }
       throw new Error('Order not found in simulation');

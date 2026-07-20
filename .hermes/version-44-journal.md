@@ -1,5 +1,13 @@
 # Version 44 Hermes Recovery Journal
 
+## [2026-07-20 11:48 UTC] Task 9 validated
+- **Branch/commit**: `feat/error-boundaries` at `ad8a0e36`.
+- **Delivered**: region-aware boundaries for navigation, marketplace, product details, cart/checkout, seller onboarding, account controls, and a final page-level containment layer.
+- **Recovery UI**: Retry, Load Demo Catalogue, and Back to Marketplace; route changes reset failed regions.
+- **Data/compliance review**: removed raw render-error persistence and unverified seller claims from global metadata; no new user, food, or order data path was added and no compliance certification is asserted.
+- **Verification**: TypeScript passed; 11 Jest suites / 77 tests passed; ESLint passed with zero errors and three pre-existing image warnings.
+- **Next**: Task 10 on `fix/storage-safety`.
+
 ## [2026-07-20 11:42 UTC] Task 8 validated
 - **Branch**: `feat/reliability-degradation-engine`
 - **Commit**: `d456f490` (following initial implementation `5904e37c`)

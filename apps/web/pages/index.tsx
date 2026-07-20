@@ -8,6 +8,7 @@ import PredictiveSearch, { ParsedFilters } from '../components/PredictiveSearch'
 import DiscoveryCanvas from '../components/DiscoveryCanvas';
 import ZeroStepCheckout from '../components/ZeroStepCheckout';
 import Head from 'next/head';
+import { readCart, writeCart } from '../lib/storageSafety';
 
 const fallbackTrendingFoods: FoodItem[] = [
   { id: '1', name: 'Belgian Chocolates', country: 'Belgium', price: 24.99, description: 'Fine artisanal chocolates with creamy hazelnut fillings.', sellerId: 'seller-be' },
@@ -52,7 +53,7 @@ export default function Home() {
 
   const handleAddToCart = (id: string) => {
     try {
-      const cart = JSON.parse(localStorage.getItem('cart') || '[]');
+      const cart = readCart();
       const existing = cart.find((item: any) => item.id === id);
       if (existing) {
         existing.quantity += 1;
@@ -62,7 +63,8 @@ export default function Home() {
           cart.push({ id: item.id, name: item.name, price: item.price, country: item.country, quantity: 1, sellerId: item.sellerId, finderFee: item.finderFee || 2.50 });
         }
       }
-      localStorage.setItem('cart', JSON.stringify(cart));
+      const result = writeCart(cart);
+      if (!result.ok) throw new Error('Cart storage is unavailable.');
       window.dispatchEvent(new Event('cart-updated'));
     } catch (e) {
       console.error('Failed to add to cart:', e);

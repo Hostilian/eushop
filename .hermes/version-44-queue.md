@@ -17,7 +17,7 @@
   - Safe error reporting and fallback state dispatch without leaking sensitive API endpoints or tokens.
   - Branch: `feat/reliability-degradation-engine`
 
-- [ ] TASK 9 — Error Boundaries around Key User Experience Regions (`apps/web/components/common/ErrorBoundary.tsx`)
+- [x] TASK 9 — Error Boundaries around Key User Experience Regions (`apps/web/components/common/ErrorBoundary.tsx`) — validated at `ad8a0e36`
   - Add React Error Boundaries with graceful fallback UI around Navbar, Marketplace Grid, Product Details, Cart, Seller Onboarding, and Account controls.
   - Provide inline recovery buttons ("Retry", "Load Demo Catalogue", "Back to Marketplace") so zero blank screens or infinite spinners occur.
   - Branch: `feat/error-boundaries`
