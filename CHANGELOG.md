@@ -3,6 +3,10 @@
 ## [Unreleased] — Continuous Optimization Loop #8 (2026-07-21)
 
 ### Added
+- **Product Listings & Content Quality (Phase 12)**:
+  - Verified Regulation (EU) No 1169/2011 FIC Art. 9 mandatory food disclosures (`netQuantity`, `thermalCategory`, `foodBusinessOperator`) with test coverage in `apps/web/__tests__/allergen-disclosure.test.tsx`.
+  - Added search filter facets on `apps/web/pages/search.tsx` for Dietary Restrictions (Organic, Gluten-Free, Vegan, Vegetarian), Thermal Packaging (Ambient, Chilled, Frozen), and EU Quality Schemes.
+  - Implemented PDO / PGI / TSG quality scheme verification badges in `ProductCard.tsx` and product detail pages (`food/[id].tsx`), rendered strictly when verified.
 - **Legal Compliance Deep Dive (Phase 11)**:
   - Created statutory Impressum / Legal Notice page (`apps/web/pages/impressum.tsx`) under § 5 TMG / DSA Art. 30 with 100% statement/branch test coverage (`apps/web/__tests__/impressum.test.tsx`).
   - Audited Privacy Policy (`apps/web/pages/privacy.tsx`) against GDPR Art. 13 requirements, adding ÚOOÚ supervisory authority contact details and data retention schedules.

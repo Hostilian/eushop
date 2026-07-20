@@ -12,7 +12,12 @@ export interface ProductCardProps {
   originalPrice?: number;
   country: string;
   imageUrl?: string;
+  images?: string[];
   allergens?: string[];
+  netQuantity?: string;
+  thermalCategory?: 'ambient' | 'chilled_2_8C' | 'frozen_minus_18C';
+  qualityScheme?: 'PDO' | 'PGI' | 'TSG';
+  qualitySchemeVerified?: boolean;
   seller?: {
     name: string;
     rating: number;
@@ -41,7 +46,12 @@ export function ProductCard({
   originalPrice,
   country,
   imageUrl,
+  images,
   allergens = [],
+  netQuantity,
+  thermalCategory,
+  qualityScheme,
+  qualitySchemeVerified,
   seller,
   averageRating,
   reviewCount,
@@ -125,6 +135,27 @@ export function ProductCard({
           <span>Sold by </span>
           <span className="font-bold text-gray-900 dark:text-gray-100">{sellerName}</span>
         </p>
+        {/* Badges: PDO/PGI quality scheme, net quantity, thermal category */}
+        <div className="flex flex-wrap items-center gap-1.5 text-xs">
+          {qualityScheme && qualitySchemeVerified && (
+            <span className="px-2 py-0.5 rounded-full font-bold bg-amber-100 text-amber-800 dark:bg-amber-950 dark:text-amber-300 border border-amber-200 dark:border-amber-800" aria-label={`EU Protected Designation: ${qualityScheme}`}>
+              🏅 {qualityScheme}
+            </span>
+          )}
+          {netQuantity && (
+            <span className="px-2 py-0.5 rounded-full font-medium bg-gray-100 text-gray-700 dark:bg-gray-800 dark:text-gray-300" aria-label={`Net quantity: ${netQuantity}`}>
+              {netQuantity}
+            </span>
+          )}
+          {thermalCategory && (
+            <span
+              className="px-2 py-0.5 rounded-full font-medium bg-sky-50 text-sky-700 dark:bg-sky-950 dark:text-sky-300 border border-sky-200 dark:border-sky-800"
+              aria-label={`Thermal packaging: ${thermalCategory === 'chilled_2_8C' ? 'Chilled (2-8°C)' : thermalCategory === 'frozen_minus_18C' ? 'Frozen (-18°C)' : 'Ambient (15-25°C)'}`}
+            >
+              {thermalCategory === 'chilled_2_8C' ? '❄️ 2-8°C' : thermalCategory === 'frozen_minus_18C' ? '🧊 -18°C' : '🌡️ Ambient'}
+            </span>
+          )}
+        </div>
 
         {/* Name */}
         <Link

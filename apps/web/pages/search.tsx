@@ -58,6 +58,9 @@ export default function SearchPage() {
   const [selectedAllergen, setSelectedAllergen] = useState('');
   const [minPrice, setMinPrice] = useState<number | null>(null);
   const [maxPrice, setMaxPrice] = useState<number | null>(null);
+  const [selectedDietary, setSelectedDietary] = useState('');
+  const [selectedThermal, setSelectedThermal] = useState('');
+  const [selectedQualityScheme, setSelectedQualityScheme] = useState('');
   const [foods, setFoods] = useState<FoodItem[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -90,6 +93,15 @@ export default function SearchPage() {
       let foodsArray = result.data;
       if (minPrice !== null) foodsArray = foodsArray.filter(food => food.price >= minPrice);
       if (maxPrice !== null) foodsArray = foodsArray.filter(food => food.price <= maxPrice);
+      if (selectedDietary) {
+        foodsArray = foodsArray.filter(food => food.dietaryRestrictions?.includes(selectedDietary));
+      }
+      if (selectedThermal) {
+        foodsArray = foodsArray.filter(food => (food as any).thermalCategory === selectedThermal);
+      }
+      if (selectedQualityScheme) {
+        foodsArray = foodsArray.filter(food => (food as any).qualityScheme === selectedQualityScheme);
+      }
       setFoods(foodsArray);
       setCatalogueOrigin(result.origin);
     } catch {
@@ -99,7 +111,7 @@ export default function SearchPage() {
     } finally {
       setLoading(false);
     }
-  }, [searchQuery, selectedCountry, selectedCategory, selectedAllergen, minPrice, maxPrice, page]);
+  }, [searchQuery, selectedCountry, selectedCategory, selectedAllergen, minPrice, maxPrice, selectedDietary, selectedThermal, selectedQualityScheme, page]);
 
   useEffect(() => {
     const delayTimer = setTimeout(() => {
@@ -243,6 +255,67 @@ export default function SearchPage() {
             </div>
 
             <div>
+              <label htmlFor="dietary-select" className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">
+                Dietary Preference
+              </label>
+              <select
+                id="dietary-select"
+                value={selectedDietary}
+                onChange={(e) => {
+                  setSelectedDietary(e.target.value);
+                  setPage(1);
+                }}
+                className="w-full px-4 py-2.5 border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-950 rounded-xl focus:ring-2 focus:ring-brand-green focus:border-transparent text-sm transition text-gray-800 dark:text-gray-200"
+              >
+                <option value="">All Dietary Options</option>
+                <option value="Organic">Organic</option>
+                <option value="Gluten-Free">Gluten-Free</option>
+                <option value="Vegan">Vegan</option>
+                <option value="Vegetarian">Vegetarian</option>
+              </select>
+            </div>
+
+            <div>
+              <label htmlFor="thermal-select" className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">
+                Thermal Packaging
+              </label>
+              <select
+                id="thermal-select"
+                value={selectedThermal}
+                onChange={(e) => {
+                  setSelectedThermal(e.target.value);
+                  setPage(1);
+                }}
+                className="w-full px-4 py-2.5 border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-950 rounded-xl focus:ring-2 focus:ring-brand-green focus:border-transparent text-sm transition text-gray-800 dark:text-gray-200"
+              >
+                <option value="">All Thermal Categories</option>
+                <option value="ambient">🌡️ Ambient (15-25°C)</option>
+                <option value="chilled_2_8C">❄️ Chilled (2-8°C)</option>
+                <option value="frozen_minus_18C">🧊 Frozen (-18°C)</option>
+              </select>
+            </div>
+
+            <div>
+              <label htmlFor="quality-scheme-select" className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">
+                EU Quality Designation
+              </label>
+              <select
+                id="quality-scheme-select"
+                value={selectedQualityScheme}
+                onChange={(e) => {
+                  setSelectedQualityScheme(e.target.value);
+                  setPage(1);
+                }}
+                className="w-full px-4 py-2.5 border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-950 rounded-xl focus:ring-2 focus:ring-brand-green focus:border-transparent text-sm transition text-gray-800 dark:text-gray-200"
+              >
+                <option value="">All Schemes (Verified & Standard)</option>
+                <option value="PDO">🏅 PDO (Protected Designation of Origin)</option>
+                <option value="PGI">🏅 PGI (Protected Geographical Indication)</option>
+                <option value="TSG">🏅 TSG (Traditional Speciality Guaranteed)</option>
+              </select>
+            </div>
+
+            <div>
               <label htmlFor="min-price" className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">
                 Min Price (€)
               </label>
@@ -328,6 +401,10 @@ export default function SearchPage() {
                   country={food.country}
                   imageUrl={food.imageUrl ?? getFoodImage(food.name)}
                   allergens={food.allergens || []}
+                  netQuantity={(food as any).netQuantity}
+                  thermalCategory={(food as any).thermalCategory}
+                  qualityScheme={(food as any).qualityScheme}
+                  qualitySchemeVerified={(food as any).qualitySchemeVerified}
                   seller={{
                     // COMPLIANCE-REVIEW: A missing trader name must not be replaced with a fabricated identity.
                     name: food.seller?.name || 'Seller identity unavailable',
@@ -377,6 +454,11 @@ export default function SearchPage() {
                 setSelectedCountry('');
                 setSelectedCategory('');
                 setSelectedAllergen('');
+                setSelectedDietary('');
+                setSelectedThermal('');
+                setSelectedQualityScheme('');
+                setMinPrice(null);
+                setMaxPrice(null);
                 setPage(1);
               }}
             >

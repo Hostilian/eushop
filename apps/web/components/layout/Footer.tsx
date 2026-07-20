@@ -119,14 +119,20 @@ export function Footer() {
         {/* Footer Bottom */}
         <div className="mt-12 border-t border-gray-150 dark:border-gray-800 pt-8 flex flex-col md:flex-row justify-between items-center gap-4 text-xs text-gray-400 dark:text-gray-500">
           <p>
-            &copy; {currentYear} EUshop Marketplace. All rights reserved. Operating within the EU Single Market.
+            &copy; {currentYear} EUshop Marketplace. All rights reserved. Operating within the EU Single Market under Reg. (EU) 2023/988 (GPSR) and DSA Art. 30.
           </p>
-          <div className="flex items-center gap-4">
-            <span className="flex items-center gap-1">
-              <span>🔒</span> SSL Encrypted
+          <div className="flex flex-wrap items-center gap-3">
+            <span className="flex items-center gap-1 bg-green-50 dark:bg-green-950/40 text-green-700 dark:text-green-300 px-2 py-0.5 rounded-full border border-green-200 dark:border-green-800 font-medium">
+              🇪🇺 14-Day EU Right of Withdrawal
+            </span>
+            <span className="flex items-center gap-1 bg-blue-50 dark:bg-blue-950/40 text-blue-700 dark:text-blue-300 px-2 py-0.5 rounded-full border border-blue-200 dark:border-blue-800 font-medium">
+              🛡️ 24-Month Defect Guarantee
+            </span>
+            <span className="flex items-center gap-1 bg-amber-50 dark:bg-amber-950/40 text-amber-700 dark:text-amber-300 px-2 py-0.5 rounded-full border border-amber-200 dark:border-amber-800 font-medium">
+              ✓ DSA KYBC Verified Traders
             </span>
             <span className="flex items-center gap-1">
-              <span>💳</span> Stripe Compliant
+              🔒 SSL Encrypted
             </span>
           </div>
         </div>

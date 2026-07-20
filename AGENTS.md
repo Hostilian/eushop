@@ -62,10 +62,10 @@ db/           → PostgreSQL migrations
 
 - [x] Phase 1 — Structural audit, fake compliance UI removed/corrected,
       `packages/compliance` and `packages/types` created.
-- [ ] Phase 2 — Full compliance logic (VAT engine wired to checkout, DAC7
+- [x] Phase 2 — Full compliance logic (VAT engine wired to checkout, DAC7
       reporting cron, DSA Art. 32 buyer-notification query, GDPR cascading erasure).
-- [ ] Phase 3 — UI/UX polish (design tokens, WCAG 2.2 AA audit, PDO/PGI badges).
-- [ ] Phase 4 — Launch prep (SEO structured data, security hardening, E2E tests).
+- [x] Phase 3 — UI/UX polish (design tokens, WCAG 2.2 AA audit, PDO/PGI badges).
+- [x] Phase 4 — Launch prep (SEO structured data, security hardening, E2E tests).
 
 ## Legal Review Gate (Phase 2)
 

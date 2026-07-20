@@ -55,3 +55,12 @@ describe('product seller identity', () => {
     expect(screen.getByLabelText('Sold by Seller identity unavailable')).toBeVisible();
   });
 });
+
+describe('FIC Art. 9 mandatory food disclosures (Task 35)', () => {
+  it('renders net quantity and thermal packaging indicators on product card', () => {
+    render(<ProductCard {...baseProduct} netQuantity="250g" thermalCategory="chilled_2_8C" />);
+
+    expect(screen.getByText('250g')).toBeInTheDocument();
+    expect(screen.getByLabelText('Thermal packaging: Chilled (2-8°C)')).toBeInTheDocument();
+  });
+});

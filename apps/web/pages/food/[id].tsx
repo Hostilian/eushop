@@ -240,14 +240,30 @@ export default function FoodDetailPage() {
 
   return (
     <PageWrapper>
-      {jsonLd && (
+      {food && (
         <Head>
           <title>{food.name} — EUshop</title>
           <meta name="description" content={`${food.name} from ${food.country}. ${food.description.slice(0, 120)}`} />
-          <script
-            type="application/ld+json"
-            dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
-          />
+          {/* OpenGraph / Facebook */}
+          <meta property="og:type" content="product" />
+          <meta property="og:title" content={`${food.name} — EUshop`} />
+          <meta property="og:description" content={`${food.name} from ${food.country}. ${food.description.slice(0, 120)}`} />
+          <meta property="og:url" content={`https://hostilian.github.io/eushop/food/${food.id}`} />
+          <meta property="og:site_name" content="EUshop" />
+          {food.images && food.images[0] && <meta property="og:image" content={food.images[0]} />}
+          <meta property="product:price:amount" content={food.price.toFixed(2)} />
+          <meta property="product:price:currency" content="EUR" />
+          {/* Twitter */}
+          <meta name="twitter:card" content="summary_large_image" />
+          <meta name="twitter:title" content={`${food.name} — EUshop`} />
+          <meta name="twitter:description" content={`${food.name} from ${food.country}. ${food.description.slice(0, 120)}`} />
+          {food.images && food.images[0] && <meta name="twitter:image" content={food.images[0]} />}
+          {jsonLd && (
+            <script
+              type="application/ld+json"
+              dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+            />
+          )}
         </Head>
       )}
 

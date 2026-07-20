@@ -37,6 +37,11 @@ export function PageWrapper({ children, className = '' }: PageWrapperProps) {
   
   return (
     <div className="min-h-screen bg-gray-50 text-gray-900 flex flex-col font-sans transition-colors duration-200 dark:bg-gray-950 dark:text-gray-100">
+      {/* WCAG 2.2 AA Skip to content link */}
+      <a href="#main-content" className="skip-to-content">
+        Skip to main content
+      </a>
+
       <ErrorBoundary region="navigation" compact>
         <Navbar />
       </ErrorBoundary>
@@ -48,21 +53,22 @@ export function PageWrapper({ children, className = '' }: PageWrapperProps) {
           <span>You are currently offline. Some features may be limited.</span>
           <button 
             onClick={() => window.location.reload()}
-            className="underline font-semibold hover:text-yellow-900 transition"
-            aria-label="Retry connection"
+            className="underline font-semibold hover:text-yellow-900"
           >
             Retry
           </button>
         </div>
       )}
       
-      {/* Main content container */}
-      <main className={`flex-grow mx-auto w-full max-w-7xl px-4 py-8 sm:px-6 lg:px-8 animate-fade-in ${className}`}>
-        {children}
+      <main id="main-content" className={`flex-grow container mx-auto px-4 sm:px-6 lg:px-8 py-8 ${className}`}>
+        <ErrorBoundary region="content">
+          {children}
+        </ErrorBoundary>
       </main>
-
-      <Footer />
+      
+      <ErrorBoundary region="footer" compact>
+        <Footer />
+      </ErrorBoundary>
     </div>
   );
 }
-
