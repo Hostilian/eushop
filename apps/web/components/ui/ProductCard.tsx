@@ -1,5 +1,6 @@
 import Link from 'next/link';
 import Image from 'next/image';
+import { useState } from 'react';
 import { AllergenBadge, VerifiedSellerBadge } from './Badge';
 
 export interface ProductCardProps {
@@ -27,6 +28,7 @@ export interface ProductCardProps {
  * - Displays EU allergen information as required by FIR 1169/2011.
  * - Shows DSA "Verified EU Trader" badge when seller is KYC-verified.
  * - Meets WCAG 2.1 AA: keyboard accessible, descriptive alt text, focus rings.
+ * - Implements image fallback with SVG/PNG placeholder and region flag overlay (Mode G).
  */
 export function ProductCard({
   id,
@@ -41,6 +43,7 @@ export function ProductCard({
   reviewCount,
   onAddToCart,
 }: ProductCardProps) {
+  const [imageError, setImageError] = useState(false);
   const countryFlag = country ? getCountryFlag(country) : '🇪🇺';
   const ratingDisplay = averageRating ? averageRating.toFixed(1) : null;
   const sellerName = seller?.name?.trim() || 'Seller identity unavailable';
@@ -52,24 +55,36 @@ export function ProductCard({
     >
       {/* Product image */}
       <Link
-        href={`/food/${id}`}
-        className="block relative aspect-[4/3] bg-gray-50 dark:bg-gray-800 overflow-hidden"
-        tabIndex={0}
-      >
-        {imageUrl ? (
+          href={`/food/${id}`}
+          className="block relative aspect-[4/3] bg-gray-50 dark:bg-gray-800 overflow-hidden"
+          tabIndex={0}
+        >
+        {imageUrl && !imageError ? (
           <Image
             src={imageUrl}
             alt={`Photo of ${name}`}
             fill
             sizes="(max-width: 768px) 100vw, (max-width: 1280px) 50vw, 33vw"
             className="object-cover group-hover:scale-105 transition-transform duration-300"
-            onError={(event) => { event.currentTarget.style.display = 'none'; }}
+            onError={(e) => {
+              e.currentTarget.style.display = 'none';
+              setImageError(true);
+            }}
           />
         ) : (
-          <div className="flex items-center justify-center h-full text-5xl" aria-hidden="true">
-            🍫
+          <div className="flex items-center justify-center h-full bg-gray-200 dark:bg-gray-700">
+            <div className="text-center text-sm text-gray-500 dark:text-gray-400">
+              {imageUrl ? 'Image unavailable' : 'No image available'}
+            </div>
           </div>
         )}
+        {/* Region flag overlay */}
+        <div className="absolute top-2 right-2 flex items-center gap-1 text-2xl">
+          <span aria-label={`Origin: ${country}`} role="img">
+            {countryFlag}
+          </span>
+          <span className="sr-only">{country}</span>
+        </div>
       </Link>
 
       {/* Content */}
@@ -165,4 +180,3 @@ const EU_FLAGS: Record<string, string> = {
 function getCountryFlag(isoCode: string): string {
   return EU_FLAGS[isoCode.toUpperCase()] ?? '🇪🇺';
 }
-
