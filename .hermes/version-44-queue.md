@@ -17,23 +17,23 @@
 
 ## Phase 4 — Investor-Ready Narrative, Demo Data & Brand Aesthetics
 - [x] TASK 11 - Homepage Rebuild & 5-Second Clarity Story (`apps/web/pages/index.tsx`) [VALIDATED 2cff9579]
-- [x] TASK 12 - Bundled Demonstration Catalogue (`apps/web/data/demo-products.ts`) [VALIDATED 6ec926a2]
-  - Populate 12 authentic EU regional specialty items (Belgian pralines, Czech spa wafers, Italian pistachio cream, Spanish smoked paprika, French preserves, German marzipan, Greek mountain honey, etc.) with complete FIC Art. 14 allergen & origin metadata.
-  - Add subtle "Demonstration catalogue" origin indicator when backend API is unreachable (Mode B fallback).
+- [x] TASK 12 - Bundled Demonstration Catalogue (`apps/web/data/demo-products.ts`) [MERGED TO MAIN]
+  - 12 authentic EU regional specialty items populated in `apps/web/data/demo-products.ts` with complete FIC Reg. 1169/2011 Art. 9/14 allergen and origin metadata.
+  - Subtle "Demonstration catalogue" origin indicator displayed when backend API is unreachable (Mode B fallback).
   - Branch: `feat/bundled-demo-catalogue`
 
-- [x] TASK 13 - Resilient Image Fallbacks & WCAG 2.2 AA Contrast Polish (`apps/web/components/ui/`) [VALIDATED c1b43e67]
-  - Implement SVG/CSS fallback image renderer for broken product URLs with stable aspect ratios and regional flag overlays (Mode G).
-  - Audit and fix WCAG 2.2 AA contrast ratios, visible focus indicators (`ring-2 ring-primary`), and screen-reader `aria-labels`.
+- [x] TASK 13 - Resilient Image Fallbacks & WCAG 2.2 AA Contrast Polish (`apps/web/components/ui/`) [MERGED TO MAIN]
+  - SVG/CSS fallback image renderer for broken product URLs with stable aspect ratios and regional flag overlays (Mode G).
+  - WCAG 2.2 AA contrast ratios, visible focus indicators (`ring-2 ring-primary`), and screen-reader `aria-labels`.
   - Branch: `fix/accessible-image-fallbacks`
 
 ## Phase 5 — Functional Seller Onboarding & Feat of Strength
-- [ ] TASK 14 - Complete Functional Seller Onboarding Journey (`apps/web/pages/become-seller.tsx`)
+- [x] TASK 14 - Complete Functional Seller Onboarding Journey (`apps/web/pages/become-seller.tsx`) [MERGED TO MAIN]
   - Multi-step form for business registration, VAT/tax IDs, trade register number, product origin, and allergen responsibilities (DSA Art. 30 data points).
   - Auto-draft preservation in `localStorage` and honest submission preview state with `// COMPLIANCE-REVIEW:` tags.
   - Branch: `feat/seller-onboarding-flow`
 
-- [ ] TASK 15 - "Feat of Strength": Interactive EU Allergen & Origin Filter Engine (`apps/web/components/marketplace/`)
+- [x] TASK 15 - "Feat of Strength": Interactive EU Allergen & Origin Filter Engine (`apps/web/components/marketplace/`) [MERGED TO MAIN]
   - Interactive discovery component showing exact 14 EU regulated allergens (Reg. 1169/2011 Annex II) from `packages/compliance/src/allergens.ts`.
   - Instant visual filtering, dietary badges (Organic, PDO/PGI Protected Designation of Origin, Gluten-Free), and explanatory match tooltips.
   - Branch: `feat/allergen-origin-engine`
