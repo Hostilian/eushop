@@ -186,17 +186,22 @@ export default function FoodDetailPage() {
     }
   };
 
-  // JSON-LD structured data for SEO (Phase 4.1)
-  // COMPLIANCE-REVIEW: Do not include compliance claims in structured data.
+  // JSON-LD structured data for SEO & Rich Snippets
+  // COMPLIANCE-REVIEW: Do not include unverified compliance claims in structured data.
   const jsonLd = food ? {
     '@context': 'https://schema.org',
     '@type': 'Product',
     name: food.name,
     description: food.description,
+    category: food.category || 'Specialty Food',
+    countryOfOrigin: food.country ? { '@type': 'Country', name: food.country } : undefined,
     offers: {
       '@type': 'Offer',
       priceCurrency: 'EUR',
       price: food.price.toFixed(2),
+      availability: 'https://schema.org/InStock',
+      itemCondition: 'https://schema.org/NewCondition',
+      url: `https://hostilian.github.io/eushop/food/${food.id}`,
       ...(food.seller?.name ? { seller: { '@type': 'Organization', name: food.seller.name } } : {}),
     },
   } : null;

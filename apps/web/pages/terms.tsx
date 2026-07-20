@@ -60,20 +60,25 @@ export default function TermsOfService() {
               </p>
             </section>
 
+            {/* COMPLIANCE-REVIEW: Right of withdrawal exclusions for perishable goods strictly aligned with EU Consumer Rights Directive (2011/83/EU Art. 16) */}
             <section>
               <h2 className="text-xl font-bold text-brand-dark dark:text-white mb-3 font-display">6. Right of Withdrawal</h2>
               <p>
-                Under the EU Consumer Rights Directive, buyers generally have a 14-day right of withdrawal from distance purchases.
+                Under the EU Consumer Rights Directive and Czech Civil Code (Act No. 89/2012 Coll.), buyers generally have a 14-day right of withdrawal from distance purchases using our model withdrawal form.
                 However, <strong className="text-gray-900 dark:text-white">this right does not apply to perishable goods</strong> once shipped,
                 nor to sealed goods opened after delivery for health protection and hygiene reasons.
               </p>
             </section>
 
+            {/* COMPLIANCE-REVIEW: Defect liability period (24 months) and presumption of defect (12 months) aligned with Directive (EU) 2019/771 */}
             <section>
-              <h2 className="text-xl font-bold text-brand-dark dark:text-white mb-3 font-display">7. Disputes and Jurisdiction</h2>
+              <h2 className="text-xl font-bold text-brand-dark dark:text-white mb-3 font-display">7. Defect Liability and Jurisdiction</h2>
+              <p className="mb-3">
+                Sellers provide a statutory 24-month liability period for product defects, with a legal presumption that any defect manifesting within the first 12 months existed at the time of delivery.
+              </p>
               <p>
-                Transactions occur directly between buyer and seller. EUshop is a facilitating platform and is not liable for product defects or shipping delays.
-                These Terms are governed by the laws of the Czech Republic. Disputes are subject to the courts of Prague.
+                Transactions occur directly between buyer and seller. EUshop provides the marketplace structure.
+                These Terms (Všeobecné obchodní podmínky - VOP) are governed by the laws of the Czech Republic. Disputes are subject to the competent courts of Prague.
               </p>
             </section>
 

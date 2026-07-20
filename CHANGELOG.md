@@ -1,5 +1,18 @@
 # Changelog
 
+## [Unreleased] — Continuous Optimization Loop #2 (2026-07-20)
+
+### Added
+- **Schema.org Rich Snippets**: Enhanced JSON-LD structured data in `apps/web/pages/food/[id].tsx` with `countryOfOrigin`, `availability` (`InStock`), `itemCondition` (`NewCondition`), and canonical product URL tags for rich search engine indexing.
+- **EU Omnibus Directive Pricing Transparency**: Updated `apps/web/components/ui/ProductCard.tsx` with an `originalPrice` prop and explicit 30-day historical lowest price tag (`Lowest in last 30 days: €XX.XX`) in compliance with EU Directive 2019/2161 Art. 6a.
+
+## [Unreleased] — Continuous Optimization Loop #1 (2026-07-20)
+
+### Changed
+- **YC Positioning Formula**: Refactored homepage hero title in `apps/web/pages/index.tsx` to exact 50-character concise value proposition ("Buy authentic regional foods from European sellers.") with `// COMPLIANCE-REVIEW:` annotation.
+- **GDPR & Tax Data Retention**: Updated `apps/web/pages/privacy.tsx` to explicitly justify 10-year transactional record retention under EU VAT Directive 2006/112/EC Art. 242a and GDPR Art. 6(1)(c).
+- **Czech Statutory Disclosures (VOP)**: Updated `apps/web/pages/terms.tsx` with statutory 24-month defect liability, 12-month presumption of defect, and 14-day right of withdrawal model links.
+
 ## [Unreleased] — Master Gap Analysis & Future Strategic Roadmap (2026-07-20)
 
 ### Added

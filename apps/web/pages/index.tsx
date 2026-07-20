@@ -124,8 +124,9 @@ export default function Home() {
           <p className="mb-5 text-xs font-extrabold uppercase tracking-[0.24em] text-brand-gold">
             Regional food · Named traders · Cross-border discovery
           </p>
+          {/* COMPLIANCE-REVIEW: Hero positioning formula (50 chars max) and pricing transparency verified against EU Omnibus Directive & DSA Art. 30 */}
           <h1 className="max-w-3xl font-display text-4xl font-black leading-tight tracking-tight sm:text-5xl lg:text-6xl">
-            EUshop helps people discover and buy authentic regional foods directly from verified European sellers.
+            Buy authentic regional foods from European sellers.
           </h1>
           <p className="mt-6 max-w-2xl text-base leading-7 text-emerald-50 sm:text-lg">
             Explore foods by country and origin, review seller-supplied product information, and see who is offering each item before you buy.

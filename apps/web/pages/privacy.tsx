@@ -45,11 +45,12 @@ export default function PrivacyPolicy() {
               </ul>
             </section>
 
+            {/* COMPLIANCE-REVIEW: Data retention period for transactional data (10 years) is mandated by EU VAT Directive (2006/112/EC Art. 242a) and Czech Tax Code */}
             <section>
               <h2 className="text-xl font-bold text-brand-dark dark:text-white mb-3 font-display">4. Data Sharing and Retention</h2>
               <p>
                 We share data with payment processors (Stripe), identity verification services (Auth0), and tax reporting systems as required by law.
-                Financial records are retained for up to 10 years to satisfy EU tax audit obligations. Personal profile data is deleted or anonymised upon a valid erasure request.
+                Financial and transactional records are retained for exactly 10 years strictly to fulfill mandatory EU VAT Directive and national tax audit obligations (GDPR Art. 6(1)(c)). Personal profile data outside legal retention windows is deleted or anonymised upon a valid erasure request.
               </p>
             </section>
 

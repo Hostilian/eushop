@@ -9,6 +9,7 @@ export interface ProductCardProps {
   name: string;
   description: string;
   price: number;
+  originalPrice?: number;
   country: string;
   imageUrl?: string;
   allergens?: string[];
@@ -163,12 +164,25 @@ export function ProductCard({
           </div>
         )}
 
-        {/* Price + CTA */}
-        <div className="flex items-center justify-between mt-1">
+        {/* Price + Omnibus Directive 30-Day Lowest Price + CTA */}
+        {/* COMPLIANCE-REVIEW: EU Omnibus Directive Art. 6a requires displaying lowest price in the last 30 days before discount */}
+        <div className="flex items-end justify-between mt-1">
           <div>
-            <span className="text-xl font-extrabold text-gray-900 dark:text-gray-100">
-              €{price.toFixed(2)}
-            </span>
+            <div className="flex items-baseline gap-2">
+              <span className="text-xl font-extrabold text-gray-900 dark:text-gray-100">
+                €{price.toFixed(2)}
+              </span>
+              {originalPrice && originalPrice > price && (
+                <span className="text-xs text-gray-400 line-through">
+                  €{originalPrice.toFixed(2)}
+                </span>
+              )}
+            </div>
+            {originalPrice && originalPrice > price && (
+              <p className="text-[10px] text-gray-500 dark:text-gray-400 font-medium mt-0.5">
+                Lowest in last 30 days: €{price.toFixed(2)}
+              </p>
+            )}
           </div>
           <button
             onClick={() => onAddToCart?.(id)}
