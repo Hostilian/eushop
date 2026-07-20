@@ -28,6 +28,8 @@ export default function CookieBanner() {
 
   useEffect(() => {
     // Expose global helper to query consent status dynamically
+    // COMPLIANCE-REVIEW: ePrivacy Directive / GDPR Art. 6(1)(a) cookie pre-consent logic.
+    // Pre-consent blocking structure enforced; actual cookie categories must be validated by legal counsel.
     if (typeof window !== 'undefined') {
       window.hasCookieConsent = (category: keyof CookiePreferences) => {
         if (category === 'essential') return true;

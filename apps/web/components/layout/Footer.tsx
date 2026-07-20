@@ -105,6 +105,11 @@ export function Footer() {
                       Terms of Service
                     </Link>
                   </li>
+                  <li>
+                    <Link href="/impressum" className="hover:text-primary dark:hover:text-blue-400 transition">
+                      Impressum / Legal Notice
+                    </Link>
+                  </li>
                 </ul>
               </div>
             </div>

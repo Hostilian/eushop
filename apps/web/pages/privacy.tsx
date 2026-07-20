@@ -16,9 +16,9 @@ export default function PrivacyPolicy() {
             <section>
               <h2 className="text-xl font-bold text-brand-dark dark:text-white mb-3 font-display">1. Data Controller</h2>
               <p>
-                For the purposes of the General Data Protection Regulation (GDPR), the data controller is{' '}
+                For the purposes of the General Data Protection Regulation (GDPR), the data controller is
                 <strong className="text-gray-900 dark:text-white">EUshop s.r.o.</strong> (registration details pending incorporation),
-                with its principal place of business in Prague, Czech Republic. Contact us at{' '}
+                with its principal place of business in Prague, Czech Republic. Contact us at
                 <a href="mailto:privacy@eushop.com" className="text-brand-green dark:text-brand-gold hover:underline font-semibold">
                   privacy@eushop.com
                 </a>.
@@ -45,7 +45,6 @@ export default function PrivacyPolicy() {
               </ul>
             </section>
 
-            {/* COMPLIANCE-REVIEW: Data retention period for transactional data (10 years) is mandated by EU VAT Directive (2006/112/EC Art. 242a) and Czech Tax Code */}
             <section>
               <h2 className="text-xl font-bold text-brand-dark dark:text-white mb-3 font-display">4. Data Sharing and Retention</h2>
               <p>
@@ -56,16 +55,30 @@ export default function PrivacyPolicy() {
 
             <section>
               <h2 className="text-xl font-bold text-brand-dark dark:text-white mb-3 font-display">5. Your GDPR Rights</h2>
-              <p className="mb-3">As an EU resident, you have the right to access, correct, delete, and port your personal data, and to object to or restrict processing.</p>
+              <p className="mb-3">Under GDPR Articles 15–22, EU residents have the right to access, rectify, erase, restrict, port, and object to the processing of their personal data.</p>
               <p>
-                To exercise these rights, visit our{' '}
+                To exercise these rights, visit our
                 <Link href="/gdpr" className="text-brand-green dark:text-brand-gold hover:underline font-semibold">
                   GDPR Center
-                </Link>{' '}
-                or email{' '}
+                </Link>
+                or email
                 <a href="mailto:privacy@eushop.com" className="text-brand-green dark:text-brand-gold hover:underline font-semibold">
                   privacy@eushop.com
                 </a>.
+              </p>
+            </section>
+
+            <section>
+              <h2 className="text-xl font-bold text-brand-dark dark:text-white mb-3 font-display">6. Data Transfers and International Safeguards</h2>
+              <p>
+                EUshop processes personal data exclusively within the European Economic Area. No transfers of personal data to third countries outside the EU/EEA occur unless a legally recognized transfer mechanism (such as a Standard Contractual Clause) is in place. Our data processing agreements with Stripe and Auth0 incorporate appropriate safeguards to ensure equivalent protection standards are maintained.
+              </p>
+            </section>
+
+            <section>
+              <h2 className="text-xl font-bold text-brand-dark dark:text-white mb-3 font-display">7. Right to Lodge a Complaint</h2>
+              <p>
+                If you believe our processing violates data protection legislation, you have the statutory right under GDPR Art. 77 to lodge a complaint with a Lead Data Protection Authority (such as the Office for Personal Data Protection – ÚOOÚ, Pplk. Sochora 27, 170 00 Prague 7, Czech Republic, <a href="https://uoou.gov.cz" target="_blank" rel="noopener noreferrer" className="text-brand-green dark:text-brand-gold hover:underline font-semibold">uoou.gov.cz</a>) or your local EU Member State supervisory authority.
               </p>
             </section>
           </div>

@@ -79,7 +79,7 @@ param(
     [switch]$Resume,
 
     [Parameter(ParameterSetName = 'Normal')]
-    [ValidateSet('auto', 'fcc', 'openrouter', 'gemini', 'kimi', 'minimax', 'nvidia', 'local', 'survival')]
+    [ValidateSet('auto', 'fcc', 'hermes', 'openrouter', 'gemini', 'kimi', 'minimax', 'nvidia', 'local', 'survival')]
     [string]$Provider = 'auto',
 
     [Parameter(ParameterSetName = 'Normal')]
@@ -931,22 +931,14 @@ function Invoke-Hermes {
             }
 
             $hermesArgs = @(
-                "chat",
-                "--query", $MISSION_PROMPT,
+                "-z", $MISSION_PROMPT,
                 "--yolo",
-                "--accept-hooks",
-                "--max-turns", "120"
+                "--accept-hooks"
             )
 
-            # --continue resumes the most recent session so Hermes keeps context
             if ($Resume) {
                 $hermesArgs += "--continue"
                 Write-Log "Resuming most recent Hermes session..." "INFO" "launcher"
-            } else {
-                # Always try to continue the last session for context continuity.
-                # This is safe: if no prior session exists, Hermes starts fresh.
-                $hermesArgs += "--continue"
-                Write-Log "Continuing most recent Hermes session (or starting fresh)..." "INFO" "launcher"
             }
 
             & $script:HERMES_EXE @hermesArgs 2>&1

@@ -28,13 +28,12 @@ Status: COMPLETED
 ## PHASE 11 — Legal Compliance Deep Dive
 Status: READY
 
-- [ ] TASK 28 — GDPR cookie consent banner audit
-  File: apps/web/components/legal/CookieBanner.tsx (create if missing)
+- [/] TASK 28 — GDPR cookie consent banner audit
   Goal: Implement pre-consent blocking of analytics/tracking cookies per ePrivacy Directive.
   Acceptance: Analytics script does NOT load until explicit "Accept" click. Banner visible on first visit.
   // COMPLIANCE-REVIEW: Must be verified by qualified lawyer before production.
 
-- [ ] TASK 29 — Impressum / Legal Notice page (German/EU law requirement)
+- [x] TASK 29 — Impressum / Legal Notice page (German/EU law requirement)
   File: apps/web/pages/impressum.tsx (create if missing)
   Goal: Add statutorily required Impressum with company name, address, registration number, VAT ID placeholder, responsible person, contact.
   Acceptance: /impressum route renders; footer links to it persistently.

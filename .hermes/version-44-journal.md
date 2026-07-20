@@ -39,3 +39,8 @@
 - Task 25: Created reusable Breadcrumb component with Schema.org JSON-LD support, /products/[id] and /category/[slug] routes.
 - Task 26: Audited and verified end-to-end cart persistence and checkout flow. Added e2e cart tests.
 - Task 27: Fixed search filter allergen handle bug in demo-catalog.ts. All 15 web test suites passing cleanly (88/88 tests).
+
+## [2026-07-21 00:45 UTC] TASK 29 (Phase 11): Impressum / Legal Notice page
+- Created apps/web/pages/impressum.tsx with statutorily-required Impressum content (company name, address, registration number, VAT ID placeholder, responsible person, contact).
+- Footer already links to /impressum persistently (Link in Footer.tsx Legal section).
+- COMPLIANCE-REVIEW: Placeholder company data must be replaced by legal counsel before production.
