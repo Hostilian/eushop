@@ -225,21 +225,26 @@ export default function SearchPage() {
               <label htmlFor="allergen-select" className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">
                 Allergen-Free Filter
               </label>
-              <select
-                id="allergen-select"
-                value={selectedAllergen}
-                onChange={(e) => {
-                  setSelectedAllergen(e.target.value);
-                  setPage(1); // Reset page on allergen change
-                }}
-                className="w-full px-4 py-2.5 border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-950 rounded-xl focus:ring-2 focus:ring-brand-green focus:border-transparent text-sm transition text-gray-800 dark:text-gray-200"
-              >
-                {EU_ALLERGENS.map((allergen) => (
-                  <option key={allergen} value={allergen}>
-                    {allergen ? `Free from ${allergen}` : 'No Exclusion Filters (Show All)'}
-                  </option>
+              <div className="grid grid-cols-2 gap-2">
+                {EU_ALLERGENS.filter(a => a).map((allergen) => (
+                  <label key={allergen} className="flex items-center space-x-2">
+                    <input
+                      type="checkbox"
+                      checked={selectedAllergen.split(',').includes(allergen)}
+                      onChange={() => {
+                        const allergens = selectedAllergen ? selectedAllergen.split(',') : [];
+                        const newAllergens = allergens.includes(allergen)
+                          ? allergens.filter((a) => a !== allergen)
+                          : [...allergens, allergen];
+                        setSelectedAllergen(newAllergens.join(','));
+                        setPage(1);
+                      }}
+                      className="rounded border-gray-300 dark:border-gray-600 text-brand-green focus:ring-brand-green"
+                    />
+                    <span className="text-sm text-gray-800 dark:text-gray-200">{allergen}</span>
+                  </label>
                 ))}
-              </select>
+              </div>
             </div>
 
             <div>

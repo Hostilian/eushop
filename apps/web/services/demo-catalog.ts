@@ -9,7 +9,7 @@ export interface DemoCatalogueQuery {
   page?: number;
   size?: number;
   category?: string;
-  allergenFree?: string;
+  allergenFree?: string[];
 }
 
 const normalise = (value?: string): string => value?.trim().toLocaleLowerCase('en') ?? '';
@@ -34,7 +34,7 @@ export function searchDemonstrationCatalogue({
   const searchTerm = normalise(query);
   const countryTerm = normalise(country);
   const categoryTerm = normalise(category);
-  const excludedAllergen = normalise(allergenFree);
+  const excludedAllergens = allergenFree?.map(normalise) || [];
 
   const filtered = DEMO_PRODUCTS.filter(product => {
     const matchesSearch = !searchTerm || [
@@ -45,8 +45,8 @@ export function searchDemonstrationCatalogue({
     ].some(value => normalise(value).includes(searchTerm));
     const matchesCountry = !countryTerm || normalise(product.country) === countryTerm;
     const matchesCategory = !categoryTerm || normalise(product.category) === categoryTerm;
-    const excludesAllergen = !excludedAllergen || !product.allergens.some(
-      allergen => normalise(allergen) === excludedAllergen,
+    const excludesAllergen = excludedAllergens.length === 0 || !product.allergens.some(
+      allergen => excludedAllergens.includes(normalise(allergen)),
     );
 
     return matchesSearch && matchesCountry && matchesCategory && excludesAllergen;

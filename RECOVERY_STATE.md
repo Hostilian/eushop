@@ -14,8 +14,8 @@ Master Execution Queue expanded to 23 tasks incorporating the YC-Readiness, Trut
 - **Task 12**: Bundled Demonstration Catalogue (`apps/web/data/demo-products.ts`) [DONE]
 - **Task 13**: Resilient Image Fallbacks & WCAG 2.2 AA Contrast Polish [DONE]
 - **Task 14**: Complete Functional Seller Onboarding Journey (`apps/web/pages/become-seller.tsx`) [DONE]
-- **Task 15**: Interactive EU Allergen & Origin Filter Engine (`apps/web/components/marketplace/`) [ACTIVE]
-- **Task 16**: Fact Ledger & Absolute Truthfulness Audit (`docs/evidence/FACT_LEDGER.md`)
+- **Task 15**: Interactive EU Allergen & Origin Filter Engine (`apps/web/components/marketplace/`) [DONE]
+- **Task 16**: Fact Ledger & Absolute Truthfulness Audit (`docs/evidence/FACT_LEDGER.md`) [ACTIVE]
 - **Task 17**: Asset Provenance & Third-Party Content Clearance (`docs/agent/ASSET_PROVENANCE.md`)
 - **Task 18**: Legal & Regulatory Review Matrix (`docs/agent/LEGAL_REVIEW_REQUIRED.md`)
 - **Task 19**: Security & Privacy Hardening Suite (`docs/agent/SECURITY_REVIEW.md`)
