@@ -82,7 +82,7 @@ Status: IN_PROGRESS
 - [x] TASK 65 — Currency auto-conversion & display formatting per EU member state locale
 - [x] TASK 66 — Localized statutory withdrawal forms & EU consumer rights PDF generation
 - [ ] TASK 67 — Localized error messages and accessible form validation strings
-- [ ] TASK 68 — Automatic EU region-based tax notice & shipping threshold calculation display
+- [x] TASK 68 — Automatic EU region-based tax notice & shipping threshold calculation display
 - [ ] TASK 69 — Multilingual SEO meta tags & hreflang link tags for all product routes
 - [ ] TASK 70 — Cross-border seller verification document translation guidance UI
 

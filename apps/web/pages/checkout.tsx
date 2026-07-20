@@ -4,6 +4,7 @@ import Link from 'next/link';
 import { loadStripe } from '@stripe/stripe-js';
 import { Elements, CardElement, useStripe, useElements } from '@stripe/react-stripe-js';
 import { PageWrapper } from '../components/layout/PageWrapper';
+import { TaxNotice } from '../components/common/TaxNotice';
 import { paymentAPI, orderAPI, foodAPI, authAPI, User } from '../lib/services';
 import {
   calculateFoodVat,
@@ -334,6 +335,9 @@ function CheckoutForm() {
                     </option>
                   ))}
                 </select>
+                <div className="mt-3">
+                  <TaxNotice destinationCountryIso2={formData.country || 'DE'} subtotalEur={subtotal} />
+                </div>
               </div>
             </div>
 
