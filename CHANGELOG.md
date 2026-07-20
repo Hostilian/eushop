@@ -1,5 +1,16 @@
 # Changelog
 
+## [Unreleased] — Watchdog & Nonstop Resilience (2026-07-19)
+
+### Added
+- **`scripts/EUshop-Agent-Watchdog.ps1`**: Self-healing watchdog daemon (task-682).
+  - Polls orchestrator + agent processes every 30 seconds.
+  - Auto-restarts orchestrator (with exponential backoff: 60s → 120s → … → 600s cap) on any silent crash.
+  - Clears stale `AUTONOMOUS_STOP` markers automatically so nonstop mode is preserved.
+  - After 5 consecutive failures: writes `.agent-state/ALERT.md` with exact steps to take + shows a Windows notification balloon.
+  - Detects `AUTONOMOUS_COMPLETE` marker, sends a success toast, and exits cleanly.
+  - Stop with: `.\scripts\EUshop-Agent-Watchdog.ps1 -Stop`
+
 ## [Unreleased] — Autonomous continuation (2026-07-19)
 
 ### Changed
