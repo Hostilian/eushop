@@ -75,10 +75,10 @@ Status: COMPLETED
 - [x] TASK 62 — Finalize AGENTS.md Phase progress roadmap & legal compliance disclosures
 
 ## PHASE 19 — Advanced Multilingual & i18n Localization Engine
-Status: READY
+Status: IN_PROGRESS
 
-- [ ] TASK 63 — Dynamic locale switcher (EN, DE, FR, IT, ES, CS) with RTL/LTR layout support
-- [ ] TASK 64 — Allergen name multi-language translation engine in packages/compliance
+- [x] TASK 63 — Dynamic locale switcher (EN, DE, FR, IT, ES, CS) with RTL/LTR layout support
+- [x] TASK 64 — Allergen name multi-language translation engine in packages/compliance
 - [ ] TASK 65 — Currency auto-conversion & display formatting per EU member state locale
 - [ ] TASK 66 — Localized statutory withdrawal forms & EU consumer rights PDF generation
 - [ ] TASK 67 — Localized error messages and accessible form validation strings
