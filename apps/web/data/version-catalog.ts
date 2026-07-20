@@ -37,6 +37,18 @@ export const CURRENT_APPLICATION: VersionCatalogueEntry = {
 
 export const APPLICATION_VIEWS: readonly VersionCatalogueEntry[] = [
   {
+    key: 'v44',
+    name: 'V44 — YC Master Legal Compliance Release',
+    shortName: 'V44',
+    badge: 'RELEASE',
+    description:
+      'Master legal compliance & YC optimization release featuring EU Annex II allergens, DSA Art. 30 seller disclosures, GPSR, and 100% compliance test coverage.',
+    path: '/',
+    kind: 'application-view',
+    accentClass:
+      'from-emerald-600 to-amber-500 border-amber-400 text-emerald-800 dark:text-emerald-200 font-bold',
+  },
+  {
     key: 'buyer-view',
     name: 'Buyer marketplace view',
     shortName: 'Buyer',

@@ -15,6 +15,7 @@ interface User {
 
 import { Button } from '../ui/Button';
 import { LocaleSwitcher } from './LocaleSwitcher';
+import VersionSelector from './VersionSelector';
 
 export function Navbar() {
   const [user, setUser] = useState<User | null>(null);
@@ -126,6 +127,9 @@ export function Navbar() {
 
         {/* Action Buttons */}
         <div className="flex items-center gap-3">
+          {/* Version Selector (V44 YC Release) */}
+          <VersionSelector />
+
           {/* i18n Language Locale Switcher (Task 63) */}
           <LocaleSwitcher />
 
