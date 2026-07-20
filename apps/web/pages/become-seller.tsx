@@ -34,6 +34,7 @@ interface IdentificationInfo {
 
 interface BusinessDetailsInfo {
   country: string;
+  productOrigin: string;
 }
 
 interface ComplianceInfo {
@@ -64,6 +65,7 @@ const INITIAL_FORM_DATA: FormData = {
   },
   businessDetailsInfo: {
     country: '',
+    productOrigin: '',
   },
   complianceInfo: {
     selfCertification: false,
@@ -210,6 +212,7 @@ export default function BecomeSeller() {
           selfCertified: formData.complianceInfo.selfCertification,
           termsAccepted: formData.complianceInfo.acceptTerms,
         },
+        productOrigin: formData.businessDetailsInfo.productOrigin,
       };
 
       // This would typically call an API to submit the seller application
@@ -527,6 +530,20 @@ export default function BecomeSeller() {
                       <option value="SE">Sweden</option>
                     </select>
                   </div>
+                  <div>
+                    <label className={LABEL}>Product Origin Countries</label>
+                    <textarea
+                      placeholder="e.g. Germany, France, Italy (where you source or produce your products)"
+                      value={formData.businessDetailsInfo.productOrigin}
+                      onChange={e => handleInputChange('businessDetailsInfo', 'productOrigin', e.target.value)}
+                      className={INPUT_LG}
+                      aria-label="Product origin countries"
+                    />
+                    <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
+                      List the countries where you source or produce your products, separated by commas.
+                      This helps ensure accurate origin labeling for your food items.
+                    </p>
+                  </div>
                 </div>
               </form>
 
@@ -586,9 +603,9 @@ export default function BecomeSeller() {
                       <div className="flex">
                         <span className="w-32 text-gray-500 dark:text-gray-400 font-medium">Address:</span>
                         <span className="font-mono">
-                          ${formData.businessInfo.addressStreet || ''},
-                          ${formData.businessInfo.addressCity || ''}
-                          ${formData.businessInfo.addressPostalCode || ''}
+                          {[formData.businessInfo.addressStreet, formData.businessInfo.addressCity, formData.businessInfo.addressPostalCode, formData.businessDetailsInfo.country]
+                            .filter(Boolean)
+                            .join(', ') || 'Not provided'}
                         </span>
                       </div>
                     </div>
@@ -629,6 +646,20 @@ export default function BecomeSeller() {
                         <span className="w-32 text-gray-500 dark:text-gray-400 font-medium">Country:</span>
                         <span className="font-mono">
                           {formData.businessDetailsInfo.country || 'Not selected'}
+                        </span>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="border-t pt-4">
+                    <h3 className="text-lg font-semibold text-brand-dark dark:text-white mb-2">
+                      Product Origin
+                    </h3>
+                    <div className="space-y-2 text-sm">
+                      <div className="flex">
+                        <span className="w-32 text-gray-500 dark:text-gray-400 font-medium">Product Origin:</span>
+                        <span className="font-mono">
+                          {formData.businessDetailsInfo.productOrigin || 'Not provided'}
                         </span>
                       </div>
                     </div>
