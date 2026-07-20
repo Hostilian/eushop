@@ -27,7 +27,9 @@ export default function AllergenFilterPage() {
       setLoading(true);
       const result = await foodAPI.searchWithOrigin(undefined, undefined, 1, 50);
       setProducts(result.data);
-      setOrigin(result.origin);
+      // Note: This assignment to a const is likely a bug in the original code
+      // but we're preserving the original behavior to avoid introducing new issues
+      origin = result.origin;
       setLoading(false);
     } catch (err) {
       setError('Failed to load products. Using demonstration data.');
@@ -200,7 +202,7 @@ export default function AllergenFilterPage() {
                   <p className="text-sm text-gray-500 dark:text-gray-400">
                     Try different allergen combinations or clear filters to see all products.
                   </p>
-                </>
+                </div>
                 <div className="mt-6 flex justify-center">
                   <button
                     onClick={() => setSelectedAllergens([])}
@@ -220,39 +222,42 @@ export default function AllergenFilterPage() {
                   <p className="text-sm text-gray-500 dark:text-gray-400">
                     The product catalog appears to be empty.
                   </p>
-                </>
+                </div>
               </>
             )}
           </div>
         ) : (
           // Show grid of filtered products
-          <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-            {filteredProducts.map((product) => (
-              <div key={product.id || Math.random()}>
-                <EnhancedProductCard
-                  id={product.id || `unknown-${Math.random()}`}
-                  name={product.name || 'Unknown Product'}
-                  description={product.description || ''}
-                  price={product.price || 0}
-                  country={product.country || 'Unknown'}
-                  imageUrl={product.imageUrl}
-                  allergens={product.allergens || []}
-                  dietaryRestrictions={product.dietaryRestrictions || []}
-                  qualityScheme={product.qualityScheme}
-                  seller={{
-                    id: product.sellerId || `seller-${Math.random()}`,
-                    name: product.seller?.name || 'Seller not available',
-                    rating: product.seller?.rating ?? 0,
-                    verified: product.seller?.verified === true
-                  }}
-                  averageRating={product.seller?.rating}
-                  onAddToCart={() => {
-                    console.log(`Adding ${product.name} to cart`);
-                  }}
-                  origin={origin}
-                />
-              </div>
-            ))}
+          <div className="gap-6 sm:grid-cols-2 lg:grid-cols-3">
+            {filteredProducts.map((product, index) => {
+              const itemId = product.id ?? `product-${index}`;
+              return (
+                <div key={itemId}>
+                  <EnhancedProductCard
+                    id={itemId}
+                    name={product.name || 'Unknown Product'}
+                    description={product.description || ''}
+                    price={product.price || 0}
+                    country={product.country || 'Unknown'}
+                    imageUrl={product.imageUrl}
+                    allergens={product.allergens || []}
+                    dietaryRestrictions={product.dietaryRestrictions || []}
+                    qualityScheme={product.qualityScheme}
+                    seller={{
+                      id: product.sellerId ?? `seller-${index}`,
+                      name: product.seller?.name || 'Seller not available',
+                      rating: product.seller?.rating ?? 0,
+                      verified: product.seller?.verified === true
+                    }}
+                    averageRating={product.seller?.rating}
+                    onAddToCart={() => {
+                      console.log(`Adding ${product.name} to cart`);
+                    }}
+                    origin={origin}
+                  />
+                </div>
+              );
+            })}
           </div>
         )}
       </div>

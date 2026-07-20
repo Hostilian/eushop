@@ -84,7 +84,7 @@ export default function EnhancedProductCard({
       {/* Product image */}
       <Link
         href={`/food/${id}`}
-        className="block relative aspect-[4/3] bg-gray-50 dark:bg-gray-800 overflow-hidden"
+        className="block relative aspect-[4/3] bg-gray-50 dark:bg-gray-800 overflow-hidden focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-green focus-visible:ring-offset-2"
         tabIndex={0}
       >
         {imageUrl && !imageError ? (
@@ -100,10 +100,13 @@ export default function EnhancedProductCard({
             }}
           />
         ) : (
-          <div className="flex items-center justify-center h-full bg-gray-200 dark:bg-gray-700">
-            <div className="text-center text-sm text-gray-500 dark:text-gray-400">
-              {imageUrl ? 'Image unavailable' : 'No image available'}
-            </div>
+          <div className="flex items-center justify-center h-full bg-gray-200 dark:bg-gray-700 text-gray-600 dark:text-gray-400">
+            <svg width="100%" height="100%" viewBox="0 0 4 3" aria-label="Image placeholder" role="img" className="block">
+              <rect width="4" height="3" fill="currentColor" opacity="0.2" />
+              <text x="50%" y="50%" dominant-baseline="middle" text-anchor="middle" fill="currentColor" opacity="0.6" font-size="0.6">
+                {imageUrl ? 'Image unavailable' : 'No image'}
+              </text>
+            </svg>
           </div>
         )}
         {/* Region flag overlay */}
