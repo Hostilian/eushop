@@ -2,6 +2,7 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { useState } from 'react';
 import { AllergenBadge, VerifiedSellerBadge, Badge } from '../ui/Badge';
+import { Tooltip } from '../ui/Tooltip';
 import type { StatusOrigin } from '../../lib/degradation';
 
 export interface EnhancedProductCardProps {
@@ -56,6 +57,24 @@ export default function EnhancedProductCard({
     qualityScheme,
     allergens
   });
+
+  // Allergen explanations for tooltips
+  const allergenExplanations: Record<string, string> = {
+    'Cereals containing gluten': 'Contains wheat, rye, barley, oats, spelt, kamut or their hybridised strains',
+    'Crustaceans': 'Includes crab, lobster, crayfish, shrimp, prawn',
+    'Eggs': 'Chicken eggs and other bird eggs',
+    'Fish': 'All species of fish and fish products',
+    'Peanuts': 'Legume commonly known as groundnut',
+    'Soybeans': 'Soy beans and soy-derived products',
+    'Milk': 'Milk from cows, goats, sheep and other mammals',
+    'Nuts': 'Almonds, hazelnuts, walnuts, cashews, pecans, brazils, pistachios, macadamia, Queensland nuts',
+    'Celery': 'Includes celery stalks, leaves, seeds and celeriac',
+    'Mustard': 'Liquid mustard, mustard powder and mustard seeds',
+    'Sesame seeds': 'Sesame seeds and sesame seed paste (tahini)',
+    'Sulphur dioxide and sulphites': 'Preservative E220-E228 found in dried fruit, wine, etc.',
+    'Lupin': 'Lupin beans and flour, common in gluten-free baking',
+    'Molluscs': 'Includes mussels, oysters, squid, snails and clams'
+  };
 
   return (
     <article
@@ -144,7 +163,9 @@ export default function EnhancedProductCard({
         {allergens.length > 0 && (
           <div className="flex flex-wrap gap-2" aria-label="Contains allergens:">
             {allergens.map((a) => (
-              <AllergenBadge key={a} allergen={a} />
+              <Tooltip key={a} content={allergenExplanations[a]}>
+                <AllergenBadge allergen={a} />
+              </Tooltip>
             ))}
           </div>
         )}
@@ -205,7 +226,7 @@ const EU_FLAGS: Record<string, string> = {
   DK: '🇩🇰', EE: '🇪🇪', FI: '🇫🇮', FR: '🇫🇷', DE: '🇩🇪', GR: '🇬🇷',
   HU: '🇭🇺', IE: '🇮🇪', IT: '🇮🇹', LV: '🇱🇻', LT: '🇱🇹', LU: '🇱🇺',
   MT: '🇲🇹', NL: '🇳🇱', PL: '🇵🇱', PT: '🇵🇹', RO: '🇷🇴', SK: '🇸🇰',
-  SI: '🇸🇮', ES: '🇪🇸', SE: '🇸🇪',
+  SI: '🇸🇮', ES: '🇪𝟀', SE: '🇸🇪',
 };
 
 function getCountryFlag(isoCode: string): string {

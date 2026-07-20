@@ -1,4 +1,4 @@
-import { useState, useCallback, useMemo } from 'react';
+import { useState, useCallback } from 'react';
 import { FoodItem } from '../../data/demo-products';
 import { EU_ALLERGENS_14, type EUAllergen } from '@eushop/compliance';
 import { AllergenBadge, Badge } from '../ui/Badge';
@@ -6,11 +6,11 @@ import { clsx } from 'clsx';
 
 interface AllergenFilterProps {
   products: FoodItem[];
-  onFilterChange: (filteredProducts: FoodItem[]) => void;
+  selectedAllergens: EUAllergen[];
+  onSelectAllergen: (selected: EUAllergen[]) => void;
 }
 
-export default function AllergenFilter({ products, onFilterChange }: AllergenFilterProps) {
-  const [selectedAllergens, setSelectedAllergens] = useState<EUAllergen[]>([]);
+export default function AllergenFilter({ products, selectedAllergens, onSelectAllergen }: AllergenFilterProps) {
   const [showTooltip, setShowTooltip] = useState<EUAllergen | null>(null);
 
   // Helper explanations for each allergen
@@ -31,74 +31,17 @@ export default function AllergenFilter({ products, onFilterChange }: AllergenFil
     'Molluscs': 'Includes mussels, oysters, squid, snails and clams'
   };
 
-  // Filter products based on selected allergens
-  const filteredProducts = useCallback(() => {
-    if (selectedAllergens.length === 0) {
-      return products;
-    }
-
-    return products.filter(product => {
-      const productAllergens = product.allergens || [];
-      // Return products that contain AT LEAST ONE of the selected allergens
-      return selectedAllergens.some(allergen =>
-        productAllergens.includes(allergen)
-      );
-    });
-  }, [products, selectedAllergens]);
-
-  // Handle allergen toggle
+  // Handler to toggle an allergen
   const toggleAllergen = useCallback((allergen: EUAllergen) => {
-    setSelectedAllergens(prev => {
-      if (prev.includes(allergen)) {
-        return prev.filter(a => a !== allergen);
-      }
-      return [...prev, allergen];
-    });
-  }, []);
-
-  // Get dietary badges for a product
-  const getProductBadges = useCallback((product: FoodItem) => {
-    const badges: string[] = [];
-
-    // Check for PDO/PGI
-    if (product.qualityScheme === 'PDO' || product.qualityScheme === 'PGI') {
-      badges.push({
-        label: product.qualityScheme === 'PDO' ? 'Protected Designation of Origin' : 'Protected Geographical Indication',
-        variant: 'success' as const
-      });
+    const isSelected = selectedAllergens.includes(allergen);
+    let newSelection: EUAllergen[];
+    if (isSelected) {
+      newSelection = selectedAllergens.filter(a => a !== allergen);
+    } else {
+      newSelection = [...selectedAllergens, allergen];
     }
-
-    // Check for gluten-free (no gluten-containing cereals)
-    const hasGluten = (product.allergens || []).includes('Cereals containing gluten');
-    if (!hasGluten) {
-      badges.push({ label: 'Gluten-Free', variant: 'info' as const });
-    }
-
-    // Check for organic (if available in dietary restrictions)
-    // Note: This would need to be added to the data model or inferred from other fields
-    if (product.dietaryRestrictions?.includes('Organic')) {
-      badges.push({ label: 'Organic', variant: 'success' as const });
-    }
-
-    return badges;
-  }, []);
-
-  // Calculate stats for display
-  const stats = useMemo(() => {
-    const filtered = filteredProducts();
-    const totalWithAllergens = products.filter(p =>
-      (p.allergens || []).length > 0
-    ).length;
-
-    return {
-      totalProducts: products.length,
-      filteredCount: filtered.length,
-      totalWithAllergens,
-      percentageWithAllergens: totalWithAllergens > 0
-        ? Math.round((totalWithAllergens / products.length) * 100)
-        : 0
-    };
-  }, [products, filteredProducts]);
+    onSelectAllergen(newSelection);
+  }, [selectedAllergens, onSelectAllergen]);
 
   return (
     <div className="space-y-6">
@@ -111,34 +54,6 @@ export default function AllergenFilter({ products, onFilterChange }: AllergenFil
         <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">
           Filter products by allergens they contain. See dietary info badges on products.
         </p>
-      </div>
-
-      {/* Stats bar */}
-      <div className="bg-gray-50 dark:bg-gray-950/50 rounded-xl p-4 border border-gray-200 dark:border-gray-800">
-        <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-4 text-center">
-          <div>
-            <p className="text-xs text-gray-500 dark:text-gray-400">Total Products</p>
-            <p className="text-lg font-semibold text-brand-dark dark:text-white">{stats.totalProducts}</p>
-          </div>
-          <div>
-            <p className="text-xs text-gray-500 dark:text-gray-400">With Allergens</p>
-            <p className="text-lg font-semibold text-brand-dark dark:text-white">
-              {stats.totalWithAllergens} ({stats.percentageWithAllergens}%)
-            </p>
-          </div>
-          <div>
-            <p className="text-xs text-gray-500 dark:text-gray-400">Selected Filters</p>
-            <p className="text-lg font-semibold text-brand-dark dark:text-white">
-              {selectedAllergens.length}
-            </p>
-          </div>
-          <div>
-            <p className="text-xs text-gray-500 dark:text-gray-400">Matching Products</p>
-            <p className="text-lg font-semibold text-brand-dark dark:text-white">
-              {stats.filteredCount}
-            </p>
-          </div>
-        </div>
       </div>
 
       {/* Allergen selection buttons */}
@@ -196,7 +111,7 @@ export default function AllergenFilter({ products, onFilterChange }: AllergenFil
         {/* Clear button */}
         {selectedAllergens.length > 0 && (
           <button
-            onClick={() => setSelectedAllergens([])}
+            onClick={() => onSelectAllergen([])}
             className="w-full flex items-center justify-center gap-2 px-4 py-2.5 text-sm font-semibold"
             variant="secondary"
             size="sm"
@@ -206,26 +121,6 @@ export default function AllergenFilter({ products, onFilterChange }: AllergenFil
           </button>
         )}
       </div>
-
-      {/* Selected allergens summary */}
-      {selectedAllergens.length > 0 && (
-        <div className="mt-4 p-3 bg-blue-50 dark:bg-blue-950/20 rounded-xl border border-blue-200 dark:border-blue-800">
-          <p className="font-medium text-blue-800 dark:text-blue-200 flex items-center gap-2 mb-1">
-            <span aria-hidden="true">🎯</span>
-            Active Filters: {selectedAllergens.length} selected
-          </p>
-          <div className="flex flex-wrap gap-2">
-            {selectedAllergens.map(allergen => (
-              <span key={allergen} className="px-2.5 py-0.5 text-xs font-medium bg-blue-100 dark:bg-blue-900 rounded-full">
-                {allergen.split(' ')[0]}
-              </span>
-            ))}
-          </div>
-          <p className="text-xs text-gray-500 dark:text-gray-400 mt-2">
-            Showing products that contain ANY of the selected allergens
-          </p>
-        </div>
-      )}
     </div>
   );
 }
