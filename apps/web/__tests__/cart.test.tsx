@@ -57,4 +57,16 @@ describe('CartPage Component', () => {
     const subtotalElements = screen.getAllByText('€80.00');
     expect(subtotalElements.length).toBeGreaterThan(0);
   });
+
+  it('provides a valid proceed to checkout link when cart has items', () => {
+    const mockCart = [
+      { id: '1', name: 'Belgian Chocolates', country: 'Belgium', price: 25.00, quantity: 1 }
+    ];
+    window.localStorage.setItem('cart', JSON.stringify(mockCart));
+
+    render(<CartPage />);
+
+    const checkoutLink = screen.getByRole('link', { name: /proceed to checkout/i });
+    expect(checkoutLink).toHaveAttribute('href', '/checkout');
+  });
 });

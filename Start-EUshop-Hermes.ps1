@@ -835,6 +835,32 @@ function Write-Checkpoint {
     }
 }
 
+# ─── Mission Prompt ──────────────────────────────────────────────────────────
+# Read once so both FCC and Hermes share the same compact prompt
+$MISSION_PROMPT = @"
+You are working autonomously on the EUshop project at D:\CODING\eushop.
+
+STARTUP (every invocation):
+1. Read CLAUDE.md and .claude/AUTONOMY.md.
+2. Read D:\CODING\eushop\.hermes\yc-optimization-queue.md - this is your task list.
+3. Read .claude/RECOVERY_STATE.md for the last checkpoint.
+4. Run: git status, git log --oneline -5.
+
+WORK LOOP:
+- Pick the FIRST task marked [ ] (not BLOCKED).
+- Mark it [/] in yc-optimization-queue.md before you start.
+- Do the work. Meet the acceptance criteria exactly.
+- Mark it [x] only when acceptance criteria are verifiably satisfied.
+- Append a one-line summary to .hermes/version-44-journal.md.
+- Update .claude/RECOVERY_STATE.md with what was done and the next action.
+- Commit after completing each full PHASE (not individual tasks).
+- Never touch main. Never force-push. Never expose secrets.
+- Add // COMPLIANCE-REVIEW: comments on any compliance logic.
+- When a task fails twice, mark it [!] and move to the next one.
+
+Continue working autonomously until no [ ] tasks remain or time runs out.
+"@
+
 # ─── Launch Hermes ────────────────────────────────────────────────────────────
 function Invoke-Hermes {
     param([string]$SelectedProvider)
@@ -847,7 +873,7 @@ function Invoke-Hermes {
 
     switch ($SelectedProvider) {
         "fcc" {
-            # Launch Claude via FCC gateway
+            # Launch Claude via FCC gateway in print/stdin mode (non-interactive)
             if (-not $script:CLAUDE_EXE) {
                 Write-Log "Claude executable not found for FCC mode." "ERROR" "launcher"
                 return $EXIT_FCC_NOT_FOUND
@@ -874,16 +900,14 @@ function Invoke-Hermes {
             $env:CLAUDE_CODE_AUTO_COMPACT_WINDOW = "190000"
             $env:API_TIMEOUT_MS = "600000"
             $env:DISABLE_AUTOUPDATER = "1"
+            $env:DISABLE_TELEMETRY = "1"
 
             try {
-                if ($Resume) {
-                    Write-Log "Resuming via FCC gateway..." "INFO" "launcher"
-                    & $script:CLAUDE_EXE --resume
-                } else {
-                    Write-Log "Starting fresh session via FCC gateway..." "INFO" "launcher"
-                    & $script:CLAUDE_EXE
-                }
-                $exitCode = $LASTEXITCODE
+                # Claude Code requires prompt via stdin when running non-interactively.
+                # --print flag enables non-interactive print mode.
+                Write-Log "Sending YC mission prompt to Claude via FCC gateway..." "INFO" "launcher"
+                $MISSION_PROMPT | & $script:CLAUDE_EXE --print 2>&1
+                $exitCode = if ($null -eq $LASTEXITCODE) { 0 } else { $LASTEXITCODE }
             } finally {
                 # Restore environment
                 foreach ($v in $removeVars) {
@@ -897,15 +921,36 @@ function Invoke-Hermes {
         }
 
         default {
-            # Launch Hermes directly (uses its own config.yaml and .env)
-            Write-Log "Launching Hermes agent (auto provider selection)..." "INFO" "launcher"
+            # Launch Hermes in non-interactive single-query mode (-q flag).
+            # bare 'hermes chat' requires a TTY and crashes when piped.
+            Write-Log "Launching Hermes agent (non-interactive, provider: $SelectedProvider)..." "INFO" "launcher"
 
-            if ($Resume) {
-                & $script:HERMES_EXE chat --continue 2>&1
-            } else {
-                & $script:HERMES_EXE chat 2>&1
+            if (-not $script:HERMES_EXE) {
+                Write-Log "Hermes executable not found. Cannot launch Hermes provider." "ERROR" "launcher"
+                return $EXIT_HERMES_NOT_FOUND
             }
-            $exitCode = $LASTEXITCODE
+
+            $hermesArgs = @(
+                "chat",
+                "--query", $MISSION_PROMPT,
+                "--yolo",
+                "--accept-hooks",
+                "--max-turns", "120"
+            )
+
+            # --continue resumes the most recent session so Hermes keeps context
+            if ($Resume) {
+                $hermesArgs += "--continue"
+                Write-Log "Resuming most recent Hermes session..." "INFO" "launcher"
+            } else {
+                # Always try to continue the last session for context continuity.
+                # This is safe: if no prior session exists, Hermes starts fresh.
+                $hermesArgs += "--continue"
+                Write-Log "Continuing most recent Hermes session (or starting fresh)..." "INFO" "launcher"
+            }
+
+            & $script:HERMES_EXE @hermesArgs 2>&1
+            $exitCode = if ($null -eq $LASTEXITCODE) { 0 } else { $LASTEXITCODE }
         }
     }
 
@@ -1026,7 +1071,9 @@ try {
             130 { Write-Log "Interrupted (Ctrl+C). Not restarting." "WARN" "launcher"; $false }
             default {
                 Write-Log "Abnormal exit ($exitCode). Recording crash..." "WARN" "launcher"
-                Record-Restart -ExitCode $exitCode
+                # Safely coerce to int — Claude may emit a string or object[] as exit code
+                $intExitCode = try { [int]([string]$exitCode -replace '\s.*','').Trim() } catch { 1 }
+                Record-Restart -ExitCode $intExitCode
                 if (Test-RestartStorm) {
                     Write-Log "Restart storm triggered after crash." "ERROR" "supervisor"
                     $false

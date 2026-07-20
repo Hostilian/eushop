@@ -1,5 +1,12 @@
 # Changelog
 
+## [Unreleased] — Continuous Optimization Loop #8 (2026-07-21)
+
+### Added
+- **Reusable Breadcrumb & Structured Navigation**: Created `apps/web/components/layout/Breadcrumb.tsx` with WCAG 2.2 AA keyboard accessibility and Schema.org `BreadcrumbList` JSON-LD markup for SEO.
+- **Hierarchical Category & Product Routes**: Added `/products/[id].tsx` and `/category/[slug].tsx` routes rendering category product listings and detail pages with full breadcrumb trails.
+- **End-to-End Cart & Search Tests**: Added cart checkout navigation test in `apps/web/__tests__/cart.test.tsx` and fixed `allergenFree` query handling in `apps/web/services/demo-catalog.ts`.
+
 ## [Unreleased] — Continuous Optimization Loop #7 (2026-07-20)
 
 ### Added

@@ -34,3 +34,8 @@
   21. Task 21: Investor Readiness & YC Pitch Suite (`docs/yc-investor-readiness`)
   22. Task 22: Founder 2-Minute Demo Script (`docs/founder-demo-script`)
   23. Task 23: Release Gate Offline Test & Deploy to `main`
+
+## [2026-07-20 22:36 UTC] Phase 10 Completed: Navigation, UX & Cart Reliability (Tasks 25-27)
+- Task 25: Created reusable Breadcrumb component with Schema.org JSON-LD support, /products/[id] and /category/[slug] routes.
+- Task 26: Audited and verified end-to-end cart persistence and checkout flow. Added e2e cart tests.
+- Task 27: Fixed search filter allergen handle bug in demo-catalog.ts. All 15 web test suites passing cleanly (88/88 tests).

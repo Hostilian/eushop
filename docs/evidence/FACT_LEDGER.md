@@ -1,3 +1,4 @@
+<<<<<<< Updated upstream
 # EUshop Fact Ledger & Absolute Truthfulness Audit
 
 > **Policy Directive**: No public statement, marketing claims, investor metric, or compliance label may exist in EUshop unless supported by working code, passing tests, or verified facts.
@@ -40,3 +41,20 @@
 - **Purged Fake Traction**: Removed all hardcoded false claims of "Over 10,000 Active Sellers" or "Certified Compliant".
 - **Honest Status Display**: Verification badges are rendered ONLY when explicitly supplied by active API data or verified local profiles.
 - **Degradation Transparency**: When backend API endpoints are unreachable, the UI explicitly marks data origin as `demo` or `cache`.
+=======
+# EUshop Fact Ledger & Truthfulness Audit
+
+This document serves as a ledger of factual claims made within the EUshop repository and the results of their verification against the source code. The purpose of this audit is to ensure that all documentation is accurate and reflects the current state of the project.
+
+| Claim | Source File | Verification Status | Notes |
+| :--- | :--- | :--- | :--- |
+| Architecture diagram is accurate | `CLAUDE.md` | Verified | All components and versions in the diagram have been verified against the source code. |
+| `apps/web` is a Next.js frontend and a pnpm workspace member | `CLAUDE.md` | Verified | `apps/web/package.json` confirms it's a Next.js app, and `pnpm-workspace.yaml` confirms it's a workspace member. |
+| `apps/mobile` is a React Native/Expo app that is frozen for MVP | `CLAUDE.md` | Verified | `STATUS.md` confirms that `apps/mobile` is "frozen for the pre-seed fundraising MVP". |
+| `services/core-service` is a Spring Boot monolith and a pnpm workspace member | `CLAUDE.md` | Verified | `services/core-service/pom.xml` confirms it's a Spring Boot app, and `pnpm-workspace.yaml` confirms it's a workspace member. |
+| `services/api-gateway` directory is still physically present | `CLAUDE.md` | False | The directory `services/api-gateway` does not exist. `CLAUDE.md` is out of date. |
+| `db/migrations` contains sequential numbered SQL files from `001` to `006` | `CLAUDE.md` | False | The directory `db/migrations` contains files from `001` to `013`. `CLAUDE.md` is out of date. |
+| `k8s/` contains Deployment + ingress manifests | `CLAUDE.md` | Verified | The directory contains `core-service-deployment.yml` and `ingress.yml`. |
+| `docs/` contains `API.md`, `API_REFERENCE.md`, and `AUTH0_SETUP.md` | `CLAUDE.md` | Verified | The files exist in the `docs/` directory. |
+
+>>>>>>> Stashed changes

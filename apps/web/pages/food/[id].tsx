@@ -9,6 +9,7 @@ import { AllergenBadge, VerifiedSellerBadge } from '../../components/ui/Badge';
 // Import from packages/compliance once workspace resolution is confirmed.
 import { EU_ALLERGENS_14 } from '@eushop/compliance';
 import { StartConversationButton } from '../../components/chat/StartConversationButton';
+import { Breadcrumb } from '../../components/layout/Breadcrumb';
 import { readCart, writeCart } from '../../lib/storageSafety';
 
 interface FoodDetail {
@@ -252,13 +253,12 @@ export default function FoodDetailPage() {
 
       <div className="max-w-5xl mx-auto py-6">
         {/* Breadcrumb */}
-        <nav aria-label="Breadcrumb" className="mb-6 text-sm text-gray-500 dark:text-gray-400 flex items-center gap-2">
-          <Link href="/" className="hover:text-brand-green dark:hover:text-brand-gold">Home</Link>
-          <span aria-hidden="true">/</span>
-          <Link href="/search" className="hover:text-brand-green dark:hover:text-brand-gold">Browse</Link>
-          <span aria-hidden="true">/</span>
-          <span className="text-gray-800 dark:text-gray-200 font-medium">{food.name}</span>
-        </nav>
+        <Breadcrumb items={[
+          { label: 'Home', href: '/' },
+          { label: 'Browse', href: '/search' },
+          ...(food.category ? [{ label: food.category, href: `/category/${encodeURIComponent(food.category.toLowerCase())}` }] : []),
+          { label: food.name }
+        ]} />
 
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-10">
           {/* Image */}
