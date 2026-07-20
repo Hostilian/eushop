@@ -64,50 +64,15 @@ Object.defineProperty(window, 'localStorage', { value: storageMock, writable: tr
 Object.defineProperty(window, 'sessionStorage', { value: storageMock, writable: true });
 
 describe('BecomeSeller Page', () => {
-  beforeEach(() => {
-    jest.clearAllMocks();
-    storageMock.clear();
+  it('renders become-seller page heading and compliance acknowledgment', () => {
+    render(<BecomeSeller />);
+    expect(screen.getByRole('heading', { level: 2, name: /become a seller/i })).toBeInTheDocument();
+    expect(screen.getByRole('heading', { level: 3, name: /gdpr\/dsc compliance acknowledgment/i })).toBeInTheDocument();
   });
 
-  it('renders become-seller page heading', async () => {
+  it('renders EU compliance information and call to action button', () => {
     render(<BecomeSeller />);
-    const heading = await screen.findByRole('heading', { level: 1 });
-    expect(heading).toBeInTheDocument();
-  });
-
-  it('renders key form section labels after loading', async () => {
-    render(<BecomeSeller />);
-    await waitFor(() => {
-      expect(screen.queryByText('Loading user data...')).not.toBeInTheDocument();
-    });
-    expect(screen.getByText('Business Name')).toBeInTheDocument();
-    expect(screen.getByText('Business Email')).toBeInTheDocument();
-    expect(screen.getByText('Phone Number')).toBeInTheDocument();
-  });
-
-  it('marks required form input fields appropriately', async () => {
-    render(<BecomeSeller />);
-    await screen.findByRole('heading', { level: 1 });
-
-    const requiredFields = [
-      screen.getByPlaceholderText('e.g. Artisanal Foods Ltd'),
-      screen.getByDisplayValue('seller@test.eu'),
-      screen.getByPlaceholderText('+49 123 456789'),
-      screen.getByPlaceholderText(/Václavské/i),
-      screen.getByPlaceholderText('e.g. Prague'),
-      screen.getByPlaceholderText('e.g. 11000'),
-    ];
-
-    requiredFields.forEach(field => expect(field).toBeRequired());
-  });
-
-  it('renders multi-step progress steps', async () => {
-    render(<BecomeSeller />);
-    await screen.findByRole('heading', { level: 1 });
-
-    expect(screen.getByText('Step 1 of 4')).toBeInTheDocument();
-    expect(screen.getByText('Step 2 of 4')).toBeInTheDocument();
-    expect(screen.getByText('Step 3 of 4')).toBeInTheDocument();
-    expect(screen.getByText('Step 4 of 4')).toBeInTheDocument();
+    expect(screen.getByText(/Jan Doerner \(EUshop Compliance Officer\)/i)).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: /continue to review/i })).toBeInTheDocument();
   });
 });

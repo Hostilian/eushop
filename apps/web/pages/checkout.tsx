@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import Head from 'next/head';
 import Link from 'next/link';
 import { loadStripe } from '@stripe/stripe-js';
 import { Elements, CardElement, useStripe, useElements } from '@stripe/react-stripe-js';
@@ -221,6 +222,19 @@ function CheckoutForm() {
   }
 
   return (
+    <Head>
+      {/* COMPLIANCE-REVIEW: PCI DSS — SAQ-A scope. No card data is handled, read,
+          or stored client-side; Stripe Elements (a Stripe-hosted iframe) is the only
+          card surface. This CSP is the in-page enforcement baseline for the static
+          GitHub Pages export. The authoritative CSP + X-Frame-Options must ALSO be
+          served as real HTTP headers at the CDN/proxy layer before live payments.
+          `script-src 'unsafe-inline'` is required because Next.js static export inlines
+          the __NEXT_DATA__ JSON; tightening this requires a nonce-based build pipeline. */}
+      <meta
+        httpEquiv="Content-Security-Policy"
+        content="default-src 'self'; script-src 'self' 'unsafe-inline' https://js.stripe.com; style-src 'self' 'unsafe-inline'; img-src 'self' data: https:; font-src 'self' data:; connect-src 'self' https://*.stripe.com http://localhost:3000; frame-src https://js.stripe.com https://hooks.stripe.com; object-src 'none'; base-uri 'self'; form-action 'self'; frame-ancestors 'none'"
+      />
+    </Head>
     <PageWrapper>
       <div className="max-w-5xl mx-auto py-6">
         <h1 className="text-3xl font-extrabold text-brand-dark dark:text-white mb-8 font-display">Secure Checkout</h1>

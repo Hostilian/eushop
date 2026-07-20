@@ -444,6 +444,36 @@ export default function FoodDetailPage() {
                   COMPLIANCE-REVIEW required: this disclosure demonstrates field placement and does not certify a food label or listing.
                 </p>
               )}
+
+              {/* GPSR (Regulation (EU) 2023/988 Art. 19) Non-Food Disclosures */}
+              {/* COMPLIANCE-REVIEW: Mandatory for non-food distance sales offered to EU consumers */}
+              {((food as unknown as Record<string, unknown>).productType === 'non-food' || (food as unknown as Record<string, unknown>).gpsrManufacturer) && (
+                <div className="border-t border-gray-200 dark:border-gray-800 pt-3 space-y-2" data-testid="gpsr-disclosures">
+                  <h3 className="text-xs font-bold text-gray-600 dark:text-gray-400 uppercase tracking-wider">
+                    GPSR Product Safety & Manufacturer Info
+                  </h3>
+                  {(food as unknown as Record<string, { name: string; address: string; email: string }>).gpsrManufacturer && (
+                    <p className="text-xs text-gray-700 dark:text-gray-300">
+                      <strong>Manufacturer:</strong> {(food as unknown as Record<string, { name: string; address: string; email: string }>).gpsrManufacturer.name}, {(food as unknown as Record<string, { name: string; address: string; email: string }>).gpsrManufacturer.address} ({(food as unknown as Record<string, { name: string; address: string; email: string }>).gpsrManufacturer.email})
+                    </p>
+                  )}
+                  {(food as unknown as Record<string, { name: string; address: string; email: string }>).gpsrResponsiblePerson && (
+                    <p className="text-xs text-gray-700 dark:text-gray-300">
+                      <strong>EU Responsible Person:</strong> {(food as unknown as Record<string, { name: string; address: string; email: string }>).gpsrResponsiblePerson.name}, {(food as unknown as Record<string, { name: string; address: string; email: string }>).gpsrResponsiblePerson.address} ({(food as unknown as Record<string, { name: string; address: string; email: string }>).gpsrResponsiblePerson.email})
+                    </p>
+                  )}
+                  {Array.isArray((food as unknown as Record<string, string[]>).gpsrSafetyWarnings) && (food as unknown as Record<string, string[]>).gpsrSafetyWarnings.length > 0 && (
+                    <div className="text-xs text-amber-800 dark:text-amber-300 bg-amber-50 dark:bg-amber-950/40 p-2 rounded-lg border border-amber-200 dark:border-amber-800">
+                      <strong>Safety Warnings:</strong>
+                      <ul className="list-disc pl-4 mt-1 space-y-0.5">
+                        {((food as unknown as Record<string, string[]>).gpsrSafetyWarnings).map((w: string, idx: number) => (
+                          <li key={idx}>{w}</li>
+                        ))}
+                      </ul>
+                    </div>
+                  )}
+                </div>
+              )}
             </section>
 
             {/* Dietary restrictions */}

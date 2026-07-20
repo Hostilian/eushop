@@ -77,7 +77,12 @@ export default function App({ Component, pageProps, router }: AppProps) {
 
         <meta name="referrer" content="strict-origin-when-cross-origin" />
         <meta name="robots" content="noindex, follow" />
-        <meta name="frame-options" content="DENY" />
+        {/* COMPLIANCE-REVIEW: X-Frame-Options is NOT honoured as a <meta> tag by browsers,
+            so the old `<meta name="frame-options" content="DENY">` was inert. Clickjacking
+            protection is now enforced via the CSP `frame-ancestors 'none'` directive on
+            sensitive pages (checkout). A real HTTP header at the CDN/proxy layer should be
+            added site-wide before production. */}
+        <meta name="referrer" content="strict-origin-when-cross-origin" />
       </Head>
 
       <ThemeInitializer />

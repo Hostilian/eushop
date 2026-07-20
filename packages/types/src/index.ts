@@ -129,6 +129,22 @@ export const ProductSchema = z.object({
    */
   productType: z.enum(['food', 'non-food']).default('food'),
   /**
+   * GPSR (Regulation (EU) 2023/988 Art. 19): Mandatory disclosures for non-food distance sales.
+   * // COMPLIANCE-REVIEW: Required for non-food items offered to EU consumers.
+   */
+  gpsrManufacturer: z.object({
+    name: z.string().min(1),
+    address: z.string().min(1),
+    email: z.string().email(),
+  }).optional(),
+  gpsrResponsiblePerson: z.object({
+    name: z.string().min(1),
+    address: z.string().min(1),
+    email: z.string().email(),
+  }).optional(),
+  gpsrSafetyWarnings: z.array(z.string()).optional(),
+  gpsrBatchNumber: z.string().optional(),
+  /**
    * Thermal packaging requirement for food transport & cold-chain shipping.
    * Ambient (15-25°C), Chilled (2-8°C), or Frozen (-18°C).
    */

@@ -936,6 +936,14 @@ function Invoke-Hermes {
                 "--accept-hooks"
             )
 
+            if ($SelectedProvider -eq "nvidia") {
+                $hermesArgs += @("--provider", "nvidia", "--model", "nvidia/meta/llama-3.3-70b-instruct")
+            } elseif ($SelectedProvider -eq "kimi") {
+                $hermesArgs += @("--provider", "kimi", "--model", "kimi/moonshot-v1-8k")
+            } elseif ($SelectedProvider -eq "minimax") {
+                $hermesArgs += @("--provider", "minimax", "--model", "minimax/MiniMax-Text-01")
+            }
+
             if ($Resume) {
                 $hermesArgs += "--continue"
                 Write-Log "Resuming most recent Hermes session..." "INFO" "launcher"
