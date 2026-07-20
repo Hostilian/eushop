@@ -110,6 +110,11 @@ export function Footer() {
                       Impressum / Legal Notice
                     </Link>
                   </li>
+                  <li>
+                    <Link href="/withdrawal" className="hover:text-primary dark:hover:text-blue-400 transition">
+                      Statutory Withdrawal Form
+                    </Link>
+                  </li>
                 </ul>
               </div>
             </div>
