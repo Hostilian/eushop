@@ -65,4 +65,5 @@
 - Task 70: Created DSA Art. 30 trader onboarding interface with Regulation (EU) 2016/1191 cross-border document translation guidance in `apps/web/pages/become-seller.tsx`.
 
 ## [2026-07-21 01:42 UTC] Phase 20 Active: AI Vision, Allergen Scanner & OCR Pipeline (Tasks 71-78)
-- Task 71: Integrating Vision AI food label scanner endpoint (`scripts/scan_food_label.py`).
+- Task 71: Verified Python Vision AI food label scanner backend (`scripts/scan_food_label.py`) supporting regex-based Annex II allergen matching across 6 EU languages.
+- Task 72: Created `OcrScanner.tsx` real-time camera ingredient list OCR component for seller product onboarding with unit test coverage in `OcrScanner.test.tsx`.

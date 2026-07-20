@@ -89,8 +89,8 @@ Status: COMPLETED
 ## PHASE 20 — AI Vision, Allergen Scanner & OCR Pipeline
 Status: IN_PROGRESS
 
-- [ ] TASK 71 — Vision AI food label scanner integration (scripts/scan_food_label.py API endpoint)
-- [ ] TASK 72 — Real-time camera ingredient list OCR for seller product onboarding
+- [x] TASK 71 — Vision AI food label scanner integration (scripts/scan_food_label.py API endpoint)
+- [x] TASK 72 — Real-time camera ingredient list OCR for seller product onboarding
 - [ ] TASK 73 — Automated Annex II 14 allergen extraction & auto-flagging engine
 - [ ] TASK 74 — Nutrition declaration table auto-parsing from raw label images
 - [ ] TASK 75 — Automated PDO / PGI official certificate OCR verification scanner
