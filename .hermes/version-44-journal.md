@@ -1,5 +1,14 @@
 # Version 44 Hermes Recovery Journal
 
+## [2026-07-20 12:01 UTC] Task 10 validated
+- **Branch/commit**: `fix/storage-safety` at `252dd93c`.
+- **Delivered**: versioned/validated storage envelopes, corrupt reset, migrations, quotas, SSR guards, sensitive-data rejection, and safe cart persistence.
+- **Data minimisation**: account profiles, API caches, demo orders, seller tax/contact applications, custom listings, and waitlist records are no longer persisted in modern browser code; known legacy keys are purged once at startup.
+- **Compliance review**: client cleanup is defence in depth and does not replace server-side GDPR retention/erasure, DSA KYBC evidence, or DAC7 recordkeeping. Server records are unaffected.
+- **Verification**: TypeScript passed; 12 Jest suites / 82 tests passed; ESLint passed with zero errors and three pre-existing image warnings.
+- **Preserved unrelated state**: untracked `scripts/Get-Progress.ps1` was not modified or committed.
+- **Next**: Task 11 on `feat/homepage-investor-narrative`.
+
 ## [2026-07-20 11:48 UTC] Task 9 validated
 - **Branch/commit**: `feat/error-boundaries` at `ad8a0e36`.
 - **Delivered**: region-aware boundaries for navigation, marketplace, product details, cart/checkout, seller onboarding, account controls, and a final page-level containment layer.

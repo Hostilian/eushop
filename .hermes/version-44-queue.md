@@ -22,7 +22,7 @@
   - Provide inline recovery buttons ("Retry", "Load Demo Catalogue", "Back to Marketplace") so zero blank screens or infinite spinners occur.
   - Branch: `feat/error-boundaries`
 
-- [ ] TASK 10 — Local Data Safety & Storage Handler (`apps/web/lib/storageSafety.ts`)
+- [x] TASK 10 — Local Data Safety & Storage Handler (`apps/web/lib/storageSafety.ts`) — validated at `252dd93c`
   - Defensive JSON parsing, schema versioning, corrupt data reset, quota handling for `localStorage` and `sessionStorage`.
   - SSR guard (`typeof window === 'undefined'`), never store raw secrets or unencrypted PII.
   - Branch: `fix/storage-safety`

@@ -1,5 +1,11 @@
 # Changelog
 
+## [Unreleased] — Homepage clarity story (2026-07-20)
+
+### Changed
+- Rebuilt the homepage around one marketplace value proposition, primary Explore Marketplace and Sell on EUshop actions, a three-step buyer journey, and a factual trust layer.
+- Removed competing mobile-app, AI-search, and regulatory-certification narratives from the homepage; featured foods now disclose whether their data is live, cached, bundled, demonstration, or offline.
+
 ## [Unreleased] — Browser storage safety (2026-07-20)
 
 ### Added
