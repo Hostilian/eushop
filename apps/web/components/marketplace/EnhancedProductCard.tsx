@@ -100,7 +100,7 @@ export default function EnhancedProductCard({
             }}
           />
         ) : (
-          <div className="flex items-center justify-center h-full bg-gray-200 dark:bg-gray-700 text-gray-600 dark:text-gray-400">
+          <div className="flex items-center justify-center h-full bg-gray-200 dark:bg-gray-700 text-gray-800 dark:text-gray-300">
             <svg width="100%" height="100%" viewBox="0 0 4 3" aria-label="Image placeholder" role="img" className="block">
               <rect width="4" height="3" fill="currentColor" opacity="0.2" />
               <text x="50%" y="50%" dominant-baseline="middle" text-anchor="middle" fill="currentColor" opacity="0.6" font-size="0.6">

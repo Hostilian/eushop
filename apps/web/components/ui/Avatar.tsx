@@ -24,7 +24,7 @@ export function AvatarImage(
   if (error) {
     return (
       <span
-        className="inline-flex h-full w-full items-center justify-center bg-gray-200 dark:bg-gray-700 text-gray-600 dark:text-gray-400"
+        className="inline-flex h-full w-full items-center justify-center bg-gray-200 dark:bg-gray-700 text-gray-800 dark:text-gray-300"
       >
         <svg width="100%" height="100%" viewBox="0 0 1 1" aria-label="Avatar placeholder" role="img" className="block">
           <circle cx="0.5" cy="0.5" r="0.4" fill="currentColor" opacity="0.2" />
