@@ -17,7 +17,7 @@
 
 ## Phase 4 — Investor-Ready Narrative, Demo Data & Brand Aesthetics
 - [x] TASK 11 - Homepage Rebuild & 5-Second Clarity Story (`apps/web/pages/index.tsx`) [VALIDATED 2cff9579]
-- [x] TASK 12 - Bundled Demonstration Catalogue (`apps/web/data/demo-products.ts`) [VALIDATED 1bc846e6]
+- [x] TASK 12 - Bundled Demonstration Catalogue (`apps/web/data/demo-products.ts`) [VALIDATED 6ec926a2]
   - Populate 12 authentic EU regional specialty items (Belgian pralines, Czech spa wafers, Italian pistachio cream, Spanish smoked paprika, French preserves, German marzipan, Greek mountain honey, etc.) with complete FIC Art. 14 allergen & origin metadata.
   - Add subtle "Demonstration catalogue" origin indicator when backend API is unreachable (Mode B fallback).
   - Branch: `feat/bundled-demo-catalogue`

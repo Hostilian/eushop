@@ -1,5 +1,11 @@
 # Version 44 Hermes Recovery Journal
 
+## [2026-07-20 15:40:00 UTC] Task 12: Added demonstration indicator to ProductCard for fallback catalogue
+- Modified ProductCard to show a subtle "Demo" badge when the catalogue origin is 'demo' (i.e., when backend API is unreachable).
+- Updated ProductCard.tsx to accept an optional origin prop and conditionally render the badge.
+- Updated usage in search.tsx and index.tsx to pass the catalogue origin.
+- Updated test mocks to accommodate the new prop.
+
 ## [2026-07-20 15:30:00 UTC] Task 13: Added image fallback and flag overlay to ProductCard
 - Implemented fallback UI for broken product images.
 - Added regional flag overlay in the top-right corner of product images.
