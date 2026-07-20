@@ -16,7 +16,7 @@ function Get-EUshopProgress {
     $WdLock    = Join-Path $ProjectPath ".agent-state\watchdog.pid"
     $LogDir    = Join-Path $ProjectPath ".claude\agent-failover-logs-v3"
 
-    $TotalTasks = 23
+    $TotalTasks = 24
     $CompletedTasks = 0
     $TaskDetails = @()
 
