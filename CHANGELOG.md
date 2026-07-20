@@ -6,6 +6,10 @@
 - **Schema.org Rich Snippets**: Enhanced JSON-LD structured data in `apps/web/pages/food/[id].tsx` with `countryOfOrigin`, `availability` (`InStock`), `itemCondition` (`NewCondition`), and canonical product URL tags for rich search engine indexing.
 - **EU Omnibus Directive Pricing Transparency**: Updated `apps/web/components/ui/ProductCard.tsx` with an `originalPrice` prop and explicit 30-day historical lowest price tag (`Lowest in last 30 days: €XX.XX`) in compliance with EU Directive 2019/2161 Art. 6a.
 
+### Fixed
+- **Component Parameter Destructuring**: Added `originalPrice` to destructured arguments in `ProductCard` component definition.
+- **Test Suite Alignment**: Aligned `__tests__/homepage-narrative.test.tsx` assertions with the sub-50 character YC H1 title.
+
 ## [Unreleased] — Continuous Optimization Loop #1 (2026-07-20)
 
 ### Changed

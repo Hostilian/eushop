@@ -38,6 +38,7 @@ export function ProductCard({
   name,
   description,
   price,
+  originalPrice,
   country,
   imageUrl,
   allergens = [],
