@@ -62,16 +62,23 @@ export const ChatContainer: React.FC<ChatContainerProps> = ({
     <div className="flex h-[600px] max-h-[80vh] w-full max-w-6xl mx-auto bg-white rounded-xl shadow-lg overflow-hidden">
       {/* Conversation List */}
       <div className="w-1/3 border-r border-gray-200 overflow-y-auto">
-        <div className="p-4 border-b border-gray-200 flex justify-between items-center">
-          <h2 className="text-lg font-semibold text-gray-900">Conversations</h2>
+        <div className="p-4 border-b border-gray-200 dark:border-gray-800 flex justify-between items-center bg-gray-50 dark:bg-gray-900/50">
+          <div className="flex items-center gap-2">
+            <h2 className="font-semibold text-gray-900 dark:text-white">Messages</h2>
+            <WebSocketStatus />
+          </div>
           <Button
-            variant="ghost"
-            size="icon"
+            size="sm"
             onClick={() => setShowGroupCreator(true)}
-            aria-label="Create group chat"
+            className="flex items-center gap-1"
           >
-            <Plus className="h-5 w-5" />
+            <Plus className="w-4 h-4" />
+            New Group
           </Button>
+        </div>
+        <div className="px-3 py-1.5 bg-slate-900 border-b border-slate-800 text-[10px] font-mono text-emerald-400 flex items-center justify-between">
+          <span>🔒 DSA Art. 31 Audit Trail Enabled</span>
+          <span>SLA &lt;24h Seller Response</span>
         </div>
         <ConversationList
           onSelectConversation={handleSelectConversation}

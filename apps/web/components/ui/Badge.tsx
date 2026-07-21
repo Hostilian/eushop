@@ -86,3 +86,15 @@ export function AllergenBadge({ allergen }: { allergen: string }) {
   );
 }
 
+/**
+ * Renders a seller response SLA tracking badge under DSA Article 20/30 (<24h response).
+ */
+export function SellerSlaBadge({ averageResponseHours = 2 }: { averageResponseHours?: number }) {
+  const isFast = averageResponseHours <= 24;
+  return (
+    <Badge variant={isFast ? "success" : "warning"} size="sm" icon={<span>⚡</span>}>
+      {isFast ? `Fast SLA (<${averageResponseHours}h Response)` : `SLA Response (${averageResponseHours}h)`}
+    </Badge>
+  );
+}
+
