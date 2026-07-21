@@ -1,0 +1,11 @@
+{
+  "id": "2",
+  "subject": "Read the CLAUDE.md for overall project instructions",
+  "description": "Update the CLAUDE.md for EUshop project instructions",
+  "status": "pending",
+  "blocks": [],
+  "blockedBy": [],
+  "metadata": {
+    "project": "EUshop"
+  }
+}

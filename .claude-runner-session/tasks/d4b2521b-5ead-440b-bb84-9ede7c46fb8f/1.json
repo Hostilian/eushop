@@ -1,0 +1,11 @@
+{
+  "id": "1",
+  "subject": "Update the hc-optimization-queue.md",
+  "description": "Read and update the task list and Recovery State for EUshop project.",
+  "status": "pending",
+  "blocks": [],
+  "blockedBy": [],
+  "metadata": {
+    "project": "EUshop"
+  }
+}
