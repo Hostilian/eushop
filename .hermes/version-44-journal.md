@@ -76,3 +76,4 @@
 
 ## [2026-07-21 03:25 UTC] Phase 21 Active: Real-Time Chat, Seller Messaging & DSA Dispute System (Tasks 79-86)
 - Task 79: Created `disputes.tsx` DSA Art. 20 Internal Complaint-Handling & Out-of-Court Dispute Resolution portal with link in `Footer.tsx` and unit test coverage in `disputes.test.tsx`.
+- Task 83: Created `FileValidationService.java` to validate file uploads on the backend, checking for MIME type and file size. Integrated the service into `FileController.java`.

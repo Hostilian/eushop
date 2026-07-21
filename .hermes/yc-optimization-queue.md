@@ -105,8 +105,8 @@ Status: IN_PROGRESS
 - [x] TASK 80 — Real-time buyer-seller WebSocket messaging with end-to-end audit trail
 - [x] TASK 81 — Seller response time SLA tracking & DSA compliance badge assignment
 - [x] TASK 82 — Automated buyer dispute escalation for unfulfilled cross-border shipments
-- [/] TASK 83 — File attachment virus scanning and PDF validation service for chat
-- [ ] TASK 84 — Message reaction & read receipt synchronization across web & mobile
+- [x] TASK 83 — File attachment virus scanning and PDF validation service for chat
+- [/] TASK 84 — Message reaction & read receipt synchronization across web & mobile
 - [x] TASK 85 — DSA Art. 16 Notice-and-Action illegal content reporting workflow
 - [ ] TASK 86 — Automated notification digest emails for seller customer inquiries
 

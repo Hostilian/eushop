@@ -2,6 +2,7 @@ package com.eushop.core.controller;
 
 import com.eushop.core.dto.ApiResponse;
 import com.eushop.core.service.FileStorageService;
+import com.eushop.core.service.FileValidationService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -15,9 +16,11 @@ import java.util.Map;
 public class FileController {
 
     private final FileStorageService fileStorageService;
+    private final FileValidationService fileValidationService;
 
-    public FileController(FileStorageService fileStorageService) {
+    public FileController(FileStorageService fileStorageService, FileValidationService fileValidationService) {
         this.fileStorageService = fileStorageService;
+        this.fileValidationService = fileValidationService;
     }
 
     /**
@@ -30,6 +33,17 @@ public class FileController {
     public ResponseEntity<ApiResponse<Map<String, String>>> uploadFile(
             @RequestParam("file") MultipartFile file,
             @RequestParam(value = "conversationId", required = false) String conversationId) {
+
+        if (!fileValidationService.isValid(file)) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                    .body(ApiResponse.error("Invalid file. Please check the file type and size."));
+        }
+        
+        // COMPLIANCE-REVIEW: Placeholder for virus scanning and PDF validation.
+        if (!fileValidationService.isVirusFree(file) || !fileValidationService.isValidPdf(file)) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                    .body(ApiResponse.error("File failed security checks."));
+        }
 
         try {
             String fileUrl = fileStorageService.storeFile(file, conversationId);

@@ -1,11 +1,10 @@
 package com.eushop.core.entity;
 
 import java.time.LocalDateTime;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.ArrayList;
+import java.util.List;
 
-import org.hibernate.annotations.JdbcTypeCode;
-import org.hibernate.type.SqlTypes;
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -13,6 +12,7 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 
 @Entity
@@ -43,9 +43,8 @@ public class Message {
     @Column(name = "created_at", nullable = false, updatable = false)
     private LocalDateTime createdAt;
 
-    @JdbcTypeCode(SqlTypes.JSON)
-    @Column(name = "metadata", nullable = false, columnDefinition = "jsonb")
-    private Map<String, Object> metadata = new HashMap<>();
+    @OneToMany(mappedBy = "message", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<MessageReaction> reactions = new ArrayList<>();
 
     public Message() {
     }
@@ -114,11 +113,11 @@ public class Message {
         this.createdAt = createdAt;
     }
 
-    public Map<String, Object> getMetadata() {
-        return metadata;
+    public List<MessageReaction> getReactions() {
+        return reactions;
     }
 
-    public void setMetadata(Map<String, Object> metadata) {
-        this.metadata = metadata == null ? new HashMap<>() : metadata;
+    public void setReactions(List<MessageReaction> reactions) {
+        this.reactions = reactions;
     }
 }
