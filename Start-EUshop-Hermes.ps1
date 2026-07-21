@@ -917,7 +917,7 @@ function Invoke-Hermes {
             $env:ANTHROPIC_BASE_URL = $GATEWAY_URL
             $env:ANTHROPIC_AUTH_TOKEN = $token
             $env:CLAUDE_CODE_ENABLE_GATEWAY_MODEL_DISCOVERY = "1"
-            $env:CLAUDE_CODE_AUTO_COMPACT_WINDOW = "190000"
+            $env:CLAUDE_CODE_AUTO_COMPACT_WINDOW = "7000"
             $env:CLAUDE_CODE_MAX_OUTPUT_TOKENS = "4096"
             $env:MAX_TOKENS = "4096"
             $env:MAX_THINKING_TOKENS = "1024"
