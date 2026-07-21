@@ -591,22 +591,16 @@ function Get-ConfiguredCandidates {
     # currently available free model supporting the required capabilities.
     $Definitions = @(
         [PSCustomObject]@{
-            Name = "Google Gemini 2.0 Flash"
-            Provider = "gemini"
-            KeyName = "GEMINI_API_KEY"
-            Model = "gemini/models/gemini-2.0-flash"
+            Name = "Mistral Codestral"
+            Provider = "mistral"
+            KeyName = "MISTRAL_API_KEY"
+            Model = "mistral/codestral-latest"
         },
         [PSCustomObject]@{
-            Name = "Google Gemini 1.5 Pro"
-            Provider = "gemini"
-            KeyName = "GEMINI_API_KEY"
-            Model = "gemini/models/gemini-1.5-pro"
-        },
-        [PSCustomObject]@{
-            Name = "Google Gemini 1.5 Flash 8B"
-            Provider = "gemini"
-            KeyName = "GEMINI_API_KEY"
-            Model = "gemini/models/gemini-1.5-flash-8b"
+            Name = "Mistral Small"
+            Provider = "mistral"
+            KeyName = "MISTRAL_API_KEY"
+            Model = "mistral/mistral-small-latest"
         },
         [PSCustomObject]@{
             Name = "Groq Llama 3.3 70B"
