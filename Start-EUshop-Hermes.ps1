@@ -918,8 +918,8 @@ function Invoke-Hermes {
             $env:ANTHROPIC_AUTH_TOKEN = $token
             $env:CLAUDE_CODE_ENABLE_GATEWAY_MODEL_DISCOVERY = "1"
             $env:CLAUDE_CODE_AUTO_COMPACT_WINDOW = "190000"
-            $env:CLAUDE_CODE_MAX_OUTPUT_TOKENS = "16384"
-            $env:MAX_TOKENS = "16384"
+            $env:CLAUDE_CODE_MAX_OUTPUT_TOKENS = "4096"
+            $env:MAX_TOKENS = "4096"
             $env:MAX_THINKING_TOKENS = "1024"
             $env:API_TIMEOUT_MS = "600000"
             $env:DISABLE_AUTOUPDATER = "1"

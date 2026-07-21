@@ -591,10 +591,16 @@ function Get-ConfiguredCandidates {
     # currently available free model supporting the required capabilities.
     $Definitions = @(
         [PSCustomObject]@{
-            Name = "OpenCode Codex"
-            Provider = "opencode"
-            KeyName = "OPENCODE_API_KEY"
-            Model = "opencode/gpt-5.3-codex"
+            Name = "GitHub Models GPT-4.1"
+            Provider = "github_models"
+            KeyName = "GITHUB_MODELS_TOKEN"
+            Model = "github_models/openai/gpt-4.1"
+        },
+        [PSCustomObject]@{
+            Name = "Cerebras GPT OSS"
+            Provider = "cerebras"
+            KeyName = "CEREBRAS_API_KEY"
+            Model = "cerebras/gpt-oss-120b"
         },
         [PSCustomObject]@{
             Name = "Google Gemini 2.5 Flash"
