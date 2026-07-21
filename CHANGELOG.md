@@ -1,5 +1,18 @@
 # Changelog
 
+## [Unreleased] — Continuous Optimization Loop #11 (2026-07-21)
+
+### Added
+- **API Rate Limiter & DDoS Mitigation Middleware (Phase 23 - TASK 99)**:
+  - Created `apps/web/lib/rate-limiter.ts` supporting IP/Token request throttling (`checkRateLimit`) without storing personal user data.
+- **JWT & RBAC Role Authorization Module (Phase 23 - TASK 100)**:
+  - Created `apps/web/lib/rbac.ts` enforcing role separation across `BUYER`, `SELLER`, and `ADMIN` personas.
+- **Cookieless EU Analytics Engine (Phase 24 - TASK 103)**:
+  - Created `apps/web/lib/cookieless-analytics.ts` logging anonymous page view metrics per GDPR Art. 5(1)(c) data minimization standards.
+- **EU Cross-Border Regional Shipping Calculator (Phase 24 - TASK 105)**:
+  - Created `apps/web/lib/shipping-calculator.ts` calculating regional EU shipping fees and VAT breakdown per postal code.
+- **Milestone Progress**: Advanced repository completion rate to **55.9% (76 / 136 tasks)**.
+
 ## [Unreleased] — Continuous Optimization Loop #10 (2026-07-21)
 
 ### Added

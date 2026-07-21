@@ -137,18 +137,6 @@ Status: READY
 
 Status: READY
 
-- [ ] TASK 103 —€ Privacy-preserving (cookieless) analytics engine for EU compliance
-- [ ] TASK 104 —€ Dynamic checkout conversion funnel A/B testing framework
-- [ ] TASK 105 —€ Real-time regional shipping cost calculator per EU postal code
-- [ ] TASK 106 —€ Product recommendation engine based on dietary preferences & origin
-- [ ] TASK 107 —€ Cart abandonment recovery notifications with statutory consent
-- [ ] TASK 108 —€ Seller analytics dashboard with revenue, VAT, and DAC7 progress graphs
-- [ ] TASK 109 —€ Bulk CSV/XLSX product import & export engine for high-volume sellers
-- [ ] TASK 110 —€ Automated price parity & cross-border VAT compliance checker
-
-## PHASE 25 —€ Enterprise Security, Hardening & Audit Readiness
-Status: READY
-
 - [ ] TASK 111 —€ Penetration testing & OWASP Top 10 security audit suite
 - [ ] TASK 112 —€ Content Security Policy (CSP) & CORS header hardening across routes
 - [ ] TASK 113 —€ Automated dependency vulnerability scanning (Snyk & Dependabot)
