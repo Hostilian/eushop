@@ -66,7 +66,7 @@ export const MessageList: React.FC<MessageListProps> = ({
           content: messageData.content,
           isRead: messageData.isRead,
           createdAt: messageData.createdAt,
-          reactions: messageData.reactions || {},
+          reactions: messageData.reactions || [],
         }]);
         if (onNewMessage) {
           onNewMessage();
@@ -91,7 +91,7 @@ export const MessageList: React.FC<MessageListProps> = ({
     const handleReaction = (reactionData: any) => {
       if (reactionData.conversationId === conversationId) {
         setMessages(prev => prev.map(msg =>
-          msg.id === reactionData.id ? { ...msg, reactions: reactionData.reactions || {} } : msg
+          msg.id === reactionData.id ? { ...msg, reactions: reactionData.reactions || [] } : msg
         ));
       }
     };
@@ -231,7 +231,7 @@ const MessageItem: React.FC<{
             <div className="flex justify-between items-center mt-1">
               <MessageReactions
                 messageId={message.id}
-                reactions={message.reactions || {}}
+                reactions={message.reactions || []}
                 onAddReaction={() => {
                   // Refresh reactions if needed
                 }}

@@ -5,15 +5,17 @@ import { Button } from '../ui/Button';
 import { Tooltip } from '../ui/Tooltip';
 import { websocketService } from '../../lib/services/websocketService';
 
+import { MessageReaction } from '../../lib/services/chatService';
+
 interface MessageReactionsProps {
   messageId: string;
-  reactions: Record<string, number>;
+  reactions: MessageReaction[];
   onAddReaction?: (reaction: string) => void;
 }
 
 export const MessageReactions: React.FC<MessageReactionsProps> = ({
   messageId,
-  reactions = {},
+  reactions = [],
   onAddReaction,
 }) => {
   const [showReactionPicker, setShowReactionPicker] = useState(false);
@@ -36,7 +38,15 @@ export const MessageReactions: React.FC<MessageReactionsProps> = ({
     }
   };
 
-  const totalReactions = Object.values(reactions).reduce((sum, count) => sum + count, 0);
+  const groupedReactions = reactions.reduce((acc, reaction) => {
+    if (!acc[reaction.reaction]) {
+      acc[reaction.reaction] = 0;
+    }
+    acc[reaction.reaction]++;
+    return acc;
+  }, {} as Record<string, number>);
+
+  const totalReactions = reactions.length;
 
   if (totalReactions === 0 && !showReactionPicker) {
     return (
@@ -77,7 +87,7 @@ export const MessageReactions: React.FC<MessageReactionsProps> = ({
       )}
 
       {/* Existing reactions */}
-      {Object.entries(reactions).map(([reaction, count]) => (
+      {Object.entries(groupedReactions).map(([reaction, count]) => (
         <Tooltip key={reaction} content={`${count} reaction${count !== 1 ? 's' : ''}`}>
           <button
             onClick={() => handleAddReaction(reaction)}

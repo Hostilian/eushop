@@ -77,3 +77,5 @@
 ## [2026-07-21 03:25 UTC] Phase 21 Active: Real-Time Chat, Seller Messaging & DSA Dispute System (Tasks 79-86)
 - Task 79: Created `disputes.tsx` DSA Art. 20 Internal Complaint-Handling & Out-of-Court Dispute Resolution portal with link in `Footer.tsx` and unit test coverage in `disputes.test.tsx`.
 - Task 83: Created `FileValidationService.java` to validate file uploads on the backend, checking for MIME type and file size. Integrated the service into `FileController.java`.
+- Task 84: Implemented message reactions and read receipts. Created `MessageReaction` entity and repository, updated `Message` entity, and created a new database migration. Updated `ConversationService` and `WebSocketController` to handle reactions. Updated frontend components to display reactions and read receipts.
+- Task 86: Implemented automated notification digest emails for sellers. Created `EmailService` and `DigestService` to send daily digests of unread messages. Enabled scheduling in the application.

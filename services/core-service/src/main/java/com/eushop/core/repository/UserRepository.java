@@ -30,4 +30,7 @@ public interface UserRepository extends JpaRepository<User, String> {
     Long countBuyers();
 
     List<User> findByRoleOrderByCreatedAtDesc(User.UserRole role);
+
+    @Query("SELECT u FROM User u WHERE u.role = 'SELLER'")
+    List<User> findAllSellers();
 }
