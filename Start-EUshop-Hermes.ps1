@@ -917,7 +917,8 @@ function Invoke-Hermes {
             $env:ANTHROPIC_BASE_URL = $GATEWAY_URL
             $env:ANTHROPIC_AUTH_TOKEN = $token
             $env:CLAUDE_CODE_ENABLE_GATEWAY_MODEL_DISCOVERY = "1"
-            $env:CLAUDE_CODE_AUTO_COMPACT_WINDOW = "7000"
+            $env:CLAUDE_CONFIG_DIR = Join-Path $REPO_ROOT ".claude-runner-session"
+            $env:CLAUDE_CODE_AUTO_COMPACT_WINDOW = "5000"
             $env:CLAUDE_CODE_MAX_OUTPUT_TOKENS = "4096"
             $env:MAX_TOKENS = "4096"
             $env:MAX_THINKING_TOKENS = "1024"
@@ -929,7 +930,7 @@ function Invoke-Hermes {
                 # Claude Code requires prompt via stdin when running non-interactively.
                 # --print flag enables non-interactive print mode.
                 Write-Log "Sending YC mission prompt to Claude via FCC gateway..." "INFO" "launcher"
-                $procOutput = $MISSION_PROMPT | & $script:CLAUDE_EXE --print --compact 2>&1
+                $procOutput = $MISSION_PROMPT | & $script:CLAUDE_EXE --print 2>&1
                 if ($procOutput) { $procOutput | Out-Host }
                 $exitCode = if ($null -eq $LASTEXITCODE) { 0 } else { [int]$LASTEXITCODE }
             } finally {
