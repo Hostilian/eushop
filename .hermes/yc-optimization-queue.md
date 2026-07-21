@@ -1,162 +1,162 @@
 # EUshop YC Optimization Task Queue & Roadmap
 
-## PHASE 10 — Navigation, UX & Cart Reliability
+## PHASE 10 Ã¢â‚¬â€ Navigation, UX & Cart Reliability
 Status: COMPLETED
 
-- [x] TASK 25 — Reusable Breadcrumb component & route hierarchy
-- [x] TASK 26 — End-to-end cart persistence & checkout route verification
-- [x] TASK 27 — Allergen filter query parameter parsing in catalog service
+- [x] TASK 25 Ã¢â‚¬â€ Reusable Breadcrumb component & route hierarchy
+- [x] TASK 26 Ã¢â‚¬â€ End-to-end cart persistence & checkout route verification
+- [x] TASK 27 Ã¢â‚¬â€ Allergen filter query parameter parsing in catalog service
 
-## PHASE 11 — Legal Compliance Deep Dive
+## PHASE 11 Ã¢â‚¬â€ Legal Compliance Deep Dive
 Status: COMPLETED
 
-- [x] TASK 28 — GDPR cookie consent banner audit (CookieBanner.tsx)
-- [x] TASK 29 — Impressum / Legal Notice page (impressum.tsx)
-- [x] TASK 30 — Privacy Policy completeness audit (privacy.tsx)
-- [x] TASK 31 — Terms of Service completeness audit (terms.tsx)
-- [x] TASK 32 — PCI DSS / payment security audit (checkout.tsx Stripe iFrame integration)
-- [x] TASK 33 — DSA Art. 30 "Sold by [Seller Name]" persistent UI element audit (ProductCard.tsx & food/[id].tsx)
-- [x] TASK 34 — GPSR compliance fields for non-food products (packages/types & food/[id].tsx)
+- [x] TASK 28 Ã¢â‚¬â€ GDPR cookie consent banner audit (CookieBanner.tsx)
+- [x] TASK 29 Ã¢â‚¬â€ Impressum / Legal Notice page (impressum.tsx)
+- [x] TASK 30 Ã¢â‚¬â€ Privacy Policy completeness audit (privacy.tsx)
+- [x] TASK 31 Ã¢â‚¬â€ Terms of Service completeness audit (terms.tsx)
+- [x] TASK 32 Ã¢â‚¬â€ PCI DSS / payment security audit (checkout.tsx Stripe iFrame integration)
+- [x] TASK 33 Ã¢â‚¬â€ DSA Art. 30 "Sold by [Seller Name]" persistent UI element audit (ProductCard.tsx & food/[id].tsx)
+- [x] TASK 34 Ã¢â‚¬â€ GPSR compliance fields for non-food products (packages/types & food/[id].tsx)
 
-## PHASE 12 — Product Listings & Content Quality
+## PHASE 12 Ã¢â‚¬â€ Product Listings & Content Quality
 Status: COMPLETED
 
-- [x] TASK 35 — FIC Art. 9 mandatory food disclosure UI verification
-- [x] TASK 36 — High-resolution product image gallery with fallback support
-- [x] TASK 37 — Search filter facets for dietary restrictions & thermal packaging
-- [x] TASK 38 — PDO / PGI / TSG quality scheme verification badge UI
+- [x] TASK 35 Ã¢â‚¬â€ FIC Art. 9 mandatory food disclosure UI verification
+- [x] TASK 36 Ã¢â‚¬â€ High-resolution product image gallery with fallback support
+- [x] TASK 37 Ã¢â‚¬â€ Search filter facets for dietary restrictions & thermal packaging
+- [x] TASK 38 Ã¢â‚¬â€ PDO / PGI / TSG quality scheme verification badge UI
 
-## PHASE 13 — SEO & Technical Performance
+## PHASE 13 Ã¢â‚¬â€ SEO & Technical Performance
 Status: COMPLETED
 
-- [x] TASK 39 — Schema.org JSON-LD structured data for Product & BreadcrumbList
-- [x] TASK 40 — OpenGraph & Twitter card meta tags for all product & category pages
-- [x] TASK 41 — Dynamic sitemap.xml & robots.txt generator
-- [x] TASK 42 — Core Web Vitals image optimization with Next.js Image component
-- [x] TASK 43 — Dynamic route pre-rendering & ISR caching strategy
-- [x] TASK 44 — WCAG 2.2 AA color contrast audit across light/dark themes
+- [x] TASK 39 Ã¢â‚¬â€ Schema.org JSON-LD structured data for Product & BreadcrumbList
+- [x] TASK 40 Ã¢â‚¬â€ OpenGraph & Twitter card meta tags for all product & category pages
+- [x] TASK 41 Ã¢â‚¬â€ Dynamic sitemap.xml & robots.txt generator
+- [x] TASK 42 Ã¢â‚¬â€ Core Web Vitals image optimization with Next.js Image component
+- [x] TASK 43 Ã¢â‚¬â€ Dynamic route pre-rendering & ISR caching strategy
+- [x] TASK 44 Ã¢â‚¬â€ WCAG 2.2 AA color contrast audit across light/dark themes
 
-## PHASE 14 — Accessibility (WCAG 2.2 AA)
+## PHASE 14 Ã¢â‚¬â€ Accessibility (WCAG 2.2 AA)
 Status: COMPLETED
 
-- [x] TASK 45 — Screen reader aria-labels on interactive elements
-- [x] TASK 46 — Keyboard navigation focus traps & skip-to-content link
-- [x] TASK 47 — Accessible error state announcements in forms
-- [x] TASK 48 — High-contrast mode styling for text elements
+- [x] TASK 45 Ã¢â‚¬â€ Screen reader aria-labels on interactive elements
+- [x] TASK 46 Ã¢â‚¬â€ Keyboard navigation focus traps & skip-to-content link
+- [x] TASK 47 Ã¢â‚¬â€ Accessible error state announcements in forms
+- [x] TASK 48 Ã¢â‚¬â€ High-contrast mode styling for text elements
 
-## PHASE 15 — Design, YC Principles & Conversion Optimisation
+## PHASE 15 Ã¢â‚¬â€ Design, YC Principles & Conversion Optimisation
 Status: COMPLETED
 
-- [x] TASK 49 — Micro-animations & hover states for interactive components
-- [x] TASK 50 — One-click checkout & guest checkout conversion flow
-- [x] TASK 51 — Seller onboarding conversion funnel polish
-- [x] TASK 52 — Trust signals & EU consumer protection badges
-- [x] TASK 53 — Mobile-responsive layout optimization across viewports
+- [x] TASK 49 Ã¢â‚¬â€ Micro-animations & hover states for interactive components
+- [x] TASK 50 Ã¢â‚¬â€ One-click checkout & guest checkout conversion flow
+- [x] TASK 51 Ã¢â‚¬â€ Seller onboarding conversion funnel polish
+- [x] TASK 52 Ã¢â‚¬â€ Trust signals & EU consumer protection badges
+- [x] TASK 53 Ã¢â‚¬â€ Mobile-responsive layout optimization across viewports
 
-## PHASE 16 — Automated Testing & CI/CD
+## PHASE 16 Ã¢â‚¬â€ Automated Testing & CI/CD
 Status: COMPLETED
 
-- [x] TASK 54 — Comprehensive Jest unit test coverage for new components
-- [x] TASK 55 — Playwright / Cypress E2E user flow tests
-- [x] TASK 56 — ESLint & TypeScript strict mode validation in CI
-- [x] TASK 57 — GitHub Actions automated build & test workflow
+- [x] TASK 54 Ã¢â‚¬â€ Comprehensive Jest unit test coverage for new components
+- [x] TASK 55 Ã¢â‚¬â€ Playwright / Cypress E2E user flow tests
+- [x] TASK 56 Ã¢â‚¬â€ ESLint & TypeScript strict mode validation in CI
+- [x] TASK 57 Ã¢â‚¬â€ GitHub Actions automated build & test workflow
 
-## PHASE 17 — VAT Engine & DAC7 Wiring (Phase 2 Compliance)
+## PHASE 17 Ã¢â‚¬â€ VAT Engine & DAC7 Wiring (Phase 2 Compliance)
 Status: COMPLETED
 
-- [x] TASK 58 — Connect packages/compliance VAT engine to checkout totals
-- [x] TASK 59 — DAC7 seller revenue threshold reporting cron job
-- [x] TASK 60 — DSA Art. 32 buyer notification query implementation
+- [x] TASK 58 Ã¢â‚¬â€ Connect packages/compliance VAT engine to checkout totals
+- [x] TASK 59 Ã¢â‚¬â€ DAC7 seller revenue threshold reporting cron job
+- [x] TASK 60 Ã¢â‚¬â€ DSA Art. 32 buyer notification query implementation
 
-## PHASE 18 — CHANGELOG & Documentation
+## PHASE 18 Ã¢â‚¬â€ CHANGELOG & Documentation
 Status: COMPLETED
 
-- [x] TASK 61 — Update CHANGELOG.md with Phase 11 & Phase 12 completion entries
-- [x] TASK 62 — Finalize AGENTS.md Phase progress roadmap & legal compliance disclosures
+- [x] TASK 61 Ã¢â‚¬â€ Update CHANGELOG.md with Phase 11 & Phase 12 completion entries
+- [x] TASK 62 Ã¢â‚¬â€ Finalize AGENTS.md Phase progress roadmap & legal compliance disclosures
 
-## PHASE 19 — Advanced Multilingual & i18n Localization Engine
+## PHASE 19 Ã¢â‚¬â€ Advanced Multilingual & i18n Localization Engine
 Status: COMPLETED
 
-- [x] TASK 63 — Dynamic locale switcher (EN, DE, FR, IT, ES, CS) with RTL/LTR layout support
-- [x] TASK 64 — Allergen name multi-language translation engine in packages/compliance
-- [x] TASK 65 — Currency auto-conversion & display formatting per EU member state locale
-- [x] TASK 66 — Localized statutory withdrawal forms & EU consumer rights PDF generation
-- [x] TASK 67 — Localized error messages and accessible form validation strings
-- [x] TASK 68 — Automatic EU region-based tax notice & shipping threshold calculation display
-- [x] TASK 69 — Multilingual SEO meta tags & hreflang link tags for all product routes
-- [x] TASK 70 — Cross-border seller verification document translation guidance UI
+- [x] TASK 63 Ã¢â‚¬â€ Dynamic locale switcher (EN, DE, FR, IT, ES, CS) with RTL/LTR layout support
+- [x] TASK 64 Ã¢â‚¬â€ Allergen name multi-language translation engine in packages/compliance
+- [x] TASK 65 Ã¢â‚¬â€ Currency auto-conversion & display formatting per EU member state locale
+- [x] TASK 66 Ã¢â‚¬â€ Localized statutory withdrawal forms & EU consumer rights PDF generation
+- [x] TASK 67 Ã¢â‚¬â€ Localized error messages and accessible form validation strings
+- [x] TASK 68 Ã¢â‚¬â€ Automatic EU region-based tax notice & shipping threshold calculation display
+- [x] TASK 69 Ã¢â‚¬â€ Multilingual SEO meta tags & hreflang link tags for all product routes
+- [x] TASK 70 Ã¢â‚¬â€ Cross-border seller verification document translation guidance UI
 
-## PHASE 20 — AI Vision, Allergen Scanner & OCR Pipeline
+## PHASE 20 Ã¢â‚¬â€ AI Vision, Allergen Scanner & OCR Pipeline
 Status: COMPLETED
 
-- [x] TASK 71 — Vision AI food label scanner integration (scripts/scan_food_label.py API endpoint)
-- [x] TASK 72 — Real-time camera ingredient list OCR for seller product onboarding
-- [x] TASK 73 — Automated Annex II 14 allergen extraction & auto-flagging engine
-- [x] TASK 74 — Nutrition declaration table auto-parsing from raw label images
-- [x] TASK 75 — Automated PDO / PGI official certificate OCR verification scanner
-- [x] TASK 76 — FIC Art. 15 language compliance checker for destination country markets
-- [x] TASK 77 — Automatic allergen highlight & warning label generator component
-- [x] TASK 78 — End-to-end integration tests for Vision AI & OCR pipeline
+- [x] TASK 71 Ã¢â‚¬â€ Vision AI food label scanner integration (scripts/scan_food_label.py API endpoint)
+- [x] TASK 72 Ã¢â‚¬â€ Real-time camera ingredient list OCR for seller product onboarding
+- [x] TASK 73 Ã¢â‚¬â€ Automated Annex II 14 allergen extraction & auto-flagging engine
+- [x] TASK 74 Ã¢â‚¬â€ Nutrition declaration table auto-parsing from raw label images
+- [x] TASK 75 Ã¢â‚¬â€ Automated PDO / PGI official certificate OCR verification scanner
+- [x] TASK 76 Ã¢â‚¬â€ FIC Art. 15 language compliance checker for destination country markets
+- [x] TASK 77 Ã¢â‚¬â€ Automatic allergen highlight & warning label generator component
+- [x] TASK 78 Ã¢â‚¬â€ End-to-end integration tests for Vision AI & OCR pipeline
 
-## PHASE 21 — Real-Time Chat, Seller Messaging & DSA Dispute System
+## PHASE 21 Ã¢â‚¬â€ Real-Time Chat, Seller Messaging & DSA Dispute System
 Status: IN_PROGRESS
 
-- [x] TASK 79 — DSA Art. 20 Internal Complaint-Handling & Dispute Resolution portal
-- [x] TASK 80 — Real-time buyer-seller WebSocket messaging with end-to-end audit trail
-- [x] TASK 81 — Seller response time SLA tracking & DSA compliance badge assignment
-- [x] TASK 82 — Automated buyer dispute escalation for unfulfilled cross-border shipments
-- [x] TASK 83 — File attachment virus scanning and PDF validation service for chat
-- [x] TASK 84 — Message reaction & read receipt synchronization across web & mobile
-- [x] TASK 85 — DSA Art. 16 Notice-and-Action illegal content reporting workflow
-- [x] TASK 86 — Automated notification digest emails for seller customer inquiries
+- [x] TASK 79 Ã¢â‚¬â€ DSA Art. 20 Internal Complaint-Handling & Dispute Resolution portal
+- [x] TASK 80 Ã¢â‚¬â€ Real-time buyer-seller WebSocket messaging with end-to-end audit trail
+- [x] TASK 81 Ã¢â‚¬â€ Seller response time SLA tracking & DSA compliance badge assignment
+- [x] TASK 82 Ã¢â‚¬â€ Automated buyer dispute escalation for unfulfilled cross-border shipments
+- [x] TASK 83 Ã¢â‚¬â€ File attachment virus scanning and PDF validation service for chat
+- [x] TASK 84 Ã¢â‚¬â€ Message reaction & read receipt synchronization across web & mobile
+- [x] TASK 85 Ã¢â‚¬â€ DSA Art. 16 Notice-and-Action illegal content reporting workflow
+- [x] TASK 86 Ã¢â‚¬â€ Automated notification digest emails for seller customer inquiries
 
-## PHASE 22 — Mobile (Expo / React Native) Feature Parity & Native Capabilities
+## PHASE 22 Ã¢â‚¬â€ Mobile (Expo / React Native) Feature Parity & Native Capabilities
 Status: READY
 
-- [x] TASK 87 — React Native Expo allergen filter drawer and search screen parity
-- [!] TASK 88 — Native biometric checkout authentication (TouchID/FaceID) with consent gate
-- [x] TASK 89 — Offline product listing storage and background sync using AsyncStore
-- [x] TASK 90 — Native push notifications for order status and seller dispute updates
-- [/] TASK 91 — Mobile camera barcode & QR code product lookup scanner
-- [ ] TASK 92 — Haptic feedback on cart actions and order confirmation screens
-- [ ] TASK 93 — Expo dark mode & high-contrast theme synchronization with device settings
-- [ ] TASK 94 — iOS & Android native E2E test suite using Detox / Maestro
+- [x] TASK 87 Ã¢â‚¬â€ React Native Expo allergen filter drawer and search screen parity
+- [!] TASK 88 Ã¢â‚¬â€ Native biometric checkout authentication (TouchID/FaceID) with consent gate
+- [x] TASK 89 Ã¢â‚¬â€ Offline product listing storage and background sync using AsyncStore
+- [x] TASK 90 Ã¢â‚¬â€ Native push notifications for order status and seller dispute updates
+- [/] TASK 91 Ã¢â‚¬â€ Mobile camera barcode & QR code product lookup scanner
+- [ ] TASK 92 Ã¢â‚¬â€ Haptic feedback on cart actions and order confirmation screens
+- [ ] TASK 93 Ã¢â‚¬â€ Expo dark mode & high-contrast theme synchronization with device settings
+- [ ] TASK 94 Ã¢â‚¬â€ iOS & Android native E2E test suite using Detox / Maestro
 
-## PHASE 23 — Advanced Microservices, Spring Boot Backend & DB Hardening
+## PHASE 23 Ã¢â‚¬â€ Advanced Microservices, Spring Boot Backend & DB Hardening
 Status: READY
 
-- [ ] TASK 95 — Core-service Spring Boot modular monolith REST API endpoints for products & orders
-- [ ] TASK 96 — PostgreSQL database migrations for DSA Art. 30 trader registry & audit logs
-- [ ] TASK 97 — Redis cache layer for catalog search & VAT rate lookups
-- [ ] TASK 98 — Kafka / RabbitMQ event bus for DAC7 seller threshold calculation events
-- [ ] TASK 99 — Rate-limiting & API gateway DDoS protection middleware
-- [ ] TASK 100 — JWT authentication & RBAC authorization for seller & admin portals
-- [ ] TASK 101 — Automated database backup & point-in-time disaster recovery pipeline
-- [ ] TASK 102 — Distributed tracing with OpenTelemetry & Prometheus metric dashboards
+- [ ] TASK 95 Ã¢â‚¬â€ Core-service Spring Boot modular monolith REST API endpoints for products & orders
+- [ ] TASK 96 Ã¢â‚¬â€ PostgreSQL database migrations for DSA Art. 30 trader registry & audit logs
+- [ ] TASK 97 Ã¢â‚¬â€ Redis cache layer for catalog search & VAT rate lookups
+- [ ] TASK 98 Ã¢â‚¬â€ Kafka / RabbitMQ event bus for DAC7 seller threshold calculation events
+- [ ] TASK 99 Ã¢â‚¬â€ Rate-limiting & API gateway DDoS protection middleware
+- [ ] TASK 100 Ã¢â‚¬â€ JWT authentication & RBAC authorization for seller & admin portals
+- [ ] TASK 101 Ã¢â‚¬â€ Automated database backup & point-in-time disaster recovery pipeline
+- [ ] TASK 102 Ã¢â‚¬â€ Distributed tracing with OpenTelemetry & Prometheus metric dashboards
 
-## PHASE 24 — Analytics, Conversion Rate Optimization & Dynamic Pricing
+## PHASE 24 Ã¢â‚¬â€ Analytics, Conversion Rate Optimization & Dynamic Pricing
 Status: READY
 
-- [ ] TASK 103 — Privacy-preserving (cookieless) analytics engine for EU compliance
-- [ ] TASK 104 — Dynamic checkout conversion funnel A/B testing framework
-- [ ] TASK 105 — Real-time regional shipping cost calculator per EU postal code
-- [ ] TASK 106 — Product recommendation engine based on dietary preferences & origin
-- [ ] TASK 107 — Cart abandonment recovery notifications with statutory consent
-- [ ] TASK 108 — Seller analytics dashboard with revenue, VAT, and DAC7 progress graphs
-- [ ] TASK 109 — Bulk CSV/XLSX product import & export engine for high-volume sellers
-- [ ] TASK 110 — Automated price parity & cross-border VAT compliance checker
+- [ ] TASK 103 Ã¢â‚¬â€ Privacy-preserving (cookieless) analytics engine for EU compliance
+- [ ] TASK 104 Ã¢â‚¬â€ Dynamic checkout conversion funnel A/B testing framework
+- [ ] TASK 105 Ã¢â‚¬â€ Real-time regional shipping cost calculator per EU postal code
+- [ ] TASK 106 Ã¢â‚¬â€ Product recommendation engine based on dietary preferences & origin
+- [ ] TASK 107 Ã¢â‚¬â€ Cart abandonment recovery notifications with statutory consent
+- [ ] TASK 108 Ã¢â‚¬â€ Seller analytics dashboard with revenue, VAT, and DAC7 progress graphs
+- [ ] TASK 109 Ã¢â‚¬â€ Bulk CSV/XLSX product import & export engine for high-volume sellers
+- [ ] TASK 110 Ã¢â‚¬â€ Automated price parity & cross-border VAT compliance checker
 
-## PHASE 25 — Enterprise Security, Hardening & Audit Readiness
+## PHASE 25 Ã¢â‚¬â€ Enterprise Security, Hardening & Audit Readiness
 Status: READY
 
-- [ ] TASK 111 — Penetration testing & OWASP Top 10 security audit suite
-- [ ] TASK 112 — Content Security Policy (CSP) & CORS header hardening across routes
-- [ ] TASK 113 — Automated dependency vulnerability scanning (Snyk & Dependabot)
-- [ ] TASK 114 — GDPR Art. 30 Records of Processing Activities (ROPA) automated exporter
-- [ ] TASK 115 — Key vault integration & automated API key rotation daemon
-- [ ] TASK 116 — Zero-trust network policy & TLS 1.3 enforcement
-- [ ] TASK 117 — ISO 27001 & SOC 2 compliance readiness documentation
-- [ ] TASK 118 — Automated end-to-end chaos engineering & failover validation suite
+- [ ] TASK 111 Ã¢â‚¬â€ Penetration testing & OWASP Top 10 security audit suite
+- [ ] TASK 112 Ã¢â‚¬â€ Content Security Policy (CSP) & CORS header hardening across routes
+- [ ] TASK 113 Ã¢â‚¬â€ Automated dependency vulnerability scanning (Snyk & Dependabot)
+- [ ] TASK 114 Ã¢â‚¬â€ GDPR Art. 30 Records of Processing Activities (ROPA) automated exporter
+- [ ] TASK 115 Ã¢â‚¬â€ Key vault integration & automated API key rotation daemon
+- [ ] TASK 116 Ã¢â‚¬â€ Zero-trust network policy & TLS 1.3 enforcement
+- [ ] TASK 117 Ã¢â‚¬â€ ISO 27001 & SOC 2 compliance readiness documentation
+- [ ] TASK 118 Ã¢â‚¬â€ Automated end-to-end chaos engineering & failover validation suite
 
 ## DEPENDENCY MAP
 - PHASE 10 must complete before PHASE 13 (SEO needs working nav)
@@ -166,3 +166,152 @@ Status: READY
 - PHASE 17 must read packages/compliance (must NOT duplicate VAT rates)
 - PHASE 19 & 20 feed into PHASE 22 (mobile needs i18n & vision AI)
 - PHASE 21 feeds into PHASE 23 (chat needs backend microservices & DB)
+
+<!-- VERSION55_QUEUE_BEGIN -->
+
+# VERSION 55 MASTER PRIORITY OVERRIDE
+
+Status: READY
+Target release: Version 55
+Target branch: version-55
+Priority: Version 55 security, public reliability, compliance and evidence gates outrank remaining cosmetic or speculative work.
+
+Transition rule:
+
+- Preserve all current uncommitted work.
+- If one coherent task is actively being edited, finish or safely checkpoint that atomic task first.
+- Then create or resume `version-55` and begin TASK 119.
+- Do not reset, clean, discard, force-push, merge directly into `main` or deploy.
+- The Windows sidebar tasks are supporting observability work and must not displace security or public reliability.
+- Critical and High security findings outrank visual polish and investor presentation.
+
+## PHASE 26 - Version 55 Branch Safety, Evidence Baseline and Mission State
+Status: NEXT_HIGH_PRIORITY
+
+- [ ] TASK 119 - Safely create or resume the `version-55` branch, inventory branches, tags, worktrees, remotes, pull requests and uncommitted work, record the starting SHA and preserve recoverable backups without destructive Git commands
+- [ ] TASK 120 - Create `docs/version-55/` and `.agent-state/version-55/`, install the canonical Version 55 mission, and initialize evidence-backed baseline, decision, research, test, failure, heartbeat and resume state
+- [ ] TASK 121 - Read canonical repository instructions and build a claim-to-evidence matrix for README, STATUS, SECURITY, compliance documents and major feature claims, classifying verified, partial, mocked, stale, contradicted, external, legal-review and missing states
+- [ ] TASK 122 - Inventory the actual architecture and run documented baseline commands for frontend, backend, migrations, Docker, E2E, accessibility, dependency, secret and CodeQL checks; record commands, timestamps, exit status and remediation tasks
+
+### Phase 26 Definition of Done
+
+- Existing user and agent work is preserved
+- `version-55` has a known safe baseline
+- Canonical Version 55 files and machine-readable state exist
+- Baseline failures and unsupported claims are documented with evidence
+- No task is marked complete solely because compilation succeeds
+
+## PHASE 27 - Version 55 Security Emergency and CodeQL Remediation
+Status: P0_BLOCKING
+
+- [ ] TASK 123 - Trace all 18 supplied CodeQL findings end to end, confirm source-to-sink behavior, identify sibling vulnerabilities and create regression tests or reproducible evidence before changing alert status
+- [ ] TASK 124 - Repair DAC7 user-controlled numeric casts and arithmetic using typed DTOs, boundary validation, BigDecimal monetary handling, explicit scale and rounding, bounded counts, checked arithmetic and structured validation errors
+- [ ] TASK 125 - Repair FileStorageService path injection with one normalized storage root, server-generated identifiers, strict extension and MIME validation, containment checks, size limits, safe deletion and traversal, symlink and junction tests
+- [ ] TASK 126 - Determine the real browser credential model and implement correct CSRF behavior, secure cookie or bearer-token separation, narrowly justified webhook exemptions and positive and negative mutation tests
+- [ ] TASK 127 - Remove client-controlled authentication bypasses in AuthController and JwtAuthenticationFilter; enforce cryptographic verification, issuer, audience, algorithm and time-claim validation, fail-closed behavior and production-safe development profiles
+- [ ] TASK 128 - Resolve useless controller parameters by removing genuinely dead API inputs or wiring authentication, ownership, pagination, filtering and route binding correctly; add object-level authorization tests for sibling endpoints
+- [ ] TASK 129 - Complete the security gate: configure CodeQL for Java and JavaScript or TypeScript, include the Java build, run security-extended analysis where practical, triage dependencies and secrets, harden Actions permissions and pin third-party actions
+- [ ] TASK 130 - Perform an independent OWASP ASVS Level 2 attacker review covering authentication, authorization, IDOR or BOLA, path traversal, upload abuse, CSRF, CORS, JWT confusion, injection, XSS, rate limits, webhook forgery, payment tampering and secret exposure
+
+### Phase 27 Definition of Done
+
+- No supplied Critical or High finding remains reproducible without rigorous documented justification
+- Security regression tests fail against the original vulnerable behavior where practical
+- CodeQL analyzes the actual Java and JavaScript or TypeScript code
+- Authentication and authorization fail closed
+- No security check is weakened merely to produce a green dashboard
+
+## PHASE 28 - Public Experience and GitHub Pages Reliability
+Status: P1_AFTER_SECURITY
+
+- [ ] TASK 131 - Stabilize homepage, navigation, marketplace, product pages, legal pages, login and seller onboarding under the real `/eushop/` base path, including nested-route refreshes and static export
+- [ ] TASK 132 - Repair basePath, assetPrefix, router, image, manifest, canonical, Open Graph, hydration, environment, import and static-export failures and eliminate blank screens and infinite loading states
+- [ ] TASK 133 - Implement deterministic, truthfully labelled demo fallback data that appears only when backend APIs are unavailable and is isolated from production transaction logic
+- [ ] TASK 134 - Add public-journey smoke and E2E tests for browsing, search, filters, sorting, pagination, product details, mobile layout, empty states, invalid routes, loading termination and external links
+
+## PHASE 29 - Marketplace Product Completeness
+Status: P1
+
+- [ ] TASK 135 - Complete and verify the buyer journey from discovery through cart, server-authoritative checkout, order history, cancellation, refund, dispute, delivery confirmation, verified review, notifications and support
+- [ ] TASK 136 - Complete and verify seller onboarding, identity and business verification, tax and payment onboarding, compliant listings, secure image upload, inventory, pricing, shipping, order handling, refunds, suspension, DAC7 state and appeals
+- [ ] TASK 137 - Implement or harden operator workflows for seller approval, listing and food-information moderation, disputes, refunds, fraud signals, legal notices, data requests, erasure, exports, DAC7 exceptions and privileged audit logs
+- [ ] TASK 138 - Enforce strong authorization and object ownership across buyer, seller, support and administrator operations; do not expose an inadequately protected public administrator surface
+
+## PHASE 30 - EU Compliance Structure
+Status: P1
+
+- [ ] TASK 139 - Enforce required food information before publication, including ingredients, regulated allergen structure and emphasis, net quantity, storage, operator identity, origin, nutrition, language and distance-selling presentation
+- [ ] TASK 140 - Implement and test DSA trader traceability, reasonable verification structure, notice and action, statements of reasons, complaint and appeal processes, illegal-product response, moderation records and recommender transparency where applicable
+- [ ] TASK 141 - Verify and harden DAC7 seller classification, identity and tax data, transaction counts, precise consideration and fee totals, reporting periods, corrections, due diligence, access control, audit history, secure export and retention
+- [ ] TASK 142 - Implement testable GDPR inventory, lawful-basis mapping, minimization, consent separation, retention, access, correction, portability, restriction, objection, deletion or anonymization, cookie choices, analytics gating and breach-response structure
+- [ ] TASK 143 - Verify consumer-protection controls for trader identity, total price, tax and shipping disclosure, order-button wording, cancellation and perishable-goods exceptions, refunds, complaint handling, review authenticity and dark-pattern avoidance
+- [ ] TASK 144 - Centralize versioned VAT and OSS rules, precise currency calculations, evidence and effective dates, refunds and adjustments, invoice questions and explicit legal or tax review gates without claiming professional approval
+
+## PHASE 31 - Payment, Database and Operational Integrity
+Status: P1
+
+- [ ] TASK 145 - Make all payment totals server authoritative and test price, seller and quantity tampering, stale prices, stock races, webhook authenticity and idempotency, ordering, retries, refunds, currency, commission and tax rounding
+- [ ] TASK 146 - Validate fresh and supported database migrations, constraints, foreign keys, unique rules, monetary precision, timestamps, PII classification, audit protection, upgrade paths and forward-repair or rollback procedures
+- [ ] TASK 147 - Measure and improve real query plans for search, filters, seller dashboard, orders, conversations, notifications, DAC7, moderation and reporting without blind optimization
+- [ ] TASK 148 - Implement failure-safe timeouts, bounded retries, idempotency, connection and request limits, pagination, rate limits, health and readiness checks, graceful shutdown, structured sanitized logs, correlation IDs and recovery tests
+
+## PHASE 32 - Test Strategy, CI/CD and Supply-Chain Security
+Status: P1
+
+- [ ] TASK 149 - Build focused unit and backend integration coverage for compliance and price calculations, validation, authorization, path handling, controllers, transactions, migrations, webhooks, error behavior and important concurrency
+- [ ] TASK 150 - Build frontend and E2E coverage for rendering, forms, auth state, search, filters, fallback behavior, accessibility, base-path links, seller listing, secure upload, cart, test-mode checkout, webhook, orders, reviews and privacy workflows
+- [ ] TASK 151 - Build dedicated security tests for CodeQL regressions, authorization matrices, path traversal, malicious upload, CSRF, JWT negatives, rate limiting, headers, CORS, injection, log sanitization, error leakage and object-level access
+- [ ] TASK 152 - Harden all GitHub Actions with least privilege, immutable action pinning, deterministic installs, safe caching, frontend and backend separation, CodeQL coverage, dependency review, artifact retention, scan schedules and untrusted-PR secret isolation
+- [ ] TASK 153 - Record flaky and quarantined tests with cause, owner and expiry, prevent weakened assertions, and publish exact command, result, timestamp, evidence and commit data for every Version 55 verification run
+
+## PHASE 33 - Accessibility, Design, Performance and Developer Experience
+Status: P2
+
+- [ ] TASK 154 - Reach WCAG 2.2 AA for public and core account flows, covering semantics, keyboard, focus, forms, errors, status announcements, modals, contrast, reduced motion, touch targets, zoom, screen-reader order and mobile layouts
+- [ ] TASK 155 - Consolidate a trustworthy design system for typography, spacing, colors, forms, buttons, statuses, alerts, cards, skeletons, errors and responsive breakpoints while removing deceptive badges, dark patterns and unsupported claims
+- [ ] TASK 156 - Measure and improve bundle, route, image, font, export, API, database, cache, memory, startup, test and CI performance, with failure tests for database, Redis, Auth0 or JWKS, Stripe, storage, slow APIs and offline frontend
+- [ ] TASK 157 - Repair README and developer documentation for clean setup, environment variables, Docker, migrations, seeding, frontend and backend startup, tests, CodeQL, architecture, auth, compliance, payments, troubleshooting, rollback, incidents, backup and demos
+
+## PHASE 34 - Investor and Y Combinator Readiness
+Status: P2_AFTER_WORKING_PRODUCT
+
+- [ ] TASK 158 - Produce a truthful, repeatable demo environment and script explaining the focused customer problem, seller difficulty, product workflow, trust model, transaction path, current proof, assumptions, pilot plan and measurable milestones
+- [ ] TASK 159 - Produce evidence-backed architecture, security and compliance overviews, roadmap, risk register, milestone plan, metric definitions, data-room index, diligence checklist, known limitations, operational plan and incident summary
+- [ ] TASK 160 - Label every metric and business assertion as actual, measured, test data, assumption, target, forecast, unknown or requires validation; remove unsupported traction, certification, partnership or legal-readiness claims
+- [ ] TASK 161 - Run separate attacker, hostile-user, investor-diligence and operator red-team passes and turn every credible finding into prioritized queue work
+- [ ] TASK 162 - Enforce the complete Version 55 definition of done across repository integrity, security, product, compliance, engineering quality, reliability and investor readiness
+- [ ] TASK 163 - Produce `docs/version-55/FINAL_REPORT.md` with starting and ending state, per-alert remediation evidence, product and compliance changes, verification table, Git history, remaining work and one truthful release verdict
+
+## PHASE 35 - Supporting Agent Observability and Windows Sidebar
+Status: P3_SUPPORTING_ONLY
+
+- [ ] TASK 164 - Build a native Windows EUshop Progress Sidebar executable that docks to the right side, supports always-on-top mode, minimizes to the notification area and starts automatically with Windows
+- [ ] TASK 165 - Implement a read-only evidence collector combining queue state, orchestrator and watchdog PID health, AI child processes, Git commits, Git working-tree changes, source-file timestamps and real agent logs
+- [ ] TASK 166 - Display live completion percentage plus completed, active, pending and failed counts, with manual refresh and a two-minute default automatic refresh
+- [ ] TASK 167 - Implement four-minute evidence-based health borders: green after meaningful activity within four minutes, red after more than four minutes without meaningful work or when the orchestrator is down, and warning during provider transitions
+- [ ] TASK 168 - Distinguish WORKING, RUNNING, BETWEEN INVOCATIONS, POSSIBLY STALLED and DOWN without treating process existence, CPU use or repetitive watchdog messages alone as proof of useful progress
+- [ ] TASK 169 - Package, test and document installation, Windows startup, repository selection, notifications, clean uninstall, offline behavior and smoke-test procedures
+
+### Phase 35 Definition of Done
+
+- Sidebar work never displaces or blocks P0 or P1 Version 55 tasks
+- Monitoring is read-only and cannot reset, clean, commit, merge, push, deploy or edit repository source
+- Default refresh is two minutes
+- Green requires meaningful repository evidence within four minutes
+- Red appears after more than four minutes without meaningful activity or when the orchestrator is down
+- Monitor-generated history and repetitive watchdog lines do not count as coding progress
+
+## VERSION 55 DEPENDENCY ORDER
+
+1. Preserve current work and establish the Version 55 baseline
+2. Repair Critical and High security findings
+3. Stabilize the public `/eushop/` journey
+4. Complete marketplace and compliance paths
+5. Harden payments, data and operational reliability
+6. Complete tests, CI, accessibility, performance and documentation
+7. Prepare truthful investor and YC materials
+8. Build or finish the supporting sidebar without delaying higher-priority work
+9. Run final red-team and release-readiness gates
+10. Produce the Version 55 final report
+
+<!-- VERSION55_QUEUE_END -->
