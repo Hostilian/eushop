@@ -115,6 +115,11 @@ export function Footer() {
                       Statutory Withdrawal Form
                     </Link>
                   </li>
+                  <li>
+                    <Link href="/disputes" className="hover:text-primary dark:hover:text-blue-400 transition">
+                      Dispute Portal (DSA Art. 20)
+                    </Link>
+                  </li>
                 </ul>
               </div>
             </div>

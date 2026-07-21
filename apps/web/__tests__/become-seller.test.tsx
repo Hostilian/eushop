@@ -64,15 +64,15 @@ Object.defineProperty(window, 'localStorage', { value: storageMock, writable: tr
 Object.defineProperty(window, 'sessionStorage', { value: storageMock, writable: true });
 
 describe('BecomeSeller Page', () => {
-  it('renders become-seller page heading and compliance acknowledgment', () => {
+  it('renders trader onboarding page heading and DSA Art. 30 disclosures', () => {
     render(<BecomeSeller />);
-    expect(screen.getByRole('heading', { level: 2, name: /become a seller/i })).toBeInTheDocument();
-    expect(screen.getByRole('heading', { level: 3, name: /gdpr\/dsc compliance acknowledgment/i })).toBeInTheDocument();
+    expect(screen.getByRole('heading', { level: 1, name: /Trader Onboarding & Cross-Border Identity Verification/i })).toBeInTheDocument();
+    expect(screen.getByText(/Regulation \(EU\) 2016\/1191/i)).toBeInTheDocument();
   });
 
-  it('renders EU compliance information and call to action button', () => {
+  it('renders EU compliance information and submit verification button', () => {
     render(<BecomeSeller />);
-    expect(screen.getByText(/Jan Doerner \(EUshop Compliance Officer\)/i)).toBeInTheDocument();
-    expect(screen.getByRole('button', { name: /continue to review/i })).toBeInTheDocument();
+    expect(screen.getByText(/DSA Art. 30 Public Trader Disclosure/i)).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: /Submit Verification Data/i })).toBeInTheDocument();
   });
 });

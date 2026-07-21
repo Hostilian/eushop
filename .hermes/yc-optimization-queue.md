@@ -101,7 +101,7 @@ Status: COMPLETED
 ## PHASE 21 — Real-Time Chat, Seller Messaging & DSA Dispute System
 Status: IN_PROGRESS
 
-- [ ] TASK 79 — DSA Art. 20 Internal Complaint-Handling & Dispute Resolution portal
+- [x] TASK 79 — DSA Art. 20 Internal Complaint-Handling & Dispute Resolution portal
 - [ ] TASK 80 — Real-time buyer-seller WebSocket messaging with end-to-end audit trail
 - [ ] TASK 81 — Seller response time SLA tracking & DSA compliance badge assignment
 - [ ] TASK 82 — Automated buyer dispute escalation for unfulfilled cross-border shipments

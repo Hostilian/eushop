@@ -75,4 +75,4 @@
 - Task 78: Built `vision-pipeline.test.ts` end-to-end integration test suite verifying multi-stage Vision AI & OCR compliance pipeline.
 
 ## [2026-07-21 03:25 UTC] Phase 21 Active: Real-Time Chat, Seller Messaging & DSA Dispute System (Tasks 79-86)
-- Task 79: Implementing DSA Art. 20 Internal Complaint-Handling & Dispute Resolution portal (`apps/web/pages/disputes.tsx`).
+- Task 79: Created `disputes.tsx` DSA Art. 20 Internal Complaint-Handling & Out-of-Court Dispute Resolution portal with link in `Footer.tsx` and unit test coverage in `disputes.test.tsx`.
