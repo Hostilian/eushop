@@ -591,10 +591,10 @@ function Get-ConfiguredCandidates {
     # currently available free model supporting the required capabilities.
     $Definitions = @(
         [PSCustomObject]@{
-            Name = "Mistral Codestral"
-            Provider = "mistral"
-            KeyName = "MISTRAL_API_KEY"
-            Model = "mistral/codestral-latest"
+            Name = "Groq Llama 3.3 70B"
+            Provider = "groq"
+            KeyName = "GROQ_API_KEY"
+            Model = "groq/llama-3.3-70b-versatile"
         },
         [PSCustomObject]@{
             Name = "Mistral Small"
