@@ -52,7 +52,7 @@ do {
     $dependencies = @()
 
     foreach ($line in $lines) {
-        if ($line -match '^##\s+(PHASE\s+\d+\s+—\s+[^`\r\n]+)') {
+        if ($line -match '^##\s+(PHASE\s+\d+.*)$') {
             if ($currentPhase) { $phases += $currentPhase }
             $currentPhase = [PSCustomObject]@{
                 Name = $Matches[1].Trim()
@@ -63,7 +63,7 @@ do {
             }
         } elseif ($line -match '^Status:\s*(.+)$' -and $currentPhase) {
             $currentPhase.Status = $Matches[1].Trim()
-        } elseif ($line -match '^\s*-\s*\[([x/! ])\]\s*(TASK\s+\d+\s+—\s+.*)$') {
+        } elseif ($line -match '^\s*-\s*\[([x/! ])\]\s*(TASK\s+\d+.*)$') {
             $mark = $Matches[1]
             if ($currentPhase) { $currentPhase.Total++ }
 
