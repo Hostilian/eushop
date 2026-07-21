@@ -591,6 +591,18 @@ function Get-ConfiguredCandidates {
     # currently available free model supporting the required capabilities.
     $Definitions = @(
         [PSCustomObject]@{
+            Name = "Groq Llama 3.3 70B"
+            Provider = "groq"
+            KeyName = "GROQ_API_KEY"
+            Model = "groq/llama-3.3-70b-versatile"
+        },
+        [PSCustomObject]@{
+            Name = "MiniMax Text 01"
+            Provider = "minimax"
+            KeyName = "MINIMAX_API_KEY"
+            Model = "minimax/MiniMax-Text-01"
+        },
+        [PSCustomObject]@{
             Name = "OpenRouter free model router"
             Provider = "open_router"
             KeyName = "OPENROUTER_API_KEY"
@@ -649,12 +661,6 @@ function Get-ConfiguredCandidates {
             Provider = "cerebras"
             KeyName = "CEREBRAS_API_KEY"
             Model = "cerebras/gpt-oss-120b"
-        },
-        [PSCustomObject]@{
-            Name = "Groq"
-            Provider = "groq"
-            KeyName = "GROQ_API_KEY"
-            Model = "groq/llama-3.3-70b-versatile"
         },
         [PSCustomObject]@{
             Name = "Fireworks"
