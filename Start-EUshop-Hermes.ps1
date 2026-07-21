@@ -918,7 +918,8 @@ function Invoke-Hermes {
             $env:ANTHROPIC_AUTH_TOKEN = $token
             $env:CLAUDE_CODE_ENABLE_GATEWAY_MODEL_DISCOVERY = "1"
             $env:CLAUDE_CONFIG_DIR = Join-Path $REPO_ROOT ".claude-runner-session"
-            $env:CLAUDE_CODE_AUTO_COMPACT_WINDOW = "5000"
+            $env:CLAUDE_CODE_DISABLE_PROJECT_MESSAGES = "1"
+            $env:CLAUDE_CODE_AUTO_COMPACT_WINDOW = "4000"
             $env:CLAUDE_CODE_MAX_OUTPUT_TOKENS = "4096"
             $env:MAX_TOKENS = "4096"
             $env:MAX_THINKING_TOKENS = "1024"
