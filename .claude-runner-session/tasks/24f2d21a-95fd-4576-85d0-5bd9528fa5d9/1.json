@@ -3,7 +3,7 @@
   "subject": "Safely create HTTPS context for Stripe checkout",
   "description": "Perform security checks according to checklist",
   "activeForm": "Starting safety check on Stripe checkout",
-  "status": "pending",
+  "status": "in_progress",
   "blocks": [],
   "blockedBy": [],
   "metadata": {}
