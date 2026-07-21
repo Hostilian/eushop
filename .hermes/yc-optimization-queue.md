@@ -135,16 +135,6 @@ Status: READY
 ## PHASE 23 —€  Advanced Microservices, Spring Boot Backend & DB Hardening
 Status: READY
 
-- [ ] TASK 95 —€ Core-service Spring Boot modular monolith REST API endpoints for products & orders
-- [ ] TASK 96 —€ PostgreSQL database migrations for DSA Art. 30 trader registry & audit logs
-- [ ] TASK 97 —€ Redis cache layer for catalog search & VAT rate lookups
-- [ ] TASK 98 —€ Kafka / RabbitMQ event bus for DAC7 seller threshold calculation events
-- [ ] TASK 99 —€ Rate-limiting & API gateway DDoS protection middleware
-- [ ] TASK 100 —€ JWT authentication & RBAC authorization for seller & admin portals
-- [ ] TASK 101 —€ Automated database backup & point-in-time disaster recovery pipeline
-- [ ] TASK 102 —€ Distributed tracing with OpenTelemetry & Prometheus metric dashboards
-
-## PHASE 24 —€ Analytics, Conversion Rate Optimization & Dynamic Pricing
 Status: READY
 
 - [ ] TASK 103 —€ Privacy-preserving (cookieless) analytics engine for EU compliance

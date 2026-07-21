@@ -1,5 +1,17 @@
 # Changelog
 
+## [Unreleased] — Continuous Optimization Loop #10 (2026-07-21)
+
+### Added
+- **DSA Art. 30 Trader Registry & Audit Database Migration (Phase 23 - TASK 96)**:
+  - Created `db/migrations/015_dsa_trader_registry_and_audit.sql` defining PostgreSQL schemas for trader traceability and compliance audit logs (`dsa_trader_registry`, `compliance_audit_logs`).
+  - Added compliance reference `// COMPLIANCE-REVIEW: Implements Regulation (EU) 2022/2065 (DSA) Art. 30 traceability of traders.`
+- **Redis Cache Layer for Catalog & VAT Lookups (Phase 23 - TASK 97)**:
+  - Created `apps/web/lib/redis-cache.ts` providing in-memory/Redis TTL caching for catalog queries and EU VAT rates derived strictly from `packages/compliance`.
+- **DAC7 Event Bus & Seller Threshold Calculation (Phase 23 - TASK 98)**:
+  - Created `apps/web/lib/dac7-event-bus.ts` evaluating seller transaction counts and consideration amounts against `DAC7_THRESHOLDS` from `@eushop/compliance`.
+- **Milestone Progress**: Advanced repository completion rate to **52.8% (76 / 144 tasks)**.
+
 ## [Unreleased] — Continuous Optimization Loop #9 (2026-07-21)
 
 ### Added
