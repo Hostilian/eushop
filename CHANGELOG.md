@@ -1,5 +1,16 @@
 # Changelog
 
+## [Unreleased] — Continuous Optimization Loop #12 (2026-07-21)
+
+### Added
+- **Content Security Policy (CSP) & Security Header Hardening (Phase 25 - TASK 112)**:
+  - Created `apps/web/lib/security-headers.ts` providing OWASP Top 10 Security Hardening (`Content-Security-Policy`, `X-Frame-Options`, `Permissions-Policy`, `Strict-Transport-Security`).
+- **GDPR Art. 30 Automated ROPA Exporter (Phase 25 - TASK 114)**:
+  - Created `apps/web/lib/ropa-exporter.ts` generating statutory Records of Processing Activities documentation for EU DPA audits.
+- **Key Vault Integration & Automated Key Rotation Daemon (Phase 25 - TASK 115)**:
+  - Created `apps/web/lib/key-vault-rotation.ts` implementing ISO 27001 compliant key rotation and secret versioning.
+- **Milestone Progress**: Advanced repository completion rate to **58.1% (79 / 136 tasks)**.
+
 ## [Unreleased] — Continuous Optimization Loop #11 (2026-07-21)
 
 ### Added

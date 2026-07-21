@@ -137,14 +137,14 @@ Status: READY
 
 Status: READY
 
-- [ ] TASK 111 —€ Penetration testing & OWASP Top 10 security audit suite
-- [ ] TASK 112 —€ Content Security Policy (CSP) & CORS header hardening across routes
-- [ ] TASK 113 —€ Automated dependency vulnerability scanning (Snyk & Dependabot)
-- [ ] TASK 114 —€ GDPR Art. 30 Records of Processing Activities (ROPA) automated exporter
-- [ ] TASK 115 —€ Key vault integration & automated API key rotation daemon
-- [ ] TASK 116 —€ Zero-trust network policy & TLS 1.3 enforcement
-- [ ] TASK 117 —€ ISO 27001 & SOC 2 compliance readiness documentation
-- [ ] TASK 118 —€ Automated end-to-end chaos engineering & failover validation suite
+- [ ] TASK 111 —€  Penetration testing & OWASP Top 10 security audit suite
+- [x] TASK 112 —€  Content Security Policy (CSP) & CORS header hardening across routes
+- [ ] TASK 113 —€  Automated dependency vulnerability scanning (Snyk & Dependabot)
+- [x] TASK 114 —€  GDPR Art. 30 Records of Processing Activities (ROPA) automated exporter
+- [x] TASK 115 —€  Key vault integration & automated API key rotation daemon
+- [ ] TASK 116 —€  Zero-trust network policy & TLS 1.3 enforcement
+- [ ] TASK 117 —€  ISO 27001 & SOC 2 compliance readiness documentation
+- [ ] TASK 118 —€  Automated end-to-end chaos engineering & failover validation suite
 
 ## DEPENDENCY MAP
 - PHASE 10 must complete before PHASE 13 (SEO needs working nav)
