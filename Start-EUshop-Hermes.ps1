@@ -962,6 +962,9 @@ function Invoke-Hermes {
                 "--accept-hooks"
             )
 
+            $env:MAX_TOKENS = "16384"
+            $env:MAX_COMPLETION_TOKENS = "16384"
+
             if ($SelectedProvider -eq "nvidia") {
                 $hermesArgs += @("--provider", "nvidia", "--model", "nvidia/meta/llama-3.3-70b-instruct")
             } elseif ($SelectedProvider -eq "kimi") {
