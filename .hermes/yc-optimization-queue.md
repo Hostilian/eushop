@@ -118,6 +118,7 @@ Status: READY
 - [x] TASK 89 Ã¢â‚¬â€ Offline product listing storage and background sync using AsyncStore
 - [x] TASK 90 Ã¢â‚¬â€ Native push notifications for order status and seller dispute updates
 - [/] TASK 91 Ã¢â‚¬â€ Mobile camera barcode & QR code product lookup scanner
+        // COMPLIANCE-REVIEW: Implementing barcode scanner requires ensuring that any product data fetched through this feature complies with EU regulations, including but not limited to data protection and consumer rights.
 - [ ] TASK 92 Ã¢â‚¬â€ Haptic feedback on cart actions and order confirmation screens
 - [ ] TASK 93 Ã¢â‚¬â€ Expo dark mode & high-contrast theme synchronization with device settings
 - [ ] TASK 94 Ã¢â‚¬â€ iOS & Android native E2E test suite using Detox / Maestro
