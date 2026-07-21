@@ -591,6 +591,12 @@ function Get-ConfiguredCandidates {
     # currently available free model supporting the required capabilities.
     $Definitions = @(
         [PSCustomObject]@{
+            Name = "OpenCode Codex"
+            Provider = "opencode"
+            KeyName = "OPENCODE_API_KEY"
+            Model = "opencode/gpt-5.3-codex"
+        },
+        [PSCustomObject]@{
             Name = "Google Gemini 2.5 Flash"
             Provider = "gemini"
             KeyName = "GEMINI_API_KEY"
