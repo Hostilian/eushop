@@ -79,7 +79,7 @@ param(
     [switch]$Resume,
 
     [Parameter(ParameterSetName = 'Normal')]
-    [ValidateSet('auto', 'fcc', 'hermes', 'openrouter', 'gemini', 'kimi', 'minimax', 'nvidia', 'local', 'survival')]
+    [ValidateSet("auto", "fcc", "hermes", "openrouter", "gemini", "kimi", "minimax", "nvidia", "dashscope", "alibaba", "local", "survival")]
     [string]$Provider = 'auto',
 
     [Parameter(ParameterSetName = 'Normal')]
@@ -965,7 +965,9 @@ function Invoke-Hermes {
             $env:MAX_TOKENS = "16384"
             $env:MAX_COMPLETION_TOKENS = "16384"
 
-            if ($SelectedProvider -eq "nvidia") {
+            if ($SelectedProvider -eq "dashscope" -or $SelectedProvider -eq "alibaba") {
+                $hermesArgs += @("--provider", "dashscope", "--model", "qwen-plus")
+            } elseif ($SelectedProvider -eq "nvidia") {
                 $hermesArgs += @("--provider", "nvidia", "--model", "nvidia/meta/llama-3.3-70b-instruct")
             } elseif ($SelectedProvider -eq "kimi") {
                 $hermesArgs += @("--provider", "kimi", "--model", "kimi/moonshot-v1-8k")
