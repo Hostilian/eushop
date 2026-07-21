@@ -1,9 +1,7 @@
 package com.eushop.core.service;
 
 import java.time.LocalDateTime;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -15,9 +13,11 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import com.eushop.core.entity.Conversation;
 import com.eushop.core.entity.ConversationParticipant;
 import com.eushop.core.entity.Message;
+import com.eushop.core.entity.MessageReaction;
 import com.eushop.core.entity.User;
 import com.eushop.core.repository.ConversationParticipantRepository;
 import com.eushop.core.repository.ConversationRepository;
+import com.eushop.core.repository.MessageReactionRepository;
 import com.eushop.core.repository.MessageRepository;
 import com.eushop.core.repository.UserRepository;
 
@@ -29,13 +29,16 @@ public class ConversationService {
     private final MessageRepository messageRepository;
     private final UserRepository userRepository;
     private final ConversationParticipantRepository conversationParticipantRepository;
+    private final MessageReactionRepository messageReactionRepository;
 
     public ConversationService(ConversationRepository conversationRepository, MessageRepository messageRepository,
-            UserRepository userRepository, ConversationParticipantRepository conversationParticipantRepository) {
+            UserRepository userRepository, ConversationParticipantRepository conversationParticipantRepository,
+            MessageReactionRepository messageReactionRepository) {
         this.conversationRepository = conversationRepository;
         this.messageRepository = messageRepository;
         this.userRepository = userRepository;
         this.conversationParticipantRepository = conversationParticipantRepository;
+        this.messageReactionRepository = messageReactionRepository;
     }
 
     public Conversation createConversation(String buyerId, String sellerId, String subject) {
@@ -159,36 +162,26 @@ public class ConversationService {
     public Message addReaction(String messageId, String userId, String reaction) {
         Optional<Message> messageOpt = messageRepository.findById(messageId);
         if (messageOpt.isEmpty()) {
-            return null;
+            throw new IllegalArgumentException("Message not found");
+        }
+
+        Optional<User> userOpt = userRepository.findById(userId);
+        if (userOpt.isEmpty()) {
+            throw new IllegalArgumentException("User not found");
         }
 
         Message message = messageOpt.get();
+        User user = userOpt.get();
 
         // Check if user is part of the conversation
         if (!isUserInConversation(userId, message.getConversation().getId())) {
-            return null;
+            throw new SecurityException("User is not part of this conversation");
         }
 
-        // Get or create reactions map
-        Map<String, Object> metadata = message.getMetadata();
-        if (metadata == null) {
-            metadata = new HashMap<>();
-        }
+        MessageReaction messageReaction = new MessageReaction(message, user, reaction);
+        messageReactionRepository.save(messageReaction);
 
-        Map<String, Integer> reactions;
-        if (metadata.containsKey("reactions")) {
-            reactions = (Map<String, Integer>) metadata.get("reactions");
-        } else {
-            reactions = new HashMap<>();
-        }
-
-        // Update reaction count
-        reactions.put(reaction, reactions.getOrDefault(reaction, 0) + 1);
-
-        // Update metadata
-        metadata.put("reactions", reactions);
-        message.setMetadata(metadata);
-
+        message.getReactions().add(messageReaction);
         return messageRepository.save(message);
     }
 

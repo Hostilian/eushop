@@ -33,6 +33,11 @@ export interface Conversation {
   participants?: User[];
 }
 
+export interface MessageReaction {
+  userId: string;
+  reaction: string;
+}
+
 export interface Message {
   id: string;
   conversationId: string;
@@ -44,7 +49,7 @@ export interface Message {
   isRead: boolean;
   readAt?: string;
   createdAt: string;
-  reactions?: Record<string, number>;
+  reactions?: MessageReaction[];
 }
 
 export interface CreateConversationRequest {

@@ -5,17 +5,8 @@ import com.eushop.core.entity.Message;
 import com.eushop.core.service.ConversationService;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.handler.annotation.Payload;
-import com.eushop.core.dto.MessageResponse;
-import com.eushop.core.entity.Message;
-import com.eushop.core.service.ConversationService;
-import org.springframework.messaging.handler.annotation.MessageMapping;
-import org.springframework.messaging.handler.annotation.Payload;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Controller;
-
-import java.security.Principal;
-import java.util.HashMap;
-import java.util.Map;
 
 import java.security.Principal;
 
@@ -57,14 +48,7 @@ public class WebSocketController {
         );
 
         // Convert to DTO
-        MessageResponse response = new MessageResponse(
-                message.getId(),
-                message.getConversation().getId(),
-                message.getSender().getId(),
-                message.getContent(),
-                message.getIsRead(),
-                message.getCreatedAt().toString()
-        );
+        MessageResponse response = new MessageResponse(message);
 
         // Notify both participants
         messagingTemplate.convertAndSendToUser(
@@ -171,20 +155,7 @@ public class WebSocketController {
 
         if (message != null) {
             // Convert to DTO with reactions
-            Map<String, Integer> reactions = new HashMap<>();
-            if (message.getMetadata() != null && message.getMetadata().containsKey("reactions")) {
-                reactions = (Map<String, Integer>) message.getMetadata().get("reactions");
-            }
-
-            MessageResponse response = new MessageResponse(
-                    message.getId(),
-                    message.getConversation().getId(),
-                    message.getSender().getId(),
-                    message.getContent(),
-                    message.getIsRead(),
-                    message.getCreatedAt().toString(),
-                    reactions
-            );
+            MessageResponse response = new MessageResponse(message);
 
             // Notify both participants
             messagingTemplate.convertAndSendToUser(

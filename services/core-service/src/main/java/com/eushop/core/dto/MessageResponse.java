@@ -1,6 +1,9 @@
 package com.eushop.core.dto;
 
-import java.util.Map;
+import java.util.List;
+import java.util.stream.Collectors;
+
+import com.eushop.core.entity.Message;
 
 public class MessageResponse {
     private String id;
@@ -9,28 +12,18 @@ public class MessageResponse {
     private String content;
     private boolean isRead;
     private String createdAt;
-    private Map<String, Integer> reactions;
+    private List<MessageReactionDto> reactions;
 
-    public MessageResponse(String id, String conversationId, String senderId, String content,
-                          boolean isRead, String createdAt) {
-        this.id = id;
-        this.conversationId = conversationId;
-        this.senderId = senderId;
-        this.content = content;
-        this.isRead = isRead;
-        this.createdAt = createdAt;
-        this.reactions = Map.of();
-    }
-
-    public MessageResponse(String id, String conversationId, String senderId, String content,
-                          boolean isRead, String createdAt, Map<String, Integer> reactions) {
-        this.id = id;
-        this.conversationId = conversationId;
-        this.senderId = senderId;
-        this.content = content;
-        this.isRead = isRead;
-        this.createdAt = createdAt;
-        this.reactions = reactions;
+    public MessageResponse(Message message) {
+        this.id = message.getId();
+        this.conversationId = message.getConversation().getId();
+        this.senderId = message.getSender().getId();
+        this.content = message.getContent();
+        this.isRead = message.getIsRead();
+        this.createdAt = message.getCreatedAt().toString();
+        this.reactions = message.getReactions().stream()
+                .map(MessageReactionDto::new)
+                .collect(Collectors.toList());
     }
 
     // Getters and setters
@@ -82,11 +75,11 @@ public class MessageResponse {
         this.createdAt = createdAt;
     }
 
-    public Map<String, Integer> getReactions() {
+    public List<MessageReactionDto> getReactions() {
         return reactions;
     }
 
-    public void setReactions(Map<String, Integer> reactions) {
+    public void setReactions(List<MessageReactionDto> reactions) {
         this.reactions = reactions;
     }
 }
