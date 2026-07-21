@@ -591,34 +591,22 @@ function Get-ConfiguredCandidates {
     # currently available free model supporting the required capabilities.
     $Definitions = @(
         [PSCustomObject]@{
-            Name = "Google Gemini 2.5 Flash"
+            Name = "Google Gemini 2.0 Flash"
             Provider = "gemini"
             KeyName = "GEMINI_API_KEY"
-            Model = "gemini/models/gemini-2.5-flash"
+            Model = "gemini/models/gemini-2.0-flash"
         },
         [PSCustomObject]@{
-            Name = "GitHub Models GPT-4.1"
-            Provider = "github_models"
-            KeyName = "GITHUB_MODELS_TOKEN"
-            Model = "github_models/openai/gpt-4.1"
-        },
-        [PSCustomObject]@{
-            Name = "Cerebras GPT OSS"
-            Provider = "cerebras"
-            KeyName = "CEREBRAS_API_KEY"
-            Model = "cerebras/gpt-oss-120b"
-        },
-        [PSCustomObject]@{
-            Name = "Google Gemini 2.5 Flash"
+            Name = "Google Gemini 1.5 Pro"
             Provider = "gemini"
             KeyName = "GEMINI_API_KEY"
-            Model = "gemini/models/gemini-2.5-flash"
+            Model = "gemini/models/gemini-1.5-pro"
         },
         [PSCustomObject]@{
-            Name = "MiniMax Text 01"
-            Provider = "minimax"
-            KeyName = "MINIMAX_API_KEY"
-            Model = "minimax/MiniMax-Text-01"
+            Name = "Google Gemini 1.5 Flash 8B"
+            Provider = "gemini"
+            KeyName = "GEMINI_API_KEY"
+            Model = "gemini/models/gemini-1.5-flash-8b"
         },
         [PSCustomObject]@{
             Name = "Groq Llama 3.3 70B"
