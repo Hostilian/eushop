@@ -1,163 +1,163 @@
 # EUshop YC Optimization Task Queue & Roadmap
 
-## PHASE 10 Ã¢â‚¬â€ Navigation, UX & Cart Reliability
+## PHASE 10 —€ Navigation, UX & Cart Reliability
 Status: COMPLETED
 
-- [x] TASK 25 Ã¢â‚¬â€ Reusable Breadcrumb component & route hierarchy
-- [x] TASK 26 Ã¢â‚¬â€ End-to-end cart persistence & checkout route verification
-- [x] TASK 27 Ã¢â‚¬â€ Allergen filter query parameter parsing in catalog service
+- [x] TASK 25 —€ Reusable Breadcrumb component & route hierarchy
+- [x] TASK 26 —€ End-to-end cart persistence & checkout route verification
+- [x] TASK 27 —€ Allergen filter query parameter parsing in catalog service
 
-## PHASE 11 Ã¢â‚¬â€ Legal Compliance Deep Dive
+## PHASE 11 —€ Legal Compliance Deep Dive
 Status: COMPLETED
 
-- [x] TASK 28 Ã¢â‚¬â€ GDPR cookie consent banner audit (CookieBanner.tsx)
-- [x] TASK 29 Ã¢â‚¬â€ Impressum / Legal Notice page (impressum.tsx)
-- [x] TASK 30 Ã¢â‚¬â€ Privacy Policy completeness audit (privacy.tsx)
-- [x] TASK 31 Ã¢â‚¬â€ Terms of Service completeness audit (terms.tsx)
-- [x] TASK 32 Ã¢â‚¬â€ PCI DSS / payment security audit (checkout.tsx Stripe iFrame integration)
-- [x] TASK 33 Ã¢â‚¬â€ DSA Art. 30 "Sold by [Seller Name]" persistent UI element audit (ProductCard.tsx & food/[id].tsx)
-- [x] TASK 34 Ã¢â‚¬â€ GPSR compliance fields for non-food products (packages/types & food/[id].tsx)
+- [x] TASK 28 —€ GDPR cookie consent banner audit (CookieBanner.tsx)
+- [x] TASK 29 —€ Impressum / Legal Notice page (impressum.tsx)
+- [x] TASK 30 —€ Privacy Policy completeness audit (privacy.tsx)
+- [x] TASK 31 —€ Terms of Service completeness audit (terms.tsx)
+- [x] TASK 32 —€ PCI DSS / payment security audit (checkout.tsx Stripe iFrame integration)
+- [x] TASK 33 —€ DSA Art. 30 "Sold by [Seller Name]" persistent UI element audit (ProductCard.tsx & food/[id].tsx)
+- [x] TASK 34 —€ GPSR compliance fields for non-food products (packages/types & food/[id].tsx)
 
-## PHASE 12 Ã¢â‚¬â€ Product Listings & Content Quality
+## PHASE 12 —€ Product Listings & Content Quality
 Status: COMPLETED
 
-- [x] TASK 35 Ã¢â‚¬â€ FIC Art. 9 mandatory food disclosure UI verification
-- [x] TASK 36 Ã¢â‚¬â€ High-resolution product image gallery with fallback support
-- [x] TASK 37 Ã¢â‚¬â€ Search filter facets for dietary restrictions & thermal packaging
-- [x] TASK 38 Ã¢â‚¬â€ PDO / PGI / TSG quality scheme verification badge UI
+- [x] TASK 35 —€ FIC Art. 9 mandatory food disclosure UI verification
+- [x] TASK 36 —€ High-resolution product image gallery with fallback support
+- [x] TASK 37 —€ Search filter facets for dietary restrictions & thermal packaging
+- [x] TASK 38 —€ PDO / PGI / TSG quality scheme verification badge UI
 
-## PHASE 13 Ã¢â‚¬â€ SEO & Technical Performance
+## PHASE 13 —€ SEO & Technical Performance
 Status: COMPLETED
 
-- [x] TASK 39 Ã¢â‚¬â€ Schema.org JSON-LD structured data for Product & BreadcrumbList
-- [x] TASK 40 Ã¢â‚¬â€ OpenGraph & Twitter card meta tags for all product & category pages
-- [x] TASK 41 Ã¢â‚¬â€ Dynamic sitemap.xml & robots.txt generator
-- [x] TASK 42 Ã¢â‚¬â€ Core Web Vitals image optimization with Next.js Image component
-- [x] TASK 43 Ã¢â‚¬â€ Dynamic route pre-rendering & ISR caching strategy
-- [x] TASK 44 Ã¢â‚¬â€ WCAG 2.2 AA color contrast audit across light/dark themes
+- [x] TASK 39 —€ Schema.org JSON-LD structured data for Product & BreadcrumbList
+- [x] TASK 40 —€ OpenGraph & Twitter card meta tags for all product & category pages
+- [x] TASK 41 —€ Dynamic sitemap.xml & robots.txt generator
+- [x] TASK 42 —€ Core Web Vitals image optimization with Next.js Image component
+- [x] TASK 43 —€ Dynamic route pre-rendering & ISR caching strategy
+- [x] TASK 44 —€ WCAG 2.2 AA color contrast audit across light/dark themes
 
-## PHASE 14 Ã¢â‚¬â€ Accessibility (WCAG 2.2 AA)
+## PHASE 14 —€ Accessibility (WCAG 2.2 AA)
 Status: COMPLETED
 
-- [x] TASK 45 Ã¢â‚¬â€ Screen reader aria-labels on interactive elements
-- [x] TASK 46 Ã¢â‚¬â€ Keyboard navigation focus traps & skip-to-content link
-- [x] TASK 47 Ã¢â‚¬â€ Accessible error state announcements in forms
-- [x] TASK 48 Ã¢â‚¬â€ High-contrast mode styling for text elements
+- [x] TASK 45 —€ Screen reader aria-labels on interactive elements
+- [x] TASK 46 —€ Keyboard navigation focus traps & skip-to-content link
+- [x] TASK 47 —€ Accessible error state announcements in forms
+- [x] TASK 48 —€ High-contrast mode styling for text elements
 
-## PHASE 15 Ã¢â‚¬â€ Design, YC Principles & Conversion Optimisation
+## PHASE 15 —€ Design, YC Principles & Conversion Optimisation
 Status: COMPLETED
 
-- [x] TASK 49 Ã¢â‚¬â€ Micro-animations & hover states for interactive components
-- [x] TASK 50 Ã¢â‚¬â€ One-click checkout & guest checkout conversion flow
-- [x] TASK 51 Ã¢â‚¬â€ Seller onboarding conversion funnel polish
-- [x] TASK 52 Ã¢â‚¬â€ Trust signals & EU consumer protection badges
-- [x] TASK 53 Ã¢â‚¬â€ Mobile-responsive layout optimization across viewports
+- [x] TASK 49 —€ Micro-animations & hover states for interactive components
+- [x] TASK 50 —€ One-click checkout & guest checkout conversion flow
+- [x] TASK 51 —€ Seller onboarding conversion funnel polish
+- [x] TASK 52 —€ Trust signals & EU consumer protection badges
+- [x] TASK 53 —€ Mobile-responsive layout optimization across viewports
 
-## PHASE 16 Ã¢â‚¬â€ Automated Testing & CI/CD
+## PHASE 16 —€ Automated Testing & CI/CD
 Status: COMPLETED
 
-- [x] TASK 54 Ã¢â‚¬â€ Comprehensive Jest unit test coverage for new components
-- [x] TASK 55 Ã¢â‚¬â€ Playwright / Cypress E2E user flow tests
-- [x] TASK 56 Ã¢â‚¬â€ ESLint & TypeScript strict mode validation in CI
-- [x] TASK 57 Ã¢â‚¬â€ GitHub Actions automated build & test workflow
+- [x] TASK 54 —€ Comprehensive Jest unit test coverage for new components
+- [x] TASK 55 —€ Playwright / Cypress E2E user flow tests
+- [x] TASK 56 —€ ESLint & TypeScript strict mode validation in CI
+- [x] TASK 57 —€ GitHub Actions automated build & test workflow
 
-## PHASE 17 Ã¢â‚¬â€ VAT Engine & DAC7 Wiring (Phase 2 Compliance)
+## PHASE 17 —€ VAT Engine & DAC7 Wiring (Phase 2 Compliance)
 Status: COMPLETED
 
-- [x] TASK 58 Ã¢â‚¬â€ Connect packages/compliance VAT engine to checkout totals
-- [x] TASK 59 Ã¢â‚¬â€ DAC7 seller revenue threshold reporting cron job
-- [x] TASK 60 Ã¢â‚¬â€ DSA Art. 32 buyer notification query implementation
+- [x] TASK 58 —€ Connect packages/compliance VAT engine to checkout totals
+- [x] TASK 59 —€ DAC7 seller revenue threshold reporting cron job
+- [x] TASK 60 —€ DSA Art. 32 buyer notification query implementation
 
-## PHASE 18 Ã¢â‚¬â€ CHANGELOG & Documentation
+## PHASE 18 —€ CHANGELOG & Documentation
 Status: COMPLETED
 
-- [x] TASK 61 Ã¢â‚¬â€ Update CHANGELOG.md with Phase 11 & Phase 12 completion entries
-- [x] TASK 62 Ã¢â‚¬â€ Finalize AGENTS.md Phase progress roadmap & legal compliance disclosures
+- [x] TASK 61 —€ Update CHANGELOG.md with Phase 11 & Phase 12 completion entries
+- [x] TASK 62 —€ Finalize AGENTS.md Phase progress roadmap & legal compliance disclosures
 
-## PHASE 19 Ã¢â‚¬â€ Advanced Multilingual & i18n Localization Engine
+## PHASE 19 —€ Advanced Multilingual & i18n Localization Engine
 Status: COMPLETED
 
-- [x] TASK 63 Ã¢â‚¬â€ Dynamic locale switcher (EN, DE, FR, IT, ES, CS) with RTL/LTR layout support
-- [x] TASK 64 Ã¢â‚¬â€ Allergen name multi-language translation engine in packages/compliance
-- [x] TASK 65 Ã¢â‚¬â€ Currency auto-conversion & display formatting per EU member state locale
-- [x] TASK 66 Ã¢â‚¬â€ Localized statutory withdrawal forms & EU consumer rights PDF generation
-- [x] TASK 67 Ã¢â‚¬â€ Localized error messages and accessible form validation strings
-- [x] TASK 68 Ã¢â‚¬â€ Automatic EU region-based tax notice & shipping threshold calculation display
-- [x] TASK 69 Ã¢â‚¬â€ Multilingual SEO meta tags & hreflang link tags for all product routes
-- [x] TASK 70 Ã¢â‚¬â€ Cross-border seller verification document translation guidance UI
+- [x] TASK 63 —€ Dynamic locale switcher (EN, DE, FR, IT, ES, CS) with RTL/LTR layout support
+- [x] TASK 64 —€ Allergen name multi-language translation engine in packages/compliance
+- [x] TASK 65 —€ Currency auto-conversion & display formatting per EU member state locale
+- [x] TASK 66 —€ Localized statutory withdrawal forms & EU consumer rights PDF generation
+- [x] TASK 67 —€ Localized error messages and accessible form validation strings
+- [x] TASK 68 —€ Automatic EU region-based tax notice & shipping threshold calculation display
+- [x] TASK 69 —€ Multilingual SEO meta tags & hreflang link tags for all product routes
+- [x] TASK 70 —€ Cross-border seller verification document translation guidance UI
 
-## PHASE 20 Ã¢â‚¬â€ AI Vision, Allergen Scanner & OCR Pipeline
+## PHASE 20 —€ AI Vision, Allergen Scanner & OCR Pipeline
 Status: COMPLETED
 
-- [x] TASK 71 Ã¢â‚¬â€ Vision AI food label scanner integration (scripts/scan_food_label.py API endpoint)
-- [x] TASK 72 Ã¢â‚¬â€ Real-time camera ingredient list OCR for seller product onboarding
-- [x] TASK 73 Ã¢â‚¬â€ Automated Annex II 14 allergen extraction & auto-flagging engine
-- [x] TASK 74 Ã¢â‚¬â€ Nutrition declaration table auto-parsing from raw label images
-- [x] TASK 75 Ã¢â‚¬â€ Automated PDO / PGI official certificate OCR verification scanner
-- [x] TASK 76 Ã¢â‚¬â€ FIC Art. 15 language compliance checker for destination country markets
-- [x] TASK 77 Ã¢â‚¬â€ Automatic allergen highlight & warning label generator component
-- [x] TASK 78 Ã¢â‚¬â€ End-to-end integration tests for Vision AI & OCR pipeline
+- [x] TASK 71 —€ Vision AI food label scanner integration (scripts/scan_food_label.py API endpoint)
+- [x] TASK 72 —€ Real-time camera ingredient list OCR for seller product onboarding
+- [x] TASK 73 —€ Automated Annex II 14 allergen extraction & auto-flagging engine
+- [x] TASK 74 —€ Nutrition declaration table auto-parsing from raw label images
+- [x] TASK 75 —€ Automated PDO / PGI official certificate OCR verification scanner
+- [x] TASK 76 —€ FIC Art. 15 language compliance checker for destination country markets
+- [x] TASK 77 —€ Automatic allergen highlight & warning label generator component
+- [x] TASK 78 —€ End-to-end integration tests for Vision AI & OCR pipeline
 
-## PHASE 21 Ã¢â‚¬â€ Real-Time Chat, Seller Messaging & DSA Dispute System
+## PHASE 21 —€ Real-Time Chat, Seller Messaging & DSA Dispute System
 Status: IN_PROGRESS
 
-- [x] TASK 79 Ã¢â‚¬â€ DSA Art. 20 Internal Complaint-Handling & Dispute Resolution portal
-- [x] TASK 80 Ã¢â‚¬â€ Real-time buyer-seller WebSocket messaging with end-to-end audit trail
-- [x] TASK 81 Ã¢â‚¬â€ Seller response time SLA tracking & DSA compliance badge assignment
-- [x] TASK 82 Ã¢â‚¬â€ Automated buyer dispute escalation for unfulfilled cross-border shipments
-- [x] TASK 83 Ã¢â‚¬â€ File attachment virus scanning and PDF validation service for chat
-- [x] TASK 84 Ã¢â‚¬â€ Message reaction & read receipt synchronization across web & mobile
-- [x] TASK 85 Ã¢â‚¬â€ DSA Art. 16 Notice-and-Action illegal content reporting workflow
-- [x] TASK 86 Ã¢â‚¬â€ Automated notification digest emails for seller customer inquiries
+- [x] TASK 79 —€ DSA Art. 20 Internal Complaint-Handling & Dispute Resolution portal
+- [x] TASK 80 —€ Real-time buyer-seller WebSocket messaging with end-to-end audit trail
+- [x] TASK 81 —€ Seller response time SLA tracking & DSA compliance badge assignment
+- [x] TASK 82 —€ Automated buyer dispute escalation for unfulfilled cross-border shipments
+- [x] TASK 83 —€ File attachment virus scanning and PDF validation service for chat
+- [x] TASK 84 —€ Message reaction & read receipt synchronization across web & mobile
+- [x] TASK 85 —€ DSA Art. 16 Notice-and-Action illegal content reporting workflow
+- [x] TASK 86 —€ Automated notification digest emails for seller customer inquiries
 
-## PHASE 22 Ã¢â‚¬â€ Mobile (Expo / React Native) Feature Parity & Native Capabilities
+## PHASE 22 —€ Mobile (Expo / React Native) Feature Parity & Native Capabilities
 Status: READY
 
-- [x] TASK 87 Ã¢â‚¬â€ React Native Expo allergen filter drawer and search screen parity
-- [!] TASK 88 Ã¢â‚¬â€ Native biometric checkout authentication (TouchID/FaceID) with consent gate
-- [x] TASK 89 Ã¢â‚¬â€ Offline product listing storage and background sync using AsyncStore
-- [x] TASK 90 Ã¢â‚¬â€ Native push notifications for order status and seller dispute updates
-- [/] TASK 91 Ã¢â‚¬â€ Mobile camera barcode & QR code product lookup scanner
+- [x] TASK 87 —€ React Native Expo allergen filter drawer and search screen parity
+- [!] TASK 88 —€ Native biometric checkout authentication (TouchID/FaceID) with consent gate
+- [x] TASK 89 —€ Offline product listing storage and background sync using AsyncStore
+- [x] TASK 90 —€ Native push notifications for order status and seller dispute updates
+- [/] TASK 91 —€ Mobile camera barcode & QR code product lookup scanner
         // COMPLIANCE-REVIEW: Implementing barcode scanner requires ensuring that any product data fetched through this feature complies with EU regulations, including but not limited to data protection and consumer rights.
-- [ ] TASK 92 Ã¢â‚¬â€ Haptic feedback on cart actions and order confirmation screens
-- [ ] TASK 93 Ã¢â‚¬â€ Expo dark mode & high-contrast theme synchronization with device settings
-- [ ] TASK 94 Ã¢â‚¬â€ iOS & Android native E2E test suite using Detox / Maestro
+- [ ] TASK 92 —€ Haptic feedback on cart actions and order confirmation screens
+- [ ] TASK 93 —€ Expo dark mode & high-contrast theme synchronization with device settings
+- [ ] TASK 94 —€ iOS & Android native E2E test suite using Detox / Maestro
 
-## PHASE 23 Ã¢â‚¬â€ Advanced Microservices, Spring Boot Backend & DB Hardening
+## PHASE 23 —€ Advanced Microservices, Spring Boot Backend & DB Hardening
 Status: READY
 
-- [ ] TASK 95 Ã¢â‚¬â€ Core-service Spring Boot modular monolith REST API endpoints for products & orders
-- [ ] TASK 96 Ã¢â‚¬â€ PostgreSQL database migrations for DSA Art. 30 trader registry & audit logs
-- [ ] TASK 97 Ã¢â‚¬â€ Redis cache layer for catalog search & VAT rate lookups
-- [ ] TASK 98 Ã¢â‚¬â€ Kafka / RabbitMQ event bus for DAC7 seller threshold calculation events
-- [ ] TASK 99 Ã¢â‚¬â€ Rate-limiting & API gateway DDoS protection middleware
-- [ ] TASK 100 Ã¢â‚¬â€ JWT authentication & RBAC authorization for seller & admin portals
-- [ ] TASK 101 Ã¢â‚¬â€ Automated database backup & point-in-time disaster recovery pipeline
-- [ ] TASK 102 Ã¢â‚¬â€ Distributed tracing with OpenTelemetry & Prometheus metric dashboards
+- [ ] TASK 95 —€ Core-service Spring Boot modular monolith REST API endpoints for products & orders
+- [ ] TASK 96 —€ PostgreSQL database migrations for DSA Art. 30 trader registry & audit logs
+- [ ] TASK 97 —€ Redis cache layer for catalog search & VAT rate lookups
+- [ ] TASK 98 —€ Kafka / RabbitMQ event bus for DAC7 seller threshold calculation events
+- [ ] TASK 99 —€ Rate-limiting & API gateway DDoS protection middleware
+- [ ] TASK 100 —€ JWT authentication & RBAC authorization for seller & admin portals
+- [ ] TASK 101 —€ Automated database backup & point-in-time disaster recovery pipeline
+- [ ] TASK 102 —€ Distributed tracing with OpenTelemetry & Prometheus metric dashboards
 
-## PHASE 24 Ã¢â‚¬â€ Analytics, Conversion Rate Optimization & Dynamic Pricing
+## PHASE 24 —€ Analytics, Conversion Rate Optimization & Dynamic Pricing
 Status: READY
 
-- [ ] TASK 103 Ã¢â‚¬â€ Privacy-preserving (cookieless) analytics engine for EU compliance
-- [ ] TASK 104 Ã¢â‚¬â€ Dynamic checkout conversion funnel A/B testing framework
-- [ ] TASK 105 Ã¢â‚¬â€ Real-time regional shipping cost calculator per EU postal code
-- [ ] TASK 106 Ã¢â‚¬â€ Product recommendation engine based on dietary preferences & origin
-- [ ] TASK 107 Ã¢â‚¬â€ Cart abandonment recovery notifications with statutory consent
-- [ ] TASK 108 Ã¢â‚¬â€ Seller analytics dashboard with revenue, VAT, and DAC7 progress graphs
-- [ ] TASK 109 Ã¢â‚¬â€ Bulk CSV/XLSX product import & export engine for high-volume sellers
-- [ ] TASK 110 Ã¢â‚¬â€ Automated price parity & cross-border VAT compliance checker
+- [ ] TASK 103 —€ Privacy-preserving (cookieless) analytics engine for EU compliance
+- [ ] TASK 104 —€ Dynamic checkout conversion funnel A/B testing framework
+- [ ] TASK 105 —€ Real-time regional shipping cost calculator per EU postal code
+- [ ] TASK 106 —€ Product recommendation engine based on dietary preferences & origin
+- [ ] TASK 107 —€ Cart abandonment recovery notifications with statutory consent
+- [ ] TASK 108 —€ Seller analytics dashboard with revenue, VAT, and DAC7 progress graphs
+- [ ] TASK 109 —€ Bulk CSV/XLSX product import & export engine for high-volume sellers
+- [ ] TASK 110 —€ Automated price parity & cross-border VAT compliance checker
 
-## PHASE 25 Ã¢â‚¬â€ Enterprise Security, Hardening & Audit Readiness
+## PHASE 25 —€ Enterprise Security, Hardening & Audit Readiness
 Status: READY
 
-- [ ] TASK 111 Ã¢â‚¬â€ Penetration testing & OWASP Top 10 security audit suite
-- [ ] TASK 112 Ã¢â‚¬â€ Content Security Policy (CSP) & CORS header hardening across routes
-- [ ] TASK 113 Ã¢â‚¬â€ Automated dependency vulnerability scanning (Snyk & Dependabot)
-- [ ] TASK 114 Ã¢â‚¬â€ GDPR Art. 30 Records of Processing Activities (ROPA) automated exporter
-- [ ] TASK 115 Ã¢â‚¬â€ Key vault integration & automated API key rotation daemon
-- [ ] TASK 116 Ã¢â‚¬â€ Zero-trust network policy & TLS 1.3 enforcement
-- [ ] TASK 117 Ã¢â‚¬â€ ISO 27001 & SOC 2 compliance readiness documentation
-- [ ] TASK 118 Ã¢â‚¬â€ Automated end-to-end chaos engineering & failover validation suite
+- [ ] TASK 111 —€ Penetration testing & OWASP Top 10 security audit suite
+- [ ] TASK 112 —€ Content Security Policy (CSP) & CORS header hardening across routes
+- [ ] TASK 113 —€ Automated dependency vulnerability scanning (Snyk & Dependabot)
+- [ ] TASK 114 —€ GDPR Art. 30 Records of Processing Activities (ROPA) automated exporter
+- [ ] TASK 115 —€ Key vault integration & automated API key rotation daemon
+- [ ] TASK 116 —€ Zero-trust network policy & TLS 1.3 enforcement
+- [ ] TASK 117 —€ ISO 27001 & SOC 2 compliance readiness documentation
+- [ ] TASK 118 —€ Automated end-to-end chaos engineering & failover validation suite
 
 ## DEPENDENCY MAP
 - PHASE 10 must complete before PHASE 13 (SEO needs working nav)
