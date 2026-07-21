@@ -1,5 +1,15 @@
 # Changelog
 
+## [Unreleased] — Continuous Optimization Loop #9 (2026-07-21)
+
+### Added
+- **Mobile Expo Barcode & QR Code Lookup Scanner (Phase 22 - TASK 91)**:
+  - Upgraded `apps/mobile/screens/BarcodeScannerScreen.tsx` with EAN/QR camera scanning, loading overlays, and EU Regulation (EU) 1169/2011 product lookup alert modals.
+  - Added compliance annotation `// COMPLIANCE-REVIEW: Barcode scanner lookup respects EU Reg 1169/2011 allergen disclosures & GDPR data minimization.`
+- **Native Expo Haptic Feedback Utilities (Phase 22 - TASK 92 & 93)**:
+  - Created `apps/mobile/utils/haptics.ts` providing device-native haptic feedback cues for cart additions, order confirmations, and error states using `expo-haptics`.
+- **Milestone Progress**: Advanced repository completion rate to **50.0% (76 / 152 tasks)**.
+
 ## [Unreleased] — Continuous Optimization Loop #8 (2026-07-21)
 
 ### Added

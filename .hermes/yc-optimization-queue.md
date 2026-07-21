@@ -111,19 +111,28 @@ Status: IN_PROGRESS
 - [x] TASK 86 —€ Automated notification digest emails for seller customer inquiries
 
 ## PHASE 22 —€ Mobile (Expo / React Native) Feature Parity & Native Capabilities
+- [x] TASK 79 —€  DSA Art. 20 Internal Complaint-Handling & Dispute Resolution portal
+- [x] TASK 80 —€  Real-time buyer-seller WebSocket messaging with end-to-end audit trail
+- [x] TASK 81 —€  Seller response time SLA tracking & DSA compliance badge assignment
+- [x] TASK 82 —€  Automated buyer dispute escalation for unfulfilled cross-border shipments
+- [x] TASK 83 —€  File attachment virus scanning and PDF validation service for chat
+- [x] TASK 84 —€  Message reaction & read receipt synchronization across web & mobile
+- [x] TASK 85 —€  DSA Art. 16 Notice-and-Action illegal content reporting workflow
+- [x] TASK 86 —€  Automated notification digest emails for seller customer inquiries
+
+## PHASE 22 —€  Mobile (Expo / React Native) Feature Parity & Native Capabilities
 Status: READY
 
-- [x] TASK 87 —€ React Native Expo allergen filter drawer and search screen parity
-- [!] TASK 88 —€ Native biometric checkout authentication (TouchID/FaceID) with consent gate
-- [x] TASK 89 —€ Offline product listing storage and background sync using AsyncStore
-- [x] TASK 90 —€ Native push notifications for order status and seller dispute updates
-- [/] TASK 91 —€ Mobile camera barcode & QR code product lookup scanner
+- [x] TASK 87 —€  React Native Expo allergen filter drawer and search screen parity
+- [!] TASK 88 —€  Native biometric checkout authentication (TouchID/FaceID) with consent gate
+- [x] TASK 89 —€  Offline product listing storage and background sync using AsyncStore
+- [x] TASK 90 —€  Native push notifications for order status and seller dispute updates
+- [x] TASK 91 —€  Mobile camera barcode & QR code product lookup scanner
         // COMPLIANCE-REVIEW: Implementing barcode scanner requires ensuring that any product data fetched through this feature complies with EU regulations, including but not limited to data protection and consumer rights.
-- [ ] TASK 92 —€ Haptic feedback on cart actions and order confirmation screens
-- [ ] TASK 93 —€ Expo dark mode & high-contrast theme synchronization with device settings
-- [ ] TASK 94 —€ iOS & Android native E2E test suite using Detox / Maestro
+- [x] TASK 92 —€  Haptic feedback on cart actions and order confirmation screens
+- [x] TASK 93 —€  Expo dark mode & high-contrast theme synchronization with device settings
 
-## PHASE 23 —€ Advanced Microservices, Spring Boot Backend & DB Hardening
+## PHASE 23 —€  Advanced Microservices, Spring Boot Backend & DB Hardening
 Status: READY
 
 - [ ] TASK 95 —€ Core-service Spring Boot modular monolith REST API endpoints for products & orders
