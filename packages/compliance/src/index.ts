@@ -8,3 +8,8 @@
  */
 export * from './allergens';
 export * from './vat';
+export * from './currency';
+export * from './allergen-extractor';
+export * from './nutrition-parser';
+export * from './quality-scheme-verifier';
+export * from './language-compliance';

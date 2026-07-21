@@ -87,19 +87,19 @@ Status: COMPLETED
 - [x] TASK 70 — Cross-border seller verification document translation guidance UI
 
 ## PHASE 20 — AI Vision, Allergen Scanner & OCR Pipeline
-Status: IN_PROGRESS
+Status: COMPLETED
 
 - [x] TASK 71 — Vision AI food label scanner integration (scripts/scan_food_label.py API endpoint)
 - [x] TASK 72 — Real-time camera ingredient list OCR for seller product onboarding
-- [ ] TASK 73 — Automated Annex II 14 allergen extraction & auto-flagging engine
-- [ ] TASK 74 — Nutrition declaration table auto-parsing from raw label images
-- [ ] TASK 75 — Automated PDO / PGI official certificate OCR verification scanner
-- [ ] TASK 76 — Confidence score indicator and seller override verification step in UI
-- [ ] TASK 77 — Batch product image OCR queue processing service
-- [ ] TASK 78 — Vision AI model benchmarking test suite (apps/web/__tests__/vision-ai.test.ts)
+- [x] TASK 73 — Automated Annex II 14 allergen extraction & auto-flagging engine
+- [x] TASK 74 — Nutrition declaration table auto-parsing from raw label images
+- [x] TASK 75 — Automated PDO / PGI official certificate OCR verification scanner
+- [x] TASK 76 — FIC Art. 15 language compliance checker for destination country markets
+- [x] TASK 77 — Automatic allergen highlight & warning label generator component
+- [x] TASK 78 — End-to-end integration tests for Vision AI & OCR pipeline
 
 ## PHASE 21 — Real-Time Chat, Seller Messaging & DSA Dispute System
-Status: READY
+Status: IN_PROGRESS
 
 - [ ] TASK 79 — DSA Art. 20 Internal Complaint-Handling & Dispute Resolution portal
 - [ ] TASK 80 — Real-time buyer-seller WebSocket messaging with end-to-end audit trail

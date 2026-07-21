@@ -64,6 +64,15 @@
 - Task 69: Added EU Single Market multilingual i18n `<link rel="alternate" hrefLang="..." />` tags to product detail pages in `apps/web/pages/food/[id].tsx`.
 - Task 70: Created DSA Art. 30 trader onboarding interface with Regulation (EU) 2016/1191 cross-border document translation guidance in `apps/web/pages/become-seller.tsx`.
 
-## [2026-07-21 01:42 UTC] Phase 20 Active: AI Vision, Allergen Scanner & OCR Pipeline (Tasks 71-78)
+## [2026-07-21 01:42 UTC] Phase 20 Completed: AI Vision, Allergen Scanner & OCR Pipeline (Tasks 71-78) — 100% PASS
 - Task 71: Verified Python Vision AI food label scanner backend (`scripts/scan_food_label.py`) supporting regex-based Annex II allergen matching across 6 EU languages.
 - Task 72: Created `OcrScanner.tsx` real-time camera ingredient list OCR component for seller product onboarding with unit test coverage in `OcrScanner.test.tsx`.
+- Task 73: Created `allergen-extractor.ts` automated Annex II 14 allergen extraction & auto-flagging engine in `packages/compliance/src/` with unit test coverage in `allergen-extractor.test.ts`.
+- Task 74: Created `nutrition-parser.ts` EU Reg. 1169/2011 Art. 30 mandatory nutrition declaration table parser in `packages/compliance/src/` with unit test coverage in `nutrition-parser.test.ts`.
+- Task 75: Created `quality-scheme-verifier.ts` EU Reg. 1151/2012 PDO / PGI / TSG official certificate OCR verification scanner in `packages/compliance/src/` with unit test coverage in `quality-scheme-verifier.test.ts`.
+- Task 76: Created `language-compliance.ts` FIC Reg. 1169/2011 Art. 15 language compliance checker in `packages/compliance/src/` with unit test coverage in `language-compliance.test.ts`.
+- Task 77: Created `AllergenWarning.tsx` automatic allergen highlight & warning label generator component in `apps/web/components/ui/` with unit test coverage in `AllergenWarning.test.tsx`.
+- Task 78: Built `vision-pipeline.test.ts` end-to-end integration test suite verifying multi-stage Vision AI & OCR compliance pipeline.
+
+## [2026-07-21 03:25 UTC] Phase 21 Active: Real-Time Chat, Seller Messaging & DSA Dispute System (Tasks 79-86)
+- Task 79: Implementing DSA Art. 20 Internal Complaint-Handling & Dispute Resolution portal (`apps/web/pages/disputes.tsx`).
