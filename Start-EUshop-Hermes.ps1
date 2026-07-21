@@ -966,7 +966,13 @@ function Invoke-Hermes {
             $env:MAX_COMPLETION_TOKENS = "16384"
 
             if ($SelectedProvider -eq "dashscope" -or $SelectedProvider -eq "alibaba") {
-                $hermesArgs += @("--provider", "dashscope", "--model", "qwen-plus")
+                $dashKey = Get-FccSetting -Name "DASHSCOPE_API_KEY"
+                if ($dashKey) {
+                    $env:DASHSCOPE_API_KEY = $dashKey
+                    $hermesArgs += @("--provider", "dashscope", "--model", "qwen-plus", "--api-key", $dashKey)
+                } else {
+                    $hermesArgs += @("--provider", "dashscope", "--model", "qwen-plus")
+                }
             } elseif ($SelectedProvider -eq "nvidia") {
                 $hermesArgs += @("--provider", "nvidia", "--model", "nvidia/meta/llama-3.3-70b-instruct")
             } elseif ($SelectedProvider -eq "kimi") {
