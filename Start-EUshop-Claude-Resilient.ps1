@@ -591,6 +591,12 @@ function Get-ConfiguredCandidates {
     # currently available free model supporting the required capabilities.
     $Definitions = @(
         [PSCustomObject]@{
+            Name = "Google Gemini 2.5 Flash"
+            Provider = "gemini"
+            KeyName = "GEMINI_API_KEY"
+            Model = "gemini/models/gemini-2.5-flash"
+        },
+        [PSCustomObject]@{
             Name = "GitHub Models GPT-4.1"
             Provider = "github_models"
             KeyName = "GITHUB_MODELS_TOKEN"

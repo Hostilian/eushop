@@ -1112,8 +1112,8 @@ try {
 
         if (-not $shouldRestart) { break }
 
-        Write-Log "Restarting in 10 seconds... Press Ctrl+C to cancel." "WARN" "launcher"
-        Start-Sleep -Seconds 10
+        Write-Log "Restarting in 25 seconds (cooling rate limit window)... Press Ctrl+C to cancel." "WARN" "launcher"
+        Start-Sleep -Seconds 25
         Update-LockHeartbeat
     }
 } finally {
