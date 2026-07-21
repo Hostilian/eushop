@@ -1,0 +1,7 @@
+{
+    "phase":  "post-session",
+    "provider":  "auto",
+    "timestamp":  "2026-07-21T00:15:13.2258126+02:00",
+    "pid":  15432,
+    "next_action":  "evaluate-exit-Upstream provider NIM returned HTTP 429. Category: rate_limit_error Mapped message: Provider rate limit reached. Please retry shortly.  Upstream error: {\"status\":429,\"title\":\"Too Many Requests\"}  Request ID: req_4bfa66c0e757 0"
+}

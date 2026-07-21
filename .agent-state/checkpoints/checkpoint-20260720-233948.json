@@ -1,0 +1,7 @@
+{
+    "phase":  "post-session",
+    "provider":  "auto",
+    "timestamp":  "2026-07-20T23:39:52.3066400+02:00",
+    "pid":  9320,
+    "next_action":  "evaluate-exit-1"
+}

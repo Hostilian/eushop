@@ -1,0 +1,61 @@
+{
+    "mission":  "Repair and harden Hermes/FCC for EUshop",
+    "repository":  "D:\\CODING\\eushop",
+    "current_phase":  "post-session",
+    "active_tasks":  [
+                         "Implement provider health registry",
+                         "Create canonical launcher Start-EUshop-Hermes.ps1",
+                         "Fix secret tracking (custom_keys.json in git)",
+                         "Create preflight test scripts",
+                         "Create health dashboard script"
+                     ],
+    "completed_tasks":  [
+                            "Environment baseline captured",
+                            "Hermes executable found: C:\\Users\\Hostilian\\AppData\\Local\\hermes\\hermes-agent\\venv\\Scripts\\hermes.exe v0.18.2",
+                            "FCC server health confirmed: http://127.0.0.1:8082/health = healthy",
+                            "FCC launch chain: fcc-work.cmd -\u003e Start-FCC-Work.ps1 -\u003e Start-FCC-Claude-Native.ps1",
+                            "Claude executable: C:\\Users\\Hostilian\\.local\\bin\\claude.exe v2.1.212",
+                            "Hermes config: C:\\Users\\Hostilian\\AppData\\Local\\hermes\\config.yaml",
+                            "Hermes provider chain: openrouter/free -\u003e gemini -\u003e kimi -\u003e minimax -\u003e nvidia -\u003e huggingface -\u003e alibaba",
+                            "LM Studio available: C:\\Users\\Hostilian\\.cache\\lm-studio\\bin\\lms.exe",
+                            "Git branch: version-44, clean with some untracked files",
+                            "Credential conflict found: custom_keys.json is tracked by git and contains API keys",
+                            "FCC env file: C:\\Users\\Hostilian\\.fcc\\.env (external, not tracked)",
+                            "Diagnosed Invoke-FccNonstop.ps1 stdin issue (fcc-work.cmd discards args)",
+                            "Suspicious dir found: \u0027The content you provided for `apps\u0027 - accidental shell artifact"
+                        ],
+    "blocked_tasks":  [
+
+                      ],
+    "verified_facts":  [
+                           "Hermes v0.18.2 installed and functional",
+                           "FCC server running on port 8082, healthy",
+                           "Claude Code v2.1.212 installed",
+                           "LM Studio installed (lms.exe)",
+                           "OpenRouter key configured in Hermes .env",
+                           "6 fallback providers configured in Hermes config.yaml",
+                           "custom_keys.json is git-tracked (SECURITY ISSUE)",
+                           "data/validated_keys.json is git-tracked (contains no actual keys, just metadata)",
+                           ".env.local is properly git-ignored",
+                           "Invoke-FccNonstop.ps1 passes prompt via stdin to fcc-work (correct approach)"
+                       ],
+    "unverified_assumptions":  [
+                                   "OpenRouter /free quota may be exhausted",
+                                   "LM Studio may have no models loaded",
+                                   "Kimi/MiniMax/Nvidia credentials may be stale"
+                               ],
+    "changed_files":  [
+
+                      ],
+    "last_successful_command":  "checkpoint written",
+    "last_failure":  "hermes status exit code 1 (non-zero for display command, normal behavior)",
+    "next_actions":  [
+                         "Create .agent-state/ structure files",
+                         "Fix git tracking of custom_keys.json",
+                         "Create Start-EUshop-Hermes.ps1 canonical launcher",
+                         "Create provider health registry",
+                         "Create scripts/Get-HermesHealth.ps1",
+                         "Create scripts/Test-HermesPreflight.ps1"
+                     ],
+    "restart_instructions":  "cd D:\\CODING\\eushop; Get-Content .agent-state\\mission.json; Resume from next_actions list"
+}

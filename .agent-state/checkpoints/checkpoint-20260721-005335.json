@@ -1,0 +1,7 @@
+{
+    "phase":  "post-session",
+    "provider":  "hermes",
+    "timestamp":  "2026-07-21T01:15:47.6008591+02:00",
+    "pid":  20804,
+    "next_action":  "evaluate-exit--1"
+}

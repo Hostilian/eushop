@@ -1,0 +1,7 @@
+{
+    "phase":  "post-session",
+    "provider":  "auto",
+    "timestamp":  "2026-07-21T04:37:31.7644155+02:00",
+    "pid":  17868,
+    "next_action":  "evaluate-exit-HTTP 402: {\"error\":\"You have depleted your monthly included credits. Purchase pre-paid credits to continue using Inference Providers. Alternatively, subscribe to PRO to get 20x more included usage.\"} 0"
+}

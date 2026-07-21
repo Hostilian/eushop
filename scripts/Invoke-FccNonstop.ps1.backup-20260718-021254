@@ -1,0 +1,258 @@
+[CmdletBinding()]
+param(
+    [string]$ProjectPath = "D:\CODING\eushop",
+    [int]$MaxTurnsPerRun = 50,
+    [int]$MaximumBackoffSeconds = 900
+)
+
+Set-StrictMode -Version Latest
+$ErrorActionPreference = "Continue"
+
+function Write-RunnerLog {
+    param(
+        [string]$Message,
+        [ValidateSet("INFO", "WARN", "ERROR", "SUCCESS")][string]$Level = "INFO"
+    )
+
+    $Timestamp = Get-Date -Format "yyyy-MM-dd HH:mm:ss"
+    $Line = "[$Timestamp][$Level] $Message"
+    Add-Content -LiteralPath $script:RunnerLogPath -Value $Line
+
+    switch ($Level) {
+        "WARN"    { Write-Host $Line -ForegroundColor Yellow }
+        "ERROR"   { Write-Host $Line -ForegroundColor Red }
+        "SUCCESS" { Write-Host $Line -ForegroundColor Green }
+        default   { Write-Host $Line }
+    }
+}
+
+function Get-BackoffSeconds {
+    param(
+        [int]$FailureNumber,
+        [int]$MaximumSeconds
+    )
+
+    $Exponent = [Math]::Min([Math]::Max($FailureNumber - 1, 0), 8)
+    $Seconds = [int](30 * [Math]::Pow(2, $Exponent))
+    return [Math]::Min($Seconds, $MaximumSeconds)
+}
+
+function Test-RunningPid {
+    param([int]$ProcessId)
+
+    if ($ProcessId -le 0) {
+        return $false
+    }
+
+    try {
+        $null = Get-Process -Id $ProcessId -ErrorAction Stop
+        return $true
+    }
+    catch {
+        return $false
+    }
+}
+
+if (-not (Test-Path -LiteralPath $ProjectPath -PathType Container)) {
+    throw "Project path does not exist: $ProjectPath"
+}
+
+Set-Location -LiteralPath $ProjectPath
+
+$ClaudeDirectory = Join-Path $ProjectPath ".claude"
+$LogDirectory = Join-Path $ClaudeDirectory "runner-logs"
+$CompletePath = Join-Path $ClaudeDirectory "AUTONOMOUS_COMPLETE"
+$StopPath = Join-Path $ClaudeDirectory "AUTONOMOUS_STOP"
+$LockPath = Join-Path $ClaudeDirectory "AUTONOMOUS_RUNNER.lock"
+
+New-Item -ItemType Directory -Path $LogDirectory -Force | Out-Null
+$script:RunnerLogPath = Join-Path $LogDirectory ("runner-" + (Get-Date -Format "yyyyMMdd-HHmmss") + ".log")
+
+if (Test-Path -LiteralPath $LockPath) {
+    $ExistingPidText = Get-Content -LiteralPath $LockPath -Raw -ErrorAction SilentlyContinue
+    $ExistingPid = 0
+
+    if ([int]::TryParse(($ExistingPidText -replace "\D", ""), [ref]$ExistingPid)) {
+        if (Test-RunningPid -ProcessId $ExistingPid) {
+            throw "Another autonomous runner is already active with PID $ExistingPid."
+        }
+    }
+
+    Remove-Item -LiteralPath $LockPath -Force -ErrorAction SilentlyContinue
+}
+
+Set-Content -LiteralPath $LockPath -Value $PID -NoNewline
+
+$ContinuePrompt = @"
+Continue the existing EUshop recovery, version archaeology, navigation, and unified-integration mission autonomously.
+
+Mandatory startup:
+1. Read CLAUDE.md.
+2. Read .claude/AUTONOMY.md.
+3. Read .claude/RECOVERY_STATE.md.
+4. Inspect git status, current branch, HEAD, recent commits, worktrees, and existing recovery directories.
+5. Resume the exact first unfinished step. Do not recreate verified backups or repeat completed work.
+
+Work continuously and use graceful degradation:
+- Never stop because one command, test, tool, dependency, subagent, network request, or approach fails.
+- Classify the failure, checkpoint it, change method, and continue with independent work.
+- Use simple shell commands and a fixed recovery-directory path.
+- Update .claude/RECOVERY_STATE.md frequently and before this turn ends.
+- Preserve repository work before external calls.
+- Do not ask the user for approval or for the next instruction.
+- Keep main untouched; do not force-push, deploy, expose secrets, spend money, or modify external accounts.
+- Create .claude/AUTONOMOUS_COMPLETE only when every acceptance criterion is genuinely complete.
+- If .claude/AUTONOMOUS_STOP exists, checkpoint and stop cleanly.
+
+Use as many safe agentic turns as available in this invocation. At the end of this invocation, leave the exact next action in the checkpoint so the watchdog can resume automatically.
+"@
+
+$ConsecutiveFailures = 0
+$InvocationNumber = 0
+
+try {
+    Write-RunnerLog "Autonomous watchdog started in $ProjectPath"
+    Write-RunnerLog "Press Ctrl+C or create $StopPath to stop safely."
+    Write-RunnerLog "Completion marker: $CompletePath"
+
+    while ($true) {
+        if (Test-Path -LiteralPath $StopPath) {
+            Write-RunnerLog "Manual stop marker detected. Exiting cleanly." "WARN"
+            break
+        }
+
+        if (Test-Path -LiteralPath $CompletePath) {
+            Write-RunnerLog "Mission completion marker detected." "SUCCESS"
+            Get-Content -LiteralPath $CompletePath -ErrorAction SilentlyContinue
+            break
+        }
+
+        $InvocationNumber++
+        $InvocationLogPath = Join-Path $LogDirectory (
+            "invocation-{0:D5}-{1}.log" -f $InvocationNumber, (Get-Date -Format "yyyyMMdd-HHmmss")
+        )
+
+        $FccCommand = Get-Command "fcc-work" -ErrorAction SilentlyContinue
+        if (-not $FccCommand) {
+            $ConsecutiveFailures++
+            $Delay = Get-BackoffSeconds -FailureNumber $ConsecutiveFailures -MaximumSeconds $MaximumBackoffSeconds
+            Write-RunnerLog "fcc-work is not available in this PowerShell session. Retrying after $Delay seconds." "ERROR"
+            Start-Sleep -Seconds $Delay
+            continue
+        }
+
+        $Arguments = @(
+            "--dangerously-skip-permissions",
+            "--continue",
+            "--print",
+            $ContinuePrompt,
+            "--output-format",
+            "text",
+            "--max-turns",
+            $MaxTurnsPerRun.ToString()
+        )
+
+        Write-RunnerLog "Starting FCC invocation $InvocationNumber with up to $MaxTurnsPerRun agentic turns."
+
+        $Output = @()
+        $ExitCode = 1
+
+        try {
+            $Output = & "fcc-work" @Arguments 2>&1 |
+                Tee-Object -FilePath $InvocationLogPath
+
+            if ($null -eq $LASTEXITCODE) {
+                $ExitCode = 0
+            }
+            else {
+                $ExitCode = $LASTEXITCODE
+            }
+        }
+        catch {
+            $Output += $_ | Out-String
+            $ExitCode = 1
+            Add-Content -LiteralPath $InvocationLogPath -Value ($_ | Out-String)
+        }
+
+        $OutputText = ($Output | Out-String)
+
+        $IsRateLimit = $OutputText -match "(?i)(HTTP\s*429|Too Many Requests|rate[_ -]?limit|provider rate limit)"
+        $IsTemporaryNetwork = $OutputText -match "(?i)(timeout|temporar|connection reset|connection refused|network|ECONN|ETIMEDOUT|service unavailable|HTTP\s*5\d\d)"
+        $IsNoSession = $OutputText -match "(?i)(no conversation|no session|nothing to continue|session.*not found)"
+        $IsUnknownFlag = $OutputText -match "(?i)(unknown option|unrecognized option|unexpected argument).*(continue|print|max-turns|output-format)"
+
+        if (Test-Path -LiteralPath $CompletePath) {
+            Write-RunnerLog "Claude created the completion marker." "SUCCESS"
+            continue
+        }
+
+        if (Test-Path -LiteralPath $StopPath) {
+            Write-RunnerLog "Claude or the user created the stop marker." "WARN"
+            continue
+        }
+
+        if ($IsNoSession) {
+            Write-RunnerLog "No resumable session was found. Starting a fresh session grounded in repository checkpoints." "WARN"
+
+            $FreshArguments = @(
+                "--dangerously-skip-permissions",
+                "--print",
+                $ContinuePrompt,
+                "--output-format",
+                "text",
+                "--max-turns",
+                $MaxTurnsPerRun.ToString()
+            )
+
+            try {
+                $FreshOutput = & "fcc-work" @FreshArguments 2>&1 |
+                    Tee-Object -FilePath $InvocationLogPath -Append
+                $OutputText += ($FreshOutput | Out-String)
+                $ExitCode = $LASTEXITCODE
+            }
+            catch {
+                $OutputText += ($_ | Out-String)
+                $ExitCode = 1
+                Add-Content -LiteralPath $InvocationLogPath -Value ($_ | Out-String)
+            }
+
+            $IsRateLimit = $OutputText -match "(?i)(HTTP\s*429|Too Many Requests|rate[_ -]?limit|provider rate limit)"
+            $IsTemporaryNetwork = $OutputText -match "(?i)(timeout|temporar|connection reset|connection refused|network|ECONN|ETIMEDOUT|service unavailable|HTTP\s*5\d\d)"
+        }
+
+        if ($IsUnknownFlag) {
+            Write-RunnerLog "fcc-work did not accept an automation flag. Check the invocation log: $InvocationLogPath" "ERROR"
+            Write-RunnerLog "The runner will retry because wrapper behavior may change after FCC restarts or updates." "WARN"
+            $ConsecutiveFailures++
+        }
+        elseif ($IsRateLimit) {
+            $ConsecutiveFailures++
+            Write-RunnerLog "Provider rate limit detected. Local work and checkpoints are preserved." "WARN"
+        }
+        elseif ($IsTemporaryNetwork) {
+            $ConsecutiveFailures++
+            Write-RunnerLog "Temporary network/provider failure detected." "WARN"
+        }
+        elseif ($ExitCode -ne 0) {
+            $ConsecutiveFailures++
+            Write-RunnerLog "FCC invocation exited with code $ExitCode. See $InvocationLogPath" "ERROR"
+        }
+        else {
+            $ConsecutiveFailures = 0
+            Write-RunnerLog "Invocation $InvocationNumber ended normally; mission is not yet marked complete."
+        }
+
+        if ($ConsecutiveFailures -gt 0) {
+            $Delay = Get-BackoffSeconds -FailureNumber $ConsecutiveFailures -MaximumSeconds $MaximumBackoffSeconds
+            Write-RunnerLog "Retrying after $Delay seconds. Consecutive failures: $ConsecutiveFailures" "WARN"
+            Start-Sleep -Seconds $Delay
+        }
+        else {
+            Start-Sleep -Seconds 5
+        }
+    }
+}
+finally {
+    Remove-Item -LiteralPath $LockPath -Force -ErrorAction SilentlyContinue
+    Write-RunnerLog "Autonomous watchdog stopped."
+}

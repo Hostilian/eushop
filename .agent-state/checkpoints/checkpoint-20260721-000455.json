@@ -1,0 +1,7 @@
+{
+    "phase":  "post-session",
+    "provider":  "auto",
+    "timestamp":  "2026-07-21T00:05:17.4536120+02:00",
+    "pid":  19720,
+    "next_action":  "evaluate-exit-Upstream provider GROQ returned HTTP 400. Category: invalid_request_error Mapped message: Invalid request sent to provider.  Upstream error: {\"message\":\"`max_completion_tokens` must be less than or equal to `32768`, the maximum value for `max_completion_tokens` is less than the `context_window` for this model\",\"type\":\"invalid_request_error\",\"param\":\"max_completion_tokens\"}  Request ID: req_e4dcb4e41d20 0"
+}

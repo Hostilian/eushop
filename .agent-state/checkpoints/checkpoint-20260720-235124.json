@@ -1,0 +1,7 @@
+{
+    "phase":  "post-session",
+    "provider":  "auto",
+    "timestamp":  "2026-07-20T23:51:28.5496533+02:00",
+    "pid":  2380,
+    "next_action":  "evaluate-exit-Upstream provider OPENROUTER returned HTTP 401. Category: authentication_error Mapped message: Provider authentication failed. Check API key.  Upstream error: {\"message\":\"Missing Authentication header\",\"code\":401}  Request ID: req_e2ba3f0fc32b 0"
+}

@@ -796,33 +796,13 @@ function Invoke-SelfRepair {
         $repaired++
     }
 
-    # Repair 5: Reset crash counter & consecutive failure history
-    Reset-CrashCounter
-    Write-Log "Repaired: Reset crash counter and consecutive failure history." "SUCCESS" "repair"
-    $repaired++
-
-    # Repair 6: Reset open circuit breakers in provider-health.json
-    if (Test-Path -LiteralPath $HEALTH_FILE) {
-        try {
-            $healthData = Get-Content -LiteralPath $HEALTH_FILE -Raw | ConvertFrom-Json
-            $updated = $false
-            foreach ($p in $healthData.providers) {
-                if ($p.circuit_state -eq "open") {
-                    $p.circuit_state = "closed"
-                    $p.consecutive_failures = 0
-                    $p.cooldown_until = $null
-                    $updated = $true
-                }
-            }
-            if ($updated) {
-                $healthData.updated_at = (Get-Date -Format "o")
-                $healthData | ConvertTo-Json -Depth 10 | Set-Content -LiteralPath $HEALTH_FILE
-                Write-Log "Repaired: Re-opened circuit breakers for cooled providers." "SUCCESS" "repair"
-                $repaired++
-            }
-        } catch {
-            Write-Log "Could not update provider health during repair: $($_.Exception.Message)" "WARN" "repair"
-        }
+    # Repair 5: Reset crash counter if it's corrupt
+    try {
+        Get-CrashCounter | Out-Null
+    } catch {
+        Reset-CrashCounter
+        Write-Log "Repaired: Reset corrupt crash counter." "SUCCESS" "repair"
+        $repaired++
     }
 
     Write-Log "Self-repair complete. $repaired item(s) repaired." "SUCCESS" "repair"
@@ -926,9 +906,8 @@ function Invoke-Hermes {
                 # Claude Code requires prompt via stdin when running non-interactively.
                 # --print flag enables non-interactive print mode.
                 Write-Log "Sending YC mission prompt to Claude via FCC gateway..." "INFO" "launcher"
-                $procOutput = $MISSION_PROMPT | & $script:CLAUDE_EXE --print 2>&1
-                if ($procOutput) { $procOutput | Out-Host }
-                $exitCode = if ($null -eq $LASTEXITCODE) { 0 } else { [int]$LASTEXITCODE }
+                $MISSION_PROMPT | & $script:CLAUDE_EXE --print 2>&1
+                $exitCode = if ($null -eq $LASTEXITCODE) { 0 } else { $LASTEXITCODE }
             } finally {
                 # Restore environment
                 foreach ($v in $removeVars) {
@@ -970,13 +949,12 @@ function Invoke-Hermes {
                 Write-Log "Resuming most recent Hermes session..." "INFO" "launcher"
             }
 
-            $procOutput = & $script:HERMES_EXE @hermesArgs 2>&1
-            if ($procOutput) { $procOutput | Out-Host }
-            $exitCode = if ($null -eq $LASTEXITCODE) { 0 } else { [int]$LASTEXITCODE }
+            & $script:HERMES_EXE @hermesArgs 2>&1
+            $exitCode = if ($null -eq $LASTEXITCODE) { 0 } else { $LASTEXITCODE }
         }
     }
 
-    return [int]$exitCode
+    return $exitCode
 }
 
 # ═══════════════════════════════════════════════════════════════════════════════
@@ -1088,16 +1066,14 @@ try {
         }
 
         # Classify exit code
-        [int]$cleanExitCode = try {
-            if ($exitCode -is [array]) { [int]$exitCode[-1] } else { [int]$exitCode }
-        } catch { 1 }
-
-        $shouldRestart = switch ($cleanExitCode) {
+        $shouldRestart = switch ($exitCode) {
             0   { Write-Log "Clean exit. Not restarting." "SUCCESS" "launcher"; $false }
             130 { Write-Log "Interrupted (Ctrl+C). Not restarting." "WARN" "launcher"; $false }
             default {
-                Write-Log "Abnormal exit ($cleanExitCode). Recording crash..." "WARN" "launcher"
-                Record-Restart -ExitCode $cleanExitCode
+                Write-Log "Abnormal exit ($exitCode). Recording crash..." "WARN" "launcher"
+                # Safely coerce to int — Claude may emit a string or object[] as exit code
+                $intExitCode = try { [int]([string]$exitCode -replace '\s.*','').Trim() } catch { 1 }
+                Record-Restart -ExitCode $intExitCode
                 if (Test-RestartStorm) {
                     Write-Log "Restart storm triggered after crash." "ERROR" "supervisor"
                     $false
