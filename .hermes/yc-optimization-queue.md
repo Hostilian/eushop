@@ -113,11 +113,11 @@ Status: IN_PROGRESS
 ## PHASE 22 — Mobile (Expo / React Native) Feature Parity & Native Capabilities
 Status: READY
 
-- [ ] TASK 87 — React Native Expo allergen filter drawer and search screen parity
-- [ ] TASK 88 — Native biometric checkout authentication (TouchID/FaceID) with consent gate
-- [ ] TASK 89 — Offline product listing storage and background sync using AsyncStore
-- [ ] TASK 90 — Native push notifications for order status and seller dispute updates
-- [ ] TASK 91 — Mobile camera barcode & QR code product lookup scanner
+- [x] TASK 87 — React Native Expo allergen filter drawer and search screen parity
+- [!] TASK 88 — Native biometric checkout authentication (TouchID/FaceID) with consent gate
+- [x] TASK 89 — Offline product listing storage and background sync using AsyncStore
+- [x] TASK 90 — Native push notifications for order status and seller dispute updates
+- [/] TASK 91 — Mobile camera barcode & QR code product lookup scanner
 - [ ] TASK 92 — Haptic feedback on cart actions and order confirmation screens
 - [ ] TASK 93 — Expo dark mode & high-contrast theme synchronization with device settings
 - [ ] TASK 94 — iOS & Android native E2E test suite using Detox / Maestro

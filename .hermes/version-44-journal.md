@@ -79,3 +79,8 @@
 - Task 83: Created `FileValidationService.java` to validate file uploads on the backend, checking for MIME type and file size. Integrated the service into `FileController.java`.
 - Task 84: Implemented message reactions and read receipts. Created `MessageReaction` entity and repository, updated `Message` entity, and created a new database migration. Updated `ConversationService` and `WebSocketController` to handle reactions. Updated frontend components to display reactions and read receipts.
 - Task 86: Implemented automated notification digest emails for sellers. Created `EmailService` and `DigestService` to send daily digests of unread messages. Enabled scheduling in the application.
+
+## [2026-07-21 16:30 UTC] Phase 22 Active: Mobile (Expo / React Native) Feature Parity & Native Capabilities (Tasks 87-94)
+- Task 87: Implemented allergen filter drawer and search screen parity in the React Native Expo app. Created `AllergenFilter` and `Badge` components for mobile. Added a new screen for the allergen filter and a button to navigate to it.
+- Task 89: Implemented offline product listing storage and background sync using AsyncStorage and `expo-background-fetch`. Created `OfflineStorageService` to manage offline data and registered a background task to sync products periodically.
+- Task 90: Implemented native push notifications for order status and seller dispute updates. Created `NotificationService` to register for push notifications and handle incoming notifications.

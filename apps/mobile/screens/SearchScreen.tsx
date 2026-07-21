@@ -5,6 +5,8 @@ import {
 } from 'react-native';
 import * as Location from 'expo-location';
 import { theme } from '../lib/theme';
+import { Ionicons } from '@expo/vector-icons';
+
 
 const fetchFoods = async (): Promise<any[]> => {
   return new Promise((resolve, reject) => {
@@ -91,13 +93,18 @@ export default function SearchScreen({ navigation, route }: any) {
   return (
     <View style={styles.container}>
       <View style={styles.searchPanel}>
-        <TextInput
-          style={styles.searchInput}
-          placeholder="Search artisanal foods..."
-          placeholderTextColor={theme.colors.textMuted}
-          value={search}
-          onChangeText={setSearch}
-        />
+        <View style={styles.searchContainer}>
+          <TextInput
+            style={styles.searchInput}
+            placeholder="Search artisanal foods..."
+            placeholderTextColor={theme.colors.textMuted}
+            value={search}
+            onChangeText={setSearch}
+          />
+          <TouchableOpacity style={styles.cameraButton} onPress={() => navigation.navigate('BarcodeScanner')}>
+            <Ionicons name="camera-outline" size={24} color={theme.colors.textMuted} />
+          </TouchableOpacity>
+        </View>
         <View style={styles.filterRow}>
           <View style={styles.rowInfo}>
             <Text style={styles.filterLabel}>📍 Location Search</Text>

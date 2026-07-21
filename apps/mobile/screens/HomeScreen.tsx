@@ -97,6 +97,14 @@ export default function HomeScreen({ navigation }: any) {
       <View style={styles.section}>
         <Text style={styles.sectionTitle}>Featured Categories</Text>
         <View style={styles.categoryGrid}>
+          <TouchableOpacity 
+              key={'allergen-filter'} 
+              style={styles.categoryCard}
+              onPress={() => navigation.navigate('AllergenFilter')}
+            >
+              <Text style={styles.categoryEmoji}>🔬</Text>
+              <Text style={styles.categoryName}>Allergen Filter</Text>
+            </TouchableOpacity>
           {categories.map((category) => (
             <TouchableOpacity 
               key={category.name} 
