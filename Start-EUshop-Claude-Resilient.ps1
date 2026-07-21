@@ -591,16 +591,22 @@ function Get-ConfiguredCandidates {
     # currently available free model supporting the required capabilities.
     $Definitions = @(
         [PSCustomObject]@{
-            Name = "Groq Llama 3.3 70B"
-            Provider = "groq"
-            KeyName = "GROQ_API_KEY"
-            Model = "groq/llama-3.3-70b-versatile"
+            Name = "Google Gemini 2.5 Flash"
+            Provider = "gemini"
+            KeyName = "GEMINI_API_KEY"
+            Model = "gemini/models/gemini-2.5-flash"
         },
         [PSCustomObject]@{
             Name = "MiniMax Text 01"
             Provider = "minimax"
             KeyName = "MINIMAX_API_KEY"
             Model = "minimax/MiniMax-Text-01"
+        },
+        [PSCustomObject]@{
+            Name = "Groq Llama 3.3 70B"
+            Provider = "groq"
+            KeyName = "GROQ_API_KEY"
+            Model = "groq/llama-3.3-70b-versatile"
         },
         [PSCustomObject]@{
             Name = "OpenRouter free model router"
