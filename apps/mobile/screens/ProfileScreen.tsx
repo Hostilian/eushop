@@ -86,7 +86,7 @@ export default function ProfileScreen({ navigation }: any) {
 
           </View>
         </ScrollView>
-      </View>
+      </SafeAreaView>
     );
   }
 

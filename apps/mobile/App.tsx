@@ -16,7 +16,7 @@ import SearchScreen from './screens/SearchScreen';
 import ListingUploadScreen from './screens/ListingUploadScreen';
 import CheckoutScreen from './screens/CheckoutScreen';
 import GDPRScreen from './screens/GDPRScreen';
-import AllergenFilterScreen from './app/allergen-filter';
+import AllergenFilterScreen from './screens/AllergenFilterScreen';
 
 const BACKGROUND_SYNC_TASK = 'background-sync';
 
