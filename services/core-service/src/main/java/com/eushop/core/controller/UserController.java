@@ -114,7 +114,7 @@ public class UserController {
         return ResponseEntity.ok(ApiResponse.success(dtos));
     }
 
-    @PostMapping("/{id}/become-seller")
+    @PutMapping("/{id}/become-seller")
     public ResponseEntity<ApiResponse<UserDTO>> becomeSeller(
             @PathVariable String id,
             @RequestHeader("X-User-Id") String userId,

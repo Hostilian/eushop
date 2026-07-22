@@ -157,7 +157,7 @@ const getDemoFoods = (
   page,
   size,
   category,
-  allergenFree,
+  allergenFree: allergenFree ? allergenFree.split(',') : [],
 });
 
 // -------------------------------------------------------------
@@ -188,7 +188,7 @@ function filterFoods(
   page = 1,
   size = 20,
   category?: string,
-  allergenFree?: string,
+  allergenFree?: string[],
 ): FoodItem[] {
   let filtered = [...foods];
   if (query) {
@@ -205,9 +205,9 @@ function filterFoods(
   if (category) {
     filtered = filtered.filter(food => food.category?.toLowerCase() === category.toLowerCase());
   }
-  if (allergenFree) {
+  if (allergenFree && allergenFree.length > 0) {
     filtered = filtered.filter(food =>
-      !food.allergens?.some(allergen => allergen.toLowerCase() === allergenFree.toLowerCase()),
+      !allergenFree.some(allergen => food.allergens?.some(foodAllergen => foodAllergen.toLowerCase() === allergen.toLowerCase()))
     );
   }
 
@@ -234,6 +234,7 @@ async function searchFoodsWithOrigin(
   allergenFree?: string,
   config?: any,
 ): Promise<DegradationResult<FoodItem[]>> {
+  const allergens = allergenFree ? allergenFree.split(',') : [];
   if (isStaticMode()) {
     if (volatileLocalFoods.length > 0) {
       return asDegradedResult(filterFoods(
@@ -243,7 +244,7 @@ async function searchFoodsWithOrigin(
         page,
         size,
         category,
-        allergenFree,
+        allergens,
       ), 'local');
     }
     return asDegradedResult(
