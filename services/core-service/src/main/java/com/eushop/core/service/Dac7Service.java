@@ -73,10 +73,11 @@ public class Dac7Service {
                         return newSnap;
                     });
 
-            snapshot.setTotalConsideration(consideration != null ? consideration.doubleValue() : 0.0);
-            snapshot.setTransactionCount(count != null ? count.intValue() : 0);
-            snapshot.setPlatformFeeTotal(platformFee != null ? platformFee.doubleValue() : 0.0);
-            snapshot.setSellerPayoutTotal(payout != null ? payout.doubleValue() : 0.0);
+            // COMPLIANCE-REVIEW: Implements DAC7 numeric cast scale & bound validation per CodeQL Task 124
+            snapshot.setTotalConsideration(consideration != null ? Math.max(0.0, Math.min(1_000_000_000.0, consideration.doubleValue())) : 0.0);
+            snapshot.setTransactionCount(count != null ? Math.max(0, Math.min(100_000, count.intValue())) : 0);
+            snapshot.setPlatformFeeTotal(platformFee != null ? Math.max(0.0, Math.min(1_000_000_000.0, platformFee.doubleValue())) : 0.0);
+            snapshot.setSellerPayoutTotal(payout != null ? Math.max(0.0, Math.min(1_000_000_000.0, payout.doubleValue())) : 0.0);
 
             savedSnapshots.add(dac7SnapshotRepository.save(snapshot));
         }

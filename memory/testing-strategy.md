@@ -1,0 +1,1 @@
+The testing strategy review is blocked on the completion of task #1.

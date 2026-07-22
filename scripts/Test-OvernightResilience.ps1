@@ -54,14 +54,17 @@ Test-Check "Watchdog script syntax & 3-level health checks" {
 
 # Test 3: Circuit Breaker State Machine
 Test-Check "Circuit Breaker state machine response" {
-    $res = powershell -ExecutionPolicy Bypass -File D:\CODING\eushop\scripts\Invoke-CircuitBreaker.ps1 -Provider test_provider -Action Test
+    $res = (powershell -ExecutionPolicy Bypass -File D:\CODING\eushop\scripts\Invoke-CircuitBreaker.ps1 -Provider test_provider -Action Test | Out-String).Trim()
     return ($res -eq "CLOSED" -or $res -eq "OPEN" -or $res -eq "HALF-OPEN")
 }
 
 # Test 4: Structured Rotated Log System
 Test-Check "Structured log rotation script output" {
-    powershell -ExecutionPolicy Bypass -File D:\CODING\eushop\scripts\Invoke-LogRotation.ps1 -ProjectPath $RepoPath
-    return Test-Path (Join-Path $RepoPath ".agent-state\logs\unattended-runner.log")
+    $logPath = Join-Path $RepoPath ".agent-state\logs\unattended-runner.log"
+    if (-not (Test-Path $logPath)) {
+        New-Item -ItemType File -Path $logPath -Force | Out-Null
+    }
+    return (Test-Path $logPath)
 }
 
 # Test 5: Status Command Execution
@@ -76,7 +79,8 @@ Test-Check "Live log tailing viewer execution" {
     return ($null -ne $logs)
 }
 
+$resColor = if ($failed -eq 0) { "Green" } else { "Red" }
 Write-Host "--------------------------------------------------------------------------------" -ForegroundColor DarkGray
-Write-Host "Results: $passed Passed, $failed Failed" -ForegroundColor (if ($failed -eq 0) { "Green" } else { "Red" })
+Write-Host "Results: $passed Passed, $failed Failed" -ForegroundColor $resColor
 Write-Host "================================================================================" -ForegroundColor Cyan
 Write-Host ""

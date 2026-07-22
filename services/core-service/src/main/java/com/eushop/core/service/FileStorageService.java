@@ -31,30 +31,49 @@ public class FileStorageService {
      * @throws IOException If file storage fails
      */
     public String storeFile(MultipartFile file, String conversationId) throws IOException {
-        // Normalize file name
-        String originalFileName = StringUtils.cleanPath(file.getOriginalFilename());
-        String fileExtension = "";
+        // COMPLIANCE-REVIEW: Implements file name & extension sanitization per CodeQL Task 125
+        String originalFileName = StringUtils.cleanPath(file.getOriginalFilename() != null ? file.getOriginalFilename() : "");
+        if (originalFileName.contains("..")) {
+            throw new IllegalArgumentException("Invalid file name: path traversal characters detected");
+        }
 
+        String fileExtension = "";
         if (originalFileName.contains(".")) {
-            fileExtension = originalFileName.substring(originalFileName.lastIndexOf("."));
+            fileExtension = originalFileName.substring(originalFileName.lastIndexOf(".")).toLowerCase();
+        }
+
+        // Allowed extensions filter
+        if (!fileExtension.matches("^\\.(png|jpg|jpeg|gif|webp|pdf)$")) {
+            throw new IllegalArgumentException("Unsupported file extension: " + fileExtension);
         }
 
         // Generate unique file name
         String fileName = UUID.randomUUID().toString() + fileExtension;
 
-        // Create subdirectory for conversation if provided
-        Path targetLocation = this.fileStorageLocation.resolve(fileName);
+        // Sanitize conversationId if provided
+        Path targetLocation = this.fileStorageLocation.resolve(fileName).normalize();
         if (conversationId != null && !conversationId.isEmpty()) {
-            Path conversationDir = this.fileStorageLocation.resolve(conversationId);
+            String cleanConversationId = StringUtils.cleanPath(conversationId);
+            if (cleanConversationId.contains("..")) {
+                throw new IllegalArgumentException("Invalid conversation ID path traversal attempt");
+            }
+            Path conversationDir = this.fileStorageLocation.resolve(cleanConversationId).normalize();
+            if (!conversationDir.startsWith(this.fileStorageLocation)) {
+                throw new IllegalArgumentException("Path traversal attempt in conversation directory");
+            }
             Files.createDirectories(conversationDir);
-            targetLocation = conversationDir.resolve(fileName);
+            targetLocation = conversationDir.resolve(fileName).normalize();
+        }
+
+        if (!targetLocation.startsWith(this.fileStorageLocation)) {
+            throw new IllegalArgumentException("Path traversal attempt in target file location");
         }
 
         // Copy file to target location
         Files.copy(file.getInputStream(), targetLocation, StandardCopyOption.REPLACE_EXISTING);
 
         // Return relative path for URL construction
-        return "/uploads/" + (conversationId != null ? conversationId + "/" : "") + fileName;
+        return "/uploads/" + (conversationId != null ? StringUtils.cleanPath(conversationId) + "/" : "") + fileName;
     }
 
     /**
@@ -64,7 +83,16 @@ public class FileStorageService {
      * @throws IOException If file not found
      */
     public Map<String, String> getFileInfo(String fileId) throws IOException {
+        // COMPLIANCE-REVIEW: Path traversal prevention check per OWASP / CodeQL Task 125
+        if (fileId == null || fileId.contains("..")) {
+            throw new IllegalArgumentException("Invalid file ID: path traversal attempt detected");
+        }
+
         Path filePath = this.fileStorageLocation.resolve(fileId).normalize();
+
+        if (!filePath.startsWith(this.fileStorageLocation)) {
+            throw new IllegalArgumentException("Access denied: path traversal attempt outside storage directory");
+        }
 
         if (!Files.exists(filePath)) {
             throw new IOException("File not found: " + fileId);

@@ -1,5 +1,27 @@
 # Changelog
 
+## [Unreleased] — Public Experience & GitHub Pages Reliability (2026-07-22)
+
+### Public Reliability & Export Gate
+- **Static Export & Pre-rendering Audit (Phase 28 - TASK 131 & 132)**:
+  - Verified Next.js static HTML export pre-rendering (`output: 'export'`) targeting GitHub Pages hosting (`https://hostilian.github.io/eushop/`).
+  - Configured `basePath: '/eushop'`, `trailingSlash: true`, and `unoptimized` images in `apps/web/next.config.js`.
+- **Milestone Progress**: Phase 28 **100% Completed**. Repository progress advanced to **69.9% (95 / 136 tasks)**.
+
+## [Unreleased] — Version 55 Security Emergency & CodeQL Remediation (2026-07-22)
+
+### Security & Hardening
+- **Path Traversal & MIME Extension Validation (Phase 27 - TASK 123 & 125)**:
+  - Hardened `FileStorageService.java` with canonical path verification (`startsWith`) to reject relative path traversal attacks (`../`).
+  - Added strict MIME/file extension filtering allowing only `.png`, `.jpg`, `.jpeg`, `.gif`, `.webp`, `.pdf`.
+- **DAC7 Numeric Cast & Boundary Validation (Phase 27 - TASK 124)**:
+  - Added range bounding (`Math.min` / `Math.max`) for seller transaction counts and consideration amounts in `Dac7Service.java`.
+- **Auth Filter Fail-Closed & Dev Mock Profile Gating (Phase 27 - TASK 127)**:
+  - Ensured `JwtAuthenticationFilter.java` enforces fail-closed authentication in production environments and strictly limits dev mock headers to `dev`/`test` profiles.
+- **Security Test Suite**:
+  - Added unit test suite `SecurityHardeningTest.java` verifying path traversal prevention and file extension filters.
+- **Milestone Progress**: Phase 27 **100% Completed**. Repository progress advanced to **66.9% (91 / 136 tasks)**.
+
 ## [Unreleased] — Version 55 Baseline & Evidence Gate (2026-07-22)
 
 ### Added

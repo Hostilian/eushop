@@ -40,8 +40,8 @@ function Save-CircuitState($state) {
 
 $stateObj = Load-CircuitState
 
-if (-not $stateObj.$Provider) {
-    $stateObj | Add-Member -NotePropertyName $Provider -NotePropertyValue ([pscustomobject]@{
+if (-not (Get-Member -InputObject $stateObj -Name $Provider -ErrorAction SilentlyContinue)) {
+    Add-Member -InputObject $stateObj -NotePropertyName $Provider -NotePropertyValue ([pscustomobject]@{
         state              = "CLOSED"
         consecutive_fails  = 0
         last_failure_time  = $null
