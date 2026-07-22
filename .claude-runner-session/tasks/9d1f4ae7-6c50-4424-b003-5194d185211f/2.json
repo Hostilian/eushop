@@ -1,0 +1,10 @@
+{
+  "id": "2",
+  "subject": "Mobile barcode scanner implementation",
+  "description": "Research, implement and test a barcode scanner for mobile Expo app",
+  "activeForm": "Implementing barcode scanner",
+  "status": "pending",
+  "blocks": [],
+  "blockedBy": [],
+  "metadata": {}
+}

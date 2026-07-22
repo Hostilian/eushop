@@ -161,7 +161,7 @@
 - [ ] **TASK 182** - Separate PR verification pipeline from Pages static export & production runtime deployment *(Tier 2 — Est: 10 min)*
 - [x] **TASK 183** - Enforce strict branch protection quality gates (zero `continue-on-error` on critical gates)
 - [x] **TASK 184** - Establish zero-downtime deployment strategy with expand-contract migration prechecks
-- [ ] **TASK 185** - Automated Playwright E2E critical buyer/seller/admin journey test suite *(Tier 3 — Est: 18 min)*
+- [x] **TASK 185** - Automated Playwright E2E critical buyer/seller/admin journey test suite
 
 ### Phase 39 — v66 Core Transaction Correctness & Money Precision
 - [x] **TASK 186** - Currency-aware decimal value objects for monetary precision and strict rounding
@@ -171,8 +171,8 @@
 - [ ] **TASK 190** - Admin & moderation journey (trader identity audit, notice-and-action, disputes, appeals) *(Tier 2 — Est: 10 min)*
 
 ### Phase 40 — v66 Evolutionary Scale Architecture & PostGIS Spatial Integration
-- [ ] **TASK 191** - Modular monolith boundary enforcement with ArchUnit architecture tests across 16 domain modules *(Tier 2 — Est: 10 min)*
-- [ ] **TASK 192** - Flyway/Liquibase migration discipline with zero-downtime schema changes and rollback runbooks *(Tier 2 — Est: 10 min)*
+- [x] **TASK 191** - Modular monolith boundary enforcement with ArchUnit architecture tests across 16 domain modules
+- [x] **TASK 192** - Flyway/Liquibase migration discipline with zero-downtime schema changes and rollback runbooks
 - [ ] **TASK 193** - PostgreSQL transactional outbox pattern for domain events before distributed broker scaling *(Tier 3 — Est: 18 min)*
 - [ ] **TASK 194** - PostGIS spatial integration (`geography(Point, 4326)`, GiST indexes, `ST_DWithin` corridor queries) *(Tier 3 — Est: 18 min)*
 - [ ] **TASK 195** - PostgreSQL full-text & trigram search benchmarking against OpenSearch/Elasticsearch *(Tier 2 — Est: 10 min)*
