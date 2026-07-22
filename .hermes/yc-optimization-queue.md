@@ -228,7 +228,7 @@ Status: IN_PROGRESS
 ## PHASE 30 - EU Compliance Structure
 Status: P1
 
-- [ ] TASK 139 - Enforce required food information before publication, including ingredients, regulated allergen structure and emphasis, net quantity, storage, operator identity, origin, nutrition, language and distance-selling presentation
+- [x] TASK 139 - Enforce required food information before publication, including ingredients, regulated allergen structure and emphasis, net quantity, storage, operator identity, origin, nutrition, language and distance-selling presentation
 - [ ] TASK 140 - Implement and test DSA trader traceability, reasonable verification structure, notice and action, statements of reasons, complaint and appeal processes, illegal-product response, moderation records and recommender transparency where applicable
 - [ ] TASK 141 - Verify and harden DAC7 seller classification, identity and tax data, transaction counts, precise consideration and fee totals, reporting periods, corrections, due diligence, access control, audit history, secure export and retention
 - [ ] TASK 142 - Implement testable GDPR inventory, lawful-basis mapping, minimization, consent separation, retention, access, correction, portability, restriction, objection, deletion or anonymization, cookie choices, analytics gating and breach-response structure
@@ -294,7 +294,7 @@ Status: UPCOMING
 
 - [x] TASK 170 - Build `docs/v66/00-ground-truth.md` repository inventory (commits, active packages, runtime ports, DB schema, CI workflows)
 - [x] TASK 171 - Build `docs/v66/01-product-truth.md` reconciling specialty-food marketplace vs traveler mobility thesis
-- [ ] TASK 172 - Repository boundaries cleanup (quarantine scraped sites, binary archives, temporary logs, stale sessions)
+- [x] TASK 172 - Repository boundaries cleanup (quarantine scraped sites, binary archives, temporary logs, stale sessions)
 - [ ] TASK 173 - License, SBOM, and asset provenance reconciliation across dependencies and media files
 - [x] TASK 174 - Create `docs/v66/V66_BACKLOG.md` with priority scoring engine `(Severity*5 + Value*4 + Sec*5 - Risk*2 - Effort*1)`
 

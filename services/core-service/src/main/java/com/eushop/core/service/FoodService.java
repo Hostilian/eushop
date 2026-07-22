@@ -23,9 +23,19 @@ public class FoodService {
     }
 
     public Food createFood(Food food, String sellerId) {
+        validateFoodCompliance(food);
         food.setSellerId(sellerId);
         food.setAvailable(true);
         return foodRepository.save(food);
+    }
+
+    private void validateFoodCompliance(Food food) {
+        if (food.getAllergens() == null) {
+            food.setAllergens("[]");
+        }
+        if (food.getCountry() == null || food.getCountry().length() != 2) {
+            throw new IllegalArgumentException("Country must be a valid 2-letter ISO code under FIC 1169");
+        }
     }
 
     public Optional<Food> getFoodById(String id) {
