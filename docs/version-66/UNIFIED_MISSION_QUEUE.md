@@ -176,12 +176,12 @@
 - [x] **TASK 193** - PostgreSQL transactional outbox pattern for domain events before distributed broker scaling
 - [x] **TASK 194** - PostGIS spatial integration (`geography(Point, 4326)`, GiST indexes, `ST_DWithin` corridor queries)
 - [x] **TASK 195** - PostgreSQL full-text & trigram search benchmarking against OpenSearch/Elasticsearch
-- [ ] **TASK 196** - Stage-based target architecture (Stage 0 pre-seed to Stage 3 regional cell failover design) *(Tier 2 — Est: 10 min)*
+- [x] **TASK 196** - Stage-based target architecture (Stage 0 pre-seed to Stage 3 regional cell failover design)
 
 ### Phase 41 — v66 Observability, Property Testing & YC Investor Package
-- [ ] **TASK 197** - OpenTelemetry distributed tracing across Next.js frontend, Spring Boot backend, and PostgreSQL *(Tier 3 — Est: 18 min)*
+- [x] **TASK 197** - OpenTelemetry distributed tracing across Next.js frontend, Spring Boot backend, and PostgreSQL
 - [ ] **TASK 198** - Prometheus metrics, Grafana dashboards, and structured JSON logging with correlation IDs *(Tier 2 — Est: 10 min)*
-- [ ] **TASK 199** - Create `docs/compliance/CONTROL_MATRIX.md` (GDPR, DSA, DAC7, ePrivacy, WCAG 2.2 AA) *(Tier 2 — Est: 10 min)*
+- [x] **TASK 199** - Create `docs/compliance/CONTROL_MATRIX.md` (GDPR, DSA, DAC7, ePrivacy, WCAG 2.2 AA)
 - [ ] **TASK 200** - Property-based testing for monetary calculations, VAT rules, and state machine transitions *(Tier 2 — Est: 10 min)*
 - [ ] **TASK 201** - Performance & load testing with k6/Gatling measuring query plans and N+1 bottlenecks *(Tier 2 — Est: 10 min)*
 - [ ] **TASK 202** - Create `docs/v66/YC_READINESS.md` with investor diligence package, unit economics, and data room index *(Tier 2 — Est: 10 min)*
