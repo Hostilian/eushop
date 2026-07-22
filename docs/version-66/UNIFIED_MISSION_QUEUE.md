@@ -90,14 +90,14 @@
 
 ### Phase 29 — Marketplace Product Completeness
 - [x] **TASK 135** - Buyer journey (cart, server checkout, order status, dispute & refund state transitions)
-- [ ] **TASK 136** - Complete and verify seller onboarding, identity & business verification, tax and payment onboarding, compliant listings, secure image upload, inventory, pricing, shipping, order handling, refunds, suspension, DAC7 state and appeals *(Tier 3 — Est: 18 min)*
+- [x] **TASK 136** - Complete and verify seller onboarding, identity & business verification, tax and payment onboarding, compliant listings, secure image upload, inventory, pricing, shipping, order handling, refunds, suspension, DAC7 state and appeals
 - [x] **TASK 137** - Implement operator workflows for seller approval, moderation, disputes, data requests, GDPR erasure, and audit logs
 - [ ] **TASK 138** - Enforce strong authorization and object ownership across buyer, seller, support and administrator operations *(Tier 2 — Est: 10 min)*
 
 ### Phase 30 — EU Compliance Structure
 - [x] **TASK 139** - Mandatory food information enforcement (ingredients, 14 Annex II allergens, net weight, origin, nutrition)
 - [x] **TASK 140** - DSA Art. 30 trader traceability, verification structure, notice and action, complaint/appeal flows
-- [ ] **TASK 141** - DAC7 seller classification, transaction counts, gross consideration, reporting periods, audit history, and XML export *(Tier 2 — Est: 10 min)*
+- [x] **TASK 141** - DAC7 seller classification, transaction counts, gross consideration, reporting periods, audit history, and XML export
 - [ ] **TASK 142** - GDPR data inventory, lawful basis mapping, minimization, consent receipts, deletion propagation *(Tier 3 — Est: 18 min)*
 - [ ] **TASK 143** - EU consumer-protection controls (total price, tax/shipping disclosure, order-button wording, withdrawal rights) *(Tier 2 — Est: 10 min)*
 - [ ] **TASK 144** - Centralized versioned VAT and OSS calculation engine with legal review gates *(Tier 2 — Est: 10 min)*
@@ -183,7 +183,7 @@
 - [x] **TASK 198** - Prometheus metrics, Grafana dashboards, and structured JSON logging with correlation IDs
 - [x] **TASK 199** - Create `docs/compliance/CONTROL_MATRIX.md` (GDPR, DSA, DAC7, ePrivacy, WCAG 2.2 AA)
 - [x] **TASK 200** - Property-based testing for monetary calculations, VAT rules, and state machine transitions
-- [ ] **TASK 201** - Performance & load testing with k6/Gatling measuring query plans and N+1 bottlenecks *(Tier 2 — Est: 10 min)*
+- [x] **TASK 201** - Performance & load testing with k6/Gatling measuring query plans and N+1 bottlenecks
 - [x] **TASK 202** - Create `docs/v66/YC_READINESS.md` with investor diligence package, unit economics, and data room index
 
 ---
