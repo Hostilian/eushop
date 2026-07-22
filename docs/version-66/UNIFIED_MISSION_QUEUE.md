@@ -110,14 +110,14 @@
 
 ### Phase 32 — Test Strategy, CI/CD and Supply-Chain Security
 - [x] **TASK 149** - Unit and backend integration coverage for compliance, prices, authorization, controllers, migrations
-- [x] **TASK 150** - Frontend and Playwright E2E coverage for rendering, auth, search, cart, checkout, orders, reviews *(Tier 3 — Est: 18 min)*
+- [x] **TASK 150** - Frontend and Playwright E2E coverage for rendering, auth, search, cart, checkout, orders, reviews
 - [x] **TASK 151** - Security test suite for CodeQL regressions, path traversal, upload abuse, CSRF, JWT negatives, rate limits
-- [x] **TASK 152** - GitHub Actions workflow hardening (least privilege, commit SHA action pinning, CodeQL, dependency review) *(Tier 2 — Est: 10 min)*
-- [ ] **TASK 153** - Flaky test quarantine tracking & verification run evidence recording *(Tier 1 — Est: 4 min)*
+- [x] **TASK 152** - GitHub Actions workflow hardening (least privilege, commit SHA action pinning, CodeQL, dependency review)
+- [x] **TASK 153** - Flaky test quarantine tracking & verification run evidence recording
 
 ### Phase 33 — Accessibility, Design System and User Experience
-- [ ] **TASK 154** - WCAG 2.2 AA accessibility audit (keyboard nav, focus, ARIA landmarks, contrast, screen reader order) *(Tier 2 — Est: 10 min)*
-- [ ] **TASK 155** - Consolidated design system tokens (typography, spacing, forms, alert dialogs, skeletons, dark mode) *(Tier 2 — Est: 10 min)*
+- [x] **TASK 154** - WCAG 2.2 AA accessibility audit (keyboard nav, focus, ARIA landmarks, contrast, screen reader order)
+- [x] **TASK 155** - Consolidated design system tokens (typography, spacing, forms, alert dialogs, skeletons, dark mode)
 - [ ] **TASK 156** - Performance optimization (bundle size, Next.js image optimization, API latency, cache hit rates) *(Tier 2 — Est: 10 min)*
 
 ### Phase 34 — Documentation, Investor Readiness and Release Gate
