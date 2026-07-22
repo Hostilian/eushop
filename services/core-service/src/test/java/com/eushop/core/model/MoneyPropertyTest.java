@@ -1,7 +1,6 @@
 package com.eushop.core.model;
 
 import org.junit.jupiter.api.Test;
-import java.math.BigDecimal;
 import java.util.Random;
 
 import static org.junit.jupiter.api.Assertions.*;

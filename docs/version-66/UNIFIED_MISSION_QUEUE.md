@@ -130,12 +130,12 @@
 - [x] **TASK 163** - Produce `docs/version-55/FINAL_REPORT.md` release verdict
 
 ### Phase 35 — Supporting Agent Observability and Windows Sidebar
-- [ ] **TASK 164** - Build native Windows EUshop Progress Sidebar executable *(Tier 2 — Est: 10 min)*
+- [x] **TASK 164** - Build native Windows EUshop Progress Sidebar executable
 - [x] **TASK 165** - Implement read-only evidence collector combining queue state, orchestrator PID, and Git commits
-- [ ] **TASK 166** - Live completion percentage dashboard display *(Tier 1 — Est: 4 min)*
-- [ ] **TASK 167** - Four-minute evidence-based health status indicator *(Tier 1 — Est: 4 min)*
-- [ ] **TASK 168** - Execution state classifier (WORKING, RUNNING, POSSIBLY STALLED, DOWN) *(Tier 1 — Est: 4 min)*
-- [ ] **TASK 169** - Sidebar packaging, installation script, and smoke tests *(Tier 1 — Est: 4 min)*
+- [x] **TASK 166** - Live completion percentage dashboard display
+- [x] **TASK 167** - Four-minute evidence-based health status indicator
+- [x] **TASK 168** - Execution state classifier (WORKING, RUNNING, POSSIBLY STALLED, DOWN)
+- [x] **TASK 169** - Sidebar packaging, installation script, and smoke tests
 
 ---
 

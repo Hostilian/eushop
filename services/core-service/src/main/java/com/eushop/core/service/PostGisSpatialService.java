@@ -1,7 +1,6 @@
 package com.eushop.core.service;
 
 import org.springframework.stereotype.Service;
-import java.util.*;
 
 /**
  * PostGisSpatialService provides spatial corridor geometry matching (`geography(Point, 4326)`),

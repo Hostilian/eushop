@@ -10,6 +10,7 @@ $claudeProcs = Get-Process -Name claude -ErrorAction SilentlyContinue | Select-O
 $evidence = @{
     Timestamp = (Get-Date).ToString("yyyy-MM-dd HH:mm:ss")
     GitCommit = $commit
+    ProgressScript = $progressScript
     ClaudePIDs = ($claudeProcs | ForEach-Object { $_.Id })
     TotalTasks = 108
 }

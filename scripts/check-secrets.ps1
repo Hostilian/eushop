@@ -22,10 +22,10 @@ $patterns = @(
 
 $found = $false
 foreach ($p in $patterns) {
-    $matches = Select-String -Path "$Path\*" -Pattern $p -Exclude "*.lock", "archive/*", "scratch/*", ".git/*" -ErrorAction SilentlyContinue
-    if ($matches) {
+    $foundMatches = Select-String -Path "$Path\*" -Pattern $p -Exclude "*.lock", "archive/*", "scratch/*", ".git/*" -ErrorAction SilentlyContinue
+    if ($foundMatches) {
         Write-Host "[WARN] Potential secret matched pattern '$p':" -ForegroundColor Red
-        $matches | ForEach-Object { Write-Host "  $($_.Filename):$($_.LineNumber)" -ForegroundColor Red }
+        $foundMatches | ForEach-Object { Write-Host "  $($_.Filename):$($_.LineNumber)" -ForegroundColor Red }
         $found = $true
     }
 }
