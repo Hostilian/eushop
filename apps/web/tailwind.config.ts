@@ -18,7 +18,6 @@ const config: Config = {
         danger:    'var(--color-danger)',
         success:   'var(--color-success)',
         warning:   'var(--color-warning)',
-<<<<<<< HEAD
         'v20-bg':      'var(--color-gray-50)',
         'v20-surface': 'var(--color-surface)',
         'v20-text':    'var(--color-gray-900)',
@@ -37,8 +36,6 @@ const config: Config = {
           800: 'var(--color-gray-900)',   // Charcoal Black text
           900: '#161b19',
         },
-=======
->>>>>>> pull-1
         // Brand palette
         brand: {
           green:  '#1e3f20',

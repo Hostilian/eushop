@@ -8,11 +8,7 @@ const generateCorrelationId = (): string => {
   return `web-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
 };
 
-<<<<<<< HEAD
 export const apiClient: AxiosInstance = axios.create({
-=======
-const apiClient: AxiosInstance = axios.create({
->>>>>>> pull-1
   baseURL: API_CONFIG.BASE_URL,
   timeout: API_CONFIG.TIMEOUT,
   headers: {
@@ -56,14 +52,9 @@ apiClient.interceptors.response.use(
   (response) => response,
   (error) => {
     if (error.response?.status === 401) {
-<<<<<<< HEAD
       if (typeof window !== 'undefined') {
         removeSafeStorage('userProfile', 'session');
       }
-=======
-      // Clear the cached display profile (cookie is cleared server-side)
-      typeof window !== 'undefined' && sessionStorage.removeItem('userProfile');
->>>>>>> pull-1
       if (typeof window !== 'undefined' && window.location.pathname !== '/login') {
         window.location.href = '/login';
       }

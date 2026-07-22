@@ -25,11 +25,7 @@ export default function NotFoundPage() {
       // Reconstruct the original URL and redirect
       const cleanPath = redirectPath.replace(/~and~/g, '&');
       router.replace(cleanPath);
-<<<<<<< HEAD
       return undefined;
-=======
-      return;
->>>>>>> pull-1
     }
 
     // If no redirect, auto-redirect after 5 seconds
@@ -99,11 +95,7 @@ export default function NotFoundPage() {
 
           <div className="flex flex-wrap justify-center gap-3">
             <Link href="/">
-<<<<<<< HEAD
               <button className="bg-brand-green text-white px-6 py-3 rounded-xl font-bold hover:opacity-90 transition text-sm">
-=======
-              <button className="bg-primary text-white px-6 py-3 rounded-xl font-bold hover:opacity-90 transition text-sm">
->>>>>>> pull-1
                 ← Return Home
               </button>
             </Link>

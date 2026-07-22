@@ -25,10 +25,6 @@ ALTER TABLE orders ADD COLUMN IF NOT EXISTS stripe_payment_intent_id VARCHAR(100
 CREATE INDEX IF NOT EXISTS idx_orders_stripe_pi ON orders(stripe_payment_intent_id);
 
 COMMENT ON TABLE consent_log IS
-<<<<<<< HEAD
   'Immutable audit trail of GDPR consent events per user. Never delete rows. Use granted=false to record withdrawals.';
-=======
-  'Immutable audit trail of GDPR consent events per user. Never delete rows; use granted=false to record withdrawals.';
->>>>>>> pull-1
 COMMENT ON COLUMN consent_log.ip_hash IS
   'SHA-256 hash of the user IP address at consent time. Raw IPs are not stored.';

@@ -1,6 +1,4 @@
-========================================================================
              EUshop AI Terminal Agent & API Integration Guide
-========================================================================
 
 This file details how to access the free, OpenAI-compatible AI models
 provided by the keys in `free-llm-api-keys-main`. All keys connect through
@@ -151,7 +149,6 @@ const response = await client.chat.completions.create({
 });
 console.log(response.choices[0].message.content);
 
-<<<<<<< HEAD
 --- PowerShell Example ---
 # No external package needed! Queries the multi-model AI gateway via native REST.
 $apiKey = "your-sk-api-key-here"
@@ -170,8 +167,6 @@ $response = Invoke-RestMethod -Uri "https://aiapiv2.pekpik.com/v1/chat/completio
 
 $response.choices[0].message.content
 
-=======
->>>>>>> pull-1
 --- Aider (Manual Launch) ---
 If you prefer running Aider manually without our python selection wrapper:
 1. Open terminal
@@ -182,4 +177,3 @@ If you prefer running Aider manually without our python selection wrapper:
               $env:OPENAI_API_KEY="your-sk-key-here"
 3. Run: Aider with `--model openai/deepseek-chat` or `--model openai/claude-opus-4-7`
    (LiteLLM routes standard custom openai base URLs when prefixing models with "openai/")
-========================================================================

@@ -5,7 +5,6 @@
 @import "tailwindcss/utilities";
 
 :root {
-<<<<<<< HEAD
   --color-primary: #1e3f20; /* Gourmet Forest Green */
   --color-secondary: #d4a373; /* Culinary Gold */
   --color-danger: #b33939;
@@ -34,19 +33,6 @@
   
   --color-surface: #222825; /* Dark surface */
   --color-border: #313a35; /* Muted border */
-=======
-  --color-primary: #1e3f20; /* Deep Forest Green */
-  --color-secondary: #d4a373; /* Warm Gold / Earthy Amber */
-  --color-danger: #b33939;
-  --color-success: #2e7d32;
-  --color-warning: #e67e22;
-  --color-gray-50: #fcfbf7;
-  --color-gray-100: #f4f1ea;
-  --color-gray-900: #1c1d1a;
-  
-  --font-display: 'Outfit', 'Inter', sans-serif;
-  --font-body: 'Inter', sans-serif;
->>>>>>> pull-1
 }
 
 * {
@@ -69,7 +55,6 @@ h1, h2, h3, h4, h5, h6 {
   font-family: var(--font-display);
 }
 
-<<<<<<< HEAD
 /* WCAG 2.2 AA Focus Rings & Skip Navigation Links */
 :focus-visible {
   outline: 3px solid #16a34a !important;
@@ -94,5 +79,3 @@ h1, h2, h3, h4, h5, h6 {
 }
 
 
-=======
->>>>>>> pull-1

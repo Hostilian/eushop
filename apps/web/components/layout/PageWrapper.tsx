@@ -1,8 +1,5 @@
 import React, { useState, useEffect } from 'react';
-<<<<<<< HEAD
 import ErrorBoundary from '../common/ErrorBoundary';
-=======
->>>>>>> pull-1
 import { Navbar } from './Navbar';
 import { Footer } from './Footer';
 
@@ -18,25 +15,17 @@ interface PageWrapperProps {
  */
 export function PageWrapper({ children, className = '' }: PageWrapperProps) {
   // Graceful degradation: Check if we're online to show a subtle indicator
-<<<<<<< HEAD
   const [isOnline, setIsOnline] = useState(() => {
     if (typeof window !== 'undefined') {
       return navigator.onLine;
     }
     return true;
   });
-=======
-  const [isOnline, setIsOnline] = useState(true);
->>>>>>> pull-1
   
   useEffect(() => {
     const handleOnline = () => setIsOnline(true);
     const handleOffline = () => setIsOnline(false);
     
-<<<<<<< HEAD
-=======
-    setIsOnline(navigator.onLine);
->>>>>>> pull-1
     window.addEventListener('online', handleOnline);
     window.addEventListener('offline', handleOffline);
     
@@ -48,7 +37,6 @@ export function PageWrapper({ children, className = '' }: PageWrapperProps) {
   
   return (
     <div className="min-h-screen bg-gray-50 text-gray-900 flex flex-col font-sans transition-colors duration-200 dark:bg-gray-950 dark:text-gray-100">
-<<<<<<< HEAD
       {/* WCAG 2.2 AA Skip to content link */}
       <a href="#main-content" className="skip-to-content">
         Skip to main content
@@ -57,9 +45,6 @@ export function PageWrapper({ children, className = '' }: PageWrapperProps) {
       <ErrorBoundary region="navigation" compact>
         <Navbar />
       </ErrorBoundary>
-=======
-      <Navbar />
->>>>>>> pull-1
       
       {/* Graceful degradation: Offline indicator with actionable info */}
       {!isOnline && (
@@ -68,19 +53,13 @@ export function PageWrapper({ children, className = '' }: PageWrapperProps) {
           <span>You are currently offline. Some features may be limited.</span>
           <button 
             onClick={() => window.location.reload()}
-<<<<<<< HEAD
             className="underline font-semibold hover:text-yellow-900"
-=======
-            className="underline font-semibold hover:text-yellow-900 transition"
-            aria-label="Retry connection"
->>>>>>> pull-1
           >
             Retry
           </button>
         </div>
       )}
       
-<<<<<<< HEAD
       <main id="main-content" className={`flex-grow container mx-auto px-4 sm:px-6 lg:px-8 py-8 ${className}`}>
         <ErrorBoundary region="page">
           {children}
@@ -93,15 +72,3 @@ export function PageWrapper({ children, className = '' }: PageWrapperProps) {
     </div>
   );
 }
-=======
-      {/* Main content container */}
-      <main className={`flex-grow mx-auto w-full max-w-7xl px-4 py-8 sm:px-6 lg:px-8 animate-fade-in ${className}`}>
-        {children}
-      </main>
-
-      <Footer />
-    </div>
-  );
-}
-
->>>>>>> pull-1

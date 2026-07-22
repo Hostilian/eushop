@@ -13,16 +13,12 @@ declare global {
 }
 
 export default function CookieBanner() {
-<<<<<<< HEAD
   const [showBanner, setShowBanner] = useState(() => {
     if (typeof window !== 'undefined') {
       return !localStorage.getItem('cookieConsent');
     }
     return false;
   });
-=======
-  const [showBanner, setShowBanner] = useState(false);
->>>>>>> pull-1
   const [showPreferences, setShowPreferences] = useState(false);
   const [preferences, setPreferences] = useState<CookiePreferences>({
     essential: true,
@@ -32,11 +28,8 @@ export default function CookieBanner() {
 
   useEffect(() => {
     // Expose global helper to query consent status dynamically
-<<<<<<< HEAD
     // COMPLIANCE-REVIEW: ePrivacy Directive / GDPR Art. 6(1)(a) cookie pre-consent logic.
     // Pre-consent blocking structure enforced; actual cookie categories must be validated by legal counsel.
-=======
->>>>>>> pull-1
     if (typeof window !== 'undefined') {
       window.hasCookieConsent = (category: keyof CookiePreferences) => {
         if (category === 'essential') return true;
@@ -51,14 +44,6 @@ export default function CookieBanner() {
           return false;
         }
       };
-<<<<<<< HEAD
-=======
-    }
-
-    const consent = localStorage.getItem('cookieConsent');
-    if (!consent) {
-      setShowBanner(true);
->>>>>>> pull-1
     }
   }, []);
 
@@ -113,11 +98,7 @@ export default function CookieBanner() {
             </button>
             <button
               onClick={handleAcceptAll}
-<<<<<<< HEAD
               className="px-5 py-2.5 bg-brand-green text-white font-semibold rounded-lg hover:opacity-90 transition text-sm"
-=======
-              className="px-5 py-2.5 bg-primary text-white font-semibold rounded-lg hover:opacity-90 transition text-sm"
->>>>>>> pull-1
             >
               Accept All
             </button>
@@ -174,11 +155,7 @@ export default function CookieBanner() {
             <div className="md:col-span-3 flex justify-end">
               <button
                 onClick={handleSaveCustom}
-<<<<<<< HEAD
                 className="px-5 py-2 bg-brand-green text-white font-bold rounded-lg hover:opacity-90 transition text-xs"
-=======
-                className="px-5 py-2 bg-primary text-white font-bold rounded-lg hover:opacity-90 transition text-xs"
->>>>>>> pull-1
               >
                 Save My Settings
               </button>

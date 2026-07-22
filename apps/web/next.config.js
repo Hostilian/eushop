@@ -9,10 +9,7 @@ const nextConfig = {
   // trailingSlash ensures /page -> /page/index.html, required for GitHub Pages static hosting
   trailingSlash: true,
   reactStrictMode: true,
-<<<<<<< HEAD
   transpilePackages: ['@eushop/compliance'],
-=======
->>>>>>> pull-1
   images: {
     unoptimized: true,
   },

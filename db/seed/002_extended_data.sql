@@ -22,7 +22,6 @@ ON CONFLICT (email) DO NOTHING;
 -- =====================================================
 
 -- Belgian Chocolates
-<<<<<<< HEAD
 INSERT INTO foods (seller_id, name, description, category, price, finder_fee, country, quantity, available, average_rating, review_count, sales_count, view_count, allergens)
 SELECT u.id, 'Belgian Chocolate Truffles - Dark Selection', 'Authentic Belgian dark chocolate truffles with ganache and cocoa powder coating. 250g box', 'Chocolates', 24.99, 5.00, 'BE', 100, TRUE, 4.8, 12, 45, 320, '["Milk", "Soy", "Nuts"]'::jsonb
 FROM users u WHERE u.email = 'seller1@example.com'
@@ -31,21 +30,10 @@ SELECT u.id, 'Premium Belgian Pralines - Mixed Box', 'Assorted Belgian pralines 
 FROM users u WHERE u.email = 'seller1@example.com'
 UNION ALL
 SELECT u.id, 'Belgian White Chocolate with Hazelnuts', 'Smooth white chocolate blended with roasted hazelnuts. 150g bar', 'Chocolates', 18.99, 3.80, 'BE', 120, TRUE, 4.6, 5, 18, 145, '["Milk", "Soy", "Hazelnuts"]'::jsonb
-=======
-INSERT INTO foods (seller_id, name, description, category, price, finder_fee_amount, country, quantity_available, is_active, average_rating, review_count, sales_count, view_count, allergens)
-SELECT u.id, 'Belgian Chocolate Truffles - Dark Selection', 'Authentic Belgian dark chocolate truffles with ganache and cocoa powder coating. 250g box', 'Chocolates', 24.99, 5.00, 'BE', 100, TRUE, 4.8, 12, 45, 320, 'Milk, Soy, Nuts'
-FROM users u WHERE u.email = 'seller1@example.com'
-UNION ALL
-SELECT u.id, 'Premium Belgian Pralines - Mixed Box', 'Assorted Belgian pralines with hazelnut, pistachio, and coffee fillings. 200g', 'Chocolates', 32.99, 6.50, 'BE', 75, TRUE, 4.9, 8, 28, 210, 'Milk, Soy, Nuts, Hazelnuts'
-FROM users u WHERE u.email = 'seller1@example.com'
-UNION ALL
-SELECT u.id, 'Belgian White Chocolate with Hazelnuts', 'Smooth white chocolate blended with roasted hazelnuts. 150g bar', 'Chocolates', 18.99, 3.80, 'BE', 120, TRUE, 4.6, 5, 18, 145, 'Milk, Soy, Hazelnuts'
->>>>>>> pull-1
 FROM users u WHERE u.email = 'seller1@example.com'
 ON CONFLICT DO NOTHING;
 
 -- Italian Foods
-<<<<<<< HEAD
 INSERT INTO foods (seller_id, name, description, category, price, finder_fee, country, quantity, available, average_rating, review_count, sales_count, view_count, allergens)
 SELECT u.id, 'Balsamic Vinegar of Modena 25 Year', '25-year aged traditional balsamic vinegar from Modena. Premium quality. 250ml bottle', 'Vinegars & Oils', 42.99, 8.50, 'IT', 50, TRUE, 4.9, 15, 52, 405, '[]'::jsonb
 FROM users u WHERE u.email = 'seller2@example.com'
@@ -57,24 +45,10 @@ SELECT u.id, 'San Marzano Tomatoes PDO', 'Protected Designation tomatoes from Mo
 FROM users u WHERE u.email = 'seller2@example.com'
 UNION ALL
 SELECT u.id, 'Parmigiano Reggiano 36 Months', 'Aged Parmigiano Reggiano from Emilia-Romagna. Sharp, complex flavor. 200g block', 'Cheese', 28.99, 5.80, 'IT', 60, TRUE, 4.9, 14, 48, 356, '["Milk"]'::jsonb
-=======
-INSERT INTO foods (seller_id, name, description, category, price, finder_fee_amount, country, quantity_available, is_active, average_rating, review_count, sales_count, view_count, allergens)
-SELECT u.id, 'Balsamic Vinegar of Modena 25 Year', '25-year aged traditional balsamic vinegar from Modena. Premium quality. 250ml bottle', 'Vinegars & Oils', 42.99, 8.50, 'IT', 50, TRUE, 4.9, 15, 52, 405, 'None'
-FROM users u WHERE u.email = 'seller2@example.com'
-UNION ALL
-SELECT u.id, 'Imported Italian Arborio Rice', 'Premium risotto rice from Piedmont region. Perfect for Risotto Milanese. 1kg', 'Grains & Rice', 12.99, 2.60, 'IT', 200, TRUE, 4.7, 9, 34, 198, 'None'
-FROM users u WHERE u.email = 'seller2@example.com'
-UNION ALL
-SELECT u.id, 'San Marzano Tomatoes PDO', 'Protected Designation tomatoes from Mount Vesuvius region. Perfect for Italian cooking. 400g cans (3 pack)', 'Vegetables & Fruits', 15.99, 3.20, 'IT', 150, TRUE, 4.8, 11, 41, 267, 'None'
-FROM users u WHERE u.email = 'seller2@example.com'
-UNION ALL
-SELECT u.id, 'Parmigiano Reggiano 36 Months', 'Aged Parmigiano Reggiano from Emilia-Romagna. Sharp, complex flavor. 200g block', 'Cheese', 28.99, 5.80, 'IT', 60, TRUE, 4.9, 14, 48, 356, 'Milk'
->>>>>>> pull-1
 FROM users u WHERE u.email = 'seller2@example.com'
 ON CONFLICT DO NOTHING;
 
 -- German Foods
-<<<<<<< HEAD
 INSERT INTO foods (seller_id, name, description, category, price, finder_fee, country, quantity, available, average_rating, review_count, sales_count, view_count, allergens)
 SELECT u.id, 'German Tilsiter Cheese Wheel', 'Traditional German semi-hard cheese from East Prussia. 500g wheel', 'Cheese', 38.99, 7.80, 'DE', 45, TRUE, 4.7, 10, 25, 289, '["Milk"]'::jsonb
 FROM users u WHERE u.email = 'seller3@example.com'
@@ -83,16 +57,6 @@ SELECT u.id, 'German Allgäuer Bergkäse', 'Protected designation mountain chees
 FROM users u WHERE u.email = 'seller3@example.com'
 UNION ALL
 SELECT u.id, 'German Marzipan Chocolates - Assorted', 'Assorted traditional Lübeck marzipan covered in dark chocolate. 200g box', 'Chocolates', 16.99, 3.40, 'DE', 180, TRUE, 4.6, 8, 67, 512, '["Milk", "Nuts", "Soy"]'::jsonb
-=======
-INSERT INTO foods (seller_id, name, description, category, price, finder_fee_amount, country, quantity_available, is_active, average_rating, review_count, sales_count, view_count, allergens)
-SELECT u.id, 'German Tilsiter Cheese Wheel', 'Traditional German semi-hard cheese from East Prussia. 500g wheel', 'Cheese', 38.99, 7.80, 'DE', 45, TRUE, 4.7, 10, 25, 289, 'Milk'
-FROM users u WHERE u.email = 'seller3@example.com'
-UNION ALL
-SELECT u.id, 'German Allgäuer Bergkäse', 'Protected designation mountain cheese from Bavaria. Robust flavor. 300g', 'Cheese', 35.99, 7.20, 'DE', 55, TRUE, 4.8, 12, 32, 234, 'Milk'
-FROM users u WHERE u.email = 'seller3@example.com'
-UNION ALL
-SELECT u.id, 'German Marzipan Chocolates - Assorted', 'Assorted traditional Lübeck marzipan covered in dark chocolate. 200g box', 'Chocolates', 16.99, 3.40, 'DE', 180, TRUE, 4.6, 8, 67, 512, 'Milk, Nuts, Soy'
->>>>>>> pull-1
 FROM users u WHERE u.email = 'seller3@example.com'
 ON CONFLICT DO NOTHING;
 

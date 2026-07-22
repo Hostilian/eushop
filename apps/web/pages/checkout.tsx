@@ -1,5 +1,4 @@
 import { useState, useEffect } from 'react';
-<<<<<<< HEAD
 import Head from 'next/head';
 import Link from 'next/link';
 import { loadStripe } from '@stripe/stripe-js';
@@ -29,15 +28,6 @@ const VAT_COUNTRY_OPTIONS = Object.keys(EU_FOOD_VAT_RATES).sort((left, right) =>
   EU_COUNTRY_NAMES[left].localeCompare(EU_COUNTRY_NAMES[right])
 );
 
-=======
-import Link from 'next/link';
-import { loadStripe } from '@stripe/stripe-js';
-import { Elements, CardElement, useStripe, useElements } from '@stripe/react-stripe-js';
-import { paymentAPI, orderAPI, foodAPI, authAPI, User } from '../lib/services'; // Updated import
-
-const stripePromise = loadStripe(process.env.NEXT_PUBLIC_STRIPE_PUBLIC_KEY || 'pk_test_51MockPublicKeyForCheckoutCompilationOnly');
-
->>>>>>> pull-1
 interface CartItem {
   id: string;
   name: string;
@@ -61,11 +51,7 @@ function CheckoutForm() {
     address: '',
     city: '',
     postalCode: '',
-<<<<<<< HEAD
     country: '',
-=======
-    country: 'DE',
->>>>>>> pull-1
     acceptTerms: false
   });
 
@@ -83,12 +69,9 @@ function CheckoutForm() {
           setFormData(prev => ({
             ...prev,
             email: currentUser.email,
-<<<<<<< HEAD
             country: EU_FOOD_VAT_RATES[currentUser.country.toUpperCase()] !== undefined
               ? currentUser.country.toUpperCase()
               : '',
-=======
->>>>>>> pull-1
             // Potentially pre-fill name/address if available on user object
           }));
         }
@@ -98,16 +81,8 @@ function CheckoutForm() {
     };
     fetchUser();
 
-<<<<<<< HEAD
     const items: CartItem[] = readCart();
     if (items.length > 0) {
-=======
-    const savedCart = localStorage.getItem('cart');
-    if (savedCart) {
-      try {
-        const items: CartItem[] = JSON.parse(savedCart);
-        
->>>>>>> pull-1
         // Fetch detailed information to populate sellerId and finderFee
         const fetchDetails = async () => {
           const detailed = await Promise.all(items.map(async (item) => {
@@ -132,17 +107,10 @@ function CheckoutForm() {
         };
 
         fetchDetails();
-<<<<<<< HEAD
-=======
-      } catch (error) {
-        console.error('Failed to parse cart:', error);
-      }
->>>>>>> pull-1
     }
   }, []);
 
   const subtotal = cartItems.reduce((acc, item) => acc + item.price * item.quantity, 0);
-<<<<<<< HEAD
   // COMPLIANCE-REVIEW: VAT rate source = packages/compliance/src/vat.ts
   // Catalog prices are treated as VAT-exclusive here. A tax advisor must confirm
   // product classification, shipping treatment, and invoice rounding before launch.
@@ -153,11 +121,6 @@ function CheckoutForm() {
   const vat = vatCalculation.vatAmountEur;
   const shipping = subtotal > 0 ? 9.99 : 0;
   const grandTotal = vatCalculation.grossAmountEur + shipping;
-=======
-  const vat = subtotal * 0.15;
-  const shipping = subtotal > 0 ? 9.99 : 0;
-  const grandTotal = subtotal + vat + shipping;
->>>>>>> pull-1
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -206,21 +169,15 @@ function CheckoutForm() {
       const shippingAddressStr = `${formData.address}, ${formData.postalCode} ${formData.city}, ${formData.country}`;
       
       await Promise.all(cartItems.map(async (item) => {
-<<<<<<< HEAD
         const lineVat = calculateFoodVat(item.price * item.quantity, formData.country);
-=======
->>>>>>> pull-1
         const orderPayload = {
           foodId: item.id,
           sellerId: item.sellerId || 'seller_belgium@eushop.local',
           quantity: item.quantity,
           totalPrice: item.price * item.quantity,
-<<<<<<< HEAD
           // COMPLIANCE-REVIEW: VAT rate source = packages/compliance/src/vat.ts
           vatRate: lineVat.rate,
           vatAmount: lineVat.vatAmountEur,
-=======
->>>>>>> pull-1
           finderFee: (item.finderFee || 5.00) * item.quantity,
           shippingAddress: shippingAddressStr,
           message: 'Order placed securely via web portal',
@@ -230,11 +187,7 @@ function CheckoutForm() {
       }));
 
       // 4. Clear cart & show confirmation
-<<<<<<< HEAD
       writeCart([]);
-=======
-      localStorage.setItem('cart', '[]');
->>>>>>> pull-1
       setOrderPlaced(true);
     } catch (err: any) {
       setErrorMessage(err.message || 'An unexpected error occurred during payment.');
@@ -245,11 +198,7 @@ function CheckoutForm() {
 
   if (orderPlaced) {
     return (
-<<<<<<< HEAD
       <div className="min-h-screen bg-gray-50 dark:bg-gray-950 flex items-center justify-center font-sans text-gray-800 dark:text-gray-200 p-4">
-=======
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center font-sans text-gray-800 p-4">
->>>>>>> pull-1
         <div className="max-w-md w-full bg-white p-8 rounded-2xl border border-gray-100 shadow-xl text-center">
           <div className="w-16 h-16 bg-success/10 rounded-full flex items-center justify-center mx-auto mb-6 border border-success/20">
             <span className="text-3xl text-success font-bold">✓</span>
@@ -265,13 +214,8 @@ function CheckoutForm() {
             <p>{formData.postalCode} {formData.city}</p>
             <p className="text-primary font-semibold mt-1">🌍 EU Country: {formData.country}</p>
           </div>
-<<<<<<< HEAD
           <Link href="/dashboard" className="block w-full bg-primary text-white py-3 rounded-lg font-bold hover:opacity-90 transition">
             Go to Dashboard
-=======
-          <Link href="/" className="block w-full bg-primary text-white py-3 rounded-lg font-bold hover:opacity-90 transition">
-            Return to Homepage
->>>>>>> pull-1
           </Link>
         </div>
       </div>
@@ -279,7 +223,6 @@ function CheckoutForm() {
   }
 
   return (
-<<<<<<< HEAD
     <>
       <Head>
         {/* COMPLIANCE-REVIEW: PCI DSS — SAQ-A scope. No card data is handled, read,
@@ -298,23 +241,6 @@ function CheckoutForm() {
         <div className="max-w-5xl mx-auto py-6">
           <h1 className="text-3xl font-extrabold text-brand-dark dark:text-white mb-8 font-display">Secure Checkout</h1>
 
-=======
-    <div className="min-h-screen bg-gray-50 text-gray-800 font-sans">
-      <nav className="bg-white border-b border-gray-100 py-4 px-6 shadow-sm">
-        <div className="max-w-7xl mx-auto flex justify-between items-center">
-          <Link href="/" className="text-2xl font-extrabold text-primary flex items-center gap-2">
-            <span className="text-secondary">🌿</span> EUshop
-          </Link>
-          <Link href="/cart" className="text-sm font-semibold text-gray-500 hover:text-primary transition">
-            Back to Cart
-          </Link>
-        </div>
-      </nav>
-
-      <main className="max-w-5xl mx-auto px-6 py-12">
-        <h1 className="text-3xl font-extrabold text-brand-dark mb-8 font-display">Secure Checkout</h1>
-
->>>>>>> pull-1
         {errorMessage && (
           <div className="mb-6 p-4 bg-danger/10 border border-danger/20 text-danger rounded-xl text-sm font-medium">
             ⚠️ {errorMessage}
@@ -397,10 +323,7 @@ function CheckoutForm() {
               <div className="mt-4">
                 <label className="block text-xs font-bold text-gray-600 mb-1.5 uppercase">EU Country (Logistics Restricted to EU Single Market)</label>
                 <select
-<<<<<<< HEAD
                   required
-=======
->>>>>>> pull-1
                   className="w-full px-4 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary text-sm"
                   onChange={e => setFormData({ ...formData, country: e.target.value })}
                   value={formData.country}
@@ -464,17 +387,12 @@ function CheckoutForm() {
                   <span>{subtotal.toFixed(2)} €</span>
                 </div>
                 <div className="flex justify-between">
-<<<<<<< HEAD
                   <span>
                     VAT {formData.country
                       ? `(${(vatRate * 100).toLocaleString(undefined, { maximumFractionDigits: 1 })}% · ${formData.country})`
                       : '(select destination)'}
                   </span>
                   <span data-testid="checkout-vat-amount">{vat.toFixed(2)} €</span>
-=======
-                  <span>VAT & Processing (15%)</span>
-                  <span>{vat.toFixed(2)} €</span>
->>>>>>> pull-1
                 </div>
                 <div className="flex justify-between">
                   <span>Shipping</span>
@@ -510,11 +428,7 @@ function CheckoutForm() {
               <button
                 type="submit"
                 disabled={loading || !stripe || cartItems.length === 0}
-<<<<<<< HEAD
                 className="w-full bg-brand-green text-white py-3.5 rounded-xl font-bold hover:opacity-95 shadow-md shadow-brand-green/10 transition disabled:bg-gray-300 disabled:shadow-none disabled:cursor-not-allowed text-sm flex items-center justify-center gap-2"
-=======
-                className="w-full bg-primary text-white py-3.5 rounded-xl font-bold hover:opacity-95 shadow-md shadow-primary/10 transition disabled:bg-gray-300 disabled:shadow-none disabled:cursor-not-allowed text-sm flex items-center justify-center gap-2"
->>>>>>> pull-1
               >
                 {loading ? (
                   <>
@@ -528,20 +442,9 @@ function CheckoutForm() {
             </div>
           </div>
         </form>
-<<<<<<< HEAD
       </div>
     </PageWrapper>
     </>
-=======
-      </main>
-
-      <footer className="bg-brand-dark text-gray-400 py-12 border-t border-gray-800 mt-20">
-        <div className="max-w-7xl mx-auto px-4 text-center text-sm">
-          <p>&copy; {new Date().getFullYear()} EUshop. All rights reserved.</p>
-        </div>
-      </footer>
-    </div>
->>>>>>> pull-1
   );
 }
 

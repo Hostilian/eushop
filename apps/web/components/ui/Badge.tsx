@@ -6,10 +6,7 @@ interface BadgeProps {
   variant?: 'success' | 'warning' | 'error' | 'info' | 'neutral' | 'allergen';
   size?: 'sm' | 'md';
   icon?: React.ReactNode;
-<<<<<<< HEAD
   className?: string;
-=======
->>>>>>> pull-1
 }
 
 const variantClasses: Record<string, string> = {
@@ -30,23 +27,14 @@ const sizeClasses: Record<string, string> = {
  * Inline label badge. Used for allergen disclosure, seller verification status,
  * order status, and other categorical labels.
  */
-<<<<<<< HEAD
-export function Badge({ children, variant = 'neutral', size = 'sm', icon, className = '' }: BadgeProps) {
-=======
 export function Badge({ children, variant = 'neutral', size = 'sm', icon }: BadgeProps) {
->>>>>>> pull-1
   return (
     <span
       className={[
         'inline-flex items-center font-medium rounded-full border',
         variantClasses[variant],
         sizeClasses[size],
-<<<<<<< HEAD
-        className,
-      ].filter(Boolean).join(' ')}
-=======
       ].join(' ')}
->>>>>>> pull-1
     >
       {icon && <span aria-hidden="true">{icon}</span>}
       {children}
@@ -57,14 +45,9 @@ export function Badge({ children, variant = 'neutral', size = 'sm', icon }: Badg
 // ─── Specialised variants ─────────────────────────────────────────────────────
 
 /**
-<<<<<<< HEAD
  * Renders a "Verified EU Trader" badge from the stored KYC state.
  * Must only be shown when user.kycVerified === true.
  * COMPLIANCE-REVIEW: Confirm that the stored verification state is backed by current trader evidence.
-=======
- * Renders a DSA-compliant "Verified EU Trader" badge.
- * Must only be shown when user.kycVerified === true.
->>>>>>> pull-1
  */
 export function VerifiedSellerBadge() {
   return (
@@ -89,19 +72,15 @@ export function VerifiedPurchaseBadge() {
 /**
  * Renders an EU allergen label for one of the 14 regulated allergens.
  * Used in food listings to satisfy EU Food Information Regulation (EU FIR 1169/2011).
-<<<<<<< HEAD
  *
  * WCAG 1.4.1: Must not rely on colour alone. The aria-label provides a full
  * text alternative for screen readers. The warning icon is decorative (aria-hidden).
  * WCAG 1.3.1: The role="img" + aria-label pattern ensures the allergen name is
  * announced even if CSS is disabled.
-=======
->>>>>>> pull-1
  */
 export function AllergenBadge({ allergen }: { allergen: string }) {
   return (
     <Badge variant="allergen" size="sm">
-<<<<<<< HEAD
       <span aria-hidden="true">⚠</span>
       <span aria-label={`Contains allergen: ${allergen}`}>{allergen}</span>
     </Badge>
@@ -116,9 +95,6 @@ export function SellerSlaBadge({ averageResponseHours = 2 }: { averageResponseHo
   return (
     <Badge variant={isFast ? "success" : "warning"} size="sm" icon={<span>⚡</span>}>
       {isFast ? `Fast SLA (<${averageResponseHours}h Response)` : `SLA Response (${averageResponseHours}h)`}
-=======
-      ⚠ {allergen}
->>>>>>> pull-1
     </Badge>
   );
 }

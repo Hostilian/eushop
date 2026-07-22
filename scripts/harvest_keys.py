@@ -434,10 +434,7 @@ def validate_key(item: dict, timeout: int = 5) -> dict:
     headers = {
         "Authorization": f"Bearer {key}",
         "Content-Type": "application/json",
-<<<<<<< HEAD
         "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36"
-=======
->>>>>>> pull-1
     }
 
     for base_url in unique_urls[:3]:  # Max 3 URLs per key to keep it fast

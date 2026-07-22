@@ -14,13 +14,10 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 import com.eushop.core.entity.User;
 import com.eushop.core.entity.ConsentLog;
-<<<<<<< HEAD
 import com.eushop.core.repository.ConversationRepository;
 import com.eushop.core.repository.MessageRepository;
 import com.eushop.core.repository.OrderRepository;
 import com.eushop.core.repository.ReviewRepository;
-=======
->>>>>>> pull-1
 import com.eushop.core.repository.UserRepository;
 import com.eushop.core.repository.ConsentLogRepository;
 
@@ -33,7 +30,6 @@ public class UserServiceTest {
     @Mock
     private ConsentLogRepository consentLogRepository;
 
-<<<<<<< HEAD
     @Mock
     private OrderRepository orderRepository;
 
@@ -46,8 +42,6 @@ public class UserServiceTest {
     @Mock
     private MessageRepository messageRepository;
 
-=======
->>>>>>> pull-1
     @InjectMocks
     private UserService userService;
 
@@ -149,7 +143,6 @@ public class UserServiceTest {
 
     @Test
     void testAnonymiseUser_Success() {
-<<<<<<< HEAD
         mockUser.setProfileBio("A personal seller biography");
         mockUser.setProfileImageUrl("https://cdn.example.test/profile.jpg");
         mockUser.setTaxId("FR-TAX-123");
@@ -158,8 +151,6 @@ public class UserServiceTest {
         mockUser.setAddressStreet("1 Rue du Test");
         mockUser.setAddressCity("Paris");
         mockUser.setAddressPostalCode("75001");
-=======
->>>>>>> pull-1
         when(userRepository.findById("test-uuid")).thenReturn(Optional.of(mockUser));
         when(userRepository.save(any(User.class))).thenAnswer(invocation -> invocation.getArgument(0));
 
@@ -168,7 +159,6 @@ public class UserServiceTest {
         assertTrue(mockUser.getEmail().startsWith("deleted_"));
         assertEquals("[Deleted User]", mockUser.getName());
         assertNull(mockUser.getAuth0Sub());
-<<<<<<< HEAD
         assertNull(mockUser.getProfileBio());
         assertNull(mockUser.getProfileImageUrl());
         assertNull(mockUser.getTaxId());
@@ -194,12 +184,6 @@ public class UserServiceTest {
 
         verify(userRepository, never()).save(any(User.class));
         verifyNoInteractions(orderRepository, reviewRepository, conversationRepository, messageRepository);
-=======
-        assertNull(mockUser.getTaxId());
-        
-        verify(userRepository, times(1)).findById("test-uuid");
-        verify(userRepository, times(1)).save(mockUser);
->>>>>>> pull-1
     }
 
     @Test

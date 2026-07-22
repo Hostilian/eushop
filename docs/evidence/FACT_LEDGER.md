@@ -1,4 +1,3 @@
-<<<<<<< Updated upstream
 # EUshop Fact Ledger & Absolute Truthfulness Audit
 
 > **Policy Directive**: No public statement, marketing claims, investor metric, or compliance label may exist in EUshop unless supported by working code, passing tests, or verified facts.
@@ -56,5 +55,3 @@ This document serves as a ledger of factual claims made within the EUshop reposi
 | `db/migrations` contains sequential numbered SQL files from `001` to `006` | `CLAUDE.md` | False | The directory `db/migrations` contains files from `001` to `013`. `CLAUDE.md` is out of date. |
 | `k8s/` contains Deployment + ingress manifests | `CLAUDE.md` | Verified | The directory contains `core-service-deployment.yml` and `ingress.yml`. |
 | `docs/` contains `API.md`, `API_REFERENCE.md`, and `AUTH0_SETUP.md` | `CLAUDE.md` | Verified | The files exist in the `docs/` directory. |
-
->>>>>>> Stashed changes

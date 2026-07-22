@@ -1,15 +1,8 @@
-<<<<<<< HEAD
 import { useState, useEffect, useMemo } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/router';
 import { foodAPI, FoodItem, authAPI, User } from '../../lib/services';
 import { PageWrapper } from '../../components/layout/PageWrapper';
-=======
-import { useState, useEffect } from 'react';
-import Link from 'next/link';
-import { useRouter } from 'next/router';
-import { foodAPI, FoodItem, authAPI, User } from '../../lib/services';
->>>>>>> pull-1
 
 interface SellerApplication {
   id: string;
@@ -34,7 +27,6 @@ interface OrderRecord {
   createdAt: string;
 }
 
-<<<<<<< HEAD
 // Utility functions for better maintainability
 const formatDate = (dateString: string): string => {
   try {
@@ -75,57 +67,15 @@ const TabButton = ({ id, label, count, activeTab, onClick }: TabButtonProps) => 
   </button>
 );
 
-=======
->>>>>>> pull-1
 export default function AdminDashboard() {
   const router = useRouter();
   const [adminUser, setAdminUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
   const [activeTab, setActiveTab] = useState<'sellers' | 'listings' | 'orders' | 'waitlist'>('sellers');
 
-<<<<<<< HEAD
   // COMPLIANCE-REVIEW: these synthetic records exercise the admin layout only;
   // they are not KYBC evidence, DAC7 records, or legal verification decisions.
   const [sellers, setSellers] = useState<SellerApplication[]>(() => [
-=======
-  const [sellers, setSellers] = useState<SellerApplication[]>([]);
-  const [listings, setListings] = useState<FoodItem[]>([]);
-  const [orders, setOrders] = useState<OrderRecord[]>([]);
-  const [waitlist, setWaitlist] = useState<string[]>([]);
-
-  useEffect(() => {
-    // 1. Verify user role or auto-login default Admin for demo convenience
-    const userStr = localStorage.getItem('user');
-    if (userStr) {
-      try {
-        const parsed = JSON.parse(userStr);
-        setAdminUser(parsed);
-      } catch (error) {
-        console.error('Failed to parse user session:', error);
-      }
-    } else {
-      // Auto-assign mock Admin role for smooth testing on GitHub Pages
-      const mockAdmin: User = {
-        id: 'admin-1',
-        email: 'admin@eushop.local',
-        name: 'Administrator',
-        country: 'BE',
-        role: 'ADMIN',
-        kycVerified: true,
-        emailVerified: true,
-        selfCertifiedCompliant: true
-      };
-      localStorage.setItem('user', JSON.stringify(mockAdmin));
-      setAdminUser(mockAdmin);
-    }
-
-    // 2. Load applications from localStorage
-    const rawSellers = localStorage.getItem('seller_applications');
-    if (rawSellers) {
-      setSellers(JSON.parse(rawSellers));
-    } else {
-      const defaultSellers: SellerApplication[] = [
->>>>>>> pull-1
         {
           id: 'app-1',
           name: 'Gourmet Iberico S.L.',
@@ -162,23 +112,9 @@ export default function AdminDashboard() {
           selfCertified: true,
           status: 'VERIFIED',
         }
-<<<<<<< HEAD
       ]);
   const [listings, setListings] = useState<FoodItem[]>([]);
   const [orders, setOrders] = useState<OrderRecord[]>(() => [
-=======
-      ];
-      localStorage.setItem('seller_applications', JSON.stringify(defaultSellers));
-      setSellers(defaultSellers);
-    }
-
-    // 3. Load orders from localStorage
-    const rawOrders = localStorage.getItem('orders');
-    if (rawOrders) {
-      setOrders(JSON.parse(rawOrders));
-    } else {
-      const defaultOrders: OrderRecord[] = [
->>>>>>> pull-1
         {
           id: 'order-1',
           buyerEmail: 'buyer_germany@eushop.local',
@@ -197,7 +133,6 @@ export default function AdminDashboard() {
           status: 'PROCESSING',
           createdAt: new Date(Date.now() - 1 * 24 * 60 * 60 * 1000).toISOString()
         }
-<<<<<<< HEAD
       ]);
   const [waitlist, setWaitlist] = useState<string[]>(() => [
     'investor1@earlystage.vc',
@@ -219,21 +154,10 @@ export default function AdminDashboard() {
           return;
         }
         setAdminUser(user);
-=======
-      ];
-      localStorage.setItem('orders', JSON.stringify(defaultOrders));
-      setOrders(defaultOrders);
-    }
-
-    // 4. Load listings
-    const fetchListings = async () => {
-      try {
->>>>>>> pull-1
         const all = await foodAPI.search(undefined, undefined, 1, 100);
         setListings(all);
       } catch (err) {
         console.error(err);
-<<<<<<< HEAD
         await router.replace('/login?redirect=/admin/dashboard');
       } finally {
         setLoading(false);
@@ -247,54 +171,12 @@ export default function AdminDashboard() {
     // Production approval must be persisted and audit-logged by the server.
     const updatedSellers = sellers.map(s => {
       if (s.id === appId) {
-=======
-      }
-    };
-    fetchListings();
-
-    // 5. Load investor waitlist
-    const rawWaitlist = localStorage.getItem('waitlist_emails');
-    if (rawWaitlist) {
-      setWaitlist(JSON.parse(rawWaitlist));
-    } else {
-      const defaultEmails = ['investor1@earlystage.vc', 'venture.lead@pan-eu.fund'];
-      localStorage.setItem('waitlist_emails', JSON.stringify(defaultEmails));
-      setWaitlist(defaultEmails);
-    }
-
-    setLoading(false);
-  }, []);
-
-  const handleApproveSeller = (appId: string) => {
-    const updatedSellers = sellers.map(s => {
-      if (s.id === appId) {
-        // Upgrade role of matching user in user database simulation
-        const usersStr = localStorage.getItem('local_users');
-        if (usersStr) {
-          try {
-            const users: User[] = JSON.parse(usersStr);
-            const userIdx = users.findIndex(u => u.email === s.email);
-            if (userIdx > -1) {
-              users[userIdx].role = 'SELLER';
-              users[userIdx].kycVerified = true;
-              localStorage.setItem('local_users', JSON.stringify(users));
-            }
-          } catch (e) {
-            console.error(e);
-          }
-        }
->>>>>>> pull-1
         return { ...s, status: 'VERIFIED' as const };
       }
       return s;
     });
     setSellers(updatedSellers);
-<<<<<<< HEAD
     alert('Demo application status updated. No seller role was granted.');
-=======
-    localStorage.setItem('seller_applications', JSON.stringify(updatedSellers));
-    alert('Merchant application approved and role updated to SELLER.');
->>>>>>> pull-1
   };
 
   const handleRejectSeller = (appId: string) => {
@@ -305,35 +187,11 @@ export default function AdminDashboard() {
       return s;
     });
     setSellers(updatedSellers);
-<<<<<<< HEAD
   };
 
   const handleRemoveListing = (foodId: string) => {
     setListings(prev => prev.filter(f => f.id !== foodId));
     alert('Removed from this demo dashboard view. No server listing was changed.');
-=======
-    localStorage.setItem('seller_applications', JSON.stringify(updatedSellers));
-  };
-
-  const handleRemoveListing = (foodId: string) => {
-    const localFoodsStr = localStorage.getItem('local_foods');
-    if (localFoodsStr) {
-      try {
-        const localFoods: FoodItem[] = JSON.parse(localFoodsStr);
-        const filtered = localFoods.filter(f => f.id !== foodId);
-        localStorage.setItem('local_foods', JSON.stringify(filtered));
-        // Update local UI state
-        setListings(prev => prev.filter(f => f.id !== foodId));
-        alert('Listing removed from simulated database.');
-      } catch (e) {
-        console.error(e);
-      }
-    } else {
-      // It is a static trending food, remove from local UI only
-      setListings(prev => prev.filter(f => f.id !== foodId));
-      alert('Removed from active dashboard view.');
-    }
->>>>>>> pull-1
   };
 
   const handleUpdateOrderStatus = (orderId: string, nextStatus: string) => {
@@ -344,26 +202,17 @@ export default function AdminDashboard() {
       return o;
     });
     setOrders(updatedOrders);
-<<<<<<< HEAD
-=======
-    localStorage.setItem('orders', JSON.stringify(updatedOrders));
->>>>>>> pull-1
     alert(`Order status updated to ${nextStatus}.`);
   };
 
   const handleClearWaitlist = () => {
     if (confirm('Clear waitlist emails?')) {
-<<<<<<< HEAD
-=======
-      localStorage.setItem('waitlist_emails', '[]');
->>>>>>> pull-1
       setWaitlist([]);
     }
   };
 
   if (loading) {
     return (
-<<<<<<< HEAD
       <PageWrapper>
         <div className="py-24 flex items-center justify-center">
           <div className="text-center">
@@ -388,46 +237,10 @@ export default function AdminDashboard() {
           <span className="text-xs font-bold px-2.5 py-1.5 bg-indigo-50 border border-indigo-100 dark:bg-indigo-950/20 dark:border-indigo-900/60 text-indigo-700 dark:text-indigo-400 rounded-full">
             Operator Panel
           </span>
-=======
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center font-sans">
-        <div className="text-center">
-          <div className="inline-block animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
-          <p className="text-gray-500 mt-4">Loading system logs...</p>
-        </div>
-      </div>
-    );
-  }
-
-  return (
-    <div className="min-h-screen bg-gray-50 text-gray-800 font-sans">
-      {/* Top Header */}
-      <nav className="bg-white border-b border-gray-150 py-4 px-6 shadow-sm">
-        <div className="max-w-6xl mx-auto flex justify-between items-center">
-          <Link href="/" className="text-2xl font-extrabold text-primary flex items-center gap-2">
-            <span className="text-secondary">🌿</span> EUshop
-          </Link>
-          <div className="flex items-center gap-3">
-            <span className="text-xs font-bold px-2.5 py-1 bg-indigo-50 border border-indigo-100 text-indigo-700 rounded-full">
-              Operator Panel
-            </span>
-            <Link href="/" className="text-xs font-bold text-gray-500 hover:text-primary transition">
-              View Shop
-            </Link>
-          </div>
-        </div>
-      </nav>
-
-      {/* Main Container */}
-      <main className="max-w-6xl mx-auto px-6 py-12">
-        <div className="mb-8">
-          <h1 className="text-3xl font-black text-brand-dark mb-2 font-display">Moderation Desk</h1>
-          <p className="text-xs text-gray-500">Conduct KYB verifications, review food products, monitor orders, and inspect earlywaitlist signups.</p>
->>>>>>> pull-1
         </div>
 
         {/* Tab Buttons */}
         <div className="flex border-b border-gray-200 mb-8 gap-2">
-<<<<<<< HEAD
           <TabButton
             id="sellers"
             label="Seller Applications"
@@ -456,40 +269,6 @@ export default function AdminDashboard() {
             activeTab={activeTab}
             onClick={setActiveTab}
           />
-=======
-          <button
-            onClick={() => setActiveTab('sellers')}
-            className={`px-4 py-2.5 font-bold text-xs uppercase tracking-wider transition ${
-              activeTab === 'sellers' ? 'border-b-2 border-primary text-primary' : 'text-gray-400 hover:text-gray-700'
-            }`}
-          >
-            Seller Applications ({sellers.filter(s => s.status === 'PENDING').length} Pending)
-          </button>
-          <button
-            onClick={() => setActiveTab('listings')}
-            className={`px-4 py-2.5 font-bold text-xs uppercase tracking-wider transition ${
-              activeTab === 'listings' ? 'border-b-2 border-primary text-primary' : 'text-gray-400 hover:text-gray-700'
-            }`}
-          >
-            Food Listings ({listings.length})
-          </button>
-          <button
-            onClick={() => setActiveTab('orders')}
-            className={`px-4 py-2.5 font-bold text-xs uppercase tracking-wider transition ${
-              activeTab === 'orders' ? 'border-b-2 border-primary text-primary' : 'text-gray-400 hover:text-gray-700'
-            }`}
-          >
-            System Orders ({orders.length})
-          </button>
-          <button
-            onClick={() => setActiveTab('waitlist')}
-            className={`px-4 py-2.5 font-bold text-xs uppercase tracking-wider transition ${
-              activeTab === 'waitlist' ? 'border-b-2 border-primary text-primary' : 'text-gray-400 hover:text-gray-700'
-            }`}
-          >
-            Investor Waitlist ({waitlist.length})
-          </button>
->>>>>>> pull-1
         </div>
 
         {/* Tab Content */}
@@ -505,15 +284,7 @@ export default function AdminDashboard() {
                   <div className="space-y-2">
                     <div className="flex items-center gap-3">
                       <h3 className="font-bold text-sm text-brand-dark">{app.name}</h3>
-<<<<<<< HEAD
                       <span className={`text-[9px] font-extrabold px-2 py-0.5 rounded border uppercase tracking-wider ${getStatusStyles(app.status)}`}>
-=======
-                      <span className={`text-[9px] font-extrabold px-2 py-0.5 rounded border uppercase tracking-wider ${
-                        app.status === 'PENDING' ? 'bg-amber-50 border-amber-200 text-amber-700' :
-                        app.status === 'VERIFIED' ? 'bg-emerald-50 border-emerald-200 text-emerald-700' :
-                        'bg-red-50 border-red-200 text-red-700'
-                      }`}>
->>>>>>> pull-1
                         {app.status}
                       </span>
                     </div>
@@ -613,15 +384,7 @@ export default function AdminDashboard() {
                   <div className="space-y-2">
                     <div className="flex items-center gap-3">
                       <h3 className="font-bold text-sm text-brand-dark">{order.productName}</h3>
-<<<<<<< HEAD
                       <span className={`text-[9px] font-extrabold px-2 py-0.5 rounded border uppercase tracking-wider ${getStatusStyles(order.status)}`}>
-=======
-                      <span className={`text-[9px] font-extrabold px-2 py-0.5 rounded border uppercase tracking-wider ${
-                        order.status === 'PROCESSING' ? 'bg-amber-50 border-amber-200 text-amber-700' :
-                        order.status === 'DELIVERED' ? 'bg-emerald-50 border-emerald-200 text-emerald-700' :
-                        'bg-blue-50 border-blue-200 text-blue-700'
-                      }`}>
->>>>>>> pull-1
                         {order.status}
                       </span>
                     </div>
@@ -632,11 +395,7 @@ export default function AdminDashboard() {
                       <div><strong className="text-gray-700">Seller:</strong> {order.sellerName}</div>
                       <div><strong className="text-gray-700">Total:</strong> €{order.totalPrice.toFixed(2)}</div>
                     </div>
-<<<<<<< HEAD
                     <div className="text-[10px] text-gray-400">Transaction Date: {formatDate(order.createdAt)}</div>
-=======
-                    <div className="text-[10px] text-gray-400">Transaction Date: {new Date(order.createdAt).toLocaleString()}</div>
->>>>>>> pull-1
                   </div>
 
                   <div className="flex gap-2">
@@ -692,10 +451,6 @@ export default function AdminDashboard() {
           </div>
         )}
       </main>
-<<<<<<< HEAD
     </PageWrapper>
-=======
-    </div>
->>>>>>> pull-1
   );
 }

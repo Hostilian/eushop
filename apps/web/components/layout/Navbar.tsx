@@ -1,7 +1,6 @@
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/router';
-<<<<<<< HEAD
 import { authAPI } from '../../lib/services';
 import { readCart } from '../../lib/storageSafety';
 import { Badge } from '../ui/Badge';
@@ -16,15 +15,10 @@ interface User {
 
 import { Button } from '../ui/Button';
 import { LocaleSwitcher } from './LocaleSwitcher';
-=======
-import { authAPI, User } from '../../lib/services';
-import { Button } from '../ui/Button';
->>>>>>> pull-1
 import VersionSelector from './VersionSelector';
 
 export function Navbar() {
   const [user, setUser] = useState<User | null>(null);
-<<<<<<< HEAD
   const [loading, setLoading] = useState(false); // Set to false as user loading is disabled
   const [isDark, setIsDark] = useState(() => {
     if (typeof window !== 'undefined') {
@@ -42,16 +36,6 @@ export function Navbar() {
   const router = useRouter();
 
   useEffect(() => {
-=======
-  const [loading, setLoading] = useState(true);
-  const [isDark, setIsDark] = useState(false);
-  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
-  const [cartCount, setCartCount] = useState(0);
-  const router = useRouter();
-
-  useEffect(() => {
-    // 1. Fetch user profile
->>>>>>> pull-1
     const loadUser = async () => {
       setLoading(true);
       try {
@@ -65,7 +49,6 @@ export function Navbar() {
     };
     loadUser();
 
-<<<<<<< HEAD
     // Listen for global auth updates
     window.addEventListener('auth-changed', loadUser);
 
@@ -75,27 +58,6 @@ export function Navbar() {
       setCartCount(cart.reduce((total, item) => total + item.quantity, 0));
     };
 
-=======
-    // 2. Read theme preference
-    if (typeof window !== 'undefined') {
-      const isDarkMode = document.documentElement.classList.contains('dark');
-      setIsDark(isDarkMode);
-    }
-
-    // 3. Read cart count and listen to cart changes
-    const updateCartCount = () => {
-      try {
-        const cart = JSON.parse(localStorage.getItem('cart') || '[]');
-        const count = cart.reduce((total: number, item: any) => total + (item.quantity || 1), 0);
-        setCartCount(count);
-      } catch {
-        setCartCount(0);
-      }
-    };
-
-    updateCartCount();
-
->>>>>>> pull-1
     // Listen for custom storage events or cart updates
     window.addEventListener('storage', updateCartCount);
     window.addEventListener('cart-updated', updateCartCount);
@@ -103,10 +65,7 @@ export function Navbar() {
     return () => {
       window.removeEventListener('storage', updateCartCount);
       window.removeEventListener('cart-updated', updateCartCount);
-<<<<<<< HEAD
       window.removeEventListener('auth-changed', loadUser);
-=======
->>>>>>> pull-1
     };
   }, []);
 
@@ -139,20 +98,13 @@ export function Navbar() {
     <header className="sticky top-0 z-50 w-full border-b border-gray-100 bg-white/85 backdrop-blur-md transition-colors dark:border-gray-800 dark:bg-gray-950/85">
       <div className="mx-auto flex max-w-7xl h-16 items-center justify-between px-4 sm:px-6 lg:px-8">
         {/* Brand Logo */}
-<<<<<<< HEAD
         <Link href="/" className="flex items-center gap-2 font-display text-2xl font-extrabold">
           <span className="text-3xl">🌿</span>
           <span className="tracking-tight text-brand-dark dark:text-white">EU<span className="text-brand-green dark:text-brand-gold">shop</span></span>
-=======
-        <Link href="/" className="flex items-center gap-2 font-display text-2xl font-extrabold text-primary dark:text-blue-400">
-          <span className="text-secondary dark:text-green-400 text-3xl">🌿</span>
-          <span className="tracking-tight text-brand-dark dark:text-white">EU<span className="text-primary dark:text-blue-400">shop</span></span>
->>>>>>> pull-1
         </Link>
 
         {/* Desktop Navigation */}
         <nav className="hidden md:flex items-center gap-8 text-sm font-semibold text-gray-700 dark:text-gray-300">
-<<<<<<< HEAD
           <Link href="/" className="transition hover:text-brand-green dark:hover:text-brand-gold">
             Home
           </Link>
@@ -181,26 +133,6 @@ export function Navbar() {
           {/* i18n Language Locale Switcher (Task 63) */}
           <LocaleSwitcher />
 
-=======
-          <Link href="/" className="transition hover:text-primary dark:hover:text-blue-400">
-            Home
-          </Link>
-          <Link href="/search" className="transition hover:text-primary dark:hover:text-blue-400">
-            Browse Food
-          </Link>
-          {user?.role === 'SELLER' && (
-            <Link href="/seller/dashboard" className="transition hover:text-primary dark:hover:text-blue-400 text-secondary dark:text-green-400">
-              Seller Dashboard
-            </Link>
-          )}
-        </nav>
-
-        {/* Action Buttons */}
-        <div className="flex items-center gap-4">
-          {/* Version Switcher */}
-          <VersionSelector />
-
->>>>>>> pull-1
           {/* Dark Mode Toggle */}
           <button
             onClick={toggleTheme}
@@ -215,11 +147,7 @@ export function Navbar() {
             ) : (
               // Moon icon
               <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-<<<<<<< HEAD
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 008.354-5.646z" />
-=======
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z" />
->>>>>>> pull-1
               </svg>
             )}
           </button>
@@ -236,7 +164,6 @@ export function Navbar() {
             )}
           </Link>
 
-<<<<<<< HEAD
           <div className="hidden md:flex items-center gap-3">
             {loading ? (
               <div className="h-9 w-20 bg-gray-250 dark:bg-gray-800 rounded animate-pulse" />
@@ -244,16 +171,6 @@ export function Navbar() {
               <div className="flex items-center gap-3">
                 <span className="text-sm font-semibold text-gray-700 dark:text-gray-300">
                   Hi, {user.name?.split(' ')[0] || ''}
-=======
-          {/* User Auth Buttons */}
-          <div className="hidden md:flex items-center gap-3">
-            {loading ? (
-              <div className="h-9 w-20 bg-gray-200 dark:bg-gray-800 rounded animate-pulse" />
-            ) : user ? (
-              <div className="flex items-center gap-3">
-                <span className="text-sm font-semibold text-gray-700 dark:text-gray-300">
-                  Hi, {user.name.split(' ')[0]}
->>>>>>> pull-1
                 </span>
                 <Button variant="secondary" size="sm" onClick={handleLogout}>
                   Logout
@@ -303,7 +220,6 @@ export function Navbar() {
             onClick={() => setMobileMenuOpen(false)}
             className="block px-3 py-2 rounded-lg text-base font-semibold text-gray-700 hover:bg-gray-50 dark:text-gray-300 dark:hover:bg-gray-900"
           >
-<<<<<<< HEAD
             Browse Products
           </Link>
           <Link
@@ -324,21 +240,6 @@ export function Navbar() {
           </div>
           <div className="pt-4 border-t border-gray-100 dark:border-gray-800 flex flex-col gap-2">
             {/* User Auth Buttons - Modified for mobile menu */}
-=======
-            Browse Food
-          </Link>
-          {user?.role === 'SELLER' && (
-            <Link
-              href="/seller/dashboard"
-              onClick={() => setMobileMenuOpen(false)}
-              className="block px-3 py-2 rounded-lg text-base font-semibold text-secondary hover:bg-gray-50 dark:text-green-400 dark:hover:bg-gray-900"
-            >
-              Seller Dashboard
-            </Link>
-          )}
-
-          <div className="pt-4 border-t border-gray-100 dark:border-gray-800 flex flex-col gap-2">
->>>>>>> pull-1
             {user ? (
               <>
                 <div className="px-3 py-2 text-sm text-gray-600 dark:text-gray-400">
@@ -364,7 +265,3 @@ export function Navbar() {
     </header>
   );
 }
-<<<<<<< HEAD
-=======
-
->>>>>>> pull-1

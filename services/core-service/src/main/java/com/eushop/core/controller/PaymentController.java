@@ -10,10 +10,6 @@ import java.util.Map;
 
 @RestController
 @RequestMapping("/api/payments")
-<<<<<<< HEAD
-=======
-@CrossOrigin(origins = "*")
->>>>>>> pull-1
 public class PaymentController {
 
     private final PaymentService paymentService;
@@ -51,21 +47,13 @@ public class PaymentController {
 
     @PostMapping("/create-payment-intent")
     public ResponseEntity<ApiResponse<Map<String, Object>>> createPaymentIntent(
-<<<<<<< HEAD
             @RequestBody Map<String, Object> request,
             @RequestHeader(value = "X-Correlation-ID", required = false) String correlationId) {
-=======
-            @RequestBody Map<String, Object> request) {
->>>>>>> pull-1
         try {
             Double amount = Double.valueOf(request.get("amount").toString());
             String currency = request.getOrDefault("currency", "eur").toString();
             String sellerAccountId = (String) request.get("sellerAccountId");
-<<<<<<< HEAD
             Map<String, Object> intent = paymentService.createPaymentIntent(amount, currency, sellerAccountId, correlationId);
-=======
-            Map<String, Object> intent = paymentService.createPaymentIntent(amount, currency, sellerAccountId);
->>>>>>> pull-1
             return ResponseEntity.ok(ApiResponse.success(intent, "Payment Intent created successfully"));
         } catch (StripeException e) {
             return ResponseEntity.badRequest().body(ApiResponse.error("Failed to create Payment Intent: " + e.getMessage()));

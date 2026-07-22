@@ -34,7 +34,7 @@ const EU_COUNTRIES = [
 ] as const;
 
 interface OriginFilterProps {
-  products: FoodItem[];
+  products?: FoodItem[];
   selectedOrigins: string[]; // array of country codes
   onSelectOrigin: (selected: string[]) => void;
 }
@@ -135,9 +135,7 @@ export default function OriginFilter({ selectedOrigins, onSelectOrigin }: Origin
         {selectedOrigins.length > 0 && (
           <button
             onClick={() => onSelectOrigin([])}
-            className="w-full flex items-center justify-center gap-2 px-4 py-2.5 text-sm font-semibold"
-            variant="secondary"
-            size="sm"
+            className="w-full flex items-center justify-center gap-2 px-4 py-2.5 text-sm font-semibold border border-gray-300 dark:border-gray-700 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 transition"
           >
             <span aria-hidden="true">🗑️</span>
             Clear All Filters

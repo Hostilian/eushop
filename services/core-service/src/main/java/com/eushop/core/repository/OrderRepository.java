@@ -52,7 +52,6 @@ public interface OrderRepository extends JpaRepository<Order, String> {
     /**
      * Used by the Stripe webhook handler to find the order for a given PaymentIntent.
      */
-<<<<<<< HEAD
     @EntityGraph(attributePaths = {"food", "seller", "buyer"})
     java.util.Optional<Order> findByStripePaymentIntentId(String stripePaymentIntentId);
 
@@ -79,7 +78,3 @@ public interface OrderRepository extends JpaRepository<Order, String> {
     @Query("UPDATE Order o SET o.message = NULL, o.shippingAddress = NULL WHERE o.buyerId = :userId OR o.sellerId = :userId")
     void updateOrderPiiWhereBuyerIdOrSellerId(@Param("userId") String userId);
 }
-=======
-    java.util.Optional<Order> findByStripePaymentIntentId(String stripePaymentIntentId);
-}
->>>>>>> pull-1
