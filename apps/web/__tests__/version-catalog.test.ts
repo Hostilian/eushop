@@ -51,6 +51,7 @@ describe('version catalogue', () => {
     ).toBe(true);
     expect(VERSION_SELECTOR_OPTIONS).toEqual([
       CURRENT_APPLICATION,
+      ...APPLICATION_VIEWS,
       ...HISTORICAL_SNAPSHOTS,
     ]);
   });
