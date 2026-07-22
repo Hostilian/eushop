@@ -46,6 +46,19 @@ export const CURRENT_APPLICATION: VersionCatalogueEntry = {
 
 export const FLAGSHIP_RELEASES: readonly VersionCatalogueEntry[] = [
   {
+    key: 'v77',
+    name: 'V77 - European Food Atlas & Editorial Marketplace',
+    shortName: 'V77',
+    badge: 'V77 FLAGSHIP',
+    description:
+      'Version 77 flagship release: Contemporary European food atlas, origin-led discovery canvas, transparent seller trust shield, and single market commerce.',
+    path: '/',
+    kind: 'application-view',
+    category: 'flagship-release',
+    accentClass:
+      'from-cobalt-600 to-saffron-500 border-cobalt-400 text-cobalt-800 dark:text-cobalt-200 font-bold',
+  },
+  {
     key: 'v66',
     name: 'V66 - Evolutionary Scale & PostGIS Spatial Engine',
     shortName: 'V66',

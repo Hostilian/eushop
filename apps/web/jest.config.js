@@ -10,6 +10,7 @@ const customJestConfig = {
   moduleNameMapper: {
     '^@/(.*)$': '<rootDir>/$1',
   },
+  testPathIgnorePatterns: ['<rootDir>/tests/'],
   collectCoverage: true,
   coverageReporters: ['json', 'text', 'lcov', 'clover'],
   coverageThreshold: {

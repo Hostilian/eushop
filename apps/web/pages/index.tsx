@@ -5,6 +5,11 @@ import { useEffect, useState } from 'react';
 import { PageWrapper } from '../components/layout/PageWrapper';
 import { ProductCard } from '../components/ui/ProductCard';
 import { VersionReleaseBanner } from '../components/marketplace/VersionReleaseBanner';
+import { EuropeanFoodAtlas } from '../components/v77/discovery/EuropeanFoodAtlas';
+import { MarketplacePulse } from '../components/v77/discovery/MarketplacePulse';
+import { CuratedCollections } from '../components/v77/discovery/CuratedCollections';
+import { TrustArchitectureSection } from '../components/v77/trust/TrustArchitectureSection';
+import { V77Button } from '../components/v77/ui/V77Button';
 import {
   fallbackTrendingFoods,
   foodAPI,
@@ -150,121 +155,80 @@ export default function Home() {
 
       {activeRelease && <VersionReleaseBanner version={activeRelease} />}
 
-      <section className="relative overflow-hidden rounded-[2rem] bg-brand-green px-6 py-16 text-white shadow-xl sm:px-12 sm:py-20 lg:px-16">
-        <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_right,_rgba(255,255,255,0.16),_transparent_48%)]" />
+      {/* v77 Editorial Hero Section */}
+      <section className="relative overflow-hidden rounded-3xl bg-[#141613] px-6 py-14 sm:px-12 sm:py-20 lg:px-16 text-[#fffdf8] shadow-2xl border border-[#dcd7cb]/20 mb-12">
+        <div className="absolute top-0 right-0 -mt-20 -mr-20 w-[500px] h-[500px] bg-[#1845d4]/15 rounded-full blur-3xl pointer-events-none" />
+        
         <div className="relative max-w-4xl">
-          <p className="mb-5 text-xs font-extrabold uppercase tracking-[0.24em] text-brand-gold">
-            Regional food · Named traders · Cross-border discovery
-          </p>
-          {/* COMPLIANCE-REVIEW: Hero positioning formula (50 chars max) and pricing transparency verified against EU Omnibus Directive & DSA Art. 30 */}
-          <h1 className="max-w-3xl font-display text-4xl font-black leading-tight tracking-tight sm:text-5xl lg:text-6xl">
-            Buy authentic regional foods from European sellers.
+          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full text-xs font-black bg-[#e5a024]/20 text-[#e5a024] border border-[#e5a024]/30 uppercase tracking-widest mb-6">
+            <span>🇪🇺</span> Category-Defining European Marketplace
+          </div>
+          
+          <h1 className="font-display text-4xl sm:text-6xl lg:text-7xl font-black leading-[1.08] tracking-tight text-white mb-6">
+            Shop Europe <span className="text-[#e5a024]">like a local.</span>
           </h1>
-          <p className="mt-6 max-w-2xl text-base leading-7 text-emerald-50 sm:text-lg">
-            Explore foods by country and origin, review seller-supplied product information, and see who is offering each item before you buy.
+          
+          <p className="max-w-2xl text-base sm:text-xl leading-relaxed text-[#dcd7cb]/90 mb-8 font-sans">
+            Discover authentic regional foods directly from independent European sellers, verify exact geographical origins, and buy through one trusted Single Market platform.
           </p>
-          <div className="mt-9 flex flex-col gap-3 sm:flex-row">
-            <Link
-              href="/search"
-              className="rounded-xl bg-brand-gold px-6 py-3 text-center text-sm font-extrabold text-brand-green outline-none transition hover:brightness-105 focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-offset-2 focus-visible:ring-offset-brand-green"
-            >
-              Explore Marketplace
+
+          <div className="flex flex-col sm:flex-row gap-4 max-w-xl mb-6">
+            <Link href="/search" className="w-full sm:w-auto">
+              <V77Button variant="cobalt" size="lg" className="w-full sm:w-auto text-base">
+                <span>🛒</span> Explore European Marketplace
+              </V77Button>
             </Link>
-            <Link
-              href="/become-seller"
-              className="rounded-xl border border-white/60 px-6 py-3 text-center text-sm font-extrabold text-white outline-none transition hover:bg-white/10 focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-offset-2 focus-visible:ring-offset-brand-green"
-            >
-              Sell on EUshop
+            <Link href="/become-seller" className="w-full sm:w-auto">
+              <V77Button variant="outline" size="lg" className="w-full sm:w-auto text-base text-white border-white/40 hover:bg-white/10">
+                <span>🏛️</span> Sell on EUshop
+              </V77Button>
             </Link>
+          </div>
+
+          <div className="flex flex-wrap items-center gap-4 text-xs font-bold text-[#dcd7cb]/70 pt-4 border-t border-[#dcd7cb]/15">
+            <span className="flex items-center gap-1.5"><span className="text-[#365e38] font-black">✓</span> Named Traders (DSA Art. 30)</span>
+            <span className="flex items-center gap-1.5"><span className="text-[#365e38] font-black">✓</span> 14 Regulated Allergens</span>
+            <span className="flex items-center gap-1.5"><span className="text-[#365e38] font-black">✓</span> Single Market Tax Transparency</span>
           </div>
         </div>
       </section>
 
-      <section className="py-16" aria-labelledby="how-it-works-title">
-        <div className="max-w-2xl">
-          <p className="text-xs font-extrabold uppercase tracking-[0.2em] text-brand-green dark:text-brand-gold">
-            How it works
-          </p>
-          <h2 id="how-it-works-title" className="mt-3 font-display text-3xl font-black text-brand-dark dark:text-white sm:text-4xl">
-            From a regional specialty to a confident decision
+      {/* 1. Interactive European Food Atlas */}
+      <section className="mb-14">
+        <EuropeanFoodAtlas />
+      </section>
+
+      {/* 2. Marketplace Pulse ("From Europe This Week") */}
+      <MarketplacePulse items={featuredFoods} onAddToCart={handleAddToCart} />
+
+      {/* 3. Curated European Collections */}
+      <CuratedCollections />
+
+      {/* 4. Trust Architecture & Compliance Shield */}
+      <TrustArchitectureSection />
+
+      {/* 5. Dual Conversion CTA Section */}
+      <section className="my-16 bg-gradient-to-br from-[#141613] via-[#1c1f1b] to-[#1845d4]/40 text-[#fffdf8] rounded-3xl p-8 sm:p-12 border border-[#dcd7cb]/20 text-center relative overflow-hidden shadow-2xl">
+        <div className="max-w-2xl mx-auto relative z-10">
+          <span className="text-xs font-black uppercase tracking-widest text-[#e5a024]">The European Food Wedge</span>
+          <h2 className="text-3xl sm:text-4xl font-extrabold font-display mt-2 mb-4 text-white">
+            Ready to Connect Across Europe?
           </h2>
-        </div>
-        <ol className="mt-10 grid gap-5 lg:grid-cols-3">
-          {STEPS.map(step => (
-            <li key={step.number} className="rounded-2xl border border-gray-200 bg-white p-6 shadow-sm dark:border-gray-800 dark:bg-gray-900">
-              <span className="text-xs font-black tracking-[0.2em] text-brand-green dark:text-brand-gold">
-                {step.number}
-              </span>
-              <h3 className="mt-4 text-lg font-extrabold text-brand-dark dark:text-white">{step.title}</h3>
-              <p className="mt-3 text-sm leading-6 text-gray-600 dark:text-gray-300">{step.detail}</p>
-            </li>
-          ))}
-        </ol>
-      </section>
-
-      <section
-        className="rounded-3xl border border-emerald-200 bg-emerald-50 px-6 py-10 dark:border-emerald-900 dark:bg-emerald-950/30 sm:px-10"
-        aria-labelledby="trust-layer-title"
-      >
-        <p className="text-xs font-extrabold uppercase tracking-[0.2em] text-brand-green dark:text-brand-gold">
-          Trust layer
-        </p>
-        <h2 id="trust-layer-title" className="mt-3 font-display text-3xl font-black text-brand-dark dark:text-white">
-          The information buyers need stays close to the product
-        </h2>
-        <div className="mt-8 grid gap-6 md:grid-cols-3">
-          {TRUST_ITEMS.map(item => (
-            <article key={item.title}>
-              <h3 className="text-base font-extrabold text-brand-dark dark:text-white">{item.title}</h3>
-              <p className="mt-2 text-sm leading-6 text-gray-700 dark:text-gray-300">{item.detail}</p>
-            </article>
-          ))}
-        </div>
-        <p className="mt-8 border-t border-emerald-200 pt-5 text-xs leading-5 text-gray-600 dark:border-emerald-900 dark:text-gray-400">
-          EUshop provides marketplace structure and disclosure surfaces. Legal, tax, food-safety, and trader-verification conclusions require qualified human review.
-        </p>
-      </section>
-
-      <section className="py-16" aria-labelledby="featured-foods-title">
-        <div className="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
-          <div>
-            <p className="text-xs font-extrabold uppercase tracking-[0.2em] text-brand-green dark:text-brand-gold">
-              A taste of the marketplace
-            </p>
-            <h2 id="featured-foods-title" className="mt-3 font-display text-3xl font-black text-brand-dark dark:text-white">
-              Featured regional foods
-            </h2>
+          <p className="text-sm sm:text-base text-[#dcd7cb]/90 mb-8 leading-relaxed">
+            Whether you are searching for authentic regional olive oils, artisanal chocolates, or expanding your independent European food business across 27 EU member states.
+          </p>
+          <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
+            <Link href="/search" className="w-full sm:w-auto">
+              <V77Button variant="cobalt" size="lg" className="w-full sm:w-auto">
+                Explore All Products →
+              </V77Button>
+            </Link>
+            <Link href="/become-seller" className="w-full sm:w-auto">
+              <V77Button variant="secondary" size="lg" className="w-full sm:w-auto">
+                Apply as a Specialist Seller →
+              </V77Button>
+            </Link>
           </div>
-          <span className="w-fit rounded-full border border-gray-200 bg-white px-3 py-1 text-xs font-semibold text-gray-600 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300">
-            {ORIGIN_LABEL[catalogueOrigin]}
-          </span>
-        </div>
-
-        <div className="mt-8 grid gap-7 md:grid-cols-3">
-          {featuredFoods.map(food => (
-            <ProductCard
-              key={food.id}
-              id={food.id}
-              name={food.name}
-              description={food.description}
-              price={food.price}
-              country={food.country}
-              imageUrl={food.imageUrl ?? getFoodImage(food.name)}
-              allergens={food.allergens ?? []}
-              seller={food.seller}
-              onAddToCart={handleAddToCart}
-              origin={catalogueOrigin}
-            />
-          ))}
-        </div>
-
-        <div className="mt-10 text-center">
-          <Link
-            href="/search"
-            className="inline-flex rounded-xl bg-brand-green px-6 py-3 text-sm font-extrabold text-white outline-none hover:opacity-90 focus-visible:ring-2 focus-visible:ring-brand-green focus-visible:ring-offset-2"
-          >
-            Explore Marketplace
-          </Link>
         </div>
       </section>
     </PageWrapper>

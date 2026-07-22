@@ -33,22 +33,22 @@ describe('homepage clarity narrative', () => {
 
     expect(screen.getByRole('heading', {
       level: 1,
-      name: 'Buy authentic regional foods from European sellers.',
+      name: /Shop Europe like a local/i,
     })).toBeInTheDocument();
-    expect(screen.getAllByRole('link', { name: 'Explore Marketplace' })[0])
+    expect(screen.getAllByRole('link', { name: /Explore European Marketplace/i })[0])
       .toHaveAttribute('href', '/search');
-    expect(screen.getByRole('link', { name: 'Sell on EUshop' }))
+    expect(screen.getAllByRole('link', { name: /Sell on EUshop/i })[0])
       .toHaveAttribute('href', '/become-seller');
   });
 
-  it('shows the three-step workflow and qualified trust layer', () => {
+  it('shows the European Food Atlas and trust architecture shield', () => {
     render(<Home />);
 
-    expect(screen.getByRole('heading', { name: 'Discover by place and preference' })).toBeInTheDocument();
-    expect(screen.getByRole('heading', { name: 'Review the listing before buying' })).toBeInTheDocument();
-    expect(screen.getByRole('heading', { name: 'Order through one marketplace' })).toBeInTheDocument();
-    expect(screen.getByRole('heading', { name: 'Allergen disclosures' })).toBeInTheDocument();
-    expect(screen.getByText(/not a legal certification or product guarantee/i)).toBeInTheDocument();
-    expect(screen.getByText(/require qualified human review/i)).toBeInTheDocument();
+    expect(screen.getByRole('heading', { name: 'Shop Europe by Origin & Specialty' })).toBeInTheDocument();
+    expect(screen.getByRole('heading', { name: 'From Europe This Week' })).toBeInTheDocument();
+    expect(screen.getByRole('heading', { name: 'Explore Curated European Collections' })).toBeInTheDocument();
+    expect(screen.getByRole('heading', { name: 'European Marketplace Trust & Compliance Shield' })).toBeInTheDocument();
+    expect(screen.getByText(/DSA Art\. 30 Named Traders/i)).toBeInTheDocument();
+    expect(screen.getByText(/14 EU Regulated Allergens/i)).toBeInTheDocument();
   });
 });
