@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 # Deploy EUshop to GitHub Pages
 # Live URL: https://hostilian.github.io/eushop
 #
@@ -26,18 +25,6 @@
 #
 # Version Portal: https://hostilian.github.io/eushop/versions/
 
-=======
-# Deploy EUshop Next.js site to GitHub Pages
-# Live URL: https://hostilian.github.io/eushop
-#
-# 5 Versions are served from a single build with client-side localStorage switching:
-#   V1 - Pitch & Calculator (Investor)
-#   V2 - Buyer Marketplace
-#   V3 - Seller Compliance Hub
-#   V4 - Admin Console
-#   V5 - Developer Portal & Docs
-#
->>>>>>> pull-1
 name: Deploy EUshop to GitHub Pages
 
 on:
@@ -65,27 +52,17 @@ jobs:
 
       - name: Setup pnpm
         uses: pnpm/action-setup@v4
-<<<<<<< HEAD
-=======
-        with:
-          version: 9
->>>>>>> pull-1
 
       - name: Setup Node.js 20
         uses: actions/setup-node@v4
         with:
           node-version: "20"
-<<<<<<< HEAD
           # Note: do NOT use cache: "pnpm" here — it requires packageManager field in package.json
           # We handle caching explicitly with actions/cache below
-=======
-          cache: "pnpm"
->>>>>>> pull-1
 
       - name: Setup GitHub Pages
         uses: actions/configure-pages@v6
 
-<<<<<<< HEAD
       - name: Restore pnpm store cache
         uses: actions/cache@v4
         with:
@@ -98,38 +75,21 @@ jobs:
         uses: actions/cache@v4
         with:
           path: apps/web/.next/cache
-=======
-      - name: Cache Next.js build
-        uses: actions/cache@v4
-        with:
-          path: |
-            apps/web/.next/cache
->>>>>>> pull-1
           key: ${{ runner.os }}-nextjs-${{ hashFiles('**/pnpm-lock.yaml') }}-${{ hashFiles('apps/web/**.[jt]s', 'apps/web/**.[jt]sx') }}
           restore-keys: |
             ${{ runner.os }}-nextjs-${{ hashFiles('**/pnpm-lock.yaml') }}-
 
       - name: Install all dependencies
-<<<<<<< HEAD
         run: pnpm install --prefer-frozen-lockfile
 
       - name: Build Next.js static export
         # basePath='/eushop' (set in next.config.js) matches GitHub Pages URL.
         # Next.js copies everything from apps/web/public/ into apps/web/out/ automatically.
         # This means all vN/ static demo folders land in out/vN/ without any extra step.
-=======
-        run: pnpm install --frozen-lockfile
-
-      - name: Build Next.js static export
-        # basePath='/eushop' matches the GitHub Pages URL: https://hostilian.github.io/eushop
-        # trailingSlash=true ensures /page -> /page/index.html for static hosting
-        # NEXT_PUBLIC_BASE_PATH is NOT set here, so it defaults to '/eushop' in next.config.js
->>>>>>> pull-1
         run: pnpm --filter "@eushop/web" run build
         env:
           NODE_ENV: production
 
-<<<<<<< HEAD
       - name: Verify static output integrity
         # This step catches silent build failures where out/ is missing or incomplete.
         # It fails loudly rather than uploading an empty/broken artifact.
@@ -181,12 +141,6 @@ jobs:
         uses: actions/upload-pages-artifact@v3
         with:
           # Next.js static export output directory
-=======
-      - name: Upload Pages artifact
-        uses: actions/upload-pages-artifact@v5
-        with:
-          # The static export is output to apps/web/out/
->>>>>>> pull-1
           path: ./apps/web/out
 
   deploy:
@@ -198,8 +152,4 @@ jobs:
     steps:
       - name: Deploy to GitHub Pages
         id: deployment
-<<<<<<< HEAD
         uses: actions/deploy-pages@v4
-=======
-        uses: actions/deploy-pages@v5
->>>>>>> pull-1
