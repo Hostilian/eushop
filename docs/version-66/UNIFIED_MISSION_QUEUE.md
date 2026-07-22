@@ -100,11 +100,11 @@
 - [x] **TASK 141** - DAC7 seller classification, transaction counts, gross consideration, reporting periods, audit history, and XML export
 - [x] **TASK 142** - GDPR data inventory, lawful basis mapping, minimization, consent receipts, deletion propagation
 - [x] **TASK 143** - EU consumer-protection controls (total price, tax/shipping disclosure, order-button wording, withdrawal rights)
-- [ ] **TASK 144** - Centralized versioned VAT and OSS calculation engine with legal review gates *(Tier 2 — Est: 10 min)*
+- [x] **TASK 144** - Centralized versioned VAT and OSS calculation engine with legal review gates
 
 ### Phase 31 — Payment, Database and Operational Integrity
-- [ ] **TASK 145** - Server-authoritative payment totals, tampering protection, Stripe webhook signature verification, idempotency *(Tier 3 — Est: 18 min)*
-- [ ] **TASK 146** - Database migration verification, foreign key constraints, monetary precision, timestamps, rollback runbooks *(Tier 2 — Est: 10 min)*
+- [x] **TASK 145** - Server-authoritative payment totals, tampering protection, Stripe webhook signature verification, idempotency
+- [x] **TASK 146** - Database migration verification, foreign key constraints, monetary precision, timestamps, rollback runbooks
 - [ ] **TASK 147** - SQL query plan optimization for search, filters, seller dashboard, orders, and DAC7 reporting *(Tier 2 — Est: 10 min)*
 - [ ] **TASK 148** - Failure-safe timeouts, retries, rate limits, health probes, structured JSON logging, correlation IDs *(Tier 2 — Est: 10 min)*
 
