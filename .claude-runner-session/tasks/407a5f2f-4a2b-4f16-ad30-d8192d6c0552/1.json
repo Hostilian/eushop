@@ -1,0 +1,9 @@
+{
+  "id": "1",
+  "subject": "Autonomous loop for critical issues in current codebase",
+  "description": "Create a loop that autonomously identifies and fixes critical issues in the current codebase, prioritizing tasks based on severity and impact",
+  "status": "in_progress",
+  "blocks": [],
+  "blockedBy": [],
+  "metadata": {}
+}

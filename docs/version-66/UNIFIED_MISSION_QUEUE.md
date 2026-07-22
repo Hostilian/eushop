@@ -118,7 +118,7 @@
 ### Phase 33 — Accessibility, Design System and User Experience
 - [x] **TASK 154** - WCAG 2.2 AA accessibility audit (keyboard nav, focus, ARIA landmarks, contrast, screen reader order)
 - [x] **TASK 155** - Consolidated design system tokens (typography, spacing, forms, alert dialogs, skeletons, dark mode)
-- [ ] **TASK 156** - Performance optimization (bundle size, Next.js image optimization, API latency, cache hit rates) *(Tier 2 — Est: 10 min)*
+- [x] **TASK 156** - Performance optimization (bundle size, Next.js image optimization, API latency, cache hit rates) *(Tier 2 — Est: 10 min)*
 
 ### Phase 34 — Documentation, Investor Readiness and Release Gate
 - [ ] **TASK 157** - Developer documentation update (README, env setup, Docker, migrations, troubleshooting, rollback) *(Tier 1 — Est: 4 min)*
@@ -166,8 +166,8 @@
 ### Phase 39 — v66 Core Transaction Correctness & Money Precision
 - [x] **TASK 186** - Currency-aware decimal value objects for monetary precision and strict rounding
 - [x] **TASK 187** - Complete server-authoritative Stripe Connect state machine (idempotency, webhooks, signatures)
-- [ ] **TASK 188** - End-to-end buyer journey verification (discovery, cart, server checkout, order status, dispute, review) *(Tier 3 — Est: 18 min)*
-- [ ] **TASK 189** - Seller onboarding & KYBC verification gate, listing publication, inventory, DAC7 export *(Tier 3 — Est: 18 min)*
+- [x] **TASK 188** - End-to-end buyer journey verification (discovery, cart, server checkout, order status, dispute, review) *(Tier 3 — Est: 18 min)*
+- [x] **TASK 189** - Seller onboarding & KYBC verification gate, listing publication, inventory, DAC7 export *(Tier 3 — Est: 18 min)*
 - [ ] **TASK 190** - Admin & moderation journey (trader identity audit, notice-and-action, disputes, appeals) *(Tier 2 — Est: 10 min)*
 
 ### Phase 40 — v66 Evolutionary Scale Architecture & PostGIS Spatial Integration
