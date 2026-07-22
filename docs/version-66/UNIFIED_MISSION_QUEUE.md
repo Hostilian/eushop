@@ -154,10 +154,10 @@
 - [ ] **TASK 177** - Actor & role authorization matrix enforcement & CSRF/SameSite cookie session security *(Tier 3 — Est: 18 min)*
 - [x] **TASK 178** - Centralized security headers, CSP, output encoding, and API rate limiting middleware
 - [x] **TASK 179** - Create `docs/security/THREAT_MODEL.md` (STRIDE framework across all 16 domain modules)
-- [ ] **TASK 180** - Supply-chain security, GitHub Action commit-SHA pinning, container scanning, and SBOM generation *(Tier 2 — Est: 10 min)*
+- [x] **TASK 180** - Supply-chain security, GitHub Action commit-SHA pinning, container scanning, and SBOM generation
 
 ### Phase 38 — v66 CI/CD Pipeline Trustworthiness & Zero-Downtime Deployment
-- [ ] **TASK 181** - GitHub Actions CI failure matrix diagnosis and Maven wrapper execution permission stabilization *(Tier 2 — Est: 10 min)*
+- [x] **TASK 181** - GitHub Actions CI failure matrix diagnosis and Maven wrapper execution permission stabilization
 - [ ] **TASK 182** - Separate PR verification pipeline from Pages static export & production runtime deployment *(Tier 2 — Est: 10 min)*
 - [ ] **TASK 183** - Enforce strict branch protection quality gates (zero `continue-on-error` on critical gates) *(Tier 1 — Est: 4 min)*
 - [ ] **TASK 184** - Establish zero-downtime deployment strategy with expand-contract migration prechecks *(Tier 3 — Est: 18 min)*
