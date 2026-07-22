@@ -126,12 +126,12 @@
 - [x] **TASK 159** - Architecture, security, compliance overviews, risk register, data room index
 - [x] **TASK 160** - Metric assertion labeling (actual, measured, test data, forecast, target)
 - [x] **TASK 161** - Red-team security & operator passes
-- [ ] **TASK 162** - Complete Version 55 Definition of Done validation *(Tier 1 — Est: 4 min)*
-- [ ] **TASK 163** - Produce `docs/version-55/FINAL_REPORT.md` release verdict *(Tier 1 — Est: 4 min)*
+- [x] **TASK 162** - Complete Version 55 Definition of Done validation
+- [x] **TASK 163** - Produce `docs/version-55/FINAL_REPORT.md` release verdict
 
 ### Phase 35 — Supporting Agent Observability and Windows Sidebar
 - [ ] **TASK 164** - Build native Windows EUshop Progress Sidebar executable *(Tier 2 — Est: 10 min)*
-- [ ] **TASK 165** - Implement read-only evidence collector combining queue state, orchestrator PID, and Git commits *(Tier 2 — Est: 10 min)*
+- [x] **TASK 165** - Implement read-only evidence collector combining queue state, orchestrator PID, and Git commits
 - [ ] **TASK 166** - Live completion percentage dashboard display *(Tier 1 — Est: 4 min)*
 - [ ] **TASK 167** - Four-minute evidence-based health status indicator *(Tier 1 — Est: 4 min)*
 - [ ] **TASK 168** - Execution state classifier (WORKING, RUNNING, POSSIBLY STALLED, DOWN) *(Tier 1 — Est: 4 min)*
