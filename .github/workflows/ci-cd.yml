@@ -50,7 +50,7 @@ jobs:
           path: ~/.local/share/pnpm/store
           key: ${{ runner.os }}-pnpm-${{ hashFiles('**/pnpm-lock.yaml') }}
           restore-keys: ${{ runner.os }}-pnpm-
-      - run: pnpm install --prefer-frozen-lockfile
+      - run: pnpm install --no-frozen-lockfile
       - run: pnpm --filter "@eushop/web" run lint
       - name: Type-check web application
         run: pnpm --filter "@eushop/web" exec tsc --noEmit
@@ -75,7 +75,7 @@ jobs:
           path: ~/.local/share/pnpm/store
           key: ${{ runner.os }}-pnpm-${{ hashFiles('**/pnpm-lock.yaml') }}
           restore-keys: ${{ runner.os }}-pnpm-
-      - run: pnpm install --prefer-frozen-lockfile
+      - run: pnpm install --no-frozen-lockfile
       - name: Run compliance engine tests
         run: pnpm --filter "@eushop/compliance" run test --ci --coverage
       - name: Upload compliance test coverage
@@ -103,7 +103,7 @@ jobs:
           path: ~/.local/share/pnpm/store
           key: ${{ runner.os }}-pnpm-${{ hashFiles('**/pnpm-lock.yaml') }}
           restore-keys: ${{ runner.os }}-pnpm-
-      - run: pnpm install --prefer-frozen-lockfile
+      - run: pnpm install --no-frozen-lockfile
       - name: Run web Jest tests
         run: pnpm --filter "@eushop/web" exec jest --ci --coverage
       - uses: actions/upload-artifact@v4
@@ -125,7 +125,9 @@ jobs:
           cache: maven
       - name: Run core-service tests
         working-directory: services/core-service
-        run: ./mvnw test
+        run: |
+          chmod +x ./mvnw
+          ./mvnw test
 
   build:
     name: Build Static Export
