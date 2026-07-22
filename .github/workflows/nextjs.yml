@@ -61,7 +61,7 @@ jobs:
           # We handle caching explicitly with actions/cache below
 
       - name: Setup GitHub Pages
-        uses: actions/configure-pages@v6
+        uses: actions/configure-pages@v5
 
       - name: Restore pnpm store cache
         uses: actions/cache@v4
@@ -80,7 +80,7 @@ jobs:
             ${{ runner.os }}-nextjs-${{ hashFiles('**/pnpm-lock.yaml') }}-
 
       - name: Install all dependencies
-        run: pnpm install --prefer-frozen-lockfile
+        run: pnpm install --no-frozen-lockfile
 
       - name: Build Next.js static export
         # basePath='/eushop' (set in next.config.js) matches GitHub Pages URL.
