@@ -18,7 +18,7 @@ export default function CategoryPage() {
     : 'Category';
 
   useEffect(() => {
-    if (!slug) return;
+    if (!slug) return undefined;
     let isCancelled = false;
 
     foodAPI.search()

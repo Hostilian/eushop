@@ -8,7 +8,7 @@ interface DialogRootProps {
 
 function DialogRoot({ open, onOpenChange, children }: DialogRootProps) {
   useEffect(() => {
-    if (!open) return;
+    if (!open) return undefined;
     const onKeyDown = (event: KeyboardEvent) => {
       if (event.key === 'Escape') onOpenChange?.(false);
     };

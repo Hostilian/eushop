@@ -46,7 +46,7 @@ export function ProductCard({
   originalPrice,
   country,
   imageUrl,
-  images,
+  images: _images,
   allergens = [],
   netQuantity,
   thermalCategory,

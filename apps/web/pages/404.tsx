@@ -25,7 +25,7 @@ export default function NotFoundPage() {
       // Reconstruct the original URL and redirect
       const cleanPath = redirectPath.replace(/~and~/g, '&');
       router.replace(cleanPath);
-      return;
+      return undefined;
     }
 
     // If no redirect, auto-redirect after 5 seconds

@@ -95,7 +95,9 @@ export const UserSearch: React.FC<UserSearchProps> = ({
                 className={`p-2 hover:bg-gray-50 cursor-pointer flex items-center gap-2 ${isSelected ? 'bg-blue-50' : ''}`}
                 onClick={() => handleSelectUser(user)}
               >
-                <UserAvatar name={user.name} src={user.avatar} size="sm" />
+                <div className="w-6 h-6 rounded-full bg-emerald-100 dark:bg-emerald-900 text-emerald-800 dark:text-emerald-200 flex items-center justify-center text-xs font-bold">
+                  {user.name ? user.name.charAt(0).toUpperCase() : 'U'}
+                </div>
                 <span className="text-sm">{user.name}</span>
                 {isSelected && <span className="text-xs text-green-600 ml-auto">✓ Selected</span>}
               </div>
