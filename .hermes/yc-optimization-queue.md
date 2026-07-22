@@ -229,7 +229,7 @@ Status: IN_PROGRESS
 Status: P1
 
 - [x] TASK 139 - Enforce required food information before publication, including ingredients, regulated allergen structure and emphasis, net quantity, storage, operator identity, origin, nutrition, language and distance-selling presentation
-- [ ] TASK 140 - Implement and test DSA trader traceability, reasonable verification structure, notice and action, statements of reasons, complaint and appeal processes, illegal-product response, moderation records and recommender transparency where applicable
+- [x] TASK 140 - Implement and test DSA trader traceability, reasonable verification structure, notice and action, statements of reasons, complaint and appeal processes, illegal-product response, moderation records and recommender transparency where applicable
 - [ ] TASK 141 - Verify and harden DAC7 seller classification, identity and tax data, transaction counts, precise consideration and fee totals, reporting periods, corrections, due diligence, access control, audit history, secure export and retention
 - [ ] TASK 142 - Implement testable GDPR inventory, lawful-basis mapping, minimization, consent separation, retention, access, correction, portability, restriction, objection, deletion or anonymization, cookie choices, analytics gating and breach-response structure
 - [ ] TASK 143 - Verify consumer-protection controls for trader identity, total price, tax and shipping disclosure, order-button wording, cancellation and perishable-goods exceptions, refunds, complaint handling, review authenticity and dark-pattern avoidance
@@ -304,7 +304,7 @@ Status: UPCOMING
 - [x] TASK 175 - Secret & suspicious automation containment, pre-commit prevention, and scanner rules
 - [ ] TASK 176 - Complete CodeQL taint analysis across all numeric casts and path expressions repository-wide
 - [ ] TASK 177 - Actor & role authorization matrix enforcement & CSRF/SameSite cookie session security
-- [ ] TASK 178 - Centralized security headers, CSP, output encoding, and API rate limiting middleware
+- [x] TASK 178 - Centralized security headers, CSP, output encoding, and API rate limiting middleware
 - [x] TASK 179 - Create `docs/security/THREAT_MODEL.md` (STRIDE framework across all 16 domain modules)
 - [ ] TASK 180 - Supply-chain security, GitHub Action commit-SHA pinning, container scanning, and SBOM generation
 
