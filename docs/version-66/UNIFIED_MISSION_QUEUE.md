@@ -110,9 +110,9 @@
 
 ### Phase 32 — Test Strategy, CI/CD and Supply-Chain Security
 - [x] **TASK 149** - Unit and backend integration coverage for compliance, prices, authorization, controllers, migrations
-- [ ] **TASK 150** - Frontend and Playwright E2E coverage for rendering, auth, search, cart, checkout, orders, reviews *(Tier 3 — Est: 18 min)*
+- [x] **TASK 150** - Frontend and Playwright E2E coverage for rendering, auth, search, cart, checkout, orders, reviews *(Tier 3 — Est: 18 min)*
 - [x] **TASK 151** - Security test suite for CodeQL regressions, path traversal, upload abuse, CSRF, JWT negatives, rate limits
-- [ ] **TASK 152** - GitHub Actions workflow hardening (least privilege, commit SHA action pinning, CodeQL, dependency review) *(Tier 2 — Est: 10 min)*
+- [x] **TASK 152** - GitHub Actions workflow hardening (least privilege, commit SHA action pinning, CodeQL, dependency review) *(Tier 2 — Est: 10 min)*
 - [ ] **TASK 153** - Flaky test quarantine tracking & verification run evidence recording *(Tier 1 — Est: 4 min)*
 
 ### Phase 33 — Accessibility, Design System and User Experience
@@ -158,7 +158,7 @@
 
 ### Phase 38 — v66 CI/CD Pipeline Trustworthiness & Zero-Downtime Deployment
 - [x] **TASK 181** - GitHub Actions CI failure matrix diagnosis and Maven wrapper execution permission stabilization
-- [ ] **TASK 182** - Separate PR verification pipeline from Pages static export & production runtime deployment *(Tier 2 — Est: 10 min)*
+- [x] **TASK 182** - Separate PR verification pipeline from Pages static export & production runtime deployment *(Tier 2 — Est: 10 min)*
 - [x] **TASK 183** - Enforce strict branch protection quality gates (zero `continue-on-error` on critical gates)
 - [x] **TASK 184** - Establish zero-downtime deployment strategy with expand-contract migration prechecks
 - [x] **TASK 185** - Automated Playwright E2E critical buyer/seller/admin journey test suite
