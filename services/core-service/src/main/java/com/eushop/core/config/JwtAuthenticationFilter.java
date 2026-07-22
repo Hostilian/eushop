@@ -63,7 +63,9 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     }
 
     @Override
-    protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
+    protected void doFilterInternal(@org.springframework.lang.NonNull HttpServletRequest request,
+                                    @org.springframework.lang.NonNull HttpServletResponse response,
+                                    @org.springframework.lang.NonNull FilterChain filterChain)
             throws ServletException, IOException {
 
         // Strip any user-supplied X-User-Id, X-User-Email, X-User-Role headers to prevent spoofing
@@ -74,7 +76,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
         String token = extractToken(request);
 
-        if (token != null && !token.isEmpty()) {
+        if (token != null && !token.isEmpty() && token.length() <= 4096 && !token.matches(".*[\\r\\n\\t].*")) {
             try {
                 if (isMockTokenAllowed() && isMockTokenFormat(token)) {
                     // Process Mock Authentication
@@ -96,14 +98,16 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     private String extractToken(HttpServletRequest request) {
         String authHeader = request.getHeader("Authorization");
         if (authHeader != null && authHeader.startsWith("Bearer ")) {
-            return authHeader.substring(7);
+            String candidate = authHeader.substring(7).trim();
+            return candidate.length() <= 4096 ? candidate : null;
         }
 
         // Try Cookie extraction
         if (request.getCookies() != null) {
             for (Cookie cookie : request.getCookies()) {
-                if ("token".equals(cookie.getName())) {
-                    return cookie.getValue();
+                if ("token".equals(cookie.getName()) && cookie.getValue() != null) {
+                    String candidate = cookie.getValue().trim();
+                    return candidate.length() <= 4096 ? candidate : null;
                 }
             }
         }
@@ -120,6 +124,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         return token.split("\\.").length != 3;
     }
 
+    @SuppressWarnings("unchecked")
     private void processMockAuthentication(String token, HeaderMapRequestWrapper request) throws Exception {
         byte[] decodedBytes = Base64.getDecoder().decode(token);
         Map<String, Object> claims = objectMapper.readValue(decodedBytes, Map.class);

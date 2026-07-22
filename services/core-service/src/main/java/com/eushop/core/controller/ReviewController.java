@@ -32,6 +32,9 @@ public class ReviewController {
     public ResponseEntity<ApiResponse<Review>> createReview(
             @RequestBody Review review,
             @RequestHeader(value = "X-User-Id", required = false) String userId) {
+        if (userId != null && !userId.isEmpty() && (review.getBuyerId() == null || review.getBuyerId().isEmpty())) {
+            review.setBuyerId(userId);
+        }
         Review created = reviewService.createReview(review);
         return ResponseEntity.status(HttpStatus.CREATED)
                 .body(ApiResponse.success(created, "Review created successfully"));
@@ -74,6 +77,9 @@ public class ReviewController {
             @PathVariable String id,
             @RequestBody Review review,
             @RequestHeader(value = "X-User-Id", required = false) String userId) {
+        if (userId != null && !userId.isEmpty() && (review.getBuyerId() == null || review.getBuyerId().isEmpty())) {
+            review.setBuyerId(userId);
+        }
         Review updated = reviewService.updateReview(id, review);
         return ResponseEntity.ok(ApiResponse.success(updated, "Review updated successfully"));
     }
@@ -82,6 +88,7 @@ public class ReviewController {
     public ResponseEntity<ApiResponse<Void>> deleteReview(
             @PathVariable String id,
             @RequestHeader(value = "X-User-Id", required = false) String userId) {
+        log.info("Deleting review {} requested by user {}", id, userId);
         reviewService.deleteReview(id);
         return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
     }

@@ -34,16 +34,18 @@ public class AuthController {
             HttpServletResponse response) {
         
         String email = credentials.get("email");
-        if (email == null || email.isEmpty()) {
-            return ResponseEntity.badRequest().body(Map.of("error", "Email is required"));
+        if (email == null || email.trim().isEmpty() || !email.matches("^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,6}$")) {
+            return ResponseEntity.badRequest().body(Map.of("error", "Valid email address is required"));
         }
+        email = email.trim().toLowerCase();
 
         // Fetch or create user (mocking Auth0 user persistence)
-        User user = userService.getUserByEmail(email)
+        final String sanitizedEmail = email;
+        User user = userService.getUserByEmail(sanitizedEmail)
                 .orElseGet(() -> {
-                    String name = email.split("@")[0].toUpperCase();
+                    String name = sanitizedEmail.split("@")[0].replaceAll("[^a-zA-Z0-9_]", "").toUpperCase();
                     String auth0Sub = "auth0|mock-" + UUID.randomUUID().toString();
-                    return userService.createUser(email, name, "DE", auth0Sub);
+                    return userService.createUser(sanitizedEmail, name.isEmpty() ? "USER" : name, "DE", auth0Sub);
                 });
 
         userService.updateLastLogin(user.getId());

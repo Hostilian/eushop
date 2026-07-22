@@ -71,6 +71,7 @@ public class NotificationController {
     public ResponseEntity<ApiResponse<Void>> markAsRead(
             @PathVariable String id,
             @RequestHeader(value = "X-User-Id", required = false) String userId) {
+        log.info("Marking notification {} as read by user {}", id, userId);
         notificationService.markAsRead(id);
         return ResponseEntity.ok(ApiResponse.success(null, "Notification marked as read"));
     }
@@ -90,6 +91,7 @@ public class NotificationController {
     public ResponseEntity<ApiResponse<Void>> deleteNotification(
             @PathVariable String id,
             @RequestHeader(value = "X-User-Id", required = false) String userId) {
+        log.info("Deleting notification {} requested by user {}", id, userId);
         notificationService.deleteNotification(id);
         return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
     }

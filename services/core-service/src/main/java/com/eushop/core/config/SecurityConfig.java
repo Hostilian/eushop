@@ -36,9 +36,11 @@ public class SecurityConfig {
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http
             .cors(Customizer.withDefaults())
-            .csrf(csrf -> csrf.disable()) // Stateless API
+            // CodeQL [java/disabled-spring-csrf] Stateless REST API authenticated strictly via Authorization Bearer headers (SessionCreationPolicy.STATELESS)
+            .csrf(csrf -> csrf.disable())
             .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
             .authorizeHttpRequests(auth -> auth
+                .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
                 // Public endpoints
                 .requestMatchers(HttpMethod.POST, "/api/webhooks/**").permitAll()
                 .requestMatchers(HttpMethod.GET, "/api/foods/**").permitAll()

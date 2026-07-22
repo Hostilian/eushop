@@ -32,8 +32,9 @@ public class ConversationController {
     public ResponseEntity<ApiResponse<Conversation>> createConversation(
             @RequestBody ConversationRequest request,
             @RequestHeader(value = "X-User-Id", required = false) String userId) {
+        String effectiveBuyerId = (userId != null && !userId.isEmpty()) ? userId : request.getBuyerId();
         Conversation conversation = conversationService.createConversation(
-                request.getBuyerId(),
+                effectiveBuyerId,
                 request.getSellerId(),
                 request.getSubject());
         return ResponseEntity.status(HttpStatus.CREATED)
@@ -88,6 +89,7 @@ public class ConversationController {
     public ResponseEntity<ApiResponse<Void>> closeConversation(
             @PathVariable String id,
             @RequestHeader(value = "X-User-Id", required = false) String userId) {
+        log.info("Closing conversation {} requested by user {}", id, userId);
         conversationService.closeConversation(id);
         return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
     }

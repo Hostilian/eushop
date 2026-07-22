@@ -48,8 +48,12 @@ public class Dac7Service {
     }
 
     public List<Dac7AnnualSnapshot> generateSnapshotsForYear(int year) {
+        if (year < 2000 || year > 2100) {
+            throw new IllegalArgumentException("Invalid DAC7 reporting year: " + year);
+        }
+        short reportingYear = (short) year;
         LocalDateTime startOfYear = LocalDateTime.of(year, 1, 1, 0, 0, 0);
-        LocalDateTime endOfYear = LocalDateTime.of(year + 1, 1, 1, 0, 0, 0);
+        LocalDateTime endOfYear = startOfYear.plusYears(1);
 
         List<Map<String, Object>> aggregates = orderRepository.calculateDac7AggregatesForYear(startOfYear, endOfYear);
         List<Dac7AnnualSnapshot> savedSnapshots = new ArrayList<>();
@@ -64,11 +68,11 @@ public class Dac7Service {
             if (sellerId == null) continue;
 
             Dac7AnnualSnapshot snapshot = dac7SnapshotRepository
-                    .findBySellerIdAndReportingYear(sellerId, (short) year)
+                    .findBySellerIdAndReportingYear(sellerId, reportingYear)
                     .orElseGet(() -> {
                         Dac7AnnualSnapshot newSnap = new Dac7AnnualSnapshot();
                         newSnap.setSellerId(sellerId);
-                        newSnap.setReportingYear((short) year);
+                        newSnap.setReportingYear(reportingYear);
                         return newSnap;
                     });
 
@@ -86,7 +90,11 @@ public class Dac7Service {
     }
 
     public List<Dac7AnnualSnapshot> getReportableSellers(int year) {
-        List<Dac7AnnualSnapshot> allSnapshots = dac7SnapshotRepository.findByReportingYear((short) year);
+        if (year < 2000 || year > 2100) {
+            throw new IllegalArgumentException("Invalid DAC7 reporting year: " + year);
+        }
+        short reportingYear = (short) year;
+        List<Dac7AnnualSnapshot> allSnapshots = dac7SnapshotRepository.findByReportingYear(reportingYear);
         List<Dac7AnnualSnapshot> reportable = new ArrayList<>();
 
         for (Dac7AnnualSnapshot snapshot : allSnapshots) {
