@@ -159,12 +159,12 @@
 ### Phase 38 — v66 CI/CD Pipeline Trustworthiness & Zero-Downtime Deployment
 - [x] **TASK 181** - GitHub Actions CI failure matrix diagnosis and Maven wrapper execution permission stabilization
 - [ ] **TASK 182** - Separate PR verification pipeline from Pages static export & production runtime deployment *(Tier 2 — Est: 10 min)*
-- [ ] **TASK 183** - Enforce strict branch protection quality gates (zero `continue-on-error` on critical gates) *(Tier 1 — Est: 4 min)*
+- [x] **TASK 183** - Enforce strict branch protection quality gates (zero `continue-on-error` on critical gates)
 - [ ] **TASK 184** - Establish zero-downtime deployment strategy with expand-contract migration prechecks *(Tier 3 — Est: 18 min)*
 - [ ] **TASK 185** - Automated Playwright E2E critical buyer/seller/admin journey test suite *(Tier 3 — Est: 18 min)*
 
 ### Phase 39 — v66 Core Transaction Correctness & Money Precision
-- [ ] **TASK 186** - Currency-aware decimal value objects for monetary precision and strict rounding *(Tier 2 — Est: 10 min)*
+- [x] **TASK 186** - Currency-aware decimal value objects for monetary precision and strict rounding
 - [ ] **TASK 187** - Complete server-authoritative Stripe Connect state machine (idempotency, webhooks, signatures) *(Tier 3 — Est: 18 min)*
 - [ ] **TASK 188** - End-to-end buyer journey verification (discovery, cart, server checkout, order status, dispute, review) *(Tier 3 — Est: 18 min)*
 - [ ] **TASK 189** - Seller onboarding & KYBC verification gate, listing publication, inventory, DAC7 export *(Tier 3 — Est: 18 min)*
