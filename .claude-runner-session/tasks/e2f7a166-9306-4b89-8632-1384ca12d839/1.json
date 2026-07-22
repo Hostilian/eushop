@@ -1,0 +1,8 @@
+{
+  "id": "1",
+  "subject": "Follow EUshop Autonomous Workflow",
+  "description": "Read and understand the project's CLAUDE.md and .claude/AUTONOMY.md files, then proceed with the tasks in .hermes/yc-optimization-queue.md",
+  "status": "pending",
+  "blocks": [],
+  "blockedBy": []
+}

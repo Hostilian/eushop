@@ -11,31 +11,38 @@ param(
 $ErrorActionPreference = "SilentlyContinue"
 
 function Get-EUshopProgress {
-    $QueueFile = Join-Path $ProjectPath ".hermes\version-44-queue.md"
-    $LockFile  = Join-Path $ProjectPath ".claude\AGENT_FAILOVER.lock"
-    $WdLock    = Join-Path $ProjectPath ".agent-state\watchdog.pid"
-    $LogDir    = Join-Path $ProjectPath ".claude\agent-failover-logs-v3"
+    $MasterQueueFile = Join-Path $ProjectPath ".hermes\yc-optimization-queue.md"
+    $Version44File   = Join-Path $ProjectPath ".hermes\version-44-queue.md"
+    $LockFile        = Join-Path $ProjectPath ".claude\AGENT_FAILOVER.lock"
+    $WdLock          = Join-Path $ProjectPath ".agent-state\watchdog.pid"
+    $LogDir          = Join-Path $ProjectPath ".claude\agent-failover-logs-v3"
 
-    $TotalTasks = 24
+    $TargetFile = if (Test-Path $MasterQueueFile) { $MasterQueueFile } else { $Version44File }
+
+    $TotalTasks = 0
     $CompletedTasks = 0
     $TaskDetails = @()
 
-    if (Test-Path $QueueFile) {
-        $Lines = Get-Content $QueueFile -Encoding UTF8
+    if (Test-Path $TargetFile) {
+        $Lines = Get-Content $TargetFile -Encoding UTF8
         foreach ($line in $Lines) {
-            if ($line -match '- \[x\] TASK (\d+)') {
-                $tId = [int]$Matches[1]
-                $CompletedTasks++
-                $TaskDetails += [PSCustomObject]@{ Id = $tId; Line = $line; Status = "DONE" }
-            } elseif ($line -match '- \[/\] TASK (\d+)') {
-                $tId = [int]$Matches[1]
-                $TaskDetails += [PSCustomObject]@{ Id = $tId; Line = $line; Status = "IN_PROGRESS" }
-            } elseif ($line -match '- \[ \] TASK (\d+)') {
-                $tId = [int]$Matches[1]
-                $TaskDetails += [PSCustomObject]@{ Id = $tId; Line = $line; Status = "QUEUED" }
+            if ($line -match '^\s*-\s*\[([x /!])\]\s+TASK\s+(\d+)\s*(?:[—\-:\s])\s*(.*)$') {
+                $statusChar = $Matches[1]
+                $tId        = [int]$Matches[2]
+                $TotalTasks++
+                if ($statusChar -eq 'x') {
+                    $CompletedTasks++
+                    $TaskDetails += [PSCustomObject]@{ Id = $tId; Line = $line; Status = "DONE" }
+                } elseif ($statusChar -eq '/' -or $statusChar -eq '!') {
+                    $TaskDetails += [PSCustomObject]@{ Id = $tId; Line = $line; Status = "IN_PROGRESS" }
+                } else {
+                    $TaskDetails += [PSCustomObject]@{ Id = $tId; Line = $line; Status = "QUEUED" }
+                }
             }
         }
     }
+
+    if ($TotalTasks -eq 0) { $TotalTasks = 1 }
 
     $GitBranch = (git -C $ProjectPath branch --show-current 2>$null).Trim()
     $GitCommit = (git -C $ProjectPath rev-parse --short HEAD 2>$null).Trim()

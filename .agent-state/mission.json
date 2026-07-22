@@ -1,7 +1,7 @@
 {
     "mission":  "Repair and harden Hermes/FCC for EUshop",
     "repository":  "D:\\CODING\\eushop",
-    "current_phase":  "post-session",
+    "current_phase":  "pre-launch",
     "active_tasks":  [
                          "Implement provider health registry",
                          "Create canonical launcher Start-EUshop-Hermes.ps1",

@@ -1,0 +1,8 @@
+{
+  "id": "1",
+  "subject": "Autonomously handle allVA tasks in yc-optimization-queue",
+  "description": "Continue working autonomously until no [ ] tasks remain or time runs out",
+  "status": "in_progress",
+  "blocks": [],
+  "blockedBy": []
+}

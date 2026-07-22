@@ -608,7 +608,14 @@ function Show-HealthDashboard {
 
     # Secret safety
     Write-Host ""
-    $secretSafe = -not (git ls-files --error-unmatch custom_keys.json 2>$null)
+    $secretTracked = $false
+    try {
+        $null = git ls-files --error-unmatch custom_keys.json 2>&1
+        $secretTracked = ($LASTEXITCODE -eq 0)
+    } catch {
+        $secretTracked = $false
+    }
+    $secretSafe = -not $secretTracked
     $secretStatus = if ($secretSafe) { "PASS (custom_keys.json not tracked)" } else { "FAIL (secret file tracked in git!)" }
     $secretColor  = if ($secretSafe) { "Green" } else { "Red" }
     Write-Host "  Secret scan            : " -NoNewline; Write-Host $secretStatus -ForegroundColor $secretColor

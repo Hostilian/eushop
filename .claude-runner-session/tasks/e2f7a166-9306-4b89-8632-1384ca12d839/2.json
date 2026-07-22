@@ -1,0 +1,8 @@
+{
+  "id": "2",
+  "subject": "Complete Phase 26",
+  "description": "Start with TASK 119: Safely create or resume the `version-55` branch, inventory branches, tags, worktrees, remotes, pull requests and uncommitted work, record the starting SHA and preserve recoverable backups without destructive Git commands",
+  "status": "pending",
+  "blocks": [],
+  "blockedBy": []
+}
