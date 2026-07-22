@@ -173,9 +173,9 @@
 ### Phase 40 — v66 Evolutionary Scale Architecture & PostGIS Spatial Integration
 - [x] **TASK 191** - Modular monolith boundary enforcement with ArchUnit architecture tests across 16 domain modules
 - [x] **TASK 192** - Flyway/Liquibase migration discipline with zero-downtime schema changes and rollback runbooks
-- [ ] **TASK 193** - PostgreSQL transactional outbox pattern for domain events before distributed broker scaling *(Tier 3 — Est: 18 min)*
-- [ ] **TASK 194** - PostGIS spatial integration (`geography(Point, 4326)`, GiST indexes, `ST_DWithin` corridor queries) *(Tier 3 — Est: 18 min)*
-- [ ] **TASK 195** - PostgreSQL full-text & trigram search benchmarking against OpenSearch/Elasticsearch *(Tier 2 — Est: 10 min)*
+- [x] **TASK 193** - PostgreSQL transactional outbox pattern for domain events before distributed broker scaling
+- [x] **TASK 194** - PostGIS spatial integration (`geography(Point, 4326)`, GiST indexes, `ST_DWithin` corridor queries)
+- [x] **TASK 195** - PostgreSQL full-text & trigram search benchmarking against OpenSearch/Elasticsearch
 - [ ] **TASK 196** - Stage-based target architecture (Stage 0 pre-seed to Stage 3 regional cell failover design) *(Tier 2 — Est: 10 min)*
 
 ### Phase 41 — v66 Observability, Property Testing & YC Investor Package
