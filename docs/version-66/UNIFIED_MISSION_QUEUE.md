@@ -121,11 +121,11 @@
 - [x] **TASK 156** - Performance optimization (bundle size, Next.js image optimization, API latency, cache hit rates) *(Tier 2 — Est: 10 min)*
 
 ### Phase 34 — Documentation, Investor Readiness and Release Gate
-- [x] **TASK 157** - Developer documentation update (README, env setup, Docker, migrations, troubleshooting, rollback) *(Tier 1 — Est: 4 min)*
-- [ ] **TASK 158** - Truthful demo script and environment walkthrough *(Tier 1 — Est: 4 min)*
-- [x] **TASK 159** - Architecture, security, compliance overviews, risk register, data room index *(Tier 1 — Est: 4 min)*
-- [ ] **TASK 160** - Metric assertion labeling (actual, measured, test data, forecast, target) *(Tier 1 — Est: 4 min)*
-- [ ] **TASK 161** - Red-team security & operator passes *(Tier 2 — Est: 10 min)*
+- [x] **TASK 157** - Developer documentation update (README, env setup, Docker, migrations, troubleshooting, rollback)
+- [x] **TASK 158** - Truthful demo script and environment walkthrough
+- [x] **TASK 159** - Architecture, security, compliance overviews, risk register, data room index
+- [x] **TASK 160** - Metric assertion labeling (actual, measured, test data, forecast, target)
+- [x] **TASK 161** - Red-team security & operator passes
 - [ ] **TASK 162** - Complete Version 55 Definition of Done validation *(Tier 1 — Est: 4 min)*
 - [ ] **TASK 163** - Produce `docs/version-55/FINAL_REPORT.md` release verdict *(Tier 1 — Est: 4 min)*
 
