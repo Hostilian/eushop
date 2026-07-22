@@ -92,14 +92,14 @@
 - [x] **TASK 135** - Buyer journey (cart, server checkout, order status, dispute & refund state transitions)
 - [x] **TASK 136** - Complete and verify seller onboarding, identity & business verification, tax and payment onboarding, compliant listings, secure image upload, inventory, pricing, shipping, order handling, refunds, suspension, DAC7 state and appeals
 - [x] **TASK 137** - Implement operator workflows for seller approval, moderation, disputes, data requests, GDPR erasure, and audit logs
-- [ ] **TASK 138** - Enforce strong authorization and object ownership across buyer, seller, support and administrator operations *(Tier 2 — Est: 10 min)*
+- [x] **TASK 138** - Enforce strong authorization and object ownership across buyer, seller, support and administrator operations
 
 ### Phase 30 — EU Compliance Structure
 - [x] **TASK 139** - Mandatory food information enforcement (ingredients, 14 Annex II allergens, net weight, origin, nutrition)
 - [x] **TASK 140** - DSA Art. 30 trader traceability, verification structure, notice and action, complaint/appeal flows
 - [x] **TASK 141** - DAC7 seller classification, transaction counts, gross consideration, reporting periods, audit history, and XML export
-- [ ] **TASK 142** - GDPR data inventory, lawful basis mapping, minimization, consent receipts, deletion propagation *(Tier 3 — Est: 18 min)*
-- [ ] **TASK 143** - EU consumer-protection controls (total price, tax/shipping disclosure, order-button wording, withdrawal rights) *(Tier 2 — Est: 10 min)*
+- [x] **TASK 142** - GDPR data inventory, lawful basis mapping, minimization, consent receipts, deletion propagation
+- [x] **TASK 143** - EU consumer-protection controls (total price, tax/shipping disclosure, order-button wording, withdrawal rights)
 - [ ] **TASK 144** - Centralized versioned VAT and OSS calculation engine with legal review gates *(Tier 2 — Est: 10 min)*
 
 ### Phase 31 — Payment, Database and Operational Integrity
