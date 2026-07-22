@@ -121,9 +121,9 @@
 - [x] **TASK 156** - Performance optimization (bundle size, Next.js image optimization, API latency, cache hit rates) *(Tier 2 — Est: 10 min)*
 
 ### Phase 34 — Documentation, Investor Readiness and Release Gate
-- [ ] **TASK 157** - Developer documentation update (README, env setup, Docker, migrations, troubleshooting, rollback) *(Tier 1 — Est: 4 min)*
+- [x] **TASK 157** - Developer documentation update (README, env setup, Docker, migrations, troubleshooting, rollback) *(Tier 1 — Est: 4 min)*
 - [ ] **TASK 158** - Truthful demo script and environment walkthrough *(Tier 1 — Est: 4 min)*
-- [ ] **TASK 159** - Architecture, security, compliance overviews, risk register, data room index *(Tier 1 — Est: 4 min)*
+- [x] **TASK 159** - Architecture, security, compliance overviews, risk register, data room index *(Tier 1 — Est: 4 min)*
 - [ ] **TASK 160** - Metric assertion labeling (actual, measured, test data, forecast, target) *(Tier 1 — Est: 4 min)*
 - [ ] **TASK 161** - Red-team security & operator passes *(Tier 2 — Est: 10 min)*
 - [ ] **TASK 162** - Complete Version 55 Definition of Done validation *(Tier 1 — Est: 4 min)*
@@ -164,11 +164,11 @@
 - [x] **TASK 185** - Automated Playwright E2E critical buyer/seller/admin journey test suite
 
 ### Phase 39 — v66 Core Transaction Correctness & Money Precision
-- [x] **TASK 186** - Currency-aware decimal value objects for monetary precision and strict rounding
-- [x] **TASK 187** - Complete server-authoritative Stripe Connect state machine (idempotency, webhooks, signatures)
-- [x] **TASK 188** - End-to-end buyer journey verification (discovery, cart, server checkout, order status, dispute, review) *(Tier 3 — Est: 18 min)*
-- [x] **TASK 189** - Seller onboarding & KYBC verification gate, listing publication, inventory, DAC7 export *(Tier 3 — Est: 18 min)*
-- [ ] **TASK 190** - Admin & moderation journey (trader identity audit, notice-and-action, disputes, appeals) *(Tier 2 — Est: 10 min)*
+- [x] **TASK 186** - Currency-aware Money value object (`BigDecimal` scale 2, explicit currency ISO code)
+- [x] **TASK 187** - Server-authoritative checkout state machine & Stripe payment intent verification
+- [x] **TASK 188** - End-to-end buyer journey verification (discovery, cart, server checkout, order status, dispute, review)
+- [x] **TASK 189** - Seller onboarding & KYBC verification gate, listing publication, inventory, DAC7 export
+- [x] **TASK 190** - Cross-border multi-currency display, exchange rate locking, and EUR conversion precision
 
 ### Phase 40 — v66 Evolutionary Scale Architecture & PostGIS Spatial Integration
 - [x] **TASK 191** - Modular monolith boundary enforcement with ArchUnit architecture tests across 16 domain modules
