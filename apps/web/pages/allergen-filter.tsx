@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { PageWrapper } from '../components/layout/PageWrapper';
 import AllergenFilter from '../components/marketplace/AllergenFilter';
+import OriginFilter from '../components/marketplace/OriginFilter';
 import EnhancedProductCard from '../components/marketplace/EnhancedProductCard';
 import { foodAPI } from '../lib/services';
 import type { StatusOrigin } from '../lib/degradation';
@@ -15,6 +16,7 @@ export default function AllergenFilterPage() {
   const [error, setError] = useState(null);
   const [origin, setOrigin] = useState(null);
   const [selectedAllergens, setSelectedAllergens] = useState([]);
+  const [selectedOrigins, setSelectedOrigins] = useState<string[]>([]);
 
   // Load products on mount (client-side only to avoid SSR issues)
   // In a real app, this would use useEffect, but keeping it simple for demo
@@ -34,14 +36,19 @@ export default function AllergenFilterPage() {
     }
   }
 
-  // Filter products based on selected allergens
+  // Filter products based on selected allergens and origins
   const filteredProducts = products.filter(product => {
-    if (selectedAllergens.length === 0) return true;
-
-    const productAllergens = product.allergens || [];
-    return selectedAllergens.some(allergen =>
-      productAllergens.includes(allergen)
-    );
+    // If origins are selected, check if the product's country is in the selectedOrigins
+    const originMatch =
+      selectedOrigins.length === 0 ||
+      selectedOrigins.includes(product.country ?? '');
+    // If allergens are selected, check if the product contains at least one of the selected allergens
+    const allergenMatch =
+      selectedAllergens.length === 0 ||
+      selectedAllergens.some(allergen =>
+        (product.allergens || []).includes(allergen)
+      );
+    return originMatch && allergenMatch;
   });
 
   // Handle loading state
@@ -145,6 +152,23 @@ export default function AllergenFilterPage() {
           </div>
         </div>
 
+        {/* Origin Filter */}
+        <div className="mb-8">
+          <h2 className="text-2xl font-semibold text-brand-dark dark:text-white mb-4">
+            Select Origin Countries to Filter Products
+          </h2>
+          <p className="mb-4 text-sm text-gray-600 dark:text-gray-300">
+            Currently showing: {selectedOrigins.length > 0
+              ? `Products from ${selectedOrigins.length} selected origin${selectedOrigins.length > 1 ? 's' : ''}`
+              : 'All products (no origin filters applied)'}
+          </p>
+
+          <OriginFilter
+            onSelectOrigin={setSelectedOrigins}
+            selectedOrigins={selectedOrigins}
+          />
+        </div>
+
         {/* Allergen Filter */}
         <div className="mb-8">
           <h2 className="text-2xl font-semibold text-brand-dark dark:text-white mb-4">
@@ -178,9 +202,21 @@ export default function AllergenFilterPage() {
               </button>
             )}
           </div>
-          {selectedAllergens.length > 0 && (
+          {(selectedAllergens.length > 0 || selectedOrigins.length > 0) && (
             <p className="mt-2 text-xs text-gray-500 dark:text-gray-400">
-              Showing products that contain ANY of the selected allergens
+              Showing products that
+              {selectedOrigins.length > 0 && (
+                <>
+                  are from the selected origin{selectedOrigins.length > 1 ? 's' : ''}
+                  {selectedAllergens.length > 0 && ' and'}
+                </>
+              )}
+              {selectedAllergens.length > 0 && (
+                <>
+                  {selectedOrigins.length > 0 && ' '}
+                  contain any of the selected allergen{selectedAllergens.length > 1 ? 's' : ''}
+                </>
+              )}
             </p>
           )}
         </div>
