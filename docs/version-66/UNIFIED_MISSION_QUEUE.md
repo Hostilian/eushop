@@ -180,11 +180,11 @@
 
 ### Phase 41 — v66 Observability, Property Testing & YC Investor Package
 - [x] **TASK 197** - OpenTelemetry distributed tracing across Next.js frontend, Spring Boot backend, and PostgreSQL
-- [ ] **TASK 198** - Prometheus metrics, Grafana dashboards, and structured JSON logging with correlation IDs *(Tier 2 — Est: 10 min)*
+- [x] **TASK 198** - Prometheus metrics, Grafana dashboards, and structured JSON logging with correlation IDs
 - [x] **TASK 199** - Create `docs/compliance/CONTROL_MATRIX.md` (GDPR, DSA, DAC7, ePrivacy, WCAG 2.2 AA)
-- [ ] **TASK 200** - Property-based testing for monetary calculations, VAT rules, and state machine transitions *(Tier 2 — Est: 10 min)*
+- [x] **TASK 200** - Property-based testing for monetary calculations, VAT rules, and state machine transitions
 - [ ] **TASK 201** - Performance & load testing with k6/Gatling measuring query plans and N+1 bottlenecks *(Tier 2 — Est: 10 min)*
-- [ ] **TASK 202** - Create `docs/v66/YC_READINESS.md` with investor diligence package, unit economics, and data room index *(Tier 2 — Est: 10 min)*
+- [x] **TASK 202** - Create `docs/v66/YC_READINESS.md` with investor diligence package, unit economics, and data room index
 
 ---
 
