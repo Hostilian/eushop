@@ -109,9 +109,9 @@
 - [x] **TASK 148** - Failure-safe timeouts, retries, rate limits, health probes, structured JSON logging, correlation IDs
 
 ### Phase 32 — Test Strategy, CI/CD and Supply-Chain Security
-- [ ] **TASK 149** - Unit and backend integration coverage for compliance, prices, authorization, controllers, migrations *(Tier 2 — Est: 10 min)*
+- [x] **TASK 149** - Unit and backend integration coverage for compliance, prices, authorization, controllers, migrations
 - [ ] **TASK 150** - Frontend and Playwright E2E coverage for rendering, auth, search, cart, checkout, orders, reviews *(Tier 3 — Est: 18 min)*
-- [ ] **TASK 151** - Security test suite for CodeQL regressions, path traversal, upload abuse, CSRF, JWT negatives, rate limits *(Tier 3 — Est: 18 min)*
+- [x] **TASK 151** - Security test suite for CodeQL regressions, path traversal, upload abuse, CSRF, JWT negatives, rate limits
 - [ ] **TASK 152** - GitHub Actions workflow hardening (least privilege, commit SHA action pinning, CodeQL, dependency review) *(Tier 2 — Est: 10 min)*
 - [ ] **TASK 153** - Flaky test quarantine tracking & verification run evidence recording *(Tier 1 — Est: 4 min)*
 
@@ -151,7 +151,7 @@
 ### Phase 37 — v66 Zero-Critical Security Program & STRIDE Threat Model
 - [x] **TASK 175** - Secret & suspicious automation containment, pre-commit prevention, and scanner rules
 - [x] **TASK 176** - Complete CodeQL taint analysis across all numeric casts and path expressions repository-wide
-- [ ] **TASK 177** - Actor & role authorization matrix enforcement & CSRF/SameSite cookie session security *(Tier 3 — Est: 18 min)*
+- [x] **TASK 177** - Actor & role authorization matrix enforcement & CSRF/SameSite cookie session security
 - [x] **TASK 178** - Centralized security headers, CSP, output encoding, and API rate limiting middleware
 - [x] **TASK 179** - Create `docs/security/THREAT_MODEL.md` (STRIDE framework across all 16 domain modules)
 - [x] **TASK 180** - Supply-chain security, GitHub Action commit-SHA pinning, container scanning, and SBOM generation
