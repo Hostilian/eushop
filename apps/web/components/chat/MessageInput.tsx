@@ -31,7 +31,7 @@ export const MessageInput: React.FC<MessageInputProps> = ({
 
   // Handle typing indicators
   useEffect(() => {
-    if (!content.trim()) return;
+    if (!content.trim()) return undefined;
 
     const typingTimeout = setTimeout(() => {
       websocketService.sendTyping(conversationId, false);

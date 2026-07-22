@@ -10,7 +10,7 @@ interface AllergenFilterProps {
   onSelectAllergen: (selected: EUAllergen[]) => void;
 }
 
-export default function AllergenFilter({ products, selectedAllergens, onSelectAllergen }: AllergenFilterProps) {
+export default function AllergenFilter({ products: _products, selectedAllergens, onSelectAllergen }: AllergenFilterProps) {
   const [showTooltip, setShowTooltip] = useState<EUAllergen | null>(null);
 
   // Helper explanations for each allergen
@@ -112,9 +112,7 @@ export default function AllergenFilter({ products, selectedAllergens, onSelectAl
         {selectedAllergens.length > 0 && (
           <button
             onClick={() => onSelectAllergen([])}
-            className="w-full flex items-center justify-center gap-2 px-4 py-2.5 text-sm font-semibold"
-            variant="secondary"
-            size="sm"
+            className="w-full flex items-center justify-center gap-2 px-4 py-2.5 text-sm font-semibold border border-gray-300 dark:border-gray-700 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 transition"
           >
             <span aria-hidden="true">🗑️</span>
             Clear All Filters

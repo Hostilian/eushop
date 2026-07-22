@@ -61,12 +61,12 @@ export function PageWrapper({ children, className = '' }: PageWrapperProps) {
       )}
       
       <main id="main-content" className={`flex-grow container mx-auto px-4 sm:px-6 lg:px-8 py-8 ${className}`}>
-        <ErrorBoundary region="content">
+        <ErrorBoundary region="page">
           {children}
         </ErrorBoundary>
       </main>
       
-      <ErrorBoundary region="footer" compact>
+      <ErrorBoundary region="page" compact>
         <Footer />
       </ErrorBoundary>
     </div>

@@ -6,6 +6,7 @@ interface BadgeProps {
   variant?: 'success' | 'warning' | 'error' | 'info' | 'neutral' | 'allergen';
   size?: 'sm' | 'md';
   icon?: React.ReactNode;
+  className?: string;
 }
 
 const variantClasses: Record<string, string> = {
@@ -26,14 +27,15 @@ const sizeClasses: Record<string, string> = {
  * Inline label badge. Used for allergen disclosure, seller verification status,
  * order status, and other categorical labels.
  */
-export function Badge({ children, variant = 'neutral', size = 'sm', icon }: BadgeProps) {
+export function Badge({ children, variant = 'neutral', size = 'sm', icon, className = '' }: BadgeProps) {
   return (
     <span
       className={[
         'inline-flex items-center font-medium rounded-full border',
         variantClasses[variant],
         sizeClasses[size],
-      ].join(' ')}
+        className,
+      ].filter(Boolean).join(' ')}
     >
       {icon && <span aria-hidden="true">{icon}</span>}
       {children}

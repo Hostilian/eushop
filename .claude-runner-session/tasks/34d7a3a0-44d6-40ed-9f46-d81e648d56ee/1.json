@@ -1,0 +1,9 @@
+{
+  "id": "1",
+  "subject": "Create tasks from .hermes\\/yc-optimization-queue.md",
+  "description": "Read .hermes\\/yc-optimization-queue.md and create tasks from it",
+  "activeForm": "Creating tasks from optimization queue",
+  "status": "pending",
+  "blocks": [],
+  "blockedBy": []
+}

@@ -116,10 +116,10 @@ export function Navbar() {
           </Link>
           {/* Trust Badges Section */}
           <div className="flex items-center gap-2 text-xs">
-            <Badge variant="outline" className="border-brand-green text-brand-green dark:border-brand-gold dark:text-brand-gold">
+            <Badge variant="neutral" className="border-brand-green text-brand-green dark:border-brand-gold dark:text-brand-gold">
               GDPR Compliant
             </Badge>
-            <Badge variant="outline" className="border-brand-green text-brand-green dark:border-brand-gold dark:text-brand-gold">
+            <Badge variant="neutral" className="border-brand-green text-brand-green dark:border-brand-gold dark:text-brand-gold">
               Verified Sellers
             </Badge>
           </div>
@@ -231,10 +231,10 @@ export function Navbar() {
           </Link>
           {/* Trust Badges in Mobile Menu */}
           <div className="flex flex-col gap-1 pt-4 border-t border-gray-100 dark:border-gray-800">
-            <Badge variant="outline" className="w-fit border-brand-green text-brand-green dark:border-brand-gold dark:text-brand-gold">
+            <Badge variant="neutral" className="w-fit border-brand-green text-brand-green dark:border-brand-gold dark:text-brand-gold">
               GDPR Compliant
             </Badge>
-            <Badge variant="outline" className="w-fit border-brand-green text-brand-green dark:border-brand-gold dark:text-brand-gold">
+            <Badge variant="neutral" className="w-fit border-brand-green text-brand-green dark:border-brand-gold dark:text-brand-gold">
               Verified Sellers
             </Badge>
           </div>

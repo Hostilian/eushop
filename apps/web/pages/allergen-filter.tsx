@@ -27,9 +27,6 @@ export default function AllergenFilterPage() {
       setLoading(true);
       const result = await foodAPI.searchWithOrigin(undefined, undefined, 1, 50);
       setProducts(result.data);
-      // Note: This assignment to a const is likely a bug in the original code
-      // but we're preserving the original behavior to avoid introducing new issues
-      origin = result.origin;
       setLoading(false);
     } catch (err) {
       setError('Failed to load products. Using demonstration data.');
@@ -244,7 +241,6 @@ export default function AllergenFilterPage() {
                     dietaryRestrictions={product.dietaryRestrictions || []}
                     qualityScheme={product.qualityScheme}
                     seller={{
-                      id: product.sellerId ?? `seller-${index}`,
                       name: product.seller?.name || 'Seller not available',
                       rating: product.seller?.rating ?? 0,
                       verified: product.seller?.verified === true

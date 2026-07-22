@@ -1,8 +1,6 @@
 import React, { useState, useEffect, useCallback } from 'react';
-import { Input } from '../ui/Input';
-import { User } from '../../lib/types';
-import { userService } from '../../lib/services/userService';
-import { UserAvatar } from './UserAvatar';
+import { User } from '@/lib/types';
+import { userService } from '@/lib/services/userService';
 
 interface UserSearchProps {
   onSelect: (users: User[]) => void;
@@ -71,13 +69,12 @@ export const UserSearch: React.FC<UserSearchProps> = ({
 
   return (
     <div className={`relative ${className}`}>
-      <Input
-        label="Search users"
+      <input
         type="text"
         placeholder={placeholder}
         value={query}
         onChange={(e) => setQuery(e.target.value)}
-        className="w-full"
+        className="w-full px-3 py-2 border border-gray-300 rounded-lg dark:border-gray-700 bg-white dark:bg-gray-900 text-gray-900 dark:text-white"
       />
 
       {loading && (

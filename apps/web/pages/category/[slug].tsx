@@ -21,7 +21,7 @@ export default function CategoryPage() {
     if (!slug) return;
     let isCancelled = false;
 
-    foodAPI.getAll()
+    foodAPI.search()
       .then((items: any[]) => {
         if (isCancelled) return;
         const categorySlug = (slug as string).toLowerCase();

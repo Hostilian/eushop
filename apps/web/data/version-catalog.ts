@@ -37,16 +37,40 @@ export const CURRENT_APPLICATION: VersionCatalogueEntry = {
 
 export const APPLICATION_VIEWS: readonly VersionCatalogueEntry[] = [
   {
-    key: 'v44',
-    name: 'V44 — YC Master Legal Compliance Release',
-    shortName: 'V44',
-    badge: 'RELEASE',
+    key: 'v66',
+    name: 'V66 - Evolutionary Scale & PostGIS Spatial Engine',
+    shortName: 'V66',
+    badge: 'V66 RELEASE',
     description:
-      'Master legal compliance & YC optimization release featuring EU Annex II allergens, DSA Art. 30 seller disclosures, GPSR, and 100% compliance test coverage.',
-    path: '/',
+      'Version 66 flagship release: PostGIS spatial corridor matching, OpenTelemetry distributed tracing, k6 load testing, and property-based financial testing.',
+    path: '/?v=v66',
     kind: 'application-view',
     accentClass:
-      'from-emerald-600 to-amber-500 border-amber-400 text-emerald-800 dark:text-emerald-200 font-bold',
+      'from-emerald-600 to-indigo-600 border-indigo-400 text-emerald-800 dark:text-emerald-200 font-bold',
+  },
+  {
+    key: 'v55',
+    name: 'V55 - Security Emergency & CodeQL Zero-Critical',
+    shortName: 'V55',
+    badge: 'V55 RELEASE',
+    description:
+      'Version 55 safety & compliance milestone: Zero-critical CodeQL enforcement, OWASP taint sink remediation, and DAC7 automated tax reporting.',
+    path: '/?v=v55',
+    kind: 'application-view',
+    accentClass:
+      'from-blue-600 to-emerald-500 border-blue-400 text-blue-800 dark:text-blue-200 font-bold',
+  },
+  {
+    key: 'v44',
+    name: 'V44 - YC Master Legal Compliance Release',
+    shortName: 'V44',
+    badge: 'V44 RELEASE',
+    description:
+      'Master legal compliance & YC optimization release featuring EU Annex II allergens, DSA Art. 30 seller disclosures, GPSR, and 100% compliance test coverage.',
+    path: '/?v=v44',
+    kind: 'application-view',
+    accentClass:
+      'from-amber-500 to-emerald-600 border-amber-400 text-amber-800 dark:text-amber-200 font-bold',
   },
   {
     key: 'buyer-view',
@@ -319,6 +343,7 @@ export const HISTORICAL_SNAPSHOTS: readonly VersionCatalogueEntry[] = [
 
 export const VERSION_SELECTOR_OPTIONS: readonly VersionCatalogueEntry[] = [
   CURRENT_APPLICATION,
+  ...APPLICATION_VIEWS,
   ...HISTORICAL_SNAPSHOTS,
 ];
 
