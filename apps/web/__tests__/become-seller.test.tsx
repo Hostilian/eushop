@@ -22,11 +22,16 @@ jest.mock('next/link', () => {
   return MockLink;
 });
 
+<<<<<<< HEAD
 jest.mock('../components/layout/PageWrapper', () => ({
   PageWrapper: ({ children }: { children: React.ReactNode }) => <>{children}</>,
 }));
 
 // Mock the API services
+=======
+// Mock the API services — the page calls authAPI.getCurrentUser on mount.
+// NOTE: jest.mock is hoisted, so mockUser must be defined INSIDE the factory.
+>>>>>>> pull-1
 jest.mock('../lib/services', () => {
   const fakeUser = {
     id: 'test-user-id',
@@ -42,12 +47,19 @@ jest.mock('../lib/services', () => {
     authAPI: {
       getCurrentUser: jest.fn().mockResolvedValue(fakeUser),
       getCachedProfile: jest.fn().mockReturnValue(fakeUser),
+<<<<<<< HEAD
       becomeSeller: jest.fn(),
+=======
+>>>>>>> pull-1
     },
   };
 });
 
+<<<<<<< HEAD
 // Storage mock
+=======
+// Storage mock (shared for localStorage + sessionStorage)
+>>>>>>> pull-1
 const storageMock = (() => {
   let store: Record<string, string> = {};
   return {
@@ -64,6 +76,7 @@ Object.defineProperty(window, 'localStorage', { value: storageMock, writable: tr
 Object.defineProperty(window, 'sessionStorage', { value: storageMock, writable: true });
 
 describe('BecomeSeller Page', () => {
+<<<<<<< HEAD
   it('renders trader onboarding page heading and DSA Art. 30 disclosures', () => {
     render(<BecomeSeller />);
     expect(screen.getByRole('heading', { level: 1, name: /Trader Onboarding & Cross-Border Identity Verification/i })).toBeInTheDocument();
@@ -76,3 +89,31 @@ describe('BecomeSeller Page', () => {
     expect(screen.getByRole('button', { name: /Submit Verification Data/i })).toBeInTheDocument();
   });
 });
+=======
+  beforeEach(() => {
+    jest.clearAllMocks();
+    storageMock.clear();
+  });
+
+  it('renders become-seller page heading', async () => {
+    render(<BecomeSeller />);
+    // Wait for async getCurrentUser to resolve and the form to render
+    const heading = await screen.findByRole('heading', { name: /become a seller/i });
+    expect(heading).toBeInTheDocument();
+  });
+
+  it('renders key form section labels after loading', async () => {
+    render(<BecomeSeller />);
+    // Wait for the loading spinner to disappear and the form to appear
+    await waitFor(() => {
+      expect(screen.queryByText('Loading user data...')).not.toBeInTheDocument();
+    });
+    expect(screen.getByText('Business Name')).toBeInTheDocument();
+    expect(screen.getByText('Business Email')).toBeInTheDocument();
+    expect(screen.getByText('Phone Number')).toBeInTheDocument();
+    expect(screen.getByText(/KYB & Tax Verification/)).toBeInTheDocument();
+  });
+});
+
+
+>>>>>>> pull-1

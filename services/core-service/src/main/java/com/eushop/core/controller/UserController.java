@@ -2,15 +2,26 @@ package com.eushop.core.controller;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+<<<<<<< HEAD
+=======
+import org.springframework.web.bind.annotation.CrossOrigin;
+>>>>>>> pull-1
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+<<<<<<< HEAD
+=======
+import org.springframework.web.bind.annotation.PutMapping;
+>>>>>>> pull-1
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import java.util.Map;
+import java.util.List;
+import java.util.stream.Collectors;
 
 import java.util.List;
 import java.util.Map;
@@ -119,12 +130,41 @@ public class UserController {
         return ResponseEntity.ok(ApiResponse.success(toDTO(user), "Now a seller"));
     }
 
+<<<<<<< HEAD
     @GetMapping("/{id}/verify")
+=======
+    @GetMapping("/all")
+    public ResponseEntity<ApiResponse<List<UserDTO>>> getAllUsers(
+            @RequestHeader(value = "X-User-Role", required = false) String userRole,
+            @RequestParam(required = false) String role) {
+        
+        if (!"ADMIN".equalsIgnoreCase(userRole)) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN)
+                    .body(ApiResponse.error("Only admins can list users"));
+        }
+
+        List<User> users;
+        if (role != null) {
+            users = userService.getUsersByRole(User.UserRole.valueOf(role.toUpperCase()));
+        } else {
+            users = userService.getAllUsers();
+        }
+
+        List<UserDTO> dtos = users.stream().map(this::toDTO).collect(Collectors.toList());
+        return ResponseEntity.ok(ApiResponse.success(dtos));
+    }
+
+    @PostMapping("/{id}/verify")
+>>>>>>> pull-1
     public ResponseEntity<ApiResponse<UserDTO>> verifySeller(
             @PathVariable String id,
             @RequestHeader(value = "X-User-Role", required = false) String userRole,
             @RequestParam boolean verified) {
+<<<<<<< HEAD
 
+=======
+        
+>>>>>>> pull-1
         if (!"ADMIN".equalsIgnoreCase(userRole)) {
             return ResponseEntity.status(HttpStatus.FORBIDDEN)
                     .body(ApiResponse.error("Only admins can verify sellers"));
@@ -138,16 +178,25 @@ public class UserController {
     public ResponseEntity<ApiResponse<Void>> deleteAccount(
             @PathVariable String id,
             @RequestHeader("X-User-Id") String userId) {
+<<<<<<< HEAD
 
+=======
+        
+>>>>>>> pull-1
         if (!id.equals(userId)) {
             return ResponseEntity.status(HttpStatus.FORBIDDEN)
                     .body(ApiResponse.error("Cannot delete other user's account"));
         }
+<<<<<<< HEAD
 
+=======
+        
+>>>>>>> pull-1
         userService.anonymiseUser(id);
         return ResponseEntity.ok(ApiResponse.success(null, "Account successfully anonymised (GDPR erasure completed)"));
     }
 
+<<<<<<< HEAD
     // COMPLIANCE-REVIEW: verify erasure cascades to all subprocessors
     @DeleteMapping("/{id}/erase")
     public ResponseEntity<ApiResponse<Void>> eraseUserData(
@@ -165,16 +214,26 @@ public class UserController {
                 "Erasure request processed for EUshop core records; subprocessor erasure requires separate verification"));
     }
 
+=======
+>>>>>>> pull-1
     @GetMapping("/{id}/export")
     public ResponseEntity<ApiResponse<Map<String, Object>>> exportAccount(
             @PathVariable String id,
             @RequestHeader("X-User-Id") String userId) {
+<<<<<<< HEAD
 
+=======
+        
+>>>>>>> pull-1
         if (!id.equals(userId)) {
             return ResponseEntity.status(HttpStatus.FORBIDDEN)
                     .body(ApiResponse.error("Cannot export other user's data"));
         }
+<<<<<<< HEAD
 
+=======
+        
+>>>>>>> pull-1
         Map<String, Object> data = userService.exportUserData(id);
         return ResponseEntity.ok(ApiResponse.success(data, "User data exported successfully (GDPR portability)"));
     }
@@ -185,11 +244,16 @@ public class UserController {
             @RequestHeader("X-User-Id") String userId,
             @RequestBody Map<String, Object> requestBody,
             jakarta.servlet.http.HttpServletRequest request) {
+<<<<<<< HEAD
 
+=======
+        
+>>>>>>> pull-1
         if (!id.equals(userId)) {
             return ResponseEntity.status(HttpStatus.FORBIDDEN)
                     .body(ApiResponse.error("Cannot record consent for other user"));
         }
+<<<<<<< HEAD
 
         String consentType = (String) requestBody.get("consentType");
         String consentVersion = (String) requestBody.get("consentVersion");
@@ -202,6 +266,20 @@ public class UserController {
         String ip = request.getRemoteAddr();
         String userAgent = request.getHeader("User-Agent");
 
+=======
+        
+        String consentType = (String) requestBody.get("consentType");
+        String consentVersion = (String) requestBody.get("consentVersion");
+        Boolean granted = (Boolean) requestBody.get("granted");
+        
+        if (consentType == null || consentVersion == null || granted == null) {
+            return ResponseEntity.badRequest().body(ApiResponse.error("Missing required consent fields"));
+        }
+        
+        String ip = request.getRemoteAddr();
+        String userAgent = request.getHeader("User-Agent");
+        
+>>>>>>> pull-1
         userService.recordConsent(id, consentType, consentVersion, granted, ip, userAgent);
         return ResponseEntity.ok(ApiResponse.success(null, "Consent logged successfully"));
     }

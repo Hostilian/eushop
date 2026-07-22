@@ -85,12 +85,15 @@ public class Order {
     @Column(name = "tracking_number")
     private String trackingNumber;
 
+<<<<<<< HEAD
     @Column(name = "platform_fee_eur")
     private Double platformFeeEur;
 
     @Column(name = "seller_payout_eur")
     private Double sellerPayoutEur;
 
+=======
+>>>>>>> pull-1
     /**
      * Stripe PaymentIntent ID — set when the order is created at checkout.
      * Used by the webhook handler to confirm/cancel the order asynchronously.

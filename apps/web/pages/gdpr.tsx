@@ -10,6 +10,7 @@ export default function GDPRPage() {
   const [exporting, setExporting] = useState(false);
   const [deleting, setDeleting] = useState(false);
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
+<<<<<<< HEAD
   const [cookieConsent, setCookieConsent] = useState(() => {
     if (typeof window !== 'undefined') {
       const consentStr = localStorage.getItem('cookieConsent');
@@ -25,6 +26,9 @@ export default function GDPRPage() {
     }
     return { analytics: false, marketing: false };
   });
+=======
+  const [cookieConsent, setCookieConsent] = useState({ analytics: false, marketing: false });
+>>>>>>> pull-1
   const [error, setError] = useState('');
   const [successMsg, setSuccessMsg] = useState('');
   const router = useRouter();
@@ -46,6 +50,25 @@ export default function GDPRPage() {
       }
     };
     fetchUser();
+<<<<<<< HEAD
+=======
+
+    // Read cookie preferences
+    if (typeof window !== 'undefined') {
+      const consentStr = localStorage.getItem('cookieConsent');
+      if (consentStr) {
+        try {
+          const parsed = JSON.parse(consentStr);
+          setCookieConsent({
+            analytics: !!parsed.analytics,
+            marketing: !!parsed.marketing,
+          });
+        } catch {
+          // ignore
+        }
+      }
+    }
+>>>>>>> pull-1
   }, [router]);
 
   const handleExport = async () => {
@@ -364,6 +387,7 @@ export default function GDPRPage() {
                 className="h-4.5 w-4.5 text-primary focus:ring-primary border-gray-300 dark:border-gray-700 rounded cursor-pointer"
               />
             </div>
+<<<<<<< HEAD
 
             <div className="flex items-center justify-between p-4 bg-gray-50 dark:bg-gray-950 rounded-xl opacity-60">
               <div className="max-w-[85%]">
@@ -372,6 +396,8 @@ export default function GDPRPage() {
               </div>
               <span className="text-xs font-bold text-gray-400 uppercase">Not Available</span>
             </div>
+=======
+>>>>>>> pull-1
           </div>
         </div>
 

@@ -7,7 +7,11 @@
 -- This prevents fake reviews and satisfies the DSA "trusted review" requirement (Recital 62).
 ALTER TABLE reviews ADD COLUMN IF NOT EXISTS verified_purchase BOOLEAN NOT NULL DEFAULT FALSE;
 
+<<<<<<< HEAD
 CREATE INDEX IF NOT EXISTS idx_reviews_verified_purchase_food ON reviews(verified_purchase, food_id);
+=======
+CREATE INDEX IF NOT EXISTS idx_reviews_verified_purchase ON reviews(verified_purchase, food_id);
+>>>>>>> pull-1
 
 -- Materialized view for fast listing-page rating display.
 -- Refreshed via Spring Application Event on every new review save.

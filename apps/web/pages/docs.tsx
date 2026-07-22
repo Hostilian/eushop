@@ -2,8 +2,11 @@ import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import fs from 'fs';
 import path from 'path';
+<<<<<<< HEAD
 import { PageWrapper } from '../components/layout/PageWrapper';
 import { authAPI } from '../lib/services';
+=======
+>>>>>>> pull-1
 
 interface DocsProps {
   statusContent: string;
@@ -255,10 +258,17 @@ function SandboxTester() {
           allergens: ['Milk', 'Soy', 'Nuts']
         }, null, 2));
       } else if (endpoint === '/auth/me') {
+<<<<<<< HEAD
         const user = await authAPI.getCurrentUser().catch(() => null);
         if (user) {
           setResponseCode(200);
           setResponseBody(JSON.stringify({ status: 'SUCCESS', data: user }, null, 2));
+=======
+        const user = localStorage.getItem('user');
+        if (user) {
+          setResponseCode(200);
+          setResponseBody(JSON.stringify({ status: 'SUCCESS', data: JSON.parse(user) }, null, 2));
+>>>>>>> pull-1
         } else {
           setResponseCode(401);
           setResponseBody(JSON.stringify({ status: 'ERROR', message: 'Unauthorized. No active session cookie found.' }, null, 2));
@@ -273,7 +283,11 @@ function SandboxTester() {
           status: 'requires_payment_method'
         }, null, 2));
       } else if (endpoint === '/orders') {
+<<<<<<< HEAD
         const user = await authAPI.getCurrentUser().catch(() => null);
+=======
+        const user = localStorage.getItem('user');
+>>>>>>> pull-1
         if (user) {
           setResponseCode(200);
           setResponseBody(JSON.stringify({
@@ -284,7 +298,11 @@ function SandboxTester() {
               productName: 'Artisanal Belgian Chocolates',
               quantity: 1,
               totalPrice: 24.99,
+<<<<<<< HEAD
               buyerEmail: user.email,
+=======
+              buyerEmail: JSON.parse(user).email,
+>>>>>>> pull-1
               status: 'PROCESSING'
             }
           }, null, 2));
@@ -343,7 +361,11 @@ function SandboxTester() {
         <button
           onClick={handleSend}
           disabled={sending}
+<<<<<<< HEAD
           className="bg-brand-green hover:opacity-90 text-white rounded-xl text-xs font-bold transition md:col-span-1 py-2 uppercase"
+=======
+          className="bg-blue-600 hover:bg-blue-700 text-white rounded-xl text-xs font-bold transition md:col-span-1 py-2 uppercase"
+>>>>>>> pull-1
         >
           {sending ? 'Sending...' : 'Send Call'}
         </button>
@@ -384,9 +406,31 @@ export default function DeveloperDocs({ statusContent, devContent, auditContent,
   };
 
   return (
+<<<<<<< HEAD
     <PageWrapper>
       {/* Workspace split screen layout */}
       <div className="flex-1 max-w-7xl w-full mx-auto flex flex-col md:flex-row items-stretch py-6">
+=======
+    <div className="min-h-screen bg-gray-50 text-gray-800 font-sans flex flex-col">
+      <nav className="bg-white border-b border-gray-150 py-4 px-6 shadow-sm sticky top-0 z-50">
+        <div className="max-w-7xl mx-auto flex justify-between items-center">
+          <Link href="/" className="text-2xl font-extrabold text-primary flex items-center gap-2">
+            <span className="text-secondary">🌿</span> EUshop
+          </Link>
+          <div className="flex items-center gap-3">
+            <span className="text-xs font-bold px-2.5 py-1 bg-blue-50 border border-blue-100 text-blue-700 rounded-full">
+              Developer Portal
+            </span>
+            <Link href="/" className="text-xs font-bold text-gray-500 hover:text-primary transition">
+              Storefront
+            </Link>
+          </div>
+        </div>
+      </nav>
+
+      {/* Workspace split screen layout */}
+      <div className="flex-1 max-w-7xl w-full mx-auto flex flex-col md:flex-row items-stretch">
+>>>>>>> pull-1
         {/* Sidebar Nav */}
         <aside className="w-full md:w-64 border-r border-gray-200 bg-white p-6 shrink-0 space-y-6">
           <div>
@@ -395,7 +439,11 @@ export default function DeveloperDocs({ statusContent, devContent, auditContent,
               <button
                 onClick={() => setActiveDoc('status')}
                 className={`w-full text-left px-3 py-2 rounded-xl text-xs font-bold transition ${
+<<<<<<< HEAD
                   activeDoc === 'status' ? 'bg-brand-green/10 text-brand-green' : 'text-gray-600 hover:bg-gray-50'
+=======
+                  activeDoc === 'status' ? 'bg-blue-50 text-blue-600' : 'text-gray-600 hover:bg-gray-50'
+>>>>>>> pull-1
                 }`}
               >
                 STATUS.md
@@ -403,7 +451,11 @@ export default function DeveloperDocs({ statusContent, devContent, auditContent,
               <button
                 onClick={() => setActiveDoc('dev')}
                 className={`w-full text-left px-3 py-2 rounded-xl text-xs font-bold transition ${
+<<<<<<< HEAD
                   activeDoc === 'dev' ? 'bg-brand-green/10 text-brand-green' : 'text-gray-600 hover:bg-gray-50'
+=======
+                  activeDoc === 'dev' ? 'bg-blue-50 text-blue-600' : 'text-gray-600 hover:bg-gray-50'
+>>>>>>> pull-1
                 }`}
               >
                 DEVELOPMENT.md
@@ -411,7 +463,11 @@ export default function DeveloperDocs({ statusContent, devContent, auditContent,
               <button
                 onClick={() => setActiveDoc('audit')}
                 className={`w-full text-left px-3 py-2 rounded-xl text-xs font-bold transition ${
+<<<<<<< HEAD
                   activeDoc === 'audit' ? 'bg-brand-green/10 text-brand-green' : 'text-gray-600 hover:bg-gray-50'
+=======
+                  activeDoc === 'audit' ? 'bg-blue-50 text-blue-600' : 'text-gray-600 hover:bg-gray-50'
+>>>>>>> pull-1
                 }`}
               >
                 Investor Diligence Plan
@@ -419,7 +475,11 @@ export default function DeveloperDocs({ statusContent, devContent, auditContent,
               <button
                 onClick={() => setActiveDoc('api')}
                 className={`w-full text-left px-3 py-2 rounded-xl text-xs font-bold transition ${
+<<<<<<< HEAD
                   activeDoc === 'api' ? 'bg-brand-green/10 text-brand-green' : 'text-gray-600 hover:bg-gray-50'
+=======
+                  activeDoc === 'api' ? 'bg-blue-50 text-blue-600' : 'text-gray-600 hover:bg-gray-50'
+>>>>>>> pull-1
                 }`}
               >
                 API_REFERENCE.md
@@ -461,7 +521,11 @@ export default function DeveloperDocs({ statusContent, devContent, auditContent,
                   href="https://github.com"
                   target="_blank"
                   rel="noreferrer"
+<<<<<<< HEAD
                   className="text-brand-green hover:underline font-bold"
+=======
+                  className="text-primary hover:underline font-bold"
+>>>>>>> pull-1
                 >
                   Improve this page.
                 </a>
@@ -471,7 +535,11 @@ export default function DeveloperDocs({ statusContent, devContent, auditContent,
           </article>
         </main>
       </div>
+<<<<<<< HEAD
     </PageWrapper>
+=======
+    </div>
+>>>>>>> pull-1
   );
 }
 
@@ -487,8 +555,11 @@ export async function getStaticProps() {
   // So we try process.cwd() first, then __dirname-based fallbacks
   const tryRoots = [
     process.cwd(),
+<<<<<<< HEAD
     path.resolve(process.cwd(), '..'),
     path.resolve(process.cwd(), '../..'),
+=======
+>>>>>>> pull-1
     path.resolve(/* turbopackIgnore: true */ __dirname, '../../../'),
     path.resolve(/* turbopackIgnore: true */ __dirname, '../../'),
     path.resolve(/* turbopackIgnore: true */ __dirname, '../'),

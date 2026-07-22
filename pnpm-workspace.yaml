@@ -1,4 +1,7 @@
 packages:
   - 'apps/*'
+<<<<<<< HEAD
   - 'packages/*'
+=======
+>>>>>>> pull-1
   - 'services/core-service'

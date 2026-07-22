@@ -186,6 +186,7 @@ public class FoodController {
                     .body(ApiResponse.error("Only seller or admin can modify this food"));
         }
 
+<<<<<<< HEAD
         if (available) {
             var seller = userService.getUserById(food.getSellerId()).orElse(null);
             if (seller == null || !Boolean.TRUE.equals(seller.getKycVerified())) {
@@ -194,10 +195,13 @@ public class FoodController {
             }
         }
 
+=======
+>>>>>>> pull-1
         foodService.toggleAvailability(id, available);
         
         Food updated = foodService.getFoodById(id)
                 .orElseThrow(() -> new IllegalArgumentException("Food not found"));
+<<<<<<< HEAD
         return ResponseEntity.ok(ApiResponse.success(toDTO(updated), "Food availability updated"));
     }
 
@@ -227,6 +231,12 @@ public class FoodController {
         return ResponseEntity.ok(ApiResponse.success(dtos, "Search results fetched successfully"));
     }
 
+=======
+        
+        return ResponseEntity.ok(ApiResponse.success(toDTO(updated), "Food availability updated"));
+    }
+
+>>>>>>> pull-1
     private FoodDTO toDTO(Food food) {
         FoodDTO dto = new FoodDTO();
         dto.setId(food.getId());

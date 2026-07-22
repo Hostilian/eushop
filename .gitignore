@@ -71,6 +71,7 @@ logs/key_daemon.log
 # Auto-generated watchdog script (from install_daemon.ps1)
 scripts/watchdog_daemon.ps1
 
+<<<<<<< HEAD
 # Key Harvesting & LLM related files
 /data/validated_keys.json
 /scripts/harvest_keys.py
@@ -125,3 +126,6 @@ nul
 # Script backups
 scripts/*.backup-*
 scripts/*.backup-stdin-*
+=======
+# NOTE: data/validated_keys.json IS committed (public pool from GitHub Actions)
+>>>>>>> pull-1

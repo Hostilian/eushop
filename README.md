@@ -68,6 +68,7 @@ cd services/core-service
 
 ---
 
+<<<<<<< HEAD
 ## 🛡️ Regulatory Compliance & Security
 
 For details on security architecture and vulnerability disclosure, see [SECURITY.md](file:///d:/CODING/eushop/SECURITY.md). For details on regulatory compliance status and gap analysis, see [COMPLIANCE_GAPS.md](file:///d:/CODING/eushop/COMPLIANCE_GAPS.md).
@@ -81,6 +82,19 @@ For details on security architecture and vulnerability disclosure, see [SECURITY
 - **Article 30/31 KYBC trader vetting**: Requires commercial sellers to have `kycVerified=true` and role `SELLER` to list items.
 - **Recital 62 Verified reviews**: Limits listing reviews only to verified buyers with a `DELIVERED` order status.
 
+=======
+## 🛡️ Regulatory & Regulatory Compliance
+
+### General Data Protection Regulation (GDPR)
+- **Article 17 Erasure ("Right to be Forgotten")**: Anonymises personal profiles and credentials while retaining order histories for tax audit obligations.
+- **Article 20 Portability**: Users can download a full, machine-readable JSON copy of their stored account data.
+- **Consent logging**: Automatically records and hashes User-Agent/IP details on any cookies preferences update.
+
+### Digital Services Act (DSA)
+- **Article 30/31 KYBC trader vetting**: Requires commercial sellers to have `kycVerified=true` and role `SELLER` to list items.
+- **Recital 62 Verified reviews**: Limits listing reviews only to verified buyers with a `DELIVERED` order status.
+
+>>>>>>> pull-1
 ### DAC7 Tax Reporting Directive
 - Captures seller taxation IDs, trade register records, and annual platform revenues for reporting to EU tax authorities.
 

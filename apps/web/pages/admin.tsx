@@ -21,9 +21,16 @@ export default function AdminPage() {
   const setSessionTimeout = () => {
     clearSessionTimeout();
     sessionTimeoutRef.current = setTimeout(() => {
+<<<<<<< HEAD
       void authAPI.logout().finally(() => {
         router.push('/login?session=expired&redirect=/admin');
       });
+=======
+      // Clear local storage and redirect to login
+      localStorage.removeItem('userSession');
+      sessionStorage.clear();
+      router.push('/login?session=expired&redirect=/admin');
+>>>>>>> pull-1
     }, 15 * 60 * 1000); // 15 minutes
   };
 
@@ -35,6 +42,7 @@ export default function AdminPage() {
   useEffect(() => {
     const checkAdminAccess = async () => {
       try {
+<<<<<<< HEAD
         // Security: Add timeout for the API call
         const controller = new AbortController();
         const timeoutId = setTimeout(() => controller.abort(), 10000);
@@ -49,6 +57,36 @@ export default function AdminPage() {
         
         clearTimeout(timeoutId);
 
+=======
+        // Security: Check for session in localStorage first
+        const sessionData = localStorage.getItem('userSession');
+        if (sessionData) {
+          try {
+            const parsed = JSON.parse(sessionData);
+            if (parsed.expires && Date.now() > parsed.expires) {
+              localStorage.removeItem('userSession');
+              throw new Error('Session expired');
+            }
+          } catch {
+            localStorage.removeItem('userSession');
+          }
+        }
+
+        // Security: Add timeout for the API call
+        const controller = new AbortController();
+        const timeoutId = setTimeout(() => controller.abort(), 10000);
+
+        // Security: Check if user has admin role before allowing access
+        const currentUser = await authAPI.getCurrentUser({
+          signal: controller.signal,
+          headers: {
+            'X-Request-ID': Math.random().toString(36).substring(2, 15)
+          }
+        });
+        
+        clearTimeout(timeoutId);
+
+>>>>>>> pull-1
         if (currentUser && currentUser.role === 'ADMIN') {
           // Security: Validate user object structure
           if (!currentUser.id || !currentUser.email) {
@@ -57,6 +95,16 @@ export default function AdminPage() {
           
           setIsAuthorized(true);
           
+<<<<<<< HEAD
+=======
+          // Security: Store session with expiration
+          localStorage.setItem('userSession', JSON.stringify({
+            userId: currentUser.id,
+            role: currentUser.role,
+            expires: Date.now() + 15 * 60 * 1000 // 15 minutes
+          }));
+          
+>>>>>>> pull-1
           // Set up session timeout
           setSessionTimeout();
           
@@ -78,6 +126,24 @@ export default function AdminPage() {
         // Graceful degradation: Provide user-friendly error messages with offline detection
         if (!navigator.onLine) {
           setError('You appear to be offline. Please check your internet connection and try again.');
+<<<<<<< HEAD
+=======
+          // In offline mode, allow viewing cached admin data if available
+          try {
+            const cachedSession = localStorage.getItem('userSession');
+            if (cachedSession) {
+              const parsed = JSON.parse(cachedSession);
+              if (parsed.role === 'admin' && parsed.expires > Date.now()) {
+                setIsAuthorized(true);
+                setLoading(false);
+                router.replace('/admin/dashboard');
+                return;
+              }
+            }
+          } catch (cacheError) {
+            console.warn('Could not use cached session:', cacheError);
+          }
+>>>>>>> pull-1
         } else if (error.name === 'AbortError') {
           setError('Request timed out. Please check your connection and try again.');
         } else if (error.message?.includes('Network')) {
@@ -103,27 +169,42 @@ export default function AdminPage() {
 
     checkAdminAccess();
 
+<<<<<<< HEAD
+=======
+    // Cleanup function
+>>>>>>> pull-1
     return () => {
       clearSessionTimeout();
       window.removeEventListener('mousemove', resetSessionTimeout);
       window.removeEventListener('keydown', resetSessionTimeout);
       window.removeEventListener('click', resetSessionTimeout);
     };
+<<<<<<< HEAD
     // eslint-disable-next-line react-hooks/exhaustive-deps
+=======
+>>>>>>> pull-1
   }, [router]);
 
   if (loading) {
     return (
       <div className="min-h-screen bg-gray-900 text-gray-100 flex items-center justify-center font-sans">
         <div className="text-center">
+<<<<<<< HEAD
           <div className="inline-block animate-spin rounded-full h-8 w-8 border-b-2 border-brand-green mb-4"></div>
+=======
+          <div className="inline-block animate-spin rounded-full h-8 w-8 border-b-2 border-primary mb-4"></div>
+>>>>>>> pull-1
           <p className="text-gray-400 text-sm mb-2">Verifying admin privileges...</p>
           <p className="text-gray-500 text-xs mb-4">This may take a few seconds</p>
           {/* Graceful degradation: Provide alternative actions if loading is stuck */}
           <div className="space-y-2">
             <button 
               onClick={() => window.location.reload()}
+<<<<<<< HEAD
               className="text-brand-green hover:underline text-sm block mx-auto"
+=======
+              className="text-primary hover:underline text-sm block mx-auto"
+>>>>>>> pull-1
             >
               Refresh page
             </button>
@@ -155,7 +236,11 @@ export default function AdminPage() {
             {error.includes('offline') && (
               <button
                 onClick={() => window.location.reload()}
+<<<<<<< HEAD
                 className="px-4 py-2 bg-brand-green text-white rounded-lg hover:opacity-90 transition"
+=======
+                className="px-4 py-2 bg-primary text-white rounded-lg hover:opacity-90 transition"
+>>>>>>> pull-1
               >
                 Retry Connection
               </button>

@@ -4,8 +4,11 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
 import java.util.Optional;
+<<<<<<< HEAD
 import java.util.Arrays;
 import java.util.List;
+=======
+>>>>>>> pull-1
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -37,8 +40,12 @@ public class FoodServiceTest {
         mockFood.setPrice(24.99);
         mockFood.setCountry("BE");
         mockFood.setCategory("Chocolates");
+<<<<<<< HEAD
         mockFood.setAllergens("[\"Milk\", \"Nuts\"]");
         mockFood.setDietaryRestrictions("[\"Vegetarian\", \"Gluten-Free\"]");
+=======
+        mockFood.setAllergens("None");
+>>>>>>> pull-1
         mockFood.setViewCount(5);
         mockFood.setAvailable(true);
     }
@@ -79,8 +86,12 @@ public class FoodServiceTest {
         updateDetails.setCategory("Gifts");
         updateDetails.setPrice(29.99);
         updateDetails.setCountry("BE");
+<<<<<<< HEAD
         updateDetails.setAllergens("[\"Nuts\"]");
         updateDetails.setDietaryRestrictions("[\"Vegan\"]");
+=======
+        updateDetails.setAllergens("Nuts");
+>>>>>>> pull-1
 
         Food updated = foodService.updateFood("food-123", updateDetails);
 
@@ -88,13 +99,18 @@ public class FoodServiceTest {
         assertEquals("Updated Chocolates", updated.getName());
         assertEquals("Updated Description", updated.getDescription());
         assertEquals(29.99, updated.getPrice());
+<<<<<<< HEAD
         assertEquals("[\"Nuts\"]", updated.getAllergens());
         assertEquals("[\"Vegan\"]", updated.getDietaryRestrictions());
+=======
+        assertEquals("Nuts", updated.getAllergens());
+>>>>>>> pull-1
         verify(foodRepository, times(1)).findById("food-123");
         verify(foodRepository, times(1)).save(mockFood);
     }
 
     @Test
+<<<<<<< HEAD
     void testCreateFood_AllergenDataIntegrity() {
         when(foodRepository.save(any(Food.class))).thenReturn(mockFood);
 
@@ -107,6 +123,8 @@ public class FoodServiceTest {
     }
 
     @Test
+=======
+>>>>>>> pull-1
     void testDeleteFood_Success() {
         doNothing().when(foodRepository).deleteById("food-123");
 

@@ -224,11 +224,15 @@ def validate_key(item: dict, timeout: int = VALIDATION_TIMEOUT) -> dict:
     preferred = item.get("working_base_url") or item.get("base_url")
     urls_to_try = get_healthy_urls(preferred)
 
+<<<<<<< HEAD
     headers = {
         "Authorization": f"Bearer {key}",
         "Content-Type": "application/json",
         "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36"
     }
+=======
+    headers = {"Authorization": f"Bearer {key}", "Content-Type": "application/json"}
+>>>>>>> pull-1
     payload = {"model": model, "messages": [{"role": "user", "content": "hi"}], "max_tokens": 1}
 
     for base_url in urls_to_try[:4]:  # Try up to 4 endpoints per key
@@ -285,6 +289,7 @@ def validate_key(item: dict, timeout: int = VALIDATION_TIMEOUT) -> dict:
     return item
 
 
+<<<<<<< HEAD
 def load_custom_keys() -> list[dict]:
     """Load custom keys from custom_keys.json in project root."""
     path = PROJECT_ROOT / "custom_keys.json"
@@ -311,6 +316,8 @@ def load_custom_keys() -> list[dict]:
     return []
 
 
+=======
+>>>>>>> pull-1
 # ─────────────────────────────────────────────────────────────────────────────
 # Layer 1: Hot cache
 # ─────────────────────────────────────────────────────────────────────────────
@@ -567,10 +574,17 @@ def model_score(model: str) -> int:
 
 def write_hot_cache(valid_keys: list[dict], source_tag: str = "refresh"):
     """Write the hot cache sorted by model priority."""
+<<<<<<< HEAD
     # Sort: custom first, then non-rate-limited first, then by model score
     sorted_keys = sorted(
         valid_keys,
         key=lambda k: (k.get("custom", False), not k.get("rate_limited", False), model_score(k.get("model", ""))),
+=======
+    # Sort: non-rate-limited first, then by model score
+    sorted_keys = sorted(
+        valid_keys,
+        key=lambda k: (not k.get("rate_limited", False), model_score(k.get("model", ""))),
+>>>>>>> pull-1
         reverse=True,
     )
     data = {
@@ -775,8 +789,12 @@ def refresh_cycle(force_harvest: bool = False) -> int:
         remote_keys = load_remote_pool()
 
     # ── Merge all raw sources ─────────────────────────────────────────────────
+<<<<<<< HEAD
     custom_keys = load_custom_keys()
     all_raw = custom_keys + fresh_from_harvest + local_keys + remote_keys
+=======
+    all_raw = fresh_from_harvest + local_keys + remote_keys
+>>>>>>> pull-1
     all_raw = [k for k in all_raw if k.get("key") and k["key"] not in known_invalid]
     all_raw = deduplicate(all_raw)
 

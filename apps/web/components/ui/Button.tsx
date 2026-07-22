@@ -1,6 +1,7 @@
 
 import * as React from 'react';
 
+<<<<<<< HEAD
 type ButtonVariant =
   | 'primary'
   | 'secondary'
@@ -9,6 +10,10 @@ type ButtonVariant =
   | 'danger'
   | 'destructive';
 type ButtonSize = 'sm' | 'md' | 'lg' | 'icon';
+=======
+type ButtonVariant = 'primary' | 'secondary' | 'ghost' | 'danger';
+type ButtonSize = 'sm' | 'md' | 'lg';
+>>>>>>> pull-1
 
 interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
   variant?: ButtonVariant;
@@ -21,6 +26,7 @@ interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
 
 const variantClasses: Record<ButtonVariant, string> = {
   primary:
+<<<<<<< HEAD
     'bg-brand-green text-white hover:opacity-90 focus-visible:ring-brand-green/50 shadow-sm',
   secondary:
     'bg-white dark:bg-gray-900 text-gray-800 dark:text-gray-200 border border-gray-200 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-800 focus-visible:ring-gray-300 shadow-sm',
@@ -32,13 +38,25 @@ const variantClasses: Record<ButtonVariant, string> = {
     'bg-red-600 text-white hover:bg-red-700 focus-visible:ring-red-400 shadow-sm',
   destructive:
     'bg-red-600 text-white hover:bg-red-700 focus-visible:ring-red-400 shadow-sm',
+=======
+    'bg-primary text-white hover:bg-primary/90 focus-visible:ring-primary/50 shadow-sm',
+  secondary:
+    'bg-white text-gray-800 border border-gray-200 hover:bg-gray-50 focus-visible:ring-gray-300 shadow-sm',
+  ghost:
+    'bg-transparent text-gray-700 hover:bg-gray-100 focus-visible:ring-gray-300',
+  danger:
+    'bg-red-600 text-white hover:bg-red-700 focus-visible:ring-red-400 shadow-sm',
+>>>>>>> pull-1
 };
 
 const sizeClasses: Record<ButtonSize, string> = {
   sm: 'px-3 py-1.5 text-sm gap-1.5',
   md: 'px-4 py-2.5 text-sm gap-2',
   lg: 'px-6 py-3 text-base gap-2.5',
+<<<<<<< HEAD
   icon: 'h-10 w-10 p-0',
+=======
+>>>>>>> pull-1
 };
 
 /**

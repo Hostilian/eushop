@@ -11,10 +11,13 @@ import com.eushop.core.entity.User;
 import com.eushop.core.entity.ConsentLog;
 import com.eushop.core.repository.UserRepository;
 import com.eushop.core.repository.ConsentLogRepository;
+<<<<<<< HEAD
 import com.eushop.core.repository.OrderRepository;
 import com.eushop.core.repository.ReviewRepository;
 import com.eushop.core.repository.ConversationRepository;
 import com.eushop.core.repository.MessageRepository;
+=======
+>>>>>>> pull-1
 
 /**
  * UserService handles user-related business logic including GDPR compliance
@@ -26,6 +29,7 @@ public class UserService {
 
     private final UserRepository userRepository;
     private final ConsentLogRepository consentLogRepository;
+<<<<<<< HEAD
     private final OrderRepository orderRepository;
     private final ReviewRepository reviewRepository;
     private final ConversationRepository conversationRepository;
@@ -43,6 +47,12 @@ public class UserService {
         this.reviewRepository = reviewRepository;
         this.conversationRepository = conversationRepository;
         this.messageRepository = messageRepository;
+=======
+
+    public UserService(UserRepository userRepository, ConsentLogRepository consentLogRepository) {
+        this.userRepository = userRepository;
+        this.consentLogRepository = consentLogRepository;
+>>>>>>> pull-1
     }
 
     public User createUser(String email, String name, String country, String auth0Sub) {
@@ -140,10 +150,13 @@ public class UserService {
      * <p>After anonymisation the user can no longer log in (email is wiped),
      * but historical order/transaction data is preserved for the legally-required
      * minimum retention period.
+<<<<<<< HEAD
      * <p>
      * This method also anonymizes/PII-clears related data in orders, reviews,
      * conversations, and messages in EUshop's core database. This does not certify
      * completion by external subprocessors.
+=======
+>>>>>>> pull-1
      */
     @Transactional
     public void anonymiseUser(String userId) {
@@ -162,6 +175,7 @@ public class UserService {
         user.setAddressStreet(null);
         user.setAddressCity(null);
         user.setAddressPostalCode(null);
+<<<<<<< HEAD
         // COMPLIANCE-REVIEW: Confirm the statutory retention basis and minimisation period
         // before retaining country, role, KYC state, or aggregate seller statistics after erasure.
         // The stable id is retained only to preserve referential integrity in core records.
@@ -179,6 +193,10 @@ public class UserService {
         // Clear PII in messages: content, attachments
         conversationRepository.updateConversationPiiWhereBuyerIdOrSellerId(userId);
         messageRepository.updateMessagePiiWhereSenderId(userId);
+=======
+        // Preserve: id, role, country (needed for DAC7), kycVerified, aggregate stats
+        userRepository.save(user);
+>>>>>>> pull-1
     }
 
     /**

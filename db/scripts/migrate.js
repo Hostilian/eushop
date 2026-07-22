@@ -102,7 +102,11 @@ async function migrate() {
       console.log(`▸ Applying migration: ${file}`);
       const filePath = path.join(migrationsDir, file);
       const migrationFile = fs.readFileSync(filePath, 'utf8');
+<<<<<<< HEAD
       const statements = splitSqlStatements(migrationFile);
+=======
+      const statements = migrationFile.split(';').filter(s => s.trim());
+>>>>>>> pull-1
 
       for (const statement of statements) {
         if (statement.trim()) {

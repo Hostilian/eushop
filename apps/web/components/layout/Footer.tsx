@@ -20,10 +20,13 @@ export function Footer() {
             <p className="text-xs font-semibold text-primary dark:text-blue-400 flex items-center gap-1">
               <span>🇪🇺</span> EU Single Market Trade Only
             </p>
+<<<<<<< HEAD
             {/* COMPLIANCE-REVIEW: DSA Art. 30 requires persistent seller identity display. */}
             <p className="text-xs leading-relaxed max-w-xs text-gray-500 dark:text-gray-400">
               EUshop provides the marketplace. The “Sold by [seller name]” disclosure identifies the trader offering a product.
             </p>
+=======
+>>>>>>> pull-1
           </div>
 
           {/* Navigation Links */}
@@ -105,6 +108,7 @@ export function Footer() {
                       Terms of Service
                     </Link>
                   </li>
+<<<<<<< HEAD
                   <li>
                     <Link href="/impressum" className="hover:text-primary dark:hover:text-blue-400 transition">
                       Impressum / Legal Notice
@@ -120,6 +124,8 @@ export function Footer() {
                       Dispute Portal (DSA Art. 20)
                     </Link>
                   </li>
+=======
+>>>>>>> pull-1
                 </ul>
               </div>
             </div>
@@ -129,6 +135,7 @@ export function Footer() {
         {/* Footer Bottom */}
         <div className="mt-12 border-t border-gray-150 dark:border-gray-800 pt-8 flex flex-col md:flex-row justify-between items-center gap-4 text-xs text-gray-400 dark:text-gray-500">
           <p>
+<<<<<<< HEAD
             &copy; {currentYear} EUshop Marketplace. All rights reserved. Operating within the EU Single Market under Reg. (EU) 2023/988 (GPSR) and DSA Art. 30.
           </p>
           <div className="flex flex-wrap items-center gap-3">
@@ -143,6 +150,16 @@ export function Footer() {
             </span>
             <span className="flex items-center gap-1">
               🔒 SSL Encrypted
+=======
+            &copy; {currentYear} EUshop Marketplace. All rights reserved. Registered and compliant within the EU.
+          </p>
+          <div className="flex items-center gap-4">
+            <span className="flex items-center gap-1">
+              <span>🔒</span> SSL Encrypted
+            </span>
+            <span className="flex items-center gap-1">
+              <span>💳</span> Stripe Compliant
+>>>>>>> pull-1
             </span>
           </div>
         </div>

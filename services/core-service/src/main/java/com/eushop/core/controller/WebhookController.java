@@ -31,11 +31,15 @@ public class WebhookController {
     private static final Logger log = LoggerFactory.getLogger(WebhookController.class);
 
     private final OrderService orderService;
+<<<<<<< HEAD
     private final org.springframework.jdbc.core.JdbcTemplate jdbcTemplate;
+=======
+>>>>>>> pull-1
 
     @Value("${stripe.webhook.secret:whsec_placeholder}")
     private String webhookSecret;
 
+<<<<<<< HEAD
     @Value("${spring.profiles.active:dev}")
     private String activeProfile;
 
@@ -50,6 +54,10 @@ public class WebhookController {
         if (isProduction && (webhookSecret == null || webhookSecret.startsWith("whsec_placeholder") || webhookSecret.trim().isEmpty())) {
             throw new IllegalStateException("FATAL: Stripe webhook secret is not configured in production mode. Failing closed.");
         }
+=======
+    public WebhookController(OrderService orderService) {
+        this.orderService = orderService;
+>>>>>>> pull-1
     }
 
     /**
@@ -70,7 +78,11 @@ public class WebhookController {
                 log.warn("STRIPE_WEBHOOK_SECRET not configured — skipping signature verification (dev mode only)");
                 event = com.stripe.model.Event.GSON.fromJson(payload, Event.class);
             } else {
+<<<<<<< HEAD
                 event = constructEvent(payload, sigHeader, webhookSecret);
+=======
+                event = Webhook.constructEvent(payload, sigHeader, webhookSecret);
+>>>>>>> pull-1
             }
         } catch (SignatureVerificationException e) {
             log.error("Stripe webhook signature verification failed: {}", e.getMessage());
@@ -82,6 +94,7 @@ public class WebhookController {
 
         log.info("Received Stripe event: type={} id={}", event.getType(), event.getId());
 
+<<<<<<< HEAD
         // Deduplicate events to ensure processing idempotency
         String eventId = event.getId();
         if (eventId != null) {
@@ -96,6 +109,8 @@ public class WebhookController {
             }
         }
 
+=======
+>>>>>>> pull-1
         switch (event.getType()) {
             case "payment_intent.succeeded" -> handlePaymentIntentSucceeded(event);
             case "payment_intent.payment_failed" -> handlePaymentIntentFailed(event);
@@ -154,8 +169,11 @@ public class WebhookController {
             log.error("Error processing payment_intent.payment_failed: {}", e.getMessage(), e);
         }
     }
+<<<<<<< HEAD
 
     Event constructEvent(String payload, String sigHeader, String secret) throws SignatureVerificationException {
         return Webhook.constructEvent(payload, sigHeader, secret);
     }
+=======
+>>>>>>> pull-1
 }
