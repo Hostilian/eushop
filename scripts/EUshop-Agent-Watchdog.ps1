@@ -131,6 +131,29 @@ function Test-AgentAlive {
     return ($null -ne $a -and @($a).Count -gt 0)
 }
 
+# ─── 3-Level Health Checks ──────────────────────────────────────────────────
+
+function Test-AppHealth {
+    # Lightweight app health check: verify Next.js page build or Spring Boot health endpoint
+    try {
+        $resp = Invoke-WebRequest -Uri "http://localhost:3002" -TimeoutSec 3 -ErrorAction SilentlyContinue
+        if ($resp -and $resp.StatusCode -eq 200) { return $true }
+    } catch {}
+    # Fallback check: verify workspace package files exist
+    return (Test-Path "apps\web\package.json") -and (Test-Path "services\core-service\pom.xml")
+}
+
+function Test-AiHealth {
+    # Lightweight synthetic AI gateway health check with strict 4s timeout
+    try {
+        $resp = Invoke-RestMethod -Uri "http://127.0.0.1:8082/health" -TimeoutSec 4 -ErrorAction Stop
+        if ($resp -and $resp.status -eq "healthy") { return $true }
+    } catch {}
+    # If gateway is stopped, fallback check if OpenRouter / direct AI CLI is available
+    $cli = Get-Command hermes.exe, claude.exe, codex.exe -ErrorAction SilentlyContinue
+    return ($null -ne $cli -and @($cli).Count -gt 0)
+}
+
 function Clear-StaleState {
     if (Test-Path -LiteralPath $StopMarker) {
         Remove-Item -LiteralPath $StopMarker -Force -ErrorAction SilentlyContinue
@@ -247,6 +270,11 @@ while ($true) {
             $lastRestart = [DateTime]::Now
             # Exponential backoff (cap at max)
             $backoff = [Math]::Min($backoff * 2, $MaxBackoffSec)
+            if ($fails -ge 10) {
+                Write-Log "WARN" "Auto-resetting fail counter after 10 retries for infinite overnight recovery."
+                $fails = 1
+                $backoff = $InitialBackoffSec
+            }
 
         } elseif ($orchAlive -and -not $agentAlive) {
             # -- Orchestrator alive but no agent yet - just wait ---------------

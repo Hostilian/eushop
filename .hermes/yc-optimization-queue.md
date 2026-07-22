@@ -174,12 +174,12 @@ Transition rule:
 - Critical and High security findings outrank visual polish and investor presentation.
 
 ## PHASE 26 - Version 55 Branch Safety, Evidence Baseline and Mission State
-Status: IN_PROGRESS
+Status: COMPLETED
 
 - [x] TASK 119 - Safely create or resume the `version-55` branch, inventory branches, tags, worktrees, remotes, pull requests and uncommitted work, record the starting SHA and preserve recoverable backups without destructive Git commands
 - [x] TASK 120 - Create `docs/version-55/` and `.agent-state/version-55/`, install the canonical Version 55 mission, and initialize evidence-backed baseline, decision, research, test, failure, heartbeat and resume state
-- [ ] TASK 121 - Read canonical repository instructions and build a claim-to-evidence matrix for README, STATUS, SECURITY, compliance documents and major feature claims, classifying verified, partial, mocked, stale, contradicted, external, legal-review and missing states
-- [ ] TASK 122 - Inventory the actual architecture and run documented baseline commands for frontend, backend, migrations, Docker, E2E, accessibility, dependency, secret and CodeQL checks; record commands, timestamps, exit status and remediation tasks
+- [x] TASK 121 - Read canonical repository instructions and build a claim-to-evidence matrix for README, STATUS, SECURITY, compliance documents and major feature claims, classifying verified, partial, mocked, stale, contradicted, external, legal-review and missing states
+- [x] TASK 122 - Inventory the actual architecture and run documented baseline commands for frontend, backend, migrations, Docker, E2E, accessibility, dependency, secret and CodeQL checks; record commands, timestamps, exit status and remediation tasks
 
 ### Phase 26 Definition of Done
 

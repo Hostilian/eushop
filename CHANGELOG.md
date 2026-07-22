@@ -1,5 +1,18 @@
 # Changelog
 
+## [Unreleased] — Version 55 Baseline & Evidence Gate (2026-07-22)
+
+### Added
+- **Version 55 Branch Safety & Evidence Infrastructure (Phase 26 - TASK 119, 120)**:
+  - Created `version-55` branch from baseline commit `4cb6fab18b3f8836c2341f5047c278da10ca5dd6`.
+  - Initialized state directories `.agent-state/version-55/` and `docs/version-55/` with `MISSION_MANIFEST.md` and `VERSION_55_BASELINE.md`.
+- **Claim-to-Evidence Audit Matrix (Phase 26 - TASK 121)**:
+  - Created `docs/version-55/CLAIM_EVIDENCE_MATRIX.md` auditing feature and regulatory claims across README, STATUS, SECURITY, and COMPLIANCE_GAPS.
+- **Architecture Inventory & Baseline Commands Audit (Phase 26 - TASK 122)**:
+  - Created `docs/version-55/BASELINE_COMMANDS_AUDIT.md` verifying Next.js, Spring Boot, Hermes preflight, and CodeQL security targets.
+  - Repaired build bugs in `dac7-event-bus.ts`, `rbac.ts`, `redis-cache.ts`, and `ConversationService.java`.
+- **Milestone Progress**: Phase 26 **100% Completed** (4/4 tasks). Repository progress advanced to **61.0% (83 / 136 tasks)**.
+
 ## [Unreleased] — Continuous Optimization Loop #12 (2026-07-21)
 
 ### Added

@@ -36,8 +36,8 @@ export async function processDAC7TransactionEvent(event: DAC7TransactionEvent): 
   });
 
   const thresholdExceeded = 
-    updatedCount >= DAC7_THRESHOLDS.TRANSACTIONS_COUNT || 
-    updatedAmount >= DAC7_THRESHOLDS.CONSIDERATION_EUR;
+    updatedCount >= DAC7_THRESHOLDS.maxTransactions || 
+    updatedAmount >= DAC7_THRESHOLDS.maxConsiderationEur;
 
   return {
     sellerId: event.sellerId,

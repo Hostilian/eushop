@@ -11,7 +11,7 @@ export interface UserContext {
 
 export function hasPermission(user: UserContext, requiredRole: Role): boolean {
   if (user.role === 'ADMIN') return true;
-  if (requiredRole === 'SELLER' && (user.role === 'SELLER' || user.role === 'ADMIN')) return true;
+  if (requiredRole === 'SELLER' && user.role === 'SELLER') return true;
   if (requiredRole === 'BUYER') return true;
   return false;
 }

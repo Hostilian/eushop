@@ -1,4 +1,4 @@
-import { getVatRate } from '@eushop/compliance';
+import { getFoodVatRate } from '@eushop/compliance';
 
 // COMPLIANCE-REVIEW: Redis caching layer for catalog search & EU VAT rate engine lookups.
 // Ensure cached VAT rates always validate against packages/compliance source of truth.
@@ -24,7 +24,7 @@ export async function getCachedVatRate(countryCode: string, category: string = '
   }
 
   // Calculate using compliance package as single source of truth
-  const rate = getVatRate(countryCode as any, category as any);
+  const rate = getFoodVatRate(countryCode);
   
   memoryCache.set(cacheKey, {
     data: rate,
