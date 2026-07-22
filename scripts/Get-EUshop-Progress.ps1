@@ -90,18 +90,24 @@ do {
     $emptyWidth = $barWidth - $filledWidth
     $progressBar = ("=" * $filledWidth) + ("-" * $emptyWidth)
 
-    # ETA Calculation
+    # ETA Calculation (Single-Agent vs Multi-Agent Parallel Acceleration)
     $remainingTasks = $inProgress + $pending + $failed
     $totalEstMinutes = $remainingTasks * $AvgMinutesPerTask
     $etaHours = [math]::Floor($totalEstMinutes / 60)
     $etaMins = $totalEstMinutes % 60
+
+    # Multi-Agent Acceleration factor (Primary + 4 Sidecars = ~3.2x concurrency)
+    $parallelEstMinutes = [math]::Round($totalEstMinutes / 3.2)
+    $parallelHours = [math]::Floor($parallelEstMinutes / 60)
+    $parallelMins = $parallelEstMinutes % 60
+    $parallelFinishTime = (Get-Date).AddMinutes($parallelEstMinutes).ToString("HH:mm")
 
     $nowStr = (Get-Date).ToString("yyyy-MM-dd HH:mm:ss")
 
     Clear-Host
     Write-Host ""
     Write-Host "=========================================================================" -ForegroundColor Cyan
-    Write-Host "  EUshop Master Optimization Task Progress & Dependency Map" -ForegroundColor Yellow
+    Write-Host "  EUshop Master Optimization Task Progress & Multi-Agent Acceleration" -ForegroundColor Yellow
     Write-Host "  Last Updated: $nowStr  (Auto-refreshing every ${RefreshSeconds}s)" -ForegroundColor DarkGray
     Write-Host "=========================================================================" -ForegroundColor Cyan
     Write-Host ""
@@ -119,15 +125,14 @@ do {
     Write-Host "$inProgress" -ForegroundColor Cyan
 
     Write-Host "  Pending / Remaining: " -NoNewline
-    Write-Host "$remainingTasks" -ForegroundColor Gray
+    Write-Host "$pending" -ForegroundColor Yellow
 
-    if ($failed -gt 0) {
-        Write-Host "  Blocked / Failed   : " -NoNewline
-        Write-Host "$failed" -ForegroundColor Red
-    }
+    $failColor = if ($failed -gt 0) { "Red" } else { "Gray" }
+    Write-Host "  Blocked / Failed   : " -NoNewline
+    Write-Host "$failed" -ForegroundColor $failColor
 
-    Write-Host "  Estimated Time     : " -NoNewline
-    Write-Host "~$etaHours hrs $etaMins mins" -ForegroundColor DarkCyan -NoNewline
+    Write-Host "  Single-Agent ETA   : ~${etaHours} hrs ${etaMins} mins" -ForegroundColor DarkGray
+    Write-Host "  ACCELERATED ETA    : ~${parallelHours} hrs ${parallelMins} mins (Finish: ~${parallelFinishTime})" -ForegroundColor DarkCyan -NoNewline
     Write-Host " (assuming ~${AvgMinutesPerTask}m per task)" -ForegroundColor DarkGray
     Write-Host ""
 

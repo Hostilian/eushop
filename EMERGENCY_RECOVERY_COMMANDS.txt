@@ -1,0 +1,79 @@
+================================================================================
+  EUSHOP AUTONOMOUS SYSTEM — EMERGENCY POWERSHELL DIAGNOSTIC & AUTO-HEAL SUITE
+================================================================================
+  Created: 2026-07-22
+  Use this file whenever Gemini or your interactive terminal AI goes offline!
+  Copy and paste any command or block directly into Windows PowerShell.
+================================================================================
+
+--------------------------------------------------------------------------------
+SECTION 1: ONE-LINE EMERGENCY AUTO-RECOVERY & HEALTH CHECK COMMAND
+--------------------------------------------------------------------------------
+Copy and paste this SINGLE command into PowerShell to diagnose system health, 
+reset provider failover cooldowns, heal background processes, verify sidecar worktrees,
+and print live task completion & accelerated ETA:
+
+powershell -ExecutionPolicy Bypass -File D:\CODING\eushop\scripts\Emergency-Recovery.ps1
+
+
+--------------------------------------------------------------------------------
+SECTION 2: FULL STANDALONE POWERSHELL CODE BLOCK
+--------------------------------------------------------------------------------
+If you prefer running a clean multi-line script in PowerShell, copy and paste this entire block:
+
+Set-Location "D:\CODING\eushop"
+Write-Host "========================================================================" -ForegroundColor Cyan
+Write-Host "         EUshop Emergency Recovery & Multi-Agent Health Check           " -ForegroundColor Cyan
+Write-Host "========================================================================" -ForegroundColor Cyan
+
+# 1. Reset provider circuit breaker cooldowns
+Write-Host "[1/4] Resetting provider circuit breaker failovers in .claude\provider-state-v3.json..." -ForegroundColor Yellow
+if (Test-Path ".claude\provider-state-v3.json") {
+    $json = Get-Content ".claude\provider-state-v3.json" -Raw
+    $json = $json -replace '"failures":\s*\d+', '"failures": 0'
+    $json = $json -replace '"circuitUntil":\s*"[^"]*"', '"circuitUntil": ""'
+    $json | Set-Content ".claude\provider-state-v3.json" -Encoding UTF8
+    Write-Host "[OK  ] Provider cooldowns reset to 0." -ForegroundColor Green
+}
+
+# 2. Ensure sidecar worktrees exist
+Write-Host "`n[2/4] Verifying parallel multi-agent worktrees under D:\CODING\eushop-agents..." -ForegroundColor Yellow
+powershell -ExecutionPolicy Bypass -File scripts\EUshop-MultiAgent-Sidecars.ps1 -Mode Launch
+
+# 3. Restart supervisor if orchestrator is stopped
+Write-Host "`n[3/4] Ensuring background supervisor and watchdog are active..." -ForegroundColor Yellow
+powershell -ExecutionPolicy Bypass -File scripts\Start-EUshop-Supervised.ps1
+
+# 4. Display status dashboard & ETA
+Write-Host "`n[4/4] Fetching live progress and ETA..." -ForegroundColor Yellow
+powershell -ExecutionPolicy Bypass -File scripts\Get-EUshop-Progress.ps1 -Once
+
+
+--------------------------------------------------------------------------------
+SECTION 3: QUICK UTILITY & DIAGNOSTIC COMMANDS
+--------------------------------------------------------------------------------
+
+1. VIEW LIVE SYSTEM STATUS & PROCESS PIDS:
+   powershell -ExecutionPolicy Bypass -File scripts\Get-EUshop-Status.ps1
+
+2. VIEW LIVE PROGRESS & MULTI-AGENT ACCELERATED ETA:
+   powershell -ExecutionPolicy Bypass -File scripts\Get-EUshop-Progress.ps1 -Once
+
+3. VIEW PARALLEL SIDECAR WORKTREE STATUS:
+   powershell -ExecutionPolicy Bypass -File scripts\EUshop-MultiAgent-Sidecars.ps1 -Mode Status
+
+4. RESUME HERMES / FCC ORCHESTRATOR IN FOREGROUND:
+   powershell -ExecutionPolicy Bypass -File Start-EUshop-Hermes.ps1 -Resume
+
+5. CHECK SCHEDULED WINDOWS TASK DAEMONS:
+   powershell -ExecutionPolicy Bypass -File scripts\install_daemon.ps1 -Status
+
+6. RUN BACKEND UNIT & INTEGRATION TEST SUITE (SPRING BOOT):
+   node scripts/run-mvn.js clean test
+
+7. VERIFY FRONTEND PRE-RENDERING & STATIC EXPORT (NEXT.JS):
+   pnpm --filter @eushop/web run build
+
+================================================================================
+  END OF EMERGENCY COMMAND SUITE
+================================================================================

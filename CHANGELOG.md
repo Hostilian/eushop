@@ -1,5 +1,14 @@
 # Changelog
 
+## [Unreleased] — Marketplace Product Completeness & Order State Hardening (2026-07-22)
+
+### Buyer Journey & Order State Machine
+- **Order Dispute & Refund State Transitions (Phase 29 - TASK 135)**:
+  - Added `DISPUTED` and `REFUNDED` statuses to `Order.java` entity model.
+  - Implemented `disputeOrder` and `refundOrder` transactional methods in `OrderService.java`.
+  - Added `/api/orders/{id}/dispute` and `/api/orders/{id}/refund` REST endpoints with buyer/seller/admin ownership checks in `OrderController.java`.
+  - Added unit test suite in `OrderServiceTest.java` verifying state transition validation (54/54 backend tests passing).
+
 ## [Unreleased] — Public Experience & GitHub Pages Reliability (2026-07-22)
 
 ### Public Reliability & Export Gate

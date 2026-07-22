@@ -218,11 +218,11 @@ Status: COMPLETED
 - [x] TASK 134 - Add public-journey smoke and E2E tests for browsing, search, filters, sorting, pagination, product details, mobile layout, empty states, invalid routes, loading termination and external links
 
 ## PHASE 29 - Marketplace Product Completeness
-Status: P1
+Status: IN_PROGRESS
 
-- [ ] TASK 135 - Complete and verify the buyer journey from discovery through cart, server-authoritative checkout, order history, cancellation, refund, dispute, delivery confirmation, verified review, notifications and support
+- [x] TASK 135 - Complete and verify the buyer journey from discovery through cart, server-authoritative checkout, order history, cancellation, refund, dispute, delivery confirmation, verified review, notifications and support
 - [ ] TASK 136 - Complete and verify seller onboarding, identity and business verification, tax and payment onboarding, compliant listings, secure image upload, inventory, pricing, shipping, order handling, refunds, suspension, DAC7 state and appeals
-- [ ] TASK 137 - Implement or harden operator workflows for seller approval, listing and food-information moderation, disputes, refunds, fraud signals, legal notices, data requests, erasure, exports, DAC7 exceptions and privileged audit logs
+- [x] TASK 137 - Implement or harden operator workflows for seller approval, listing and food-information moderation, disputes, refunds, fraud signals, legal notices, data requests, erasure, exports, DAC7 exceptions and privileged audit logs
 - [ ] TASK 138 - Enforce strong authorization and object ownership across buyer, seller, support and administrator operations; do not expose an inadequately protected public administrator surface
 
 ## PHASE 30 - EU Compliance Structure
@@ -289,17 +289,61 @@ Status: P3_SUPPORTING_ONLY
 - Red appears after more than four minutes without meaningful activity or when the orchestrator is down
 - Monitor-generated history and repetitive watchdog lines do not count as coding progress
 
-## VERSION 55 DEPENDENCY ORDER
+## PHASE 36 - v66 Ground Truth, Product Identity & Truth Inventory
+Status: UPCOMING
 
-1. Preserve current work and establish the Version 55 baseline
-2. Repair Critical and High security findings
-3. Stabilize the public `/eushop/` journey
-4. Complete marketplace and compliance paths
-5. Harden payments, data and operational reliability
-6. Complete tests, CI, accessibility, performance and documentation
-7. Prepare truthful investor and YC materials
-8. Build or finish the supporting sidebar without delaying higher-priority work
-9. Run final red-team and release-readiness gates
-10. Produce the Version 55 final report
+- [x] TASK 170 - Build `docs/v66/00-ground-truth.md` repository inventory (commits, active packages, runtime ports, DB schema, CI workflows)
+- [x] TASK 171 - Build `docs/v66/01-product-truth.md` reconciling specialty-food marketplace vs traveler mobility thesis
+- [ ] TASK 172 - Repository boundaries cleanup (quarantine scraped sites, binary archives, temporary logs, stale sessions)
+- [ ] TASK 173 - License, SBOM, and asset provenance reconciliation across dependencies and media files
+- [x] TASK 174 - Create `docs/v66/V66_BACKLOG.md` with priority scoring engine `(Severity*5 + Value*4 + Sec*5 - Risk*2 - Effort*1)`
 
-<!-- VERSION55_QUEUE_END -->
+## PHASE 37 - v66 Zero-Critical Security Program & STRIDE Threat Model
+Status: UPCOMING
+
+- [ ] TASK 175 - Secret & suspicious automation containment, pre-commit prevention, and scanner rules
+- [ ] TASK 176 - Complete CodeQL taint analysis across all numeric casts and path expressions repository-wide
+- [ ] TASK 177 - Actor & role authorization matrix enforcement & CSRF/SameSite cookie session security
+- [ ] TASK 178 - Centralized security headers, CSP, output encoding, and API rate limiting middleware
+- [x] TASK 179 - Create `docs/security/THREAT_MODEL.md` (STRIDE framework across all 16 domain modules)
+- [ ] TASK 180 - Supply-chain security, GitHub Action commit-SHA pinning, container scanning, and SBOM generation
+
+## PHASE 38 - v66 CI/CD Pipeline Trustworthiness & Zero-Downtime Deployment
+Status: UPCOMING
+
+- [ ] TASK 181 - GitHub Actions CI failure matrix diagnosis and Maven wrapper execution permission stabilization
+- [ ] TASK 182 - Separate PR verification pipeline from Pages static export & production runtime deployment
+- [ ] TASK 183 - Enforce strict branch protection quality gates (zero `continue-on-error` on critical gates)
+- [ ] TASK 184 - Establish zero-downtime deployment strategy with expand-contract migration prechecks
+- [ ] TASK 185 - Automated Playwright E2E critical buyer/seller/admin journey test suite
+
+## PHASE 39 - v66 Core Transaction Correctness & Money Precision
+Status: UPCOMING
+
+- [ ] TASK 186 - Currency-aware decimal value objects for monetary precision and strict rounding
+- [ ] TASK 187 - Complete server-authoritative Stripe Connect state machine (idempotency, webhooks, signatures)
+- [ ] TASK 188 - End-to-end buyer journey verification (discovery, cart, server checkout, order status, dispute, review)
+- [ ] TASK 189 - Seller onboarding & KYBC verification gate, listing publication, inventory, DAC7 export
+- [ ] TASK 190 - Admin & moderation journey (trader identity audit, notice-and-action, disputes, appeals)
+
+## PHASE 40 - v66 Evolutionary Scale Architecture & PostGIS Spatial Integration
+Status: UPCOMING
+
+- [ ] TASK 191 - Modular monolith boundary enforcement with ArchUnit architecture tests across 16 domain modules
+- [ ] TASK 192 - Flyway/Liquibase migration discipline with zero-downtime schema changes and rollback runbooks
+- [ ] TASK 193 - PostgreSQL transactional outbox pattern for domain events before distributed broker scaling
+- [ ] TASK 194 - PostGIS spatial integration (`geography(Point, 4326)`, GiST indexes, `ST_DWithin` corridor queries)
+- [ ] TASK 195 - PostgreSQL full-text & trigram search benchmarking against OpenSearch/Elasticsearch
+- [ ] TASK 196 - Stage-based target architecture (Stage 0 pre-seed to Stage 3 regional cell failover design)
+
+## PHASE 41 - v66 Observability, Property Testing & YC Investor Package
+Status: UPCOMING
+
+- [ ] TASK 197 - OpenTelemetry distributed tracing across Next.js frontend, Spring Boot backend, and PostgreSQL
+- [ ] TASK 198 - Prometheus metrics, Grafana dashboards, and structured JSON logging with correlation IDs
+- [ ] TASK 199 - Create `docs/compliance/CONTROL_MATRIX.md` (GDPR, DSA, DAC7, ePrivacy, WCAG 2.2 AA)
+- [ ] TASK 200 - Property-based testing for monetary calculations, VAT rules, and state machine transitions
+- [ ] TASK 201 - Performance & load testing with k6/Gatling measuring query plans and N+1 bottlenecks
+- [ ] TASK 202 - Create `docs/v66/YC_READINESS.md` with investor diligence package, unit economics, and data room index
+
+<!-- VERSION66_QUEUE_END -->
