@@ -8,6 +8,13 @@ export type SnapshotLineage =
   | 'core-theme-variant'
   | 'marketplace-concept';
 
+export type CatalogueEntryCategory =
+  | 'flagship-release'
+  | 'application-view'
+  | 'recovered-prototype'
+  | 'core-theme-variant'
+  | 'marketplace-concept';
+
 export interface VersionCatalogueEntry {
   key: string;
   name: string;
@@ -16,6 +23,7 @@ export interface VersionCatalogueEntry {
   description: string;
   path: string;
   kind: CatalogueEntryKind;
+  category?: CatalogueEntryCategory;
   accentClass: string;
   lineage?: SnapshotLineage;
   introducedIn?: string;
@@ -31,11 +39,12 @@ export const CURRENT_APPLICATION: VersionCatalogueEntry = {
     'The active Next.js application. Feature availability depends on the configured backend and runtime services.',
   path: '/',
   kind: 'current-application',
+  category: 'application-view',
   accentClass:
     'from-emerald-700 to-amber-600 border-amber-300 text-emerald-800 dark:text-emerald-300',
 };
 
-export const APPLICATION_VIEWS: readonly VersionCatalogueEntry[] = [
+export const FLAGSHIP_RELEASES: readonly VersionCatalogueEntry[] = [
   {
     key: 'v66',
     name: 'V66 - Evolutionary Scale & PostGIS Spatial Engine',
@@ -45,6 +54,7 @@ export const APPLICATION_VIEWS: readonly VersionCatalogueEntry[] = [
       'Version 66 flagship release: PostGIS spatial corridor matching, OpenTelemetry distributed tracing, k6 load testing, and property-based financial testing.',
     path: '/?v=v66',
     kind: 'application-view',
+    category: 'flagship-release',
     accentClass:
       'from-emerald-600 to-indigo-600 border-indigo-400 text-emerald-800 dark:text-emerald-200 font-bold',
   },
@@ -57,6 +67,7 @@ export const APPLICATION_VIEWS: readonly VersionCatalogueEntry[] = [
       'Version 55 safety & compliance milestone: Zero-critical CodeQL enforcement, OWASP taint sink remediation, and DAC7 automated tax reporting.',
     path: '/?v=v55',
     kind: 'application-view',
+    category: 'flagship-release',
     accentClass:
       'from-blue-600 to-emerald-500 border-blue-400 text-blue-800 dark:text-blue-200 font-bold',
   },
@@ -69,9 +80,14 @@ export const APPLICATION_VIEWS: readonly VersionCatalogueEntry[] = [
       'Master legal compliance & YC optimization release featuring EU Annex II allergens, DSA Art. 30 seller disclosures, GPSR, and 100% compliance test coverage.',
     path: '/?v=v44',
     kind: 'application-view',
+    category: 'flagship-release',
     accentClass:
       'from-amber-500 to-emerald-600 border-amber-400 text-amber-800 dark:text-amber-200 font-bold',
   },
+];
+
+export const APPLICATION_VIEWS: readonly VersionCatalogueEntry[] = [
+  ...FLAGSHIP_RELEASES,
   {
     key: 'buyer-view',
     name: 'Buyer marketplace view',
@@ -81,6 +97,7 @@ export const APPLICATION_VIEWS: readonly VersionCatalogueEntry[] = [
       'The current storefront route for browsing demo or API-backed catalogue data.',
     path: '/',
     kind: 'application-view',
+    category: 'application-view',
     accentClass:
       'from-emerald-500 to-green-600 border-green-200 text-green-700',
   },
@@ -93,6 +110,7 @@ export const APPLICATION_VIEWS: readonly VersionCatalogueEntry[] = [
       'The current seller onboarding route. Legal and tax outcomes still require qualified human review.',
     path: '/become-seller',
     kind: 'application-view',
+    category: 'application-view',
     accentClass:
       'from-amber-500 to-orange-600 border-orange-200 text-orange-700',
   },
@@ -105,6 +123,7 @@ export const APPLICATION_VIEWS: readonly VersionCatalogueEntry[] = [
       'The current administrative demonstration route; authorization must be validated with the backend.',
     path: '/admin/dashboard',
     kind: 'application-view',
+    category: 'application-view',
     accentClass:
       'from-purple-500 to-indigo-600 border-indigo-200 text-indigo-700',
   },
@@ -117,6 +136,7 @@ export const APPLICATION_VIEWS: readonly VersionCatalogueEntry[] = [
       'Repository-backed project documentation. Status statements should be checked against source and tests.',
     path: '/docs',
     kind: 'application-view',
+    category: 'application-view',
     accentClass:
       'from-blue-500 to-cyan-600 border-blue-200 text-blue-700',
   },

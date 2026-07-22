@@ -3,6 +3,7 @@ import Link from 'next/link';
 import {
   APPLICATION_VIEWS,
   CURRENT_APPLICATION,
+  FLAGSHIP_RELEASES,
   HISTORICAL_SNAPSHOTS,
   VERSION_SELECTOR_OPTIONS,
   CatalogueEntryKind,
@@ -63,38 +64,74 @@ export default function VersionsPage() {
           </div>
         </section>
 
-        {/* Application Views Section */}
+        {/* Flagship Major Releases Section */}
         <section className="mb-16">
-          <h2 className="text-2xl font-semibold text-gray-900 mb-6">
-            Application Views
+          <h2 className="text-2xl font-semibold text-gray-900 mb-2 flex items-center gap-2">
+            <span>🚀</span> Flagship Major Releases
           </h2>
           <p className="mb-6 text-sm text-gray-600">
-            These are routes within the current application that provide different
-            perspectives on the same underlying system.
+            Major milestone releases showcasing PostGIS spatial engines, CodeQL zero-critical security hardening, and YC legal compliance frameworks.
+          </p>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            {FLAGSHIP_RELEASES.map((release) => (
+              <div key={release.key} className="bg-white rounded-2xl p-6 shadow-sm border border-gray-200 flex flex-col justify-between hover:shadow-md transition">
+                <div>
+                  <div className="flex items-center justify-between mb-3">
+                    <span className="px-3 py-1 text-xs font-black bg-emerald-600 text-white rounded-full uppercase tracking-wider">
+                      {release.badge}
+                    </span>
+                  </div>
+                  <h3 className="text-lg font-bold text-gray-900 mb-2">
+                    {release.name}
+                  </h3>
+                  <p className="text-sm text-gray-600 leading-relaxed mb-4">
+                    {release.description}
+                  </p>
+                </div>
+                <div>
+                  <Link
+                    href={release.path}
+                    className="inline-flex items-center justify-center w-full px-4 py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs rounded-xl transition shadow-sm"
+                  >
+                    Launch Interactive View →
+                  </Link>
+                </div>
+              </div>
+            ))}
+          </div>
+        </section>
+
+        {/* Application Views Section */}
+        <section className="mb-16">
+          <h2 className="text-2xl font-semibold text-gray-900 mb-2 flex items-center gap-2">
+            <span>📱</span> Application Views
+          </h2>
+          <p className="mb-6 text-sm text-gray-600">
+            Role-based perspectives on the live application for buyers, sellers, and operators.
           </p>
           <div className="space-y-4">
-            {APPLICATION_VIEWS.map((view) => (
-              <div key={view.key} className="bg-white rounded-lg shadow-sm">
+            {APPLICATION_VIEWS.filter(v => v.category !== 'flagship-release').map((view) => (
+              <div key={view.key} className="bg-white rounded-xl shadow-sm border border-gray-200">
                 <div className="px-6 py-4 flex items-center justify-between sm:grid sm:grid-cols-3 sm:text-center sm:gap-4">
                   <div>
-                    <h3 className="text-lg font-medium text-gray-900">
+                    <h3 className="text-base font-bold text-gray-900">
                       {view.name}
                     </h3>
-                    <p className="mt-1 text-sm text-gray-500 truncate">
+                    <p className="mt-1 text-xs text-gray-500 truncate">
                       {view.description}
                     </p>
                   </div>
                   <div>
-                    <span className="px-3 py-0.5 text-xs font-medium bg-blue-100 text-blue-800 rounded-full">
+                    <span className="px-3 py-0.5 text-xs font-semibold bg-blue-100 text-blue-800 rounded-full">
                       {view.badge}
                     </span>
                   </div>
                   <div className="text-sm">
                     <Link
                       href={view.path}
-                      className="text-indigo-600 hover:text-indigo-500 hover:underline"
+                      className="text-indigo-600 font-semibold hover:text-indigo-500 hover:underline"
                     >
-                      View →
+                      Open Route →
                     </Link>
                   </div>
                 </div>

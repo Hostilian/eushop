@@ -1,8 +1,10 @@
 import Head from 'next/head';
 import Link from 'next/link';
+import { useRouter } from 'next/router';
 import { useEffect, useState } from 'react';
 import { PageWrapper } from '../components/layout/PageWrapper';
 import { ProductCard } from '../components/ui/ProductCard';
+import { VersionReleaseBanner } from '../components/marketplace/VersionReleaseBanner';
 import {
   fallbackTrendingFoods,
   foodAPI,
@@ -62,10 +64,38 @@ const getFoodImage = (foodName: string): string | undefined => {
 };
 
 export default function Home() {
+  const router = useRouter();
   const [featuredFoods, setFeaturedFoods] = useState<FoodItem[]>(() =>
     fallbackTrendingFoods.slice(0, 3),
   );
   const [catalogueOrigin, setCatalogueOrigin] = useState<StatusOrigin>('demo');
+  const [storedRelease, setStoredRelease] = useState<'v66' | 'v55' | 'v44' | null>(() => {
+    if (typeof window !== 'undefined') {
+      const stored = localStorage.getItem('eushop-demo-version');
+      if (stored === 'v66' || stored === 'v55' || stored === 'v44') return stored;
+    }
+    return null;
+  });
+
+  useEffect(() => {
+    const handleVersionChange = () => {
+      const v = localStorage.getItem('eushop-demo-version');
+      if (v === 'v66' || v === 'v55' || v === 'v44') {
+        setStoredRelease(v);
+      } else {
+        setStoredRelease(null);
+      }
+    };
+
+    window.addEventListener('demo-version-changed', handleVersionChange);
+    return () => window.removeEventListener('demo-version-changed', handleVersionChange);
+  }, []);
+
+  const queryV = router.query.v as string | undefined;
+  const activeRelease: 'v66' | 'v55' | 'v44' | null =
+    queryV === 'v66' || queryV === 'v55' || queryV === 'v44'
+      ? queryV
+      : storedRelease;
 
   useEffect(() => {
     let active = true;
@@ -117,6 +147,8 @@ export default function Home() {
         <meta name="robots" content="index, follow" />
         <link rel="canonical" href="https://hostilian.github.io/eushop/" />
       </Head>
+
+      {activeRelease && <VersionReleaseBanner version={activeRelease} />}
 
       <section className="relative overflow-hidden rounded-[2rem] bg-brand-green px-6 py-16 text-white shadow-xl sm:px-12 sm:py-20 lg:px-16">
         <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_right,_rgba(255,255,255,0.16),_transparent_48%)]" />
