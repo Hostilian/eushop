@@ -1,0 +1,8 @@
+{
+  "id": "1",
+  "subject": "Optimize EUshop",
+  "description": "Read CLAUDE.md and .claude/AUTONOMY.md, then read D:\\\\CODING\\\\eushop\\\\.hermes\\\\yc-optimization-queue.md, .claude/RECOVERY_STATE.md for the last checkpoint, and finally run: git status, git log --oneline -5 to understand the current state of the repository.",
+  "status": "pending",
+  "blocks": [],
+  "blockedBy": []
+}

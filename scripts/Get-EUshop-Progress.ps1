@@ -22,12 +22,14 @@ param(
 # Robust Queue Path Resolution
 if ([string]::IsNullOrWhiteSpace($QueuePath)) {
     $baseDir = if ($PSScriptRoot) { $PSScriptRoot } else { (Get-Location).Path }
-    if (Test-Path "$baseDir\.hermes\yc-optimization-queue.md") {
+    if (Test-Path "$baseDir\docs\version-66\UNIFIED_MISSION_QUEUE.md") {
+        $QueuePath = "$baseDir\docs\version-66\UNIFIED_MISSION_QUEUE.md"
+    } elseif (Test-Path "$baseDir\..\docs\version-66\UNIFIED_MISSION_QUEUE.md") {
+        $QueuePath = "$baseDir\..\docs\version-66\UNIFIED_MISSION_QUEUE.md"
+    } elseif (Test-Path "$baseDir\.hermes\yc-optimization-queue.md") {
         $QueuePath = "$baseDir\.hermes\yc-optimization-queue.md"
-    } elseif (Test-Path "$baseDir\..\.hermes\yc-optimization-queue.md") {
-        $QueuePath = "$baseDir\..\.hermes\yc-optimization-queue.md"
     } else {
-        $QueuePath = ".\.hermes\yc-optimization-queue.md"
+        $QueuePath = ".\docs\version-66\UNIFIED_MISSION_QUEUE.md"
     }
 }
 

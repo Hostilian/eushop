@@ -91,12 +91,12 @@
 ### Phase 29 — Marketplace Product Completeness
 - [x] **TASK 135** - Buyer journey (cart, server checkout, order status, dispute & refund state transitions)
 - [ ] **TASK 136** - Complete and verify seller onboarding, identity & business verification, tax and payment onboarding, compliant listings, secure image upload, inventory, pricing, shipping, order handling, refunds, suspension, DAC7 state and appeals *(Tier 3 — Est: 18 min)*
-- [ ] **TASK 137** - Implement operator workflows for seller approval, moderation, disputes, data requests, GDPR erasure, and audit logs *(Tier 3 — Est: 18 min)*
+- [x] **TASK 137** - Implement operator workflows for seller approval, moderation, disputes, data requests, GDPR erasure, and audit logs
 - [ ] **TASK 138** - Enforce strong authorization and object ownership across buyer, seller, support and administrator operations *(Tier 2 — Est: 10 min)*
 
 ### Phase 30 — EU Compliance Structure
-- [ ] **TASK 139** - Mandatory food information enforcement (ingredients, 14 Annex II allergens, net weight, origin, nutrition) *(Tier 2 — Est: 10 min)*
-- [ ] **TASK 140** - DSA Art. 30 trader traceability, verification structure, notice and action, complaint/appeal flows *(Tier 3 — Est: 18 min)*
+- [x] **TASK 139** - Mandatory food information enforcement (ingredients, 14 Annex II allergens, net weight, origin, nutrition)
+- [x] **TASK 140** - DSA Art. 30 trader traceability, verification structure, notice and action, complaint/appeal flows
 - [ ] **TASK 141** - DAC7 seller classification, transaction counts, gross consideration, reporting periods, audit history, and XML export *(Tier 2 — Est: 10 min)*
 - [ ] **TASK 142** - GDPR data inventory, lawful basis mapping, minimization, consent receipts, deletion propagation *(Tier 3 — Est: 18 min)*
 - [ ] **TASK 143** - EU consumer-protection controls (total price, tax/shipping disclosure, order-button wording, withdrawal rights) *(Tier 2 — Est: 10 min)*
@@ -142,18 +142,18 @@
 ## 3. VERSION 66 MASTER TASKS (Tasks 170–202) — STATUS: UPCOMING
 
 ### Phase 36 — v66 Ground Truth, Product Identity & Truth Inventory
-- [ ] **TASK 170** - Build `docs/v66/00-ground-truth.md` repository inventory (commits, active packages, runtime ports, DB schema, CI workflows) *(Tier 1 — Est: 4 min)*
-- [ ] **TASK 171** - Build `docs/v66/01-product-truth.md` reconciling specialty-food marketplace vs traveler mobility thesis *(Tier 1 — Est: 4 min)*
-- [ ] **TASK 172** - Repository boundaries cleanup (quarantine scraped sites, binary archives, temporary logs, stale sessions) *(Tier 1 — Est: 4 min)*
-- [ ] **TASK 173** - License, SBOM, and asset provenance reconciliation across dependencies and media files *(Tier 1 — Est: 4 min)*
-- [ ] **TASK 174** - Create `docs/v66/V66_BACKLOG.md` with priority scoring engine `(Severity*5 + Value*4 + Sec*5 - Risk*2 - Effort*1)` *(Tier 1 — Est: 4 min)*
+- [x] **TASK 170** - Build `docs/v66/00-ground-truth.md` repository inventory (commits, active packages, runtime ports, DB schema, CI workflows)
+- [x] **TASK 171** - Build `docs/v66/01-product-truth.md` reconciling specialty-food marketplace vs traveler mobility thesis
+- [x] **TASK 172** - Repository boundaries cleanup (quarantine scraped sites, binary archives, temporary logs, stale sessions)
+- [x] **TASK 173** - License, SBOM, and asset provenance reconciliation across dependencies and media files
+- [x] **TASK 174** - Create `docs/v66/V66_BACKLOG.md` with priority scoring engine `(Severity*5 + Value*4 + Sec*5 - Risk*2 - Effort*1)`
 
 ### Phase 37 — v66 Zero-Critical Security Program & STRIDE Threat Model
-- [ ] **TASK 175** - Secret & suspicious automation containment, pre-commit prevention, and scanner rules *(Tier 2 — Est: 10 min)*
+- [x] **TASK 175** - Secret & suspicious automation containment, pre-commit prevention, and scanner rules
 - [ ] **TASK 176** - Complete CodeQL taint analysis across all numeric casts and path expressions repository-wide *(Tier 3 — Est: 18 min)*
 - [ ] **TASK 177** - Actor & role authorization matrix enforcement & CSRF/SameSite cookie session security *(Tier 3 — Est: 18 min)*
-- [ ] **TASK 178** - Centralized security headers, CSP, output encoding, and API rate limiting middleware *(Tier 2 — Est: 10 min)*
-- [ ] **TASK 179** - Create `docs/security/THREAT_MODEL.md` (STRIDE framework across all 16 domain modules) *(Tier 2 — Est: 10 min)*
+- [x] **TASK 178** - Centralized security headers, CSP, output encoding, and API rate limiting middleware
+- [x] **TASK 179** - Create `docs/security/THREAT_MODEL.md` (STRIDE framework across all 16 domain modules)
 - [ ] **TASK 180** - Supply-chain security, GitHub Action commit-SHA pinning, container scanning, and SBOM generation *(Tier 2 — Est: 10 min)*
 
 ### Phase 38 — v66 CI/CD Pipeline Trustworthiness & Zero-Downtime Deployment
