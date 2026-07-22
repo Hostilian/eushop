@@ -80,6 +80,30 @@ public class OrderService {
         return orderRepository.save(order);
     }
 
+    public Order disputeOrder(String orderId) {
+        Order order = orderRepository.findById(orderId)
+                .orElseThrow(() -> new IllegalArgumentException("Order not found"));
+        
+        if (order.getStatus() == Order.OrderStatus.CANCELLED || order.getStatus() == Order.OrderStatus.REFUNDED) {
+            throw new IllegalStateException("Order cannot be disputed in current status");
+        }
+        
+        order.setStatus(Order.OrderStatus.DISPUTED);
+        return orderRepository.save(order);
+    }
+
+    public Order refundOrder(String orderId) {
+        Order order = orderRepository.findById(orderId)
+                .orElseThrow(() -> new IllegalArgumentException("Order not found"));
+        
+        if (order.getStatus() == Order.OrderStatus.CANCELLED || order.getStatus() == Order.OrderStatus.REFUNDED) {
+            throw new IllegalStateException("Order cannot be refunded in current status");
+        }
+        
+        order.setStatus(Order.OrderStatus.REFUNDED);
+        return orderRepository.save(order);
+    }
+
     public Double getSellerRevenue(String sellerId) {
         Double revenue = orderRepository.calculateSellerRevenue(sellerId);
         return revenue != null ? revenue : 0.0;

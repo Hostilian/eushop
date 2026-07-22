@@ -104,4 +104,26 @@ class OrderServiceTest {
         });
         verify(orderRepository, never()).save(any(Order.class));
     }
+
+    @Test
+    void disputeOrder_ValidOrder_SetsDisputed() {
+        when(orderRepository.findById("order_1")).thenReturn(Optional.of(testOrder));
+        when(orderRepository.save(any(Order.class))).thenReturn(testOrder);
+
+        Order disputed = orderService.disputeOrder("order_1");
+
+        assertEquals(Order.OrderStatus.DISPUTED, disputed.getStatus());
+        verify(orderRepository, times(1)).save(testOrder);
+    }
+
+    @Test
+    void refundOrder_ValidOrder_SetsRefunded() {
+        when(orderRepository.findById("order_1")).thenReturn(Optional.of(testOrder));
+        when(orderRepository.save(any(Order.class))).thenReturn(testOrder);
+
+        Order refunded = orderService.refundOrder("order_1");
+
+        assertEquals(Order.OrderStatus.REFUNDED, refunded.getStatus());
+        verify(orderRepository, times(1)).save(testOrder);
+    }
 }

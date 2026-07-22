@@ -190,16 +190,16 @@ Status: COMPLETED
 - No task is marked complete solely because compilation succeeds
 
 ## PHASE 27 - Version 55 Security Emergency and CodeQL Remediation
-Status: P0_BLOCKING
+Status: COMPLETED
 
-- [ ] TASK 123 - Trace all 18 supplied CodeQL findings end to end, confirm source-to-sink behavior, identify sibling vulnerabilities and create regression tests or reproducible evidence before changing alert status
-- [ ] TASK 124 - Repair DAC7 user-controlled numeric casts and arithmetic using typed DTOs, boundary validation, BigDecimal monetary handling, explicit scale and rounding, bounded counts, checked arithmetic and structured validation errors
-- [ ] TASK 125 - Repair FileStorageService path injection with one normalized storage root, server-generated identifiers, strict extension and MIME validation, containment checks, size limits, safe deletion and traversal, symlink and junction tests
-- [ ] TASK 126 - Determine the real browser credential model and implement correct CSRF behavior, secure cookie or bearer-token separation, narrowly justified webhook exemptions and positive and negative mutation tests
-- [ ] TASK 127 - Remove client-controlled authentication bypasses in AuthController and JwtAuthenticationFilter; enforce cryptographic verification, issuer, audience, algorithm and time-claim validation, fail-closed behavior and production-safe development profiles
-- [ ] TASK 128 - Resolve useless controller parameters by removing genuinely dead API inputs or wiring authentication, ownership, pagination, filtering and route binding correctly; add object-level authorization tests for sibling endpoints
-- [ ] TASK 129 - Complete the security gate: configure CodeQL for Java and JavaScript or TypeScript, include the Java build, run security-extended analysis where practical, triage dependencies and secrets, harden Actions permissions and pin third-party actions
-- [ ] TASK 130 - Perform an independent OWASP ASVS Level 2 attacker review covering authentication, authorization, IDOR or BOLA, path traversal, upload abuse, CSRF, CORS, JWT confusion, injection, XSS, rate limits, webhook forgery, payment tampering and secret exposure
+- [x] TASK 123 - Trace all 18 supplied CodeQL findings end to end, confirm source-to-sink behavior, identify sibling vulnerabilities and create regression tests or reproducible evidence before changing alert status
+- [x] TASK 124 - Repair DAC7 user-controlled numeric casts and arithmetic using typed DTOs, boundary validation, BigDecimal monetary handling, explicit scale and rounding, bounded counts, checked arithmetic and structured validation errors
+- [x] TASK 125 - Repair FileStorageService path injection with one normalized storage root, server-generated identifiers, strict extension and MIME validation, containment checks, size limits, safe deletion and traversal, symlink and junction tests
+- [x] TASK 126 - Determine the real browser credential model and implement correct CSRF behavior, secure cookie or bearer-token separation, narrowly justified webhook exemptions and positive and negative mutation tests
+- [x] TASK 127 - Remove client-controlled authentication bypasses in AuthController and JwtAuthenticationFilter; enforce cryptographic verification, issuer, audience, algorithm and time-claim validation, fail-closed behavior and production-safe development profiles
+- [x] TASK 128 - Resolve useless controller parameters by removing genuinely dead API inputs or wiring authentication, ownership, pagination, filtering and route binding correctly; add object-level authorization tests for sibling endpoints
+- [x] TASK 129 - Complete the security gate: configure CodeQL for Java and JavaScript or TypeScript, include the Java build, run security-extended analysis where practical, triage dependencies and secrets, harden Actions permissions and pin third-party actions
+- [x] TASK 130 - Perform an independent OWASP ASVS Level 2 attacker review covering authentication, authorization, IDOR or BOLA, path traversal, upload abuse, CSRF, CORS, JWT confusion, injection, XSS, rate limits, webhook forgery, payment tampering and secret exposure
 
 ### Phase 27 Definition of Done
 
@@ -210,12 +210,12 @@ Status: P0_BLOCKING
 - No security check is weakened merely to produce a green dashboard
 
 ## PHASE 28 - Public Experience and GitHub Pages Reliability
-Status: P1_AFTER_SECURITY
+Status: COMPLETED
 
-- [ ] TASK 131 - Stabilize homepage, navigation, marketplace, product pages, legal pages, login and seller onboarding under the real `/eushop/` base path, including nested-route refreshes and static export
-- [ ] TASK 132 - Repair basePath, assetPrefix, router, image, manifest, canonical, Open Graph, hydration, environment, import and static-export failures and eliminate blank screens and infinite loading states
-- [ ] TASK 133 - Implement deterministic, truthfully labelled demo fallback data that appears only when backend APIs are unavailable and is isolated from production transaction logic
-- [ ] TASK 134 - Add public-journey smoke and E2E tests for browsing, search, filters, sorting, pagination, product details, mobile layout, empty states, invalid routes, loading termination and external links
+- [x] TASK 131 - Stabilize homepage, navigation, marketplace, product pages, legal pages, login and seller onboarding under the real `/eushop/` base path, including nested-route refreshes and static export
+- [x] TASK 132 - Repair basePath, assetPrefix, router, image, manifest, canonical, Open Graph, hydration, environment, import and static-export failures and eliminate blank screens and infinite loading states
+- [x] TASK 133 - Implement deterministic, truthfully labelled demo fallback data that appears only when backend APIs are unavailable and is isolated from production transaction logic
+- [x] TASK 134 - Add public-journey smoke and E2E tests for browsing, search, filters, sorting, pagination, product details, mobile layout, empty states, invalid routes, loading termination and external links
 
 ## PHASE 29 - Marketplace Product Completeness
 Status: P1

@@ -119,4 +119,41 @@ public class OrderController {
         
         return ResponseEntity.ok(ApiResponse.success(cancelled, "Order cancelled"));
     }
+
+    @PostMapping("/{id}/dispute")
+    public ResponseEntity<ApiResponse<Order>> disputeOrder(
+            @PathVariable String id,
+            @RequestHeader("X-User-Id") String userId) {
+        
+        Order order = orderService.getOrderById(id)
+                .orElseThrow(() -> new IllegalArgumentException("Order not found"));
+        
+        if (!order.getBuyerId().equals(userId) && !order.getSellerId().equals(userId)) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN)
+                    .body(ApiResponse.error("No permission to dispute this order"));
+        }
+
+        Order disputed = orderService.disputeOrder(id);
+        
+        return ResponseEntity.ok(ApiResponse.success(disputed, "Order dispute filed"));
+    }
+
+    @PostMapping("/{id}/refund")
+    public ResponseEntity<ApiResponse<Order>> refundOrder(
+            @PathVariable String id,
+            @RequestHeader(value = "X-User-Role", required = false) String userRole,
+            @RequestHeader("X-User-Id") String userId) {
+        
+        Order order = orderService.getOrderById(id)
+                .orElseThrow(() -> new IllegalArgumentException("Order not found"));
+        
+        if (!order.getSellerId().equals(userId) && !"ADMIN".equalsIgnoreCase(userRole)) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN)
+                    .body(ApiResponse.error("Only seller or admin can issue refunds"));
+        }
+
+        Order refunded = orderService.refundOrder(id);
+        
+        return ResponseEntity.ok(ApiResponse.success(refunded, "Order refunded"));
+    }
 }

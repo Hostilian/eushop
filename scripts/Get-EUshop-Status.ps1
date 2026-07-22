@@ -102,7 +102,7 @@ Write-Host "    [3] AI Path Health : $($statusObj.health_ai) (FCC Gateway / Fall
 Write-Host "--------------------------------------------------------------------------------" -ForegroundColor DarkGray
 Write-Host "  TASK QUEUE PROGRESS:" -ForegroundColor White
 Write-Host "    Completed        : $completed / $total Tasks ($pct%)" -ForegroundColor Green
-Write-Host "    Next Phase       : Phase 28 (Public Experience and GitHub Pages Reliability)" -ForegroundColor Cyan
+Write-Host "    Next Phase       : Phase 29 (Marketplace Product Completeness)" -ForegroundColor Cyan
 Write-Host "--------------------------------------------------------------------------------" -ForegroundColor DarkGray
 Write-Host "  RESOURCE & LOG INFO:" -ForegroundColor White
 Write-Host "    Disk Free        : $freeGb GB" -ForegroundColor White
