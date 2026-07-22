@@ -295,13 +295,13 @@ Status: UPCOMING
 - [x] TASK 170 - Build `docs/v66/00-ground-truth.md` repository inventory (commits, active packages, runtime ports, DB schema, CI workflows)
 - [x] TASK 171 - Build `docs/v66/01-product-truth.md` reconciling specialty-food marketplace vs traveler mobility thesis
 - [x] TASK 172 - Repository boundaries cleanup (quarantine scraped sites, binary archives, temporary logs, stale sessions)
-- [ ] TASK 173 - License, SBOM, and asset provenance reconciliation across dependencies and media files
+- [x] TASK 173 - License, SBOM, and asset provenance reconciliation across dependencies and media files
 - [x] TASK 174 - Create `docs/v66/V66_BACKLOG.md` with priority scoring engine `(Severity*5 + Value*4 + Sec*5 - Risk*2 - Effort*1)`
 
 ## PHASE 37 - v66 Zero-Critical Security Program & STRIDE Threat Model
 Status: UPCOMING
 
-- [ ] TASK 175 - Secret & suspicious automation containment, pre-commit prevention, and scanner rules
+- [x] TASK 175 - Secret & suspicious automation containment, pre-commit prevention, and scanner rules
 - [ ] TASK 176 - Complete CodeQL taint analysis across all numeric casts and path expressions repository-wide
 - [ ] TASK 177 - Actor & role authorization matrix enforcement & CSRF/SameSite cookie session security
 - [ ] TASK 178 - Centralized security headers, CSP, output encoding, and API rate limiting middleware
