@@ -43,19 +43,30 @@ export default function CartPage() {
   return (
     <PageWrapper>
       <div className="py-6">
-        <h1 className="text-3xl font-extrabold text-brand-dark dark:text-white mb-8 font-display">
-          Your Cart
-        </h1>
+        <div className="flex items-center justify-between border-b border-[#dcd7cb] pb-4 mb-8">
+          <div>
+            <span className="text-xs font-black uppercase tracking-widest text-[#1845d4]">Single Market Order</span>
+            <h1 className="text-3xl sm:text-4xl font-black text-[#141613] font-display mt-1 tracking-tight">
+              Your Marketplace Cart
+            </h1>
+          </div>
+          <span className="text-xs font-bold px-3 py-1.5 rounded-full bg-[#1845d4]/10 text-[#1845d4] border border-[#1845d4]/20 font-mono">
+            {cartItems.reduce((sum, i) => sum + i.quantity, 0)} Items
+          </span>
+        </div>
 
         {cartItems.length === 0 ? (
-          <div className="bg-white dark:bg-gray-900 rounded-3xl border border-gray-100 dark:border-gray-800 p-16 text-center shadow-sm">
-            <div className="text-6xl mb-6">🛒</div>
-            <h2 className="text-xl font-bold text-brand-dark dark:text-white mb-6">Your cart is empty</h2>
+          <div className="bg-[#fffdf8] rounded-3xl border border-[#dcd7cb] p-16 text-center shadow-lg">
+            <div className="text-6xl mb-4">🛒</div>
+            <h2 className="text-2xl font-bold text-[#141613] font-display mb-2">Your marketplace cart is empty</h2>
+            <p className="text-sm text-[#65675f] mb-6 max-w-md mx-auto">
+              Discover authentic regional foods directly from independent European sellers across 27 EU member states.
+            </p>
             <Link
               href="/search"
-              className="inline-block bg-brand-green text-white px-8 py-3 rounded-xl font-bold hover:opacity-90 transition"
+              className="inline-flex items-center gap-2 bg-[#1845d4] hover:bg-[#102f8f] text-white px-8 py-3.5 rounded-xl font-bold transition shadow-md text-sm"
             >
-              Browse Foods
+              Explore European Foods →
             </Link>
           </div>
         ) : (

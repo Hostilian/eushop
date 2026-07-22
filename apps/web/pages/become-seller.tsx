@@ -41,17 +41,47 @@ export default function BecomeSellerPage() {
       </Head>
 
       <div className="max-w-5xl mx-auto py-8">
-        {/* Header Section */}
-        <div className="mb-8 border-b border-gray-200 dark:border-gray-800 pb-6">
-          <div className="flex items-center gap-2 text-xs font-semibold text-brand-green dark:text-brand-gold uppercase tracking-wider mb-2">
-            <span>🇪🇺 EU Digital Services Act (DSA) Article 30 Compliance</span>
+        {/* v77 Editorial Header Section */}
+        <div className="relative overflow-hidden rounded-3xl bg-[#141613] px-6 py-10 sm:px-10 text-[#fffdf8] shadow-2xl border border-[#dcd7cb]/20 mb-8">
+          <div className="absolute top-0 right-0 -mt-16 -mr-16 w-80 h-80 bg-[#1845d4]/15 rounded-full blur-3xl pointer-events-none" />
+          
+          <div className="relative max-w-3xl">
+            <span className="inline-flex items-center gap-2 px-3 py-1 rounded-full text-xs font-black bg-[#e5a024]/20 text-[#e5a024] border border-[#e5a024]/30 uppercase tracking-widest mb-3">
+              <span>🏛️</span> Specialist Seller Onboarding
+            </span>
+            
+            <h1 className="font-display text-3xl sm:text-4xl font-extrabold text-white mb-2 tracking-tight">
+              Sell Regional Specialty Foods Across the EU
+            </h1>
+            
+            <p className="text-sm text-[#dcd7cb]/80 mb-6 leading-relaxed">
+              Expand your independent European food business across 27 EU member states with automated DSA Art. 30 trader identity verification, FIC Reg. 1169/2011 allergen tools, and DAC7 single-market tax compliance.
+            </p>
           </div>
-          <h1 className="text-3xl font-extrabold text-gray-900 dark:text-white font-display mb-3">
-            Trader Onboarding & Cross-Border Identity Verification
-          </h1>
-          <p className="text-sm text-gray-600 dark:text-gray-300 max-w-3xl leading-relaxed">
-            To sell specialty goods across the EU Single Market, EU law requires verifying 5 mandatory trader identification data points before listings go live.
-          </p>
+
+          {/* 4-Step Onboarding Workflow */}
+          <div className="mt-4 pt-4 border-t border-[#dcd7cb]/15 grid grid-cols-1 sm:grid-cols-4 gap-4 text-xs">
+            <div className="p-3 rounded-xl bg-[#fffdf8]/10 border border-white/10">
+              <span className="font-mono text-[#e5a024] font-bold block mb-1">STEP 01</span>
+              <span className="font-bold text-white block">Trader Identification</span>
+              <span className="text-[11px] text-[#dcd7cb]/70">Business name, VAT ID & address</span>
+            </div>
+            <div className="p-3 rounded-xl bg-[#fffdf8]/10 border border-white/10">
+              <span className="font-mono text-[#e5a024] font-bold block mb-1">STEP 02</span>
+              <span className="font-bold text-white block">DSA Art. 30 Audit</span>
+              <span className="text-[11px] text-[#dcd7cb]/70">Commercial register verification</span>
+            </div>
+            <div className="p-3 rounded-xl bg-[#fffdf8]/10 border border-white/10">
+              <span className="font-mono text-[#e5a024] font-bold block mb-1">STEP 03</span>
+              <span className="font-bold text-white block">Food Allergen Setup</span>
+              <span className="text-[11px] text-[#dcd7cb]/70">EU 14 allergen declarations</span>
+            </div>
+            <div className="p-3 rounded-xl bg-[#fffdf8]/10 border border-white/10">
+              <span className="font-mono text-[#e5a024] font-bold block mb-1">STEP 04</span>
+              <span className="font-bold text-white block">Single Market Live</span>
+              <span className="text-[11px] text-[#dcd7cb]/70">Cross-border direct sales</span>
+            </div>
+          </div>
         </div>
 
         {/* Translation Guidance Alert (Task 70) */}

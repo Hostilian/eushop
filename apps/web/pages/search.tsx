@@ -153,16 +153,88 @@ export default function SearchPage() {
   return (
     <PageWrapper>
       <div className="py-6">
-        <h1 className="text-3xl font-extrabold text-brand-dark dark:text-white mb-2 font-display">
-          Find Specialty Foods Across the EU
-        </h1>
-        <p className="text-sm text-gray-600 dark:text-gray-400 mb-8 max-w-2xl leading-relaxed">
-          Search marketplace listings by name or country and compare seller identity, origin, and food information before choosing an item.
-        </p>
+        {/* v77 Editorial Search Header */}
+        <section className="relative overflow-hidden rounded-3xl bg-[#141613] px-6 py-10 sm:px-10 text-[#fffdf8] shadow-2xl border border-[#dcd7cb]/20 mb-8">
+          <div className="absolute top-0 right-0 -mt-16 -mr-16 w-80 h-80 bg-[#1845d4]/15 rounded-full blur-3xl pointer-events-none" />
+          
+          <div className="relative max-w-3xl">
+            <span className="inline-flex items-center gap-2 px-3 py-1 rounded-full text-xs font-black bg-[#e5a024]/20 text-[#e5a024] border border-[#e5a024]/30 uppercase tracking-widest mb-3">
+              <span>🗺️</span> Regional Discovery Search
+            </span>
+            
+            <h1 className="font-display text-3xl sm:text-4xl font-extrabold text-white mb-2 tracking-tight">
+              Explore Regional European Foods
+            </h1>
+            
+            <p className="text-sm text-[#dcd7cb]/80 mb-6 leading-relaxed">
+              Discover specialty foods by country of origin, protected quality designations (DOP/IGP), food category, or declared allergen-free requirements.
+            </p>
+
+            {/* Search Bar Input */}
+            <div className="relative">
+              <input
+                type="text"
+                id="search-input"
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                placeholder="Search by product name, region, or producer (e.g., Jamón, Parmigiano, Olive Oil)..."
+                className="w-full pl-11 pr-4 py-3.5 bg-[#fffdf8] text-[#141613] rounded-2xl border border-[#dcd7cb] shadow-lg text-sm font-medium focus:outline-none focus:ring-4 focus:ring-[#1845d4]/30 focus:border-[#1845d4] placeholder:text-[#65675f]"
+              />
+              <svg
+                className="w-5 h-5 absolute left-4 top-1/2 -translate-y-1/2 text-[#65675f]"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+              </svg>
+            </div>
+          </div>
+
+          {/* Country Pills Bar */}
+          <div className="mt-6 pt-4 border-t border-[#dcd7cb]/15 flex items-center gap-2 overflow-x-auto pb-2 text-xs scrollbar-none">
+            <span className="font-extrabold uppercase text-[#e5a024] shrink-0 text-[10px] tracking-wider">Quick Origins:</span>
+            <button
+              onClick={() => { setSelectedCountry(''); setPage(1); }}
+              className={`px-3 py-1.5 rounded-full font-bold transition shrink-0 border ${
+                selectedCountry === ''
+                  ? 'bg-[#1845d4] text-white border-white'
+                  : 'bg-[#fffdf8]/10 text-white border-white/20 hover:bg-white/20'
+              }`}
+            >
+              🇪🇺 All Member States
+            </button>
+            {[
+              { name: 'Italy', flag: '🇮🇹' },
+              { name: 'France', flag: '🇫🇷' },
+              { name: 'Spain', flag: '🇪🇸' },
+              { name: 'Germany', flag: '🇩🇪' },
+              { name: 'Greece', flag: '🇬🇷' },
+              { name: 'Portugal', flag: '🇵🇹' },
+              { name: 'Netherlands', flag: '🇳🇱' },
+              { name: 'Belgium', flag: '🇧🇪' },
+              { name: 'Austria', flag: '🇦🇹' },
+              { name: 'Poland', flag: '🇵🇱' },
+            ].map((c) => (
+              <button
+                key={c.name}
+                onClick={() => { setSelectedCountry(c.name); setPage(1); }}
+                className={`px-3 py-1.5 rounded-full font-bold transition shrink-0 border flex items-center gap-1.5 ${
+                  selectedCountry === c.name
+                    ? 'bg-[#1845d4] text-white border-white ring-2 ring-white/40'
+                    : 'bg-[#fffdf8]/10 text-[#dcd7cb] border-white/20 hover:bg-white/20 hover:text-white'
+                }`}
+              >
+                <span>{c.flag}</span>
+                <span>{c.name}</span>
+              </button>
+            ))}
+          </div>
+        </section>
 
         {catalogueOrigin && (
           <p
-            className="mb-6 w-fit rounded-full border border-gray-200 bg-gray-50 px-3 py-1 text-xs font-semibold text-gray-600 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300"
+            className="mb-6 w-fit rounded-full border border-gray-200 bg-[#fffdf8] px-3 py-1 text-xs font-semibold text-gray-700 shadow-sm dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300"
             role="status"
             aria-live="polite"
           >
@@ -172,7 +244,7 @@ export default function SearchPage() {
         )}
 
         {/* Filter Bar */}
-        <div className="bg-white dark:bg-gray-900 border border-gray-150 dark:border-gray-800 rounded-3xl p-6 shadow-sm mb-10">
+        <div className="bg-[#fffdf8] border border-[#dcd7cb] rounded-3xl p-6 shadow-sm mb-10">
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-6 gap-6">
             <div>
               <label htmlFor="search-input" className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">

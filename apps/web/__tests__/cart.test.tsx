@@ -34,14 +34,14 @@ describe('CartPage Component', () => {
 
   it('renders cart page header', () => {
     render(<CartPage />);
-    const heading = screen.getByRole('heading', { level: 1, name: /^your cart$/i });
+    const heading = screen.getByRole('heading', { level: 1, name: /Your Marketplace Cart/i });
     expect(heading).toBeInTheDocument();
   });
 
   it('renders the empty state if localStorage is empty', () => {
     render(<CartPage />);
-    expect(screen.getByRole('heading', { name: /your cart is empty/i })).toBeInTheDocument();
-    expect(screen.getByRole('link', { name: /browse foods/i })).toHaveAttribute('href', '/search');
+    expect(screen.getByRole('heading', { name: /Your marketplace cart is empty/i })).toBeInTheDocument();
+    expect(screen.getByRole('link', { name: /Explore European Foods/i })).toHaveAttribute('href', '/search');
   });
 
   it('calculates the correct subtotal', () => {

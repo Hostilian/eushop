@@ -66,7 +66,7 @@ Object.defineProperty(window, 'sessionStorage', { value: storageMock, writable: 
 describe('BecomeSeller Page', () => {
   it('renders trader onboarding page heading and DSA Art. 30 disclosures', () => {
     render(<BecomeSeller />);
-    expect(screen.getByRole('heading', { level: 1, name: /Trader Onboarding & Cross-Border Identity Verification/i })).toBeInTheDocument();
+    expect(screen.getByRole('heading', { level: 1, name: /Sell Regional Specialty Foods Across the EU/i })).toBeInTheDocument();
     expect(screen.getByText(/Regulation \(EU\) 2016\/1191/i)).toBeInTheDocument();
   });
 
