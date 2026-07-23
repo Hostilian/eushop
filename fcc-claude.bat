@@ -1,3 +1,4 @@
 @echo off
-set PYTHONPATH=D:\CODING\eushop\free-claude-code-main\free-claude-code-main
-.venv\Scripts\python.exe -c "import sys; from cli.launchers.claude import launch; launch()" %*
+rem EUshop FCC Claude Launcher Wrapper
+powershell.exe -NoProfile -ExecutionPolicy Bypass -File "%USERPROFILE%\.fcc\Start-FCC-Claude-Correct.ps1" %*
+exit /b %ERRORLEVEL%
