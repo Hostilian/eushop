@@ -3,7 +3,6 @@ import { StyleSheet, Text, View, ScrollView, TouchableOpacity, Alert, Switch } f
 import { theme } from '../lib/theme';
 
 export default function GDPRScreen() {
-  const [essential, setEssential] = useState(true);
   const [analytics, setAnalytics] = useState(false);
   const [marketing, setMarketing] = useState(false);
 

@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { ScrollView, StyleSheet, Text, TouchableOpacity, View, Image, StatusBar, ActivityIndicator } from 'react-native';
+import { ScrollView, StyleSheet, Text, TouchableOpacity, View, StatusBar, ActivityIndicator } from 'react-native';
 import { theme } from '../lib/theme';
 
 // Simulate API fetch

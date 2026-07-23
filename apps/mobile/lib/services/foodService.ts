@@ -1,4 +1,4 @@
-import { EU_ALLERGENS_14, type EUAllergen } from '@eushop/compliance';
+import type { EUAllergen } from '@eushop/compliance';
 
 export interface FoodItem {
   id: string;
@@ -26,7 +26,7 @@ export const DEMO_FOOD_ITEMS: FoodItem[] = [
     country: 'Italy',
     countryCode: 'IT',
     origin: 'Nuoro, Sardinia, Italy',
-    allergens: ['gluten'],
+    allergens: ['Cereals containing gluten'],
     sellerName: 'Panificio Sa Odissea SAS',
     traderType: 'Trader (DSA Art. 30 Verified)',
     sellerVatId: 'IT09876543210',
@@ -42,7 +42,7 @@ export const DEMO_FOOD_ITEMS: FoodItem[] = [
     country: 'Belgium',
     countryCode: 'BE',
     origin: 'Bruges, Flanders, Belgium',
-    allergens: ['milk', 'nuts', 'soy'],
+    allergens: ['Milk', 'Nuts', 'Soybeans'],
     sellerName: 'Chocolaterie Van Der Berg BV',
     traderType: 'Trader (DSA Art. 30 Verified)',
     sellerVatId: 'BE0123456789',
@@ -58,7 +58,7 @@ export const DEMO_FOOD_ITEMS: FoodItem[] = [
     country: 'Spain',
     countryCode: 'ES',
     origin: 'La Mancha, Spain',
-    allergens: ['milk', 'eggs'],
+    allergens: ['Milk', 'Eggs'],
     sellerName: 'Quesería Valle de la Mancha SL',
     traderType: 'Trader (DSA Art. 30 Verified)',
     sellerVatId: 'ESB98765432',

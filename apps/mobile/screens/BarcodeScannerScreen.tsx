@@ -15,7 +15,7 @@ export default function BarcodeScannerScreen({ navigation }: any) {
     })();
   }, []);
 
-  const handleBarCodeScanned = async ({ type, data }: { type: string; data: string }) => {
+  const handleBarCodeScanned = async ({ data }: { type: string; data: string }) => {
     setScanned(true);
     setLoading(true);
 

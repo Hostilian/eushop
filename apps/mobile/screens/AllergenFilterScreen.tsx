@@ -41,9 +41,16 @@ export default function AllergenFilterScreen() {
         onSelectAllergen={setSelectedAllergens}
       />
       <View style={styles.resultsContainer}>
-        <Text style={styles.resultsText}>
-          Products ({filteredProducts.length} of {products.length} matching)
-        </Text>
+        {loading ? (
+          <Text style={styles.resultsText}>Loading European products...</Text>
+        ) : (
+          <>
+            {error && <Text style={{ color: '#c84e38', marginBottom: 8 }}>{error}</Text>}
+            <Text style={styles.resultsText}>
+              Products ({filteredProducts.length} of {products.length} matching)
+            </Text>
+          </>
+        )}
       </View>
     </ScrollView>
   );

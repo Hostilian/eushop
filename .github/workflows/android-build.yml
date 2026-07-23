@@ -5,11 +5,12 @@ on:
     branches: ["main"]
     paths:
       - "apps/mobile/**"
+      - "packages/**"
       - ".github/workflows/android-build.yml"
   workflow_dispatch:
     inputs:
       profile:
-        description: "Build profile"
+        description: "Build profile (preview = APK, production = AAB)"
         required: true
         default: "preview"
         type: choice
@@ -17,47 +18,93 @@ on:
           - preview
           - production
 
+permissions:
+  contents: read
+  actions: read
+
 jobs:
-  build:
-    name: EAS Android Build
+  validate:
+    name: Mobile Quality & Type Check
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
 
+      - uses: pnpm/action-setup@v3
+        with:
+          version: 9.7.1
+
       - uses: actions/setup-node@v4
         with:
           node-version: "20"
-          cache: "npm"
-          cache-dependency-path: apps/mobile/package-lock.json
+          cache: "pnpm"
 
-      - name: Install dependencies
-        working-directory: apps/mobile
-        run: npm install
+      - name: Install Monorepo Dependencies
+        run: pnpm install --frozen-lockfile
 
-      - name: Install EAS CLI
-        run: npm install -g eas-cli@latest
+      - name: Mobile TypeScript Validation
+        run: pnpm --filter "@eushop/mobile" exec tsc --noEmit
 
-      - name: Build APK (preview)
-        if: ${{ github.event.inputs.profile != 'production' }}
+      - name: Mobile Unit Tests
+        run: pnpm --filter "@eushop/mobile" run test
+
+  build:
+    name: EAS Android Release Build
+    needs: validate
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: pnpm/action-setup@v3
+        with:
+          version: 9.7.1
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: "pnpm"
+
+      - name: Install Monorepo Dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Install Pinned EAS CLI
+        run: npm install -g eas-cli@10.2.0
+
+      - name: Verify Credentials & Execute EAS Build
         working-directory: apps/mobile
         run: |
           if [ -z "$EXPO_TOKEN" ]; then
-            echo "EXPO_TOKEN not set — skipping EAS cloud build."
-            echo "To build locally: cd apps/mobile && eas build --platform android --profile preview --local"
-          else
-            eas build --platform android --profile preview --non-interactive
+            if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
+              echo "::error::EXPO_TOKEN secret is missing! EAS Cloud Build cannot proceed."
+              exit 1
+            else
+              echo "EXPO_TOKEN secret is not configured for push event. Skipping EAS cloud build step."
+              echo "To run Android build locally: pnpm --filter '@eushop/mobile' run android"
+              exit 0
+            fi
+          fi
+
+          PROFILE="${{ github.event.inputs.profile || 'preview' }}"
+          echo "Executing EAS Android Build with profile: $PROFILE"
+          eas build --platform android --profile "$PROFILE" --non-interactive --json > build-output.json
+          
+          cat build-output.json
+          ARTIFACT_URL=$(jq -r '.[0].artifacts.buildUrl // empty' build-output.json)
+          if [ -n "$ARTIFACT_URL" ]; then
+            curl -L "$ARTIFACT_URL" -o "eushop-v99-$PROFILE.apk"
+            sha256sum "eushop-v99-$PROFILE.apk" > "eushop-v99-$PROFILE.apk.sha256"
+            echo "::notice::Build completed successfully. Checksum generated."
           fi
         env:
           EXPO_TOKEN: ${{ secrets.EXPO_TOKEN }}
 
-      - name: Build AAB (production)
-        if: ${{ github.event.inputs.profile == 'production' }}
-        working-directory: apps/mobile
-        run: |
-          if [ -z "$EXPO_TOKEN" ]; then
-            echo "EXPO_TOKEN not set — skipping EAS cloud build."
-          else
-            eas build --platform android --profile production --non-interactive
-          fi
-        env:
-          EXPO_TOKEN: ${{ secrets.EXPO_TOKEN }}
+      - name: Upload Build Artifacts
+        if: ${{ hashFiles('apps/mobile/*.apk') != '' || hashFiles('apps/mobile/*.aab') != '' }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: eushop-v99-android-build
+          path: |
+            apps/mobile/*.apk
+            apps/mobile/*.aab
+            apps/mobile/*.sha256
+            apps/mobile/build-output.json
+          retention-days: 14

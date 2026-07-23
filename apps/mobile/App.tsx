@@ -42,12 +42,12 @@ SplashScreen.preventAutoHideAsync();
 const Tab = createBottomTabNavigator();
 
 export default function App() {
-  const [expoPushToken, setExpoPushToken] = useState<string | undefined>('');
+  const [, setExpoPushToken] = useState<string | undefined>('');
 
   useEffect(() => {
     async function prepare() {
       try {
-        await new Promise((resolve) => setTimeout(resolve, 800));
+        await new Promise((resolve) => setTimeout(() => resolve(true), 800));
         await registerBackgroundSyncAsync();
         const token = await notificationService.registerForPushNotificationsAsync();
         setExpoPushToken(token);

@@ -1,4 +1,4 @@
-import React, { useState, useCallback } from 'react';
+import React, { useCallback } from 'react';
 import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
 import { EU_ALLERGENS_14, type EUAllergen } from '@eushop/compliance';
 import { AllergenBadge } from '../ui/Badge';

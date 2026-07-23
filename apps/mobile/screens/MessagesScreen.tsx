@@ -106,7 +106,7 @@ export default function MessagesScreen() {
           </View>
 
           <ScrollView contentContainerStyle={styles.chatMessages} ref={(ref) => ref?.scrollToEnd({ animated: true })}>
-            {currentThread.messages.map((m, idx) => {
+            {currentThread.messages.map((m: any, idx: number) => {
               const isBuyer = m.sender === 'buyer';
               return (
                 <View 

@@ -359,7 +359,7 @@ const styles = StyleSheet.create({
   },
   metricsTitle: {
     fontSize: 11,
-    fontWeight: '750',
+    fontWeight: '700',
     color: theme.colors.textMuted,
     textTransform: 'uppercase',
   },
@@ -402,7 +402,7 @@ const styles = StyleSheet.create({
   secondaryButtonText: {
     color: theme.colors.primary,
     fontSize: 13,
-    fontWeight: '750',
+    fontWeight: '700',
   },
   // Form card
   formCard: {
@@ -489,7 +489,7 @@ const styles = StyleSheet.create({
   submitBtnText: {
     color: theme.colors.primary,
     fontSize: 13,
-    fontWeight: '750',
+    fontWeight: '700',
   },
   settingsSection: {
     backgroundColor: theme.colors.surface,

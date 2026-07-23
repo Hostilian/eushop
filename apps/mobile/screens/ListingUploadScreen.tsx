@@ -1,6 +1,6 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { StyleSheet, Text, TextInput, TouchableOpacity, View, ScrollView, Alert, ActivityIndicator } from 'react-native';
-import { CameraView, useCameraPermissions } from 'expo-camera';
+import { useCameraPermissions } from 'expo-camera';
 import * as Location from 'expo-location';
 import { theme } from '../lib/theme';
 
@@ -282,7 +282,7 @@ const styles = StyleSheet.create({
   },
   captureTriggerText: {
     fontSize: 13,
-    fontWeight: '750',
+    fontWeight: '700',
     color: theme.colors.primary,
   },
   photoPreviewBox: {
