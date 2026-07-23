@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>EUshop Enterprise v177 — Ground-Up Re-Founded Pan-European Marketplace</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400..800;1,9..144,400..800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+
+  <!-- Navigation -->
+  <nav class="navbar">
+    <div class="brand-title">
+      🇪🇺 EUshop <span class="brand-badge">v177 Ground-Up</span>
+    </div>
+    <ul class="nav-links">
+      <li><a href="#catalog">Catalog</a></li>
+      <li><a href="#truth">Product Truth</a></li>
+      <li><a href="#compliance">Regulatory Core</a></li>
+      <li>
+        <button class="btn-primary">Cart (<span id="cart-count">0</span>)</button>
+      </li>
+    </ul>
+  </nav>
+
+  <!-- Hero Section -->
+  <header class="hero">
+    <span class="hero-tag">ENTERPRISE RELEASE V177 • GROUND-UP PRODUCTION GRADE</span>
+    <h1 class="hero-title">The Sovereign Cross-Border Specialty Food Marketplace</h1>
+    <p class="hero-subtitle">
+      Authentic regional European foods direct from independent commercial producers across 27 EU member states. Verified DSA Art. 30 seller disclosures, automated FIC 1169 allergen safety, and DAC7 tax reconciliation.
+    </p>
+
+    <div class="stats-grid">
+      <div class="stat-card">
+        <div class="stat-value">2,150+</div>
+        <div class="stat-label">KYBC Vetted Producers</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-value">27</div>
+        <div class="stat-label">EU Member States</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-value">24,500+</div>
+        <div class="stat-label">Protected PDO/PGI Items</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-value">€19.8M</div>
+        <div class="stat-label">Automated Reconciled Sales</div>
+      </div>
+    </div>
+  </header>
+
+  <!-- Catalog Section -->
+  <section class="catalog-section" id="catalog">
+    <h2 class="section-title">Authentic Regional Specialties</h2>
+
+    <div class="filter-bar">
+      <button class="filter-chip active" data-category="all">All Specialties</button>
+      <button class="filter-chip" data-category="cheese">🧀 Artisanal Cheeses</button>
+      <button class="filter-chip" data-category="charcuterie">🥩 Cured Meats</button>
+      <button class="filter-chip" data-category="olive-oil">🫒 Extra Virgin Olive Oils</button>
+      <button class="filter-chip" data-category="wine">🍷 Organic Wines</button>
+    </div>
+
+    <div class="product-grid" id="product-grid"></div>
+  </section>
+
+  <!-- Footer -->
+  <footer>
+    <p>© 2026 EUshop Production Grade (v177). Built with Next.js 15, Spring Boot 3.2, Expo SDK 51 & EU Single Source of Truth Compliance.</p>
+  </footer>
+
+  <script src="data.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>
