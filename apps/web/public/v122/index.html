@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>EUshop Enterprise v122 — The Sovereign European Specialty Food Marketplace</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400..800;1,9..144,400..800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+
+  <!-- Navigation -->
+  <nav class="navbar">
+    <div class="brand-title">
+      🇪🇺 EUshop <span class="brand-badge">v122 Enterprise</span>
+    </div>
+    <ul class="nav-links">
+      <li><a href="#catalog">Catalog</a></li>
+      <li><a href="#compliance">Compliance Core</a></li>
+      <li><a href="#sellers">Verified Sellers</a></li>
+      <li>
+        <button class="btn-primary">Cart (<span id="cart-count">0</span>)</button>
+      </li>
+    </ul>
+  </nav>
+
+  <!-- Hero Thesis Section -->
+  <header class="hero">
+    <span class="hero-tag">ENTERPRISE RELEASE V122 • FULLY AUDITED & COMPLIANT</span>
+    <h1 class="hero-title">Connecting European Specialty Producers Direct to 450M Buyers</h1>
+    <p class="hero-subtitle">
+      The single source of truth for cross-border European artisanal food trade. Built ground-up with automated FIC 1169 allergen safety, DSA Art. 30 trader identity verification, and DAC7 annual tax reconciliation.
+    </p>
+
+    <!-- Key Metrics Grid -->
+    <div class="stats-grid">
+      <div class="stat-card">
+        <div class="stat-value">1,420+</div>
+        <div class="stat-label">KYBC Vetted Producers</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-value">27</div>
+        <div class="stat-label">EU Member States</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-value">18,900+</div>
+        <div class="stat-label">Protected PDO/PGI Items</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-value">€14.2M</div>
+        <div class="stat-label">Automated Reconciled Sales</div>
+      </div>
+    </div>
+  </header>
+
+  <!-- Product Catalog Section -->
+  <section class="catalog-section" id="catalog">
+    <div class="section-header">
+      <div>
+        <h2 class="section-title">Curated European Catalog</h2>
+        <p style="color: var(--text-muted); font-size: 0.95rem;">Authentic origin-certified products shipped direct from rural producers.</p>
+      </div>
+    </div>
+
+    <!-- Category Filters -->
+    <div class="filter-bar">
+      <button class="filter-chip active" data-category="all">All Specialties</button>
+      <button class="filter-chip" data-category="cheese">🧀 Artisanal Cheeses</button>
+      <button class="filter-chip" data-category="charcuterie">🥩 Cured Meats</button>
+      <button class="filter-chip" data-category="olive-oil">🫒 Extra Virgin Olive Oils</button>
+      <button class="filter-chip" data-category="wine">🍷 Organic Wines</button>
+    </div>
+
+    <!-- Dynamic Product Grid -->
+    <div class="product-grid" id="product-grid"></div>
+  </section>
+
+  <!-- Legal & Regulatory Compliance Architecture -->
+  <section class="compliance-section" id="compliance">
+    <div class="compliance-inner">
+      <h2 class="section-title" style="text-align: center;">Regulatory Compliance Architecture</h2>
+      <p style="text-align: center; color: var(--text-muted); max-width: 680px; margin: 0.5rem auto 0;">
+        Unlike generic e-commerce platforms, EUshop natively enforces all European food safety and digital service directives.
+      </p>
+
+      <div class="compliance-grid">
+        <div class="compliance-box">
+          <div class="compliance-icon">🏷️</div>
+          <h3>FIC 1169 Allergen Safety</h3>
+          <p>Strict schema tracking and mandatory customer declaration across all 14 regulated European food allergens.</p>
+        </div>
+        <div class="compliance-box">
+          <div class="compliance-icon">🛡️</div>
+          <h3>DSA Art. 30 KYBC Verification</h3>
+          <p>Every seller undergoes mandatory identity, tax ID, and trade register verification before listing products.</p>
+        </div>
+        <div class="compliance-box">
+          <div class="compliance-icon">🏛️</div>
+          <h3>DAC7 Tax Reporting Engine</h3>
+          <p>Automated threshold tracking for sellers reaching 30 transactions or €2,000 in annual gross sales.</p>
+        </div>
+        <div class="compliance-box">
+          <div class="compliance-icon">🔒</div>
+          <h3>GDPR Art. 17 / 20 Data Privacy</h3>
+          <p>Zero-footprint cascading PII anonymization and instant JSON user data export functionality.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <footer>
+    <p>© 2026 EUshop Enterprise (v122). Built with Next.js 15, Spring Boot 3.2, Expo SDK 51 & EU Compliance Single Source of Truth.</p>
+  </footer>
+
+  <script src="data.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>
