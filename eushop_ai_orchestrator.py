@@ -166,6 +166,56 @@ DEFAULT_TASKS = (
             "Implement supported repository-side gaps and flag qualified-review needs."
         ),
     },
+    {
+        "title": "V243 Food Knowledge Graph and Claim Provenance",
+        "priority": 90,
+        "paths": ["docs/v243", "packages/compliance", "packages/types"],
+        "prompt": (
+            "Implement V243 canonical food identity, ontology relationships (ORIGINATES_IN, "
+            "CONTAINS, PROTECTED_BY), multi-lingual alias translations, and claim-level "
+            "factual provenance ledgers in packages/compliance and packages/types."
+        ),
+    },
+    {
+        "title": "V243 Living Map of European Food and PostGIS Spatial Bounds",
+        "priority": 100,
+        "paths": ["apps/web", "db", "services/core-service"],
+        "prompt": (
+            "Implement V243 PostGIS spatial corridor & origin-destination queries for "
+            "administrative, cultural, and production zones. Integrate MapLibre GL / vector "
+            "tiles with accessible list fallback and continent-to-locality zoom semantics."
+        ),
+    },
+    {
+        "title": "V243 Multi-Seller Commerce and Stripe Payout State Machine",
+        "priority": 110,
+        "paths": ["services/core-service", "apps/web"],
+        "prompt": (
+            "Implement V243 multi-seller order splitting (MarketplaceOrder, SellerOrder, "
+            "OrderLine), server-authoritative Stripe Connect payout state machines, refund "
+            "reversals, and offer comparison by price, unit price, and aging."
+        ),
+    },
+    {
+        "title": "V243 DSA Art 30 Trader Traceability and Notice Action Moderation",
+        "priority": 120,
+        "paths": ["apps/web", "services/core-service"],
+        "prompt": (
+            "Implement DSA Article 30 persistent non-decorative trader disclosure card, "
+            "independent Producer vs. Seller identity separation, and DSA Notice & Action "
+            "illegal content moderation dashboard."
+        ),
+    },
+    {
+        "title": "V243 eAmbrosia GI Ingestion and Cultural Food Atlas",
+        "priority": 130,
+        "paths": ["services/core-service", "docs/v243", "apps/web"],
+        "prompt": (
+            "Implement eAmbrosia / GIview official EU GI ingestion & verification pipeline. "
+            "Build Cultural Food Atlas regional food trails (Cheeses of the Alps, Conservas "
+            "of Portugal) and seasonal custom tagging."
+        ),
+    },
 )
 
 SECRET_PATTERNS = (
@@ -983,8 +1033,15 @@ class ProviderManager:
             env=self.environment(provider.name),
         )
         wrote = False
-        with contextlib.suppress(OSError):
-            wrote = marker.read_text(encoding="utf-8-sig").strip() == token
+        with contextlib.suppress(Exception):
+            content = marker.read_bytes()
+            for enc in ("utf-8-sig", "utf-8", "utf-16", "latin-1"):
+                try:
+                    if content.decode(enc).strip() == token:
+                        wrote = True
+                        break
+                except Exception:
+                    pass
 
         if wrote:
             status = "WRITE_CAPABLE"

@@ -13,3 +13,5 @@ export * from './allergen-extractor';
 export * from './nutrition-parser';
 export * from './quality-scheme-verifier';
 export * from './language-compliance';
+export * from './eambrosia-verifier';
+export * from './dsa-trader-verifier';

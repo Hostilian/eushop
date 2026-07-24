@@ -1,5 +1,27 @@
 # Changelog
 
+## [Unreleased] — EUshop V243 Master Mission & Regulatory Architecture (2026-07-24)
+
+### Multi-Seller Commerce & VAT Engine
+- **Multi-Seller Cart Grouping (`apps/web/lib/multi-seller-cart.ts`)**:
+  - Implemented cart item splitting algorithm grouping orders by `sellerId`.
+  - Added per-seller EU destination VAT calculation via `@eushop/compliance` and regional shipping quote calculation via `calculateEUShipping`.
+
+### Food Knowledge Graph & Cultural Atlas
+- **European Cultural Food Atlas (`apps/web/pages/atlas/index.tsx` & `apps/web/pages/atlas/[id].tsx`)**:
+  - Built interactive European Cultural Food Atlas showcasing protected regional food trails (Cheeses of the Alps, Conservas of Portugal, Extra Virgin Olive Oils of Andalucía, Emilia-Romagna Traditions).
+  - Integrated canonical food specification views with verified PDO/PGI/TSG quality badges and eAmbrosia registration IDs.
+
+### Living Map of European Food (PostGIS)
+- **PostGIS Living Map Interface (`apps/web/pages/map.tsx`)**:
+  - Built interactive spatial map interface with coordinate pin clusters (EPSG:4326) and accessible list fallback for screen readers.
+
+### DSA Article 30 Trader Traceability & Global Command Palette
+- **DSA Article 30 Trader Card (`apps/web/components/dsa/TraderTraceabilityCard.tsx`)**:
+  - Created persistent, non-decorative trader traceability card component rendering trade register IDs, EU VAT numbers, business addresses, and self-certified compliance status.
+- **Global Command Palette (`apps/web/components/search/CommandPalette.tsx`)**:
+  - Added global `Cmd+K` / `Ctrl+K` keyboard shortcut command palette across all application pages for fast multi-entity search across foods, producers, quality schemes, and atlas routes.
+
 ## [Unreleased] — GitHub Pages Multiversion Portal Audit (2026-07-24)
 
 ### GitHub Pages & Version Catalog
