@@ -23,14 +23,17 @@ export default function CookieBanner(): React.ReactElement | null {
   });
 
   useEffect(() => {
-    setMounted(true);
-    if (typeof window !== 'undefined') {
-      const consent = localStorage.getItem('cookieConsent');
-      if (!consent) {
-        setShowBanner(true);
+    Promise.resolve().then(() => {
+      setMounted(true);
+      if (typeof window !== 'undefined') {
+        const consent = localStorage.getItem('cookieConsent');
+        if (!consent) {
+          setShowBanner(true);
+        }
       }
+    });
 
-      window.hasCookieConsent = (category: keyof CookiePreferences) => {
+    if (typeof window !== 'undefined') {
         if (category === 'essential') return true;
         const currentConsent = localStorage.getItem('cookieConsent');
         if (!currentConsent) return false;
