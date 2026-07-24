@@ -18,10 +18,14 @@ import com.eushop.core.dto.ApiResponse;
 import com.eushop.core.entity.Review;
 import com.eushop.core.service.ReviewService;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 @RestController
 @RequestMapping("/api/reviews")
 public class ReviewController {
 
+    private static final Logger log = LoggerFactory.getLogger(ReviewController.class);
     private final ReviewService reviewService;
 
     public ReviewController(ReviewService reviewService) {

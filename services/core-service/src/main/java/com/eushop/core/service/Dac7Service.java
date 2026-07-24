@@ -51,8 +51,9 @@ public class Dac7Service {
         if (year < 2000 || year > 2100) {
             throw new IllegalArgumentException("Invalid DAC7 reporting year: " + year);
         }
-        short reportingYear = (short) year;
-        LocalDateTime startOfYear = LocalDateTime.of(year, 1, 1, 0, 0, 0);
+        int sanitizedYear = Math.min(2100, Math.max(2000, year));
+        short reportingYear = (short) sanitizedYear;
+        LocalDateTime startOfYear = LocalDateTime.of(sanitizedYear, 1, 1, 0, 0, 0);
         LocalDateTime endOfYear = startOfYear.plusYears(1);
 
         List<Map<String, Object>> aggregates = orderRepository.calculateDac7AggregatesForYear(startOfYear, endOfYear);
@@ -93,7 +94,8 @@ public class Dac7Service {
         if (year < 2000 || year > 2100) {
             throw new IllegalArgumentException("Invalid DAC7 reporting year: " + year);
         }
-        short reportingYear = (short) year;
+        int sanitizedYear = Math.min(2100, Math.max(2000, year));
+        short reportingYear = (short) sanitizedYear;
         List<Dac7AnnualSnapshot> allSnapshots = dac7SnapshotRepository.findByReportingYear(reportingYear);
         List<Dac7AnnualSnapshot> reportable = new ArrayList<>();
 

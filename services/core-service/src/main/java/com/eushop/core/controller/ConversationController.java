@@ -18,10 +18,14 @@ import com.eushop.core.entity.Conversation;
 import com.eushop.core.entity.Message;
 import com.eushop.core.service.ConversationService;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 @RestController
 @RequestMapping("/api/conversations")
 public class ConversationController {
 
+    private static final Logger log = LoggerFactory.getLogger(ConversationController.class);
     private final ConversationService conversationService;
 
     public ConversationController(ConversationService conversationService) {

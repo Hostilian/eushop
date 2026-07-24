@@ -16,10 +16,14 @@ import com.eushop.core.dto.ApiResponse;
 import com.eushop.core.entity.Notification;
 import com.eushop.core.service.NotificationService;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 @RestController
 @RequestMapping("/api/notifications")
 public class NotificationController {
 
+    private static final Logger log = LoggerFactory.getLogger(NotificationController.class);
     private final NotificationService notificationService;
 
     public NotificationController(NotificationService notificationService) {
