@@ -13,12 +13,8 @@ declare global {
 }
 
 export default function CookieBanner(): React.ReactElement | null {
-  const [showBanner, setShowBanner] = useState(() => {
-    if (typeof window !== 'undefined') {
-      return !localStorage.getItem('cookieConsent');
-    }
-    return false;
-  });
+  const [mounted, setMounted] = useState(false);
+  const [showBanner, setShowBanner] = useState(false);
   const [showPreferences, setShowPreferences] = useState(false);
   const [preferences, setPreferences] = useState<CookiePreferences>({
     essential: true,
@@ -27,20 +23,22 @@ export default function CookieBanner(): React.ReactElement | null {
   });
 
   useEffect(() => {
-    // Expose global helper to query consent status dynamically
-    // COMPLIANCE-REVIEW: ePrivacy Directive / GDPR Art. 6(1)(a) cookie pre-consent logic.
-    // Pre-consent blocking structure enforced; actual cookie categories must be validated by legal counsel.
+    setMounted(true);
     if (typeof window !== 'undefined') {
+      const consent = localStorage.getItem('cookieConsent');
+      if (!consent) {
+        setShowBanner(true);
+      }
+
       window.hasCookieConsent = (category: keyof CookiePreferences) => {
         if (category === 'essential') return true;
-        const consent = localStorage.getItem('cookieConsent');
-        if (!consent) return false;
+        const currentConsent = localStorage.getItem('cookieConsent');
+        if (!currentConsent) return false;
         try {
-          const parsed = JSON.parse(consent);
+          const parsed = JSON.parse(currentConsent);
           return !!parsed[category];
         } catch {
-          // Backward compatibility for old simple string flags
-          if (consent === 'all') return true;
+          if (currentConsent === 'all') return true;
           return false;
         }
       };
@@ -67,7 +65,7 @@ export default function CookieBanner(): React.ReactElement | null {
     savePreferences(preferences);
   };
 
-  if (!showBanner) return null;
+  if (!mounted || !showBanner) return null;
 
   return (
     <div className="fixed bottom-0 left-0 right-0 z-[100] p-6 bg-gray-900 border-t border-gray-800 text-white shadow-2xl animate-fade-in-up">
