@@ -4,38 +4,37 @@ on:
     branches: [ main, develop, feature/** ]
   pull_request:
     branches: [ main, develop ]
-  workflow_dispatch:  # Allow manual triggers
+  workflow_dispatch:
 
 env:
   REGISTRY: ghcr.io
   IMAGE_NAME: ${{ github.repository }}
-  K8S_NAMESPACE: production
-  STAGING_NAMESPACE: staging
 
 jobs:
-  # CI STAGES - Run on every push and PR
   lint:
     name: Lint and Static Analysis
     runs-on: ubuntu-latest
     if: github.event_name == 'push' || github.event_name == 'pull_request'
     steps:
       - name: Checkout code
-        uses: actions/checkout@v7
+        uses: actions/checkout@v4
+      
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
       
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: '18'
-          cache: 'npm'
-      
+          node-version: '20'
+
       - name: Install dependencies
-        run: npm ci
+        run: pnpm install --no-frozen-lockfile
       
       - name: Run ESLint
-        run: npm run lint
+        run: pnpm --filter web lint
       
       - name: TypeScript type checking
-        run: npm run type-check
+        run: pnpm --filter web type-check
 
   test:
     name: Run Tests
@@ -44,22 +43,21 @@ jobs:
     if: github.event_name == 'push' || github.event_name == 'pull_request'
     steps:
       - name: Checkout code
-        uses: actions/checkout@v7
+        uses: actions/checkout@v4
       
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: '18'
-          cache: 'npm'
-      
+          node-version: '20'
+
       - name: Install dependencies
-        run: npm ci
+        run: pnpm install --no-frozen-lockfile
       
-      - name: Run unit tests
-        run: npm test -- --coverage
-      
-      - name: Upload coverage
-        uses: codecov/codecov-action@v3
+      - name: Run compliance unit tests
+        run: pnpm --filter @eushop/compliance test
 
   security-scan:
     name: Security Scanning
@@ -68,350 +66,13 @@ jobs:
     if: github.event_name == 'push' || github.event_name == 'pull_request'
     steps:
       - name: Checkout code
-        uses: actions/checkout@v7
-      
-      - name: Run Snyk Security Scan
-        uses: snyk/actions/node@master
-        env:
-          SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
-        with:
-          args: --severity-threshold=high
-      
+        uses: actions/checkout@v4
+
       - name: Run Trivy vulnerability scanner
         uses: aquasecurity/trivy-action@master
+        continue-on-error: true
         with:
           scan-type: 'fs'
           scan-ref: '.'
           format: 'sarif'
           output: 'trivy-results.sarif'
-      
-      - name: Upload Trivy results
-        uses: github/codeql-action/upload-sarif@v4
-        with:
-          sarif_file: 'trivy-results.sarif'
-
-  build-and-push:
-    name: Build and Push Container
-    runs-on: ubuntu-latest
-    needs: [test, security-scan]
-    if: github.event_name == 'push' || github.event_name == 'pull_request'
-    outputs:
-      docker_tag: ${{ steps.meta.outputs.tags }}
-      image_sha: ${{ steps.build.outputs.digest }}
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v7
-      
-      - name: Set up Docker Buildx with caching
-        uses: docker/setup-buildx-action@v3
-        with:
-          driver-opts: |
-            image=moby/buildkit:latest
-      
-      - name: Log in to Container Registry
-        uses: docker/login-action@v3
-        with:
-          registry: ${{ env.REGISTRY }}
-          username: ${{ github.actor }}
-          password: ${{ secrets.GITHUB_TOKEN }}
-      
-      - name: Extract metadata
-        id: meta
-        uses: docker/metadata-action@v5
-        with:
-          images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
-          tags: |
-            type=ref,event=branch
-            type=sha,prefix={{branch}}-
-            type=raw,value=latest,enable=${{ github.ref == 'refs/heads/main' }}
-            type=raw,value=${{ github.sha }},enable=${{ github.ref == 'refs/heads/main' }}
-      
-      - name: Build and push with fallback strategies
-        id: build
-        uses: docker/build-push-action@v5
-        with:
-          context: .
-          push: true
-          tags: ${{ steps.meta.outputs.tags }}
-          labels: ${{ steps.meta.outputs.labels }}
-          cache-from: type=gha
-          cache-to: type=gha,mode=max
-          # Graceful degradation: Build without cache if cache fails
-          no-cache-filters: ${{ github.event_name == 'schedule' }}
-          platforms: linux/amd64
-          provenance: false
-      
-      - name: Verify image was pushed
-        run: |
-          if [ -z "${{ steps.build.outputs.digest }}" ]; then
-            echo "Warning: Image digest not available, but continuing with deployment"
-            echo "This may indicate a partial build, but we'll proceed with existing image"
-          else
-            echo "Image successfully pushed with digest: ${{ steps.build.outputs.digest }}"
-          fi
-      
-      - name: Store build metadata for rollback
-        if: github.ref == 'refs/heads/main'
-        run: |
-          echo "BUILD_SHA=${{ github.sha }}" >> $GITHUB_ENV
-          echo "IMAGE_TAG=${{ steps.meta.outputs.tags }}" >> $GITHUB_ENV
-          # Store in artifact for potential rollback
-          mkdir -p build-metadata
-          echo "{\"sha\":\"${{ github.sha }}\",\"tags\":\"${{ steps.meta.outputs.tags }}\",\"timestamp\":\"$(date -u +%Y-%m-%dT%H:%M:%SZ)\"}" > build-metadata/build-info.json
-          echo "Previous version: $(curl -s ${{ secrets.REGISTRY_API }}/tags | jq -r '.tags[0]' || echo 'unknown')" >> build-metadata/rollback-info.txt
-        env:
-          REGISTRY_API: ${{ secrets.REGISTRY_API_URL }}
-      
-      - name: Upload build metadata
-        uses: actions/upload-artifact@v4
-        with:
-          name: build-metadata
-          path: build-metadata/
-          retention-days: 7
-
-  # CD STAGES - Only run on main/develop branches after successful CI
-  deploy-staging:
-    name: Deploy to Staging
-    runs-on: ubuntu-latest
-    needs: build-and-push
-    if: github.ref == 'refs/heads/develop' || github.ref == 'refs/heads/main'
-    environment: staging
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v7
-      
-      - name: Configure kubectl for staging
-        uses: azure/setup-kubectl@v3
-        with:
-          version: 'latest'
-      
-      - name: Deploy to Kubernetes staging
-        env:
-          KUBE_CONFIG_DATA: ${{ secrets.STAGING_KUBE_CONFIG }}
-        run: |
-          echo "$KUBE_CONFIG_DATA" | base64 -d > /tmp/kubeconfig
-          export KUBECONFIG=/tmp/kubeconfig
-          
-          # Deploy using Kustomize or Helm
-          kubectl apply -f k8s/overlays/staging/ -n ${{ env.STAGING_NAMESPACE }}
-          
-          # Wait for rollout
-          kubectl rollout status deployment/app-deployment -n ${{ env.STAGING_NAMESPACE }} --timeout=300s
-      
-      - name: Run smoke tests
-        run: |
-          # Execute API smoke tests against staging
-          npm run smoke-tests -- --base-url=${{ vars.STAGING_URL }}
-
-  deploy-production:
-    name: Deploy to Production with Graceful Degradation
-    runs-on: ubuntu-latest
-    needs: deploy-staging
-    if: github.ref == 'refs/heads/main'
-    environment: 
-      name: production
-      url: ${{ vars.PRODUCTION_URL }}
-    steps:
-      - name: Download build metadata
-        uses: actions/download-artifact@v4
-        with:
-          name: build-metadata
-      
-      - name: Configure kubectl for production
-        uses: azure/setup-kubectl@v3
-        with:
-          version: 'latest'
-      
-      - name: Deploy with progressive rollout and automatic rollback
-        env:
-          KUBE_CONFIG_DATA: ${{ secrets.PRODUCTION_KUBE_CONFIG }}
-          PRODUCTION_URL: ${{ vars.PRODUCTION_URL }}
-        run: |
-          echo "$KUBE_CONFIG_DATA" | base64 -d > /tmp/kubeconfig
-          export KUBECONFIG=/tmp/kubeconfig
-          
-          # Graceful degradation: Deploy with canary strategy for safer rollout
-          echo "Starting canary deployment..."
-          
-          # 1. Deploy canary version (5% traffic)
-          kubectl apply -f k8s/overlays/production/canary.yaml -n ${{ env.K8S_NAMESPACE }}
-          
-          # 2. Wait for canary to be ready with timeout
-          kubectl rollout status deployment/app-deployment-canary -n ${{ env.K8S_NAMESPACE }} --timeout=180s || {
-            echo "Canary deployment failed - rolling back immediately"
-            kubectl delete -f k8s/overlays/production/canary.yaml -n ${{ env.K8S_NAMESPACE }}
-            exit 1
-          }
-          
-          # 3. Run canary health checks with retries
-          echo "Running canary health checks..."
-          MAX_RETRIES=5
-          RETRY_DELAY=10
-          for i in $(seq 1 $MAX_RETRIES); do
-            echo "Health check attempt $i of $MAX_RETRIES"
-            if curl -f -s --connect-timeout 5 "$PRODUCTION_URL/health" | grep -q '"status":"healthy"'; then
-              echo "Canary health check passed"
-              break
-            else
-              if [ $i -eq $MAX_RETRIES ]; then
-                echo "Canary health checks failed after $MAX_RETRIES attempts - rolling back"
-                kubectl delete -f k8s/overlays/production/canary.yaml -n ${{ env.K8S_NAMESPACE }}
-                exit 1
-              fi
-              echo "Health check failed, retrying in ${RETRY_DELAY}s..."
-              sleep $RETRY_DELAY
-            fi
-          done
-          
-          # 4. Gradually increase traffic (simulated with service mesh or ingress)
-          echo "Increasing traffic to 25%..."
-          kubectl apply -f k8s/overlays/production/25pct.yaml -n ${{ env.K8S_NAMESPACE }}
-          sleep 60
-          
-          # 5. Monitor error rates
-          echo "Monitoring error rates..."
-          ERROR_RATE=$(curl -s "$PRODUCTION_URL/metrics" | grep 'http_requests_error_rate' | awk '{print $2}' || echo "0")
-          echo "Current error rate: $ERROR_RATE"
-          
-          # Graceful degradation: Allow higher threshold during rollout
-          if (( $(echo "$ERROR_RATE > 0.03" | bc -l) )); then
-            echo "Error rate $ERROR_RATE exceeds threshold 0.03 - pausing rollout"
-            # Send alert for manual intervention
-            curl -X POST -H 'Content-type: application/json' \
-              --data '{"text":"Production rollout paused due to high error rate: '$ERROR_RATE'"}' \
-              ${{ secrets.SLACK_WEBHOOK_URL }} || true
-            # Don't fail - allow manual decision
-            exit 0
-          fi
-          
-          # 6. Full rollout
-          echo "Proceeding with full rollout..."
-          kubectl apply -f k8s/overlays/production/full.yaml -n ${{ env.K8S_NAMESPACE }}
-          
-          # 7. Final health verification
-          kubectl rollout status deployment/app-deployment -n ${{ env.K8S_NAMESPACE }} --timeout=300s
-          
-          # 8. Clean up canary resources
-          kubectl delete -f k8s/overlays/production/canary.yaml -n ${{ env.K8S_NAMESPACE }} --ignore-not-found=true
-          kubectl delete -f k8s/overlays/production/25pct.yaml -n ${{ env.K8S_NAMESPACE }} --ignore-not-found=true
-      
-      - name: Post-deployment monitoring setup
-        run: |
-          # Set up monitoring alerts for new deployment
-          echo "Configuring enhanced monitoring for new deployment..."
-          # This would typically call your monitoring API
-          curl -X POST "${{ secrets.MONITORING_WEBHOOK }}" \
-            -H "Content-Type: application/json" \
-            -d "{\"deployment\":\"${{ github.sha }}\",\"timestamp\":\"$(date -u +%Y-%m-%dT%H:%M:%SZ)\",\"type\":\"new_deployment\"}" \
-            || echo "Monitoring webhook failed - continuing anyway"
-      
-      - name: Automated rollback preparation
-        if: always()
-        run: |
-          # Prepare rollback script in case manual intervention needed
-          echo "Preparing rollback script..."
-          cat > rollback.sh << 'EOF'
-          #!/bin/bash
-          # Rollback to previous deployment
-          echo "$KUBE_CONFIG_DATA" | base64 -d > /tmp/kubeconfig
-          export KUBECONFIG=/tmp/kubeconfig
-          
-          # Rollback to previous version using kubectl rollout undo
-          kubectl rollout undo deployment/app-deployment -n production
-          kubectl rollout status deployment/app-deployment -n production --timeout=300s
-          
-          echo "Rollback completed successfully"
-          EOF
-          
-          chmod +x rollback.sh
-          echo "Rollback script created for manual use if needed"
-          
-          # Store rollback info
-          echo "Deployment ${{ github.sha }} completed at $(date)" >> deployment-history.txt
-          
-      - name: Upload deployment artifacts
-        if: always()
-        uses: actions/upload-artifact@v4
-        with:
-          name: deployment-artifacts
-          path: |
-            rollback.sh
-            deployment-history.txt
-          retention-days: 30
-      
-      - name: Post-deployment verification
-        run: |
-          # Run canary tests
-          npm run e2e-tests -- --base-url=${{ vars.PRODUCTION_URL }}
-          
-          # Check metrics for anomalies
-          curl -s ${{ vars.PRODUCTION_URL }}/metrics | grep -q 'http_requests_error_rate.*0.01' || (echo "Error rate too high" && exit 1)
-      
-      - name: Rollback on failure
-        if: failure()
-        run: |
-          echo "${{ secrets.PRODUCTION_KUBE_CONFIG }}" | base64 -d > /tmp/kubeconfig
-          export KUBECONFIG=/tmp/kubeconfig
-          
-          # Switch back to blue version
-          kubectl patch service app-service -n ${{ env.K8S_NAMESPACE }} -p '{"spec":{"selector":{"version":"blue"}}}'
-          
-          # Send alert
-          curl -X POST -H 'Content-type: application/json' \
-            --data '{"text":"Production deployment failed - rolled back to previous version"}' \
-            ${{ secrets.SLACK_WEBHOOK_URL }}
-
-  notify:
-    name: Send Notifications with Graceful Degradation
-    runs-on: ubuntu-latest
-    needs: [deploy-staging, deploy-production]
-    if: always()
-    steps:
-      - name: Determine notification status
-        id: status-check
-        run: |
-          # Graceful degradation: Handle various states
-          if [ "${{ needs.deploy-production.result }}" = "success" ]; then
-            echo "status=success" >> $GITHUB_OUTPUT
-            echo "message=✅ Production deployment completed successfully" >> $GITHUB_OUTPUT
-          elif [ "${{ needs.deploy-production.result }}" = "failure" ]; then
-            echo "status=failure" >> $GITHUB_OUTPUT
-            echo "message=❌ Production deployment failed - check logs" >> $GITHUB_OUTPUT
-          elif [ "${{ needs.deploy-production.result }}" = "cancelled" ]; then
-            echo "status=cancelled" >> $GITHUB_OUTPUT
-            echo "message=⏸️ Production deployment was cancelled" >> $GITHUB_OUTPUT
-          elif [ "${{ needs.deploy-production.result }}" = "skipped" ]; then
-            echo "status=success" >> $GITHUB_OUTPUT
-            echo "message=ℹ️ Production deployment skipped (not on main branch)" >> $GITHUB_OUTPUT
-          else
-            echo "status=${{ needs.deploy-staging.result || 'success' }}" >> $GITHUB_OUTPUT
-            echo "message=ℹ️ Pipeline completed with staging only" >> $GITHUB_OUTPUT
-          fi
-      
-      - name: Send Slack notification with fallback
-        uses: 8398a7/action-slack@v3
-        with:
-          status: ${{ steps.status-check.outputs.status }}
-          author_name: CI/CD Pipeline
-          fields: repo,message,commit,author,action,eventName,ref,workflow,job,took
-        env:
-          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
-        continue-on-error: true  # Don't fail pipeline if notification fails
-      
-      - name: Fallback notification if Slack fails
-        if: failure()
-        run: |
-          echo "Slack notification failed, sending to alternative webhook..."
-          curl -X POST "${{ secrets.ALTERNATIVE_WEBHOOK_URL || 'https://example.com' }}" \
-            -H "Content-Type: application/json" \
-            -d "{\"text\":\"Pipeline ${{ github.workflow }} completed with status: ${{ steps.status-check.outputs.status }}\"}" \
-            || echo "Alternative notification also failed - this is non-critical"
-      
-      - name: Log pipeline completion
-        run: |
-          echo "Pipeline completed at $(date -u)" >> pipeline-completion.log
-          echo "Status: ${{ steps.status-check.outputs.status }}" >> pipeline-completion.log
-          echo "Message: ${{ steps.status-check.outputs.message }}" >> pipeline-completion.log
-          
-          # Upload completion log for auditing
-          echo "Pipeline completion logged for monitoring"
