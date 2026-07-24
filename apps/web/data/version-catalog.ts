@@ -106,7 +106,7 @@ export const FLAGSHIP_RELEASES: readonly VersionCatalogueEntry[] = [
     badge: 'V77 FLAGSHIP',
     description:
       'Version 77 flagship release: Contemporary European food atlas, origin-led discovery canvas, transparent seller trust shield, and single market commerce.',
-    path: '/',
+    path: '/atlas',
     kind: 'application-view',
     category: 'flagship-release',
     accentClass:

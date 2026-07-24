@@ -1,182 +1,346 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import Head from 'next/head';
 import Link from 'next/link';
-import { EuropeanFoodAtlas } from '../../components/v77/discovery/EuropeanFoodAtlas';
+import { useRouter } from 'next/router';
+import { AtlasHero } from '../../components/atlas/AtlasHero';
+import { AtlasViewToggle, type AtlasViewMode } from '../../components/atlas/AtlasViewToggle';
+import { AtlasCountryRail } from '../../components/atlas/AtlasCountryRail';
+import { AtlasCategoryRail } from '../../components/atlas/AtlasCategoryRail';
+import { AtlasMap } from '../../components/atlas/AtlasMap';
+import { AtlasProductCard } from '../../components/atlas/AtlasProductCard';
+import { AtlasQuickView } from '../../components/atlas/AtlasQuickView';
+import { AtlasEditorialStory } from '../../components/atlas/AtlasEditorialStory';
+import { AtlasFilterPanel, type AtlasFilterState } from '../../components/atlas/AtlasFilterPanel';
+
 import { DEMO_PRODUCTS, type DemoProduct } from '../../data/demo-products';
+import { ALL_EU_COUNTRIES } from '../../data/atlas-countries';
 import { readCart, writeCart } from '../../lib/storageSafety';
 
-export default function AtlasIndexPage() {
-  const [selectedCountryFilter, setSelectedCountryFilter] = useState<string>('ALL');
-  const [addedItemNotice, setAddedItemNotice] = useState<string | null>(null);
+export default function AtlasMasterPage() {
+  const router = useRouter();
 
-  const countries = ['ALL', 'Portugal', 'Spain', 'France', 'Italy', 'Germany', 'Austria', 'Belgium', 'United Kingdom', 'Ireland', 'Sweden', 'Hungary', 'Poland', 'Greece', 'Turkey'];
+  // State Management
+  const [viewMode, setViewMode] = useState<AtlasViewMode>('shop');
+  const [searchQuery, setSearchQuery] = useState<string>('');
+  const [selectedCountryCode, setSelectedCountryCode] = useState<string>('ALL');
+  const [selectedCategory, setSelectedCategory] = useState<string>('ALL');
+  const [quickViewProduct, setQuickViewProduct] = useState<DemoProduct | null>(null);
+  const [isFilterPanelOpen, setIsFilterPanelOpen] = useState<boolean>(false);
+  const [cartNotification, setCartNotification] = useState<string | null>(null);
 
-  const filteredDishes = selectedCountryFilter === 'ALL'
-    ? DEMO_PRODUCTS
-    : DEMO_PRODUCTS.filter((item) => item.country === selectedCountryFilter);
+  // Advanced Filter State
+  const [filters, setFilters] = useState<AtlasFilterState>({
+    selectedCountry: 'ALL',
+    selectedCategory: 'ALL',
+    selectedQualityScheme: 'ALL',
+    maxPrice: 100,
+    excludedAllergens: [],
+  });
 
-  const handleOrderDish = (dish: DemoProduct) => {
+  // URL State Sync
+  useEffect(() => {
+    if (!router.isReady) return;
+    const { country, category, view, q } = router.query;
+
+    if (typeof country === 'string') {
+      setSelectedCountryCode(country.toUpperCase());
+    }
+    if (typeof category === 'string') {
+      setSelectedCategory(category);
+    }
+    if (view === 'map' || view === 'shop' || view === 'stories') {
+      setViewMode(view);
+    }
+    if (typeof q === 'string') {
+      setSearchQuery(q);
+    }
+  }, [router.isReady, router.query]);
+
+  // Compute Product Count by Country
+  const productCountByCountry = React.useMemo(() => {
+    const counts: Record<string, number> = {};
+    DEMO_PRODUCTS.forEach((prod) => {
+      const code = prod.countryIso2 || 'OTHER';
+      counts[code] = (counts[code] || 0) + 1;
+    });
+    return counts;
+  }, []);
+
+  // Filter Catalog Logic
+  const filteredProducts = React.useMemo(() => {
+    return DEMO_PRODUCTS.filter((product) => {
+      // Country Filter
+      if (selectedCountryCode !== 'ALL' && product.countryIso2 !== selectedCountryCode) {
+        return false;
+      }
+      // Category Filter
+      if (selectedCategory !== 'ALL' && product.category !== selectedCategory) {
+        return false;
+      }
+      // Search Query Filter
+      if (searchQuery.trim()) {
+        const q = searchQuery.toLowerCase();
+        const matchName = product.name.toLowerCase().includes(q);
+        const matchCountry = product.country.toLowerCase().includes(q);
+        const matchDesc = product.description.toLowerCase().includes(q);
+        if (!matchName && !matchCountry && !matchDesc) return false;
+      }
+      // Quality Scheme Filter
+      if (
+        filters.selectedQualityScheme !== 'ALL' &&
+        product.qualityScheme !== filters.selectedQualityScheme
+      ) {
+        return false;
+      }
+      // Max Price Filter
+      if (product.price > filters.maxPrice) {
+        return false;
+      }
+      // Allergen Exclusion Filter
+      if (filters.excludedAllergens.length > 0 && product.allergens) {
+        const hasExcluded = product.allergens.some((a) => filters.excludedAllergens.includes(a));
+        if (hasExcluded) return false;
+      }
+
+      return true;
+    });
+  }, [selectedCountryCode, selectedCategory, searchQuery, filters]);
+
+  // Cart Add Handler
+  const handleAddToCart = (product: DemoProduct, qty: number = 1) => {
     const cart = readCart();
-    const existing = cart.find((item) => item.id === dish.id);
+    const existing = cart.find((item) => item.id === product.id);
     if (existing) {
-      existing.quantity = Math.min(100, existing.quantity + 1);
+      existing.quantity = Math.min(100, existing.quantity + qty);
     } else {
       cart.push({
-        id: dish.id,
-        name: dish.name,
-        country: dish.country,
-        price: dish.price,
-        quantity: 1,
-        sellerId: dish.sellerId,
-        finderFee: dish.finderFee,
+        id: product.id,
+        name: product.name,
+        country: product.country,
+        price: product.price,
+        quantity: qty,
+        sellerId: product.sellerId,
+        finderFee: product.finderFee,
       });
     }
 
     if (writeCart(cart).ok) {
       window.dispatchEvent(new Event('cart-updated'));
-      setAddedItemNotice(`Added "${dish.name}" to your order cart!`);
-      setTimeout(() => setAddedItemNotice(null), 3500);
+      setCartNotification(`Added ${qty} × "${product.name}" to your basket!`);
+      setTimeout(() => setCartNotification(null), 3500);
     }
+  };
+
+  const handleCountrySelect = (code: string) => {
+    setSelectedCountryCode(code);
+    router.push(
+      {
+        pathname: '/atlas',
+        query: { ...router.query, country: code === 'ALL' ? undefined : code },
+      },
+      undefined,
+      { shallow: true }
+    );
   };
 
   return (
     <>
       <Head>
-        <title>European Cultural Food Atlas & Iconic Regional Dishes — EUshop</title>
+        <title>European Food Atlas — Explore & Shop Regional Foods | EUshop</title>
         <meta
           name="description"
-          content="Explore the living atlas of European protected regional foods, iconic dishes from 25+ countries, and buy verified unique regional specialties directly from producers."
+          content="A living map of European food, protected origin specialties (PDO/PGI/TSG), and verified local producers across all 27 EU Member States."
         />
       </Head>
 
-      <div className="min-h-screen bg-neutral-950 text-neutral-100 pb-20">
-        {/* Added Cart Notification Banner */}
-        {addedItemNotice && (
-          <div className="fixed bottom-6 right-6 z-[300] bg-emerald-600 text-white font-bold px-6 py-4 rounded-2xl shadow-2xl border border-emerald-400 flex items-center gap-3 animate-fade-in-up">
+      <div className="min-h-screen bg-[#F6F0E5] text-[#201B17] font-sans pb-24">
+        {/* Floating Cart Notification */}
+        {cartNotification && (
+          <div className="fixed bottom-6 right-6 z-[400] bg-[#385543] text-white font-bold px-6 py-4 rounded-2xl shadow-2xl border border-emerald-400 flex items-center gap-3 animate-fade-in-up">
             <span>🛒</span>
-            <span>{addedItemNotice}</span>
-            <Link href="/cart" className="ml-2 underline font-extrabold text-amber-200">
-              View Cart →
+            <span className="text-xs font-mono">{cartNotification}</span>
+            <Link href="/cart" className="ml-2 text-xs font-black underline text-[#D29A38]">
+              View Basket →
             </Link>
           </div>
         )}
 
-        {/* Header Hero */}
-        <header className="border-b border-neutral-800 bg-neutral-900/90 backdrop-blur py-12 px-6">
-          <div className="max-w-7xl mx-auto">
-            <div className="flex items-center gap-3 text-xs uppercase tracking-widest text-emerald-400 font-semibold mb-2">
-              <span>EU Food Knowledge Graph V77</span>
-              <span>•</span>
-              <span>Regulation (EU) No 1151/2012</span>
+        {/* Global Masthead Navigation Header */}
+        <header className="border-b border-[#201B17]/10 bg-[#18212A] text-[#F6F0E5] py-4 px-6 sticky top-0 z-[100] backdrop-blur-md">
+          <div className="max-w-7xl mx-auto flex items-center justify-between">
+            <Link href="/" className="flex items-center gap-2">
+              <span className="text-xl font-black text-[#D29A38] font-display">EUshop</span>
+              <span className="text-xs font-mono px-2 py-0.5 rounded bg-[#D29A38]/20 text-[#D29A38] border border-[#D29A38]/30">
+                V77 Atlas
+              </span>
+            </Link>
+
+            <div className="flex items-center gap-6 text-xs font-bold font-mono">
+              <Link href="/atlas" className="text-[#D29A38] underline">
+                Atlas Map
+              </Link>
+              <Link href="/search" className="hover:text-[#D29A38] transition">
+                Search
+              </Link>
+              <Link href="/become-seller" className="hover:text-[#D29A38] transition hidden sm:inline">
+                Sell Food
+              </Link>
+              <Link href="/cart" className="px-3.5 py-1.5 rounded-xl bg-[#385543] text-white flex items-center gap-1.5 shadow-md">
+                <span>🛒</span> Basket
+              </Link>
             </div>
-            <h1 className="text-4xl font-extrabold tracking-tight sm:text-5xl text-white mb-4 font-display">
-              European Cultural Food Atlas & Dishes Catalogue
-            </h1>
-            <p className="text-lg text-neutral-300 max-w-4xl leading-relaxed">
-              Mapping Europe's protected geographical indications, authentic regional food traditions,
-              iconic street foods, and centuries-old producer recipes across all 27 Member States.
-            </p>
           </div>
         </header>
 
-        <main className="max-w-7xl mx-auto px-6 py-12 space-y-16">
-          {/* Component 1: Interactive Atlas & Visual Terroir Maps */}
-          <EuropeanFoodAtlas />
+        {/* Main Content Area */}
+        <main className="max-w-7xl mx-auto px-6 py-8 space-y-10">
+          {/* Hero Component */}
+          <AtlasHero
+            onSearchSubmit={(q) => setSearchQuery(q)}
+            onCountrySelect={handleCountrySelect}
+            totalProductsCount={DEMO_PRODUCTS.length}
+          />
 
-          {/* Component 2: Comprehensive Catalogue of Unique Dishes & Regional Specialties */}
-          <section className="space-y-8 pt-8 border-t border-neutral-800">
-            <div className="flex flex-col md:flex-row md:items-end justify-between gap-4">
-              <div>
-                <span className="text-xs font-mono font-bold text-emerald-400 uppercase tracking-widest block mb-1">
-                  Verified Local Producers & Iconic Dishes
+          {/* View Toggle Bar */}
+          <AtlasViewToggle
+            activeView={viewMode}
+            onViewChange={setViewMode}
+            resultCount={filteredProducts.length}
+          />
+
+          {/* Map Explorer View (If Active or Default) */}
+          {(viewMode === 'map' || selectedCountryCode !== 'ALL') && (
+            <AtlasMap
+              selectedCountryCode={selectedCountryCode}
+              onSelectCountry={handleCountrySelect}
+              productCountByCountry={productCountByCountry}
+            />
+          )}
+
+          {/* Country Selector Rail */}
+          <AtlasCountryRail
+            selectedCountryCode={selectedCountryCode}
+            onSelectCountry={handleCountrySelect}
+            productCountByCountry={productCountByCountry}
+          />
+
+          {/* Food Category Department Rail */}
+          <AtlasCategoryRail
+            selectedCategory={selectedCategory}
+            onSelectCategory={setSelectedCategory}
+          />
+
+          {/* Active Filters Bar */}
+          <div className="flex flex-wrap items-center justify-between gap-4 pt-2">
+            <div className="flex flex-wrap items-center gap-2 text-xs">
+              <span className="font-mono text-gray-500 font-bold">FILTERS:</span>
+              {selectedCountryCode !== 'ALL' && (
+                <span className="px-3 py-1 rounded-xl bg-[#201B17] text-white font-bold flex items-center gap-1">
+                  Country: {selectedCountryCode}
+                  <button onClick={() => handleCountrySelect('ALL')} className="ml-1 text-[#D29A38]">✕</button>
                 </span>
-                <h2 className="text-3xl font-extrabold text-white font-display">
-                  Order Unique Country Specialties & Regional Dishes
-                </h2>
-                <p className="text-sm text-neutral-400 mt-1 max-w-2xl">
-                  Select a country to browse authentic dishes and specialty products cataloged directly from our verified European artisanal sellers.
+              )}
+              {selectedCategory !== 'ALL' && (
+                <span className="px-3 py-1 rounded-xl bg-[#385543] text-white font-bold flex items-center gap-1">
+                  Category: {selectedCategory}
+                  <button onClick={() => setSelectedCategory('ALL')} className="ml-1 text-white">✕</button>
+                </span>
+              )}
+              {searchQuery && (
+                <span className="px-3 py-1 rounded-xl bg-[#D29A38] text-[#201B17] font-black flex items-center gap-1">
+                  Query: "{searchQuery}"
+                  <button onClick={() => setSearchQuery('')} className="ml-1 text-[#201B17]">✕</button>
+                </span>
+              )}
+            </div>
+
+            <button
+              onClick={() => setIsFilterPanelOpen(true)}
+              className="px-4 py-2 bg-white border border-[#201B17]/20 rounded-xl text-xs font-bold text-[#201B17] hover:border-[#201B17] transition flex items-center gap-1.5 shadow-sm"
+            >
+              <span>🎛️</span> Advanced Filters & Allergens
+            </button>
+          </div>
+
+          {/* Main Product Commerce Grid */}
+          <section className="space-y-6">
+            <div className="flex items-center justify-between border-b border-[#201B17]/10 pb-4">
+              <h2 className="text-2xl font-black text-[#201B17] font-display">
+                Regional Specialty Catalogue
+              </h2>
+              <span className="text-xs font-mono text-gray-500">
+                {filteredProducts.length} Authenticated Foods
+              </span>
+            </div>
+
+            {filteredProducts.length > 0 ? (
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+                {filteredProducts.map((product) => (
+                  <AtlasProductCard
+                    key={product.id}
+                    product={product}
+                    onQuickView={setQuickViewProduct}
+                    onAddToCart={(p) => handleAddToCart(p, 1)}
+                  />
+                ))}
+              </div>
+            ) : (
+              <div className="bg-white border border-[#201B17]/15 rounded-3xl p-12 text-center space-y-4">
+                <span className="text-4xl block">🔍</span>
+                <h3 className="text-xl font-bold text-[#201B17]">No foods match your active filters</h3>
+                <p className="text-xs text-[#201B17]/70 max-w-md mx-auto">
+                  Try resetting your country selection or clearing allergen exclusion filters.
                 </p>
-              </div>
-              <div className="flex items-center gap-2 text-xs font-mono text-neutral-400 bg-neutral-900 px-4 py-2 rounded-xl border border-neutral-800">
-                <span>Total Cataloged Items:</span>
-                <strong className="text-emerald-400">{filteredDishes.length} Dishes</strong>
-              </div>
-            </div>
-
-            {/* Country Selector Tabs */}
-            <div className="flex flex-wrap gap-2 pt-2">
-              {countries.map((country) => (
                 <button
-                  key={country}
-                  onClick={() => setSelectedCountryFilter(country)}
-                  className={`px-4 py-2 rounded-xl text-xs font-extrabold transition-all ${
-                    selectedCountryFilter === country
-                      ? 'bg-emerald-600 text-white shadow-lg shadow-emerald-900/40 ring-2 ring-emerald-400'
-                      : 'bg-neutral-900 text-neutral-300 border border-neutral-800 hover:bg-neutral-800 hover:text-white'
-                  }`}
+                  onClick={() => {
+                    handleCountrySelect('ALL');
+                    setSelectedCategory('ALL');
+                    setSearchQuery('');
+                  }}
+                  className="px-6 py-2.5 bg-[#385543] text-white font-bold text-xs rounded-xl shadow-md"
                 >
-                  {country === 'ALL' ? 'All Countries' : country}
+                  Reset All Filters
                 </button>
-              ))}
-            </div>
-
-            {/* Dishes Catalogue Grid */}
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {filteredDishes.map((dish) => (
-                <div
-                  key={dish.id}
-                  className="bg-neutral-900 border border-neutral-800 rounded-2xl p-6 flex flex-col justify-between hover:border-emerald-500/50 transition duration-300 group shadow-xl"
-                >
-                  <div>
-                    <div className="flex items-center justify-between gap-2 mb-3">
-                      <span className="px-3 py-1 rounded-full text-[11px] font-bold bg-neutral-800 text-emerald-300 border border-neutral-700">
-                        {dish.country} ({dish.countryIso2})
-                      </span>
-                      {dish.qualityScheme && (
-                        <span className="px-2.5 py-0.5 rounded text-[10px] font-black uppercase bg-amber-400 text-neutral-950">
-                          {dish.qualityScheme} Protected
-                        </span>
-                      )}
-                    </div>
-
-                    <h3 className="text-xl font-bold text-white group-hover:text-emerald-400 transition-colors mb-2 font-display">
-                      {dish.name}
-                    </h3>
-                    <p className="text-xs text-neutral-300 mb-4 leading-relaxed line-clamp-3">
-                      {dish.description}
-                    </p>
-
-                    <div className="bg-neutral-950 p-3 rounded-xl border border-neutral-800/80 text-[11px] space-y-1.5 mb-4">
-                      <div className="flex justify-between text-neutral-400">
-                        <span>Category:</span>
-                        <strong className="text-neutral-200">{dish.category}</strong>
-                      </div>
-                      <div className="flex justify-between text-neutral-400">
-                        <span>Allergens:</span>
-                        <strong className="text-amber-300">
-                          {dish.allergens && dish.allergens.length > 0 ? dish.allergens.join(', ') : 'None Declared'}
-                        </strong>
-                      </div>
-                    </div>
-                  </div>
-
-                  <div className="pt-4 border-t border-neutral-800 flex items-center justify-between">
-                    <div>
-                      <span className="text-[10px] uppercase font-bold text-neutral-500 block">Producer Price</span>
-                      <span className="text-2xl font-black text-white font-mono">€{dish.price.toFixed(2)}</span>
-                    </div>
-                    <button
-                      onClick={() => handleOrderDish(dish)}
-                      className="px-5 py-2.5 bg-emerald-600 hover:bg-emerald-500 text-white font-extrabold text-xs rounded-xl transition shadow-lg flex items-center gap-1.5"
-                    >
-                      <span>🛒</span> Order Dish
-                    </button>
-                  </div>
-                </div>
-              ))}
-            </div>
+              </div>
+            )}
           </section>
+
+          {/* Editorial Feature Break */}
+          <AtlasEditorialStory
+            regionTag="ALENTEJO · PORTUGAL"
+            title="Liquid Gold from the Atlantic Hills"
+            subtitle="Centuries-old protected olive groves producing low-acidity extra virgin oils."
+            description="In the sun-drenched hills of Alentejo, olive trees dating back to Roman times yield extra virgin oils rich in natural polyphenols. Certified under DOP protection."
+            imageSrc="/images/italian_olive_oil.png"
+            ctaText="Shop Portuguese Olive Oils"
+            onCtaClick={() => handleCountrySelect('PT')}
+          />
         </main>
+
+        {/* Quick View Drawer */}
+        <AtlasQuickView
+          product={quickViewProduct}
+          onClose={() => setQuickViewProduct(null)}
+          onAddToCart={handleAddToCart}
+        />
+
+        {/* Slide-over Filter Panel */}
+        <AtlasFilterPanel
+          isOpen={isFilterPanelOpen}
+          onClose={() => setIsFilterPanelOpen(false)}
+          filters={filters}
+          onFilterChange={setFilters}
+          onResetFilters={() =>
+            setFilters({
+              selectedCountry: 'ALL',
+              selectedCategory: 'ALL',
+              selectedQualityScheme: 'ALL',
+              maxPrice: 100,
+              excludedAllergens: [],
+            })
+          }
+          totalMatching={filteredProducts.length}
+        />
       </div>
     </>
   );
