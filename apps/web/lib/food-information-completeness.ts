@@ -6,7 +6,7 @@
  *
  * COMPLIANCE-REVIEW: Implements mandatory pre-packed distance selling disclosure rules.
  */
-import { Allergen } from '@eushop/compliance';
+import { EUAllergen } from '@eushop/compliance';
 
 export interface FoodInformationAuditProps {
   title: string;
@@ -15,7 +15,7 @@ export interface FoodInformationAuditProps {
   netQuantityValue: number;
   netQuantityUnit: 'g' | 'kg' | 'ml' | 'l';
   ingredientsText?: string;
-  allergens: Allergen[] | string[];
+  allergens: EUAllergen[] | string[];
   storageConditions?: string;
   foodBusinessOperatorName: string;
   foodBusinessOperatorAddress: string;

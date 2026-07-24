@@ -1,37 +1,46 @@
 <#
  .SYNOPSIS
-   EUshop Local HTTP Development Launcher
+   EUshop All Versions and Application Views Local Launcher
  .DESCRIPTION
-   Launches all EUshop version pages via the local HTTP server on http://localhost:3002.
+   Launches all historical version views and flagship application routes on http://localhost:3002.
 #>
 
 $BaseUrl = "http://localhost:3002"
 
 Write-Host "=================================================================" -ForegroundColor Cyan
-Write-Host "          EUshop - Launching Web Application on Localhost        " -ForegroundColor Yellow
+Write-Host "          EUshop - Launching ALL Historical Versions and Views    " -ForegroundColor Yellow
 Write-Host "=================================================================" -ForegroundColor Cyan
-Write-Host "[INFO] Opening HTTP routes on $BaseUrl..." -ForegroundColor Green
+Write-Host "[INFO] Opening all version routes on $BaseUrl..." -ForegroundColor Green
 
-$routes = @(
+$versionRoutes = @(
     "/versions",
-    "/",
-    "/map",
+    "/?v=v243",
+    "/v177/",
+    "/v132/",
+    "/v122/",
+    "/v121/",
     "/atlas",
+    "/?v=v66",
+    "/?v=v55",
+    "/?v=v44",
+    "/?v=v1",
+    "/?v=v2",
+    "/become-seller/?v=v3",
+    "/admin/dashboard/?v=v4",
+    "/docs/?v=v5",
+    "/map",
     "/cart",
-    "/become-seller",
     "/allergen-filter",
     "/admin/moderation",
-    "/admin/dashboard",
-    "/disputes",
-    "/docs"
+    "/disputes"
 )
 
-foreach ($route in $routes) {
+foreach ($route in $versionRoutes) {
     $url = "$BaseUrl$route"
-    Write-Host "  -> Opening: $url" -ForegroundColor Gray
+    Write-Host "  -> Opening Version View: $url" -ForegroundColor Gray
     Start-Process $url
-    Start-Sleep -Milliseconds 300
+    Start-Sleep -Milliseconds 200
 }
 
 Write-Host "=================================================================" -ForegroundColor Cyan
-Write-Host "[OK] All requested HTTP views opened in browser." -ForegroundColor Green
+Write-Host "[OK] All version views and flagship routes opened in browser." -ForegroundColor Green
