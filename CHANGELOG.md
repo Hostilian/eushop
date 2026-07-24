@@ -1,5 +1,14 @@
 # Changelog
 
+## [Unreleased] — GitHub Pages Multiversion Portal Audit (2026-07-24)
+
+### GitHub Pages & Version Catalog
+- **Version Portal Conflict Resolution**:
+  - Removed legacy static file `apps/web/public/versions/index.html` which was overwriting the Next.js exported `pages/versions.tsx` route during build.
+  - Added missing `app.js` and `styles.css` files to `public/v121/` and `public/v132/` for static snapshot asset integrity.
+  - Catalogued missing versions (`v121`, `v122`, `v132`, `v177`, `v1`, `v2`, `v3-view`, `v4-view`, `v5-view`) in `apps/web/data/version-catalog.ts`.
+  - Added "Ground-Up & Enterprise Releases" section to `apps/web/pages/versions.tsx` so all 25+ demo versions and application views are accessible on GitHub Pages.
+
 ## [Unreleased] — Marketplace Product Completeness & Order State Hardening (2026-07-22)
 
 ### Buyer Journey & Order State Machine

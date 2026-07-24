@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 
 interface CookiePreferences {
   essential: boolean;
@@ -12,7 +12,7 @@ declare global {
   }
 }
 
-export default function CookieBanner() {
+export default function CookieBanner(): React.ReactElement | null {
   const [showBanner, setShowBanner] = useState(() => {
     if (typeof window !== 'undefined') {
       return !localStorage.getItem('cookieConsent');

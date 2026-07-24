@@ -290,6 +290,51 @@ export default function VersionsPage() {
                   ))}
               </div>
             </div>
+
+            {/* Ground-Up & Enterprise Releases */}
+            <div>
+              <h3 className="text-xl font-semibold text-gray-900 mb-4">
+                Ground-Up & Enterprise Releases
+              </h3>
+              <p className="mb-4 text-sm text-gray-600">
+                Full standalone enterprise marketplace releases, spatial corridor logistics engines, and production-grade ground-up builds.
+              </p>
+              <div className="space-y-3">
+                {HISTORICAL_SNAPSHOTS
+                  .filter((s) => s.lineage === 'enterprise-snapshot')
+                  .map((snapshot) => (
+                    <div key={snapshot.key} className="border-l-4 border-emerald-600 pl-4">
+                      <div className="flex items-start space-x-4">
+                        <div className="flex-shrink-0">
+                          <span className="px-2.5 py-0.5 text-xs font-medium bg-emerald-100 text-emerald-800 rounded-full">
+                            {snapshot.badge}
+                          </span>
+                        </div>
+                        <div>
+                          <h4 className="font-medium text-gray-900">{snapshot.name}</h4>
+                          <p className="mt-1 text-sm text-gray-500 line-clamp-2">
+                            {snapshot.description}
+                          </p>
+                          <div className="mt-2 flex items-center text-sm">
+                            <span className="mr-4">
+                              Introduced: {snapshot.introducedIn?.toUpperCase()}
+                            </span>
+                            <span>
+                              Last integrated: {snapshot.lastIntegratedIn?.toUpperCase()}
+                            </span>
+                          </div>
+                          <Link
+                            href={snapshot.path}
+                            className="mt-2 inline-flex items-center px-3 py-1.5 text-sm font-medium text-emerald-700 border border-emerald-200 rounded-md hover:bg-emerald-50 hover:text-emerald-800"
+                          >
+                            Visit Snapshot →
+                          </Link>
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+              </div>
+            </div>
           </div>
 
           {/* Important Notes */}

@@ -1,0 +1,8 @@
+/* EUshop V132 Enterprise Logistics & Tax Gateway Styles */
+body { font-family: system-ui, -apple-system, sans-serif; background: #090d16; color: #f8fafc; margin: 0; padding: 2rem; }
+h1 { font-size: 2.5rem; color: #a855f7; }
+.grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 1.5rem; margin-top: 2rem; }
+.card { background: #131b2e; border: 1px solid #2e1065; border-radius: 12px; padding: 1.5rem; }
+.card img { width: 100%; height: 200px; object-fit: cover; border-radius: 8px; }
+.btn { background: #9333ea; color: #fff; border: none; padding: 0.6rem 1.2rem; border-radius: 6px; cursor: pointer; }
+.btn:hover { background: #7e22ce; }

@@ -6,14 +6,16 @@ export type CatalogueEntryKind =
 export type SnapshotLineage =
   | 'recovered-prototype'
   | 'core-theme-variant'
-  | 'marketplace-concept';
+  | 'marketplace-concept'
+  | 'enterprise-snapshot';
 
 export type CatalogueEntryCategory =
   | 'flagship-release'
   | 'application-view'
   | 'recovered-prototype'
   | 'core-theme-variant'
-  | 'marketplace-concept';
+  | 'marketplace-concept'
+  | 'enterprise-snapshot';
 
 export interface VersionCatalogueEntry {
   key: string;
@@ -141,17 +143,59 @@ export const APPLICATION_VIEWS: readonly VersionCatalogueEntry[] = [
       'from-purple-500 to-indigo-600 border-indigo-200 text-indigo-700',
   },
   {
-    key: 'documentation-view',
-    name: 'Project documentation view',
-    shortName: 'Docs',
-    badge: 'VIEW',
-    description:
-      'Repository-backed project documentation. Status statements should be checked against source and tests.',
-    path: '/docs',
+    key: 'v1',
+    name: 'V1 - Pitch & ARR Calculator',
+    shortName: 'V1 Pitch',
+    badge: 'INVESTOR',
+    description: 'Investor landing page with TAM story and interactive ARR projector.',
+    path: '/?v=v1',
     kind: 'application-view',
     category: 'application-view',
-    accentClass:
-      'from-blue-500 to-cyan-600 border-blue-200 text-blue-700',
+    accentClass: 'from-rose-500 to-pink-600 border-rose-200 text-rose-700',
+  },
+  {
+    key: 'v2',
+    name: 'V2 - Buyer Marketplace',
+    shortName: 'V2 Buyer',
+    badge: 'BUYER',
+    description: 'Artisanal food explorer with search, product detail pages, and cart.',
+    path: '/?v=v2',
+    kind: 'application-view',
+    category: 'application-view',
+    accentClass: 'from-emerald-500 to-green-600 border-green-200 text-green-700',
+  },
+  {
+    key: 'v3-view',
+    name: 'V3 - Seller Compliance Hub',
+    shortName: 'V3 Seller',
+    badge: 'SELLER',
+    description: 'KYBC onboarding, DAC7 tax self-certification, and DSA Art. 30 manager.',
+    path: '/become-seller/?v=v3',
+    kind: 'application-view',
+    category: 'application-view',
+    accentClass: 'from-amber-500 to-orange-600 border-orange-200 text-orange-700',
+  },
+  {
+    key: 'v4-view',
+    name: 'V4 - Admin Console',
+    shortName: 'V4 Admin',
+    badge: 'OPERATOR',
+    description: 'Moderation desk to approve seller applications and audit tax details.',
+    path: '/admin/dashboard/?v=v4',
+    kind: 'application-view',
+    category: 'application-view',
+    accentClass: 'from-purple-500 to-indigo-600 border-indigo-200 text-indigo-700',
+  },
+  {
+    key: 'v5-view',
+    name: 'V5 - Developer Portal & Docs',
+    shortName: 'V5 Docs',
+    badge: 'DEVELOPER',
+    description: 'Interactive documentation viewer: system status, development guide, and API reference.',
+    path: '/docs/?v=v5',
+    kind: 'application-view',
+    category: 'application-view',
+    accentClass: 'from-blue-500 to-cyan-600 border-blue-200 text-blue-700',
   },
 ];
 
@@ -372,6 +416,66 @@ export const HISTORICAL_SNAPSHOTS: readonly VersionCatalogueEntry[] = [
     accentClass:
       'from-amber-500 to-orange-600 border-amber-200 text-amber-800',
   },
+  {
+    key: 'v121',
+    name: 'V121 - High-converting standalone UI',
+    shortName: 'V121',
+    badge: 'STANDALONE',
+    description:
+      'High-converting standalone visual identity demo with curated PDO/PGI catalog items.',
+    path: '/v121/',
+    kind: 'historical-snapshot',
+    lineage: 'enterprise-snapshot',
+    introducedIn: 'e1210000',
+    lastIntegratedIn: '0020e35f',
+    accentClass:
+      'from-sky-500 to-blue-700 border-sky-300 text-sky-700',
+  },
+  {
+    key: 'v122',
+    name: 'V122 - Enterprise multi-million platform',
+    shortName: 'V122',
+    badge: 'ENTERPRISE',
+    description:
+      'Enterprise pan-European specialty food marketplace with interactive allergen safety and DSA Art. 30 verification.',
+    path: '/v122/',
+    kind: 'historical-snapshot',
+    lineage: 'enterprise-snapshot',
+    introducedIn: 'e1220000',
+    lastIntegratedIn: '0020e35f',
+    accentClass:
+      'from-rose-600 to-rose-900 border-rose-400 text-rose-800',
+  },
+  {
+    key: 'v132',
+    name: 'V132 - Enterprise EU logistics & tax gateway',
+    shortName: 'V132',
+    badge: 'LOGISTICS',
+    description:
+      'Real-time cross-border customs clearance, cold-chain spatial corridor matching, and automated OSS threshold calculations.',
+    path: '/v132/',
+    kind: 'historical-snapshot',
+    lineage: 'enterprise-snapshot',
+    introducedIn: 'e1320000',
+    lastIntegratedIn: '0020e35f',
+    accentClass:
+      'from-purple-600 to-indigo-800 border-purple-300 text-purple-800',
+  },
+  {
+    key: 'v177',
+    name: 'V177 - Production-grade ground-up marketplace',
+    shortName: 'V177',
+    badge: 'GROUND-UP',
+    description:
+      'Ground-up pan-European specialty food marketplace with decision truth records, baseline audits, and legal claims ledgers.',
+    path: '/v177/',
+    kind: 'historical-snapshot',
+    lineage: 'enterprise-snapshot',
+    introducedIn: 'e1770000',
+    lastIntegratedIn: '0020e35f',
+    accentClass:
+      'from-fuchsia-700 to-purple-900 border-fuchsia-400 text-fuchsia-800',
+  },
 ];
 
 export const VERSION_SELECTOR_OPTIONS: readonly VersionCatalogueEntry[] = [
@@ -396,4 +500,8 @@ export const EXPECTED_HISTORICAL_VERSION_KEYS = [
   'v17',
   'v18',
   'v19',
+  'v121',
+  'v122',
+  'v132',
+  'v177',
 ] as const;
