@@ -42,18 +42,20 @@ export default function AtlasMasterPage() {
     if (!router.isReady) return;
     const { country, category, view, q } = router.query;
 
-    if (typeof country === 'string') {
-      setSelectedCountryCode(country.toUpperCase());
-    }
-    if (typeof category === 'string') {
-      setSelectedCategory(category);
-    }
-    if (view === 'map' || view === 'shop' || view === 'stories') {
-      setViewMode(view);
-    }
-    if (typeof q === 'string') {
-      setSearchQuery(q);
-    }
+    Promise.resolve().then(() => {
+      if (typeof country === 'string') {
+        setSelectedCountryCode(country.toUpperCase());
+      }
+      if (typeof category === 'string') {
+        setSelectedCategory(category);
+      }
+      if (view === 'map' || view === 'shop' || view === 'stories') {
+        setViewMode(view);
+      }
+      if (typeof q === 'string') {
+        setSearchQuery(q);
+      }
+    });
   }, [router.isReady, router.query]);
 
   // Compute Product Count by Country
