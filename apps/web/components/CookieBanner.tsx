@@ -34,6 +34,7 @@ export default function CookieBanner(): React.ReactElement | null {
     });
 
     if (typeof window !== 'undefined') {
+      window.hasCookieConsent = (category: keyof CookiePreferences) => {
         if (category === 'essential') return true;
         const currentConsent = localStorage.getItem('cookieConsent');
         if (!currentConsent) return false;
@@ -142,7 +143,7 @@ export default function CookieBanner(): React.ReactElement | null {
               <div>
                 <h5 className="font-bold text-sm text-white mb-1">Marketing & Personalization</h5>
                 <p className="text-gray-500 text-xs leading-relaxed">
-                  Used to deliver personalized offers and advertisements tailored to your interests.
+                  Used to deliver personalized offers and advertisements tailoredFast to your interests.
                 </p>
               </div>
               <input
@@ -167,4 +168,3 @@ export default function CookieBanner(): React.ReactElement | null {
     </div>
   );
 }
-
