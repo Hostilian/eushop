@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import type { DemoProduct } from '../../data/demo-products';
+import { getAssetPath } from '../../lib/asset-path';
 
 interface AtlasQuickViewProps {
   product: DemoProduct | null;
@@ -16,7 +17,7 @@ export const AtlasQuickView: React.FC<AtlasQuickViewProps> = ({
 
   if (!product) return null;
 
-  const defaultImage = product.imageUrl || product.images?.[0] || '/images/iconic_european_dishes.png';
+  const defaultImage = getAssetPath(product.imageUrl || product.images?.[0] || '/images/iconic_european_dishes.png');
 
   const handleAdd = () => {
     onAddToCart(product, quantity);

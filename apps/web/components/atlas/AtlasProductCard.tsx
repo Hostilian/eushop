@@ -1,5 +1,6 @@
 import React from 'react';
 import type { DemoProduct } from '../../data/demo-products';
+import { getAssetPath } from '../../lib/asset-path';
 
 interface AtlasProductCardProps {
   product: DemoProduct;
@@ -12,7 +13,7 @@ export const AtlasProductCard: React.FC<AtlasProductCardProps> = ({
   onQuickView,
   onAddToCart,
 }) => {
-  const defaultImage = product.imageUrl || product.images?.[0] || '/images/iconic_european_dishes.png';
+  const defaultImage = getAssetPath(product.imageUrl || product.images?.[0] || '/images/iconic_european_dishes.png');
 
   return (
     <div className="group bg-[#F6F0E5] border border-[#201B17]/15 rounded-2xl overflow-hidden shadow-lg hover:shadow-2xl hover:border-[#201B17]/40 transition-all duration-300 flex flex-col justify-between font-sans">

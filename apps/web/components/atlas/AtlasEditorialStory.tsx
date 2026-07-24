@@ -1,4 +1,5 @@
 import React from 'react';
+import { getAssetPath } from '../../lib/asset-path';
 
 interface AtlasEditorialStoryProps {
   title: string;
@@ -19,6 +20,8 @@ export const AtlasEditorialStory: React.FC<AtlasEditorialStoryProps> = ({
   ctaText,
   onCtaClick,
 }) => {
+  const resolvedImageSrc = getAssetPath(imageSrc);
+
   return (
     <div className="w-full bg-[#18212A] text-[#F6F0E5] rounded-3xl overflow-hidden shadow-2xl border border-[#D29A38]/30 font-sans my-12">
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-0 items-stretch">
@@ -53,7 +56,7 @@ export const AtlasEditorialStory: React.FC<AtlasEditorialStoryProps> = ({
         <div className="lg:col-span-6 min-h-[340px] relative bg-black">
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img
-            src={imageSrc}
+            src={resolvedImageSrc}
             alt={title}
             className="w-full h-full object-cover"
           />

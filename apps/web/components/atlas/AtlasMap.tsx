@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { ALL_EU_COUNTRIES, type EUCountryMetadata } from '../../data/atlas-countries';
 import { ATLAS_MAP_ASSETS, type TerroirMapAsset } from '../v77/discovery/EuropeanFoodAtlas';
+import { getAssetPath } from '../../lib/asset-path';
 
 interface AtlasMapProps {
   selectedCountryCode: string;
@@ -206,12 +207,12 @@ export const AtlasMap: React.FC<AtlasMapProps> = ({
               <div className="h-28 w-full overflow-hidden rounded-lg bg-black">
                 {/* eslint-disable-next-line @next/next/no-img-element */}
                 <img
-                  src={asset.src}
+                  src={getAssetPath(asset.src)}
                   alt={asset.title}
                   className="w-full h-full object-cover group-hover:scale-105 transition duration-300"
                 />
               </div>
-              <p className="text-xs font-bold text-white mt-2 line-clamp-1 group-hover:text-[#D29A38] transition">
+              <p className="text-xs font-bold text-[#F6F0E5] mt-2 line-clamp-1 group-hover:text-[#D29A38] transition">
                 {asset.title}
               </p>
             </div>
@@ -237,7 +238,7 @@ export const AtlasMap: React.FC<AtlasMapProps> = ({
             </div>
             <div className="relative flex-1 overflow-auto rounded-2xl bg-black p-2 flex items-center justify-center">
               {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img src={activeModalMap.src} alt={activeModalMap.title} className="max-h-[70vh] w-auto object-contain" />
+              <img src={getAssetPath(activeModalMap.src)} alt={activeModalMap.title} className="max-h-[70vh] w-auto object-contain" />
             </div>
           </div>
         </div>
