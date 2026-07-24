@@ -128,3 +128,8 @@ nul
 # Script backups
 scripts/*.backup-*
 scripts/*.backup-stdin-*
+
+# TypeScript build caches & transient files
+*.tsbuildinfo
+provider_probe.txt
+data/
