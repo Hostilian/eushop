@@ -48,9 +48,9 @@ export default function VersionSelector() {
     // Dispatch global event
     window.dispatchEvent(new Event('demo-version-changed'));
 
-    // Handle navigation based on entry kind
-    if (option.kind === 'historical-snapshot') {
-      // For historical snapshots, navigate directly to the path
+    // Handle navigation based on entry kind or static path
+    if (option.kind === 'historical-snapshot' || (option.path.startsWith('/v') && option.path !== '/')) {
+      // For historical snapshots and static folder paths, navigate directly to the path
       window.location.assign((router.basePath || '') + option.path);
     } else {
       // For application views, use Next.js routing
@@ -137,16 +137,27 @@ export default function VersionSelector() {
       {/* Dropdown Menu */}
       {open && (
         <div className="absolute right-0 mt-2.5 w-80 md:w-96 max-h-[80vh] overflow-y-auto rounded-2xl border border-gray-150 dark:border-gray-800 bg-white/95 dark:bg-gray-950/95 backdrop-blur-md shadow-2xl p-2.5 space-y-1 animate-slide-up origin-top-right">
-          <div className="px-3.5 py-2 border-b border-gray-100 dark:border-gray-900 mb-1.5">
-            <h3 className="text-xs font-bold text-brand-dark dark:text-white uppercase tracking-wider">Select Application Version</h3>
-            <p className="text-[11px] text-gray-500 dark:text-gray-400 mt-0.5">Choose from flagship releases, application views, and historical snapshots.</p>
+          <div className="px-3.5 py-2 border-b border-gray-100 dark:border-gray-900 mb-1.5 flex items-center justify-between gap-2">
+            <div>
+              <h3 className="text-xs font-bold text-brand-dark dark:text-white uppercase tracking-wider">Select Application Version</h3>
+              <p className="text-[11px] text-gray-500 dark:text-gray-400 mt-0.5">Choose from flagship releases, application views, and historical snapshots.</p>
+            </div>
+            <button
+              onClick={() => {
+                setOpen(false);
+                router.push('/versions');
+              }}
+              className="text-[10px] font-extrabold text-indigo-600 dark:text-indigo-400 hover:bg-indigo-100 dark:hover:bg-indigo-900/60 shrink-0 bg-indigo-50 dark:bg-indigo-950/80 px-2.5 py-1.5 rounded-lg border border-indigo-200 dark:border-indigo-800 transition"
+            >
+              All Versions →
+            </button>
           </div>
 
           <div className="space-y-3" role="listbox">
-            {/* 1. Flagship Major Releases */}
+            {/* 1. Flagship & Enterprise Releases */}
             <div>
               <div className="px-2 py-1 text-[10px] font-bold text-emerald-600 dark:text-emerald-400 uppercase tracking-wider flex items-center gap-1">
-                <span>🚀</span> Flagship Major Releases (V66 / V55 / V44)
+                <span>🚀</span> Flagship &amp; Enterprise Releases
               </div>
               <div className="space-y-1 mt-1">
                 {VERSION_SELECTOR_OPTIONS.filter(o => o.category === 'flagship-release').map(option => renderOption(option))}
@@ -166,10 +177,10 @@ export default function VersionSelector() {
             {/* 3. Historical Prototypes & Themes */}
             <div>
               <div className="px-2 py-1 text-[10px] font-bold text-purple-600 dark:text-purple-400 uppercase tracking-wider flex items-center gap-1 border-t border-gray-100 dark:border-gray-900 pt-2">
-                <span>🏛️</span> Historical Snapshots & Themes
+                <span>🏛️</span> Historical Snapshots &amp; Themes
               </div>
               <div className="space-y-1 mt-1">
-                {VERSION_SELECTOR_OPTIONS.filter(o => o.kind === 'historical-snapshot').map(option => renderOption(option))}
+                {VERSION_SELECTOR_OPTIONS.filter(o => o.kind === 'historical-snapshot' && o.category !== 'flagship-release').map(option => renderOption(option))}
               </div>
             </div>
           </div>

@@ -48,6 +48,58 @@ export const CURRENT_APPLICATION: VersionCatalogueEntry = {
 
 export const FLAGSHIP_RELEASES: readonly VersionCatalogueEntry[] = [
   {
+    key: 'v177',
+    name: 'V177 - Ground-Up Re-Founded Pan-European Marketplace',
+    shortName: 'V177',
+    badge: 'V177 GROUND-UP',
+    description:
+      'Ground-up pan-European specialty food marketplace with decision truth records, baseline audits, and legal claims ledgers.',
+    path: '/v177/',
+    kind: 'application-view',
+    category: 'flagship-release',
+    accentClass:
+      'from-fuchsia-700 to-purple-900 border-fuchsia-400 text-fuchsia-800 dark:text-fuchsia-200 font-bold',
+  },
+  {
+    key: 'v132',
+    name: 'V132 - Enterprise EU Logistics & Tax Gateway',
+    shortName: 'V132',
+    badge: 'V132 LOGISTICS',
+    description:
+      'Real-time cross-border customs clearance, cold-chain spatial corridor matching, and automated OSS threshold calculations.',
+    path: '/v132/',
+    kind: 'application-view',
+    category: 'flagship-release',
+    accentClass:
+      'from-purple-600 to-indigo-800 border-purple-300 text-purple-800 dark:text-purple-200 font-bold',
+  },
+  {
+    key: 'v122',
+    name: 'V122 - Enterprise Multi-Million Dollar Platform',
+    shortName: 'V122',
+    badge: 'V122 ENTERPRISE',
+    description:
+      'Enterprise pan-European specialty food marketplace with interactive allergen safety and DSA Art. 30 verification.',
+    path: '/v122/',
+    kind: 'application-view',
+    category: 'flagship-release',
+    accentClass:
+      'from-rose-600 to-rose-900 border-rose-400 text-rose-800 dark:text-rose-200 font-bold',
+  },
+  {
+    key: 'v121',
+    name: 'V121 - High-Converting Standalone UI',
+    shortName: 'V121',
+    badge: 'V121 UI',
+    description:
+      'High-converting standalone visual identity demo with curated PDO/PGI catalog items.',
+    path: '/v121/',
+    kind: 'application-view',
+    category: 'flagship-release',
+    accentClass:
+      'from-sky-500 to-blue-700 border-sky-300 text-sky-700 dark:text-sky-200 font-bold',
+  },
+  {
     key: 'v77',
     name: 'V77 - European Food Atlas & Editorial Marketplace',
     shortName: 'V77',
