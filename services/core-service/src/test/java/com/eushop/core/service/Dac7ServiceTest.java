@@ -3,6 +3,7 @@ package com.eushop.core.service;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.*;
 
@@ -13,6 +14,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import com.eushop.core.dto.Dac7AggregateProjection;
 import com.eushop.core.entity.Dac7AnnualSnapshot;
 import com.eushop.core.entity.User;
 import com.eushop.core.repository.Dac7AnnualSnapshotRepository;
@@ -40,14 +42,14 @@ public class Dac7ServiceTest {
         LocalDateTime start = LocalDateTime.of(year, 1, 1, 0, 0, 0);
         LocalDateTime end = LocalDateTime.of(year + 1, 1, 1, 0, 0, 0);
 
-        Map<String, Object> aggregate = new HashMap<>();
-        aggregate.put("sellerId", "seller-uuid");
-        aggregate.put("totalConsideration", 2500.50);
-        aggregate.put("transactionCount", 35);
-        aggregate.put("platformFeeTotal", 375.00);
-        aggregate.put("sellerPayoutTotal", 2125.50);
+        Dac7AggregateProjection aggregate = mock(Dac7AggregateProjection.class);
+        when(aggregate.getSellerId()).thenReturn("seller-uuid");
+        when(aggregate.getTotalConsideration()).thenReturn(new BigDecimal("2500.50"));
+        when(aggregate.getTransactionCount()).thenReturn(35L);
+        when(aggregate.getPlatformFeeTotal()).thenReturn(new BigDecimal("375.00"));
+        when(aggregate.getSellerPayoutTotal()).thenReturn(new BigDecimal("2125.50"));
 
-        List<Map<String, Object>> mockAggregates = Collections.singletonList(aggregate);
+        List<Dac7AggregateProjection> mockAggregates = Collections.singletonList(aggregate);
 
         when(orderRepository.calculateDac7AggregatesForYear(start, end)).thenReturn(mockAggregates);
         when(dac7SnapshotRepository.findBySellerIdAndReportingYear("seller-uuid", (short) year))

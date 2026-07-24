@@ -14,6 +14,7 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.eushop.core.dto.Dac7AggregateProjection;
 import com.eushop.core.entity.Order;
 
 @Repository
@@ -64,7 +65,7 @@ public interface OrderRepository extends JpaRepository<Order, String> {
            "WHERE o.status = 'DELIVERED' " +
            "AND o.completedAt >= :startOfYear AND o.completedAt < :endOfYear " +
            "GROUP BY o.sellerId")
-    List<Map<String, Object>> calculateDac7AggregatesForYear(
+    List<Dac7AggregateProjection> calculateDac7AggregatesForYear(
             @Param("startOfYear") LocalDateTime startOfYear,
             @Param("endOfYear") LocalDateTime endOfYear);
 

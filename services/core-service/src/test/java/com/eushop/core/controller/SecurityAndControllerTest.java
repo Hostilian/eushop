@@ -22,6 +22,8 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 @WebMvcTest(controllers = {FoodController.class, OrderController.class, WebhookController.class, PaymentController.class, Dac7Controller.class, AuthController.class})
 @Import({SecurityConfig.class, JwtAuthenticationFilter.class})
+@org.springframework.test.context.ActiveProfiles("test")
+@org.springframework.test.context.TestPropertySource(properties = {"NEXT_PUBLIC_USE_MOCK_AUTH=true", "spring.profiles.active=test"})
 public class SecurityAndControllerTest {
 
     @Autowired

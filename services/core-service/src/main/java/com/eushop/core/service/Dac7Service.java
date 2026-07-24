@@ -1,5 +1,6 @@
 package com.eushop.core.service;
 
+import com.eushop.core.dto.Dac7AggregateProjection;
 import com.eushop.core.entity.Dac7AnnualSnapshot;
 import com.eushop.core.entity.User;
 import com.eushop.core.repository.Dac7AnnualSnapshotRepository;
@@ -11,11 +12,12 @@ import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
 
 @Service
@@ -47,26 +49,30 @@ public class Dac7Service {
         generateSnapshotsForYear(currentYear);
     }
 
-    public List<Dac7AnnualSnapshot> generateSnapshotsForYear(int year) {
+    private int requireValidReportingYear(int year) {
         if (year < 2000 || year > 2100) {
             throw new IllegalArgumentException("Invalid DAC7 reporting year: " + year);
         }
-        int sanitizedYear = Math.min(2100, Math.max(2000, year));
-        short reportingYear = (short) sanitizedYear;
-        LocalDateTime startOfYear = LocalDateTime.of(sanitizedYear, 1, 1, 0, 0, 0);
+        return year;
+    }
+
+    public List<Dac7AnnualSnapshot> generateSnapshotsForYear(int year) {
+        int validYear = requireValidReportingYear(year);
+        short reportingYear = (short) validYear;
+        LocalDateTime startOfYear = LocalDateTime.of(validYear, 1, 1, 0, 0, 0);
         LocalDateTime endOfYear = startOfYear.plusYears(1);
 
-        List<Map<String, Object>> aggregates = orderRepository.calculateDac7AggregatesForYear(startOfYear, endOfYear);
+        List<Dac7AggregateProjection> aggregates = orderRepository.calculateDac7AggregatesForYear(startOfYear, endOfYear);
         List<Dac7AnnualSnapshot> savedSnapshots = new ArrayList<>();
 
-        for (Map<String, Object> row : aggregates) {
-            String sellerId = (String) row.get("sellerId");
-            Number consideration = (Number) row.get("totalConsideration");
-            Number count = (Number) row.get("transactionCount");
-            Number platformFee = (Number) row.get("platformFeeTotal");
-            Number payout = (Number) row.get("sellerPayoutTotal");
+        for (Dac7AggregateProjection row : aggregates) {
+            String sellerId = row.getSellerId();
+            if (sellerId == null || sellerId.isEmpty()) continue;
 
-            if (sellerId == null) continue;
+            BigDecimal consideration = row.getTotalConsideration();
+            Long count = row.getTransactionCount();
+            BigDecimal platformFee = row.getPlatformFeeTotal();
+            BigDecimal payout = row.getSellerPayoutTotal();
 
             Dac7AnnualSnapshot snapshot = dac7SnapshotRepository
                     .findBySellerIdAndReportingYear(sellerId, reportingYear)
@@ -77,25 +83,26 @@ public class Dac7Service {
                         return newSnap;
                     });
 
-            // COMPLIANCE-REVIEW: Implements DAC7 numeric cast scale & bound validation per CodeQL Task 124
-            snapshot.setTotalConsideration(consideration != null ? Math.max(0.0, Math.min(1_000_000_000.0, consideration.doubleValue())) : 0.0);
-            snapshot.setTransactionCount(count != null ? Math.max(0, Math.min(100_000, count.intValue())) : 0);
-            snapshot.setPlatformFeeTotal(platformFee != null ? Math.max(0.0, Math.min(1_000_000_000.0, platformFee.doubleValue())) : 0.0);
-            snapshot.setSellerPayoutTotal(payout != null ? Math.max(0.0, Math.min(1_000_000_000.0, payout.doubleValue())) : 0.0);
+            double totalConsideration = consideration != null ? consideration.setScale(2, RoundingMode.HALF_EVEN).doubleValue() : 0.0;
+            int transactionCount = count != null ? Math.toIntExact(Math.min(100_000L, Math.max(0L, count))) : 0;
+            double feeTotal = platformFee != null ? platformFee.setScale(2, RoundingMode.HALF_EVEN).doubleValue() : 0.0;
+            double payoutTotal = payout != null ? payout.setScale(2, RoundingMode.HALF_EVEN).doubleValue() : 0.0;
+
+            snapshot.setTotalConsideration(totalConsideration);
+            snapshot.setTransactionCount(transactionCount);
+            snapshot.setPlatformFeeTotal(feeTotal);
+            snapshot.setSellerPayoutTotal(payoutTotal);
 
             savedSnapshots.add(dac7SnapshotRepository.save(snapshot));
         }
 
-        log.info("Generated/Updated {} DAC7 snapshots for year {}", savedSnapshots.size(), year);
+        log.info("Generated/Updated {} DAC7 snapshots for year {}", savedSnapshots.size(), validYear);
         return savedSnapshots;
     }
 
     public List<Dac7AnnualSnapshot> getReportableSellers(int year) {
-        if (year < 2000 || year > 2100) {
-            throw new IllegalArgumentException("Invalid DAC7 reporting year: " + year);
-        }
-        int sanitizedYear = Math.min(2100, Math.max(2000, year));
-        short reportingYear = (short) sanitizedYear;
+        int validYear = requireValidReportingYear(year);
+        short reportingYear = (short) validYear;
         List<Dac7AnnualSnapshot> allSnapshots = dac7SnapshotRepository.findByReportingYear(reportingYear);
         List<Dac7AnnualSnapshot> reportable = new ArrayList<>();
 

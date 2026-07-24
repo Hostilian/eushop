@@ -32,6 +32,7 @@ import java.util.concurrent.TimeUnit;
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
     private static final Logger log = LoggerFactory.getLogger(JwtAuthenticationFilter.class);
+    private static final Set<String> ALLOWED_ROLES = Set.of("BUYER", "SELLER", "ADMIN");
 
     @Value("${spring.profiles.active:dev}")
     private String activeProfile;
@@ -42,7 +43,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     @Value("${AUTH0_AUDIENCE:}")
     private String auth0Audience;
 
-    @Value("${NEXT_PUBLIC_USE_MOCK_AUTH:true}")
+    @Value("${NEXT_PUBLIC_USE_MOCK_AUTH:false}")
     private boolean useMockAuth;
 
     private JwkProvider jwkProvider;
@@ -175,7 +176,11 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     }
 
     private void setAuthentication(String userId, String email, String role, HeaderMapRequestWrapper request) {
-        SimpleGrantedAuthority authority = new SimpleGrantedAuthority("ROLE_" + role);
+        String sanitizedRole = (role != null && ALLOWED_ROLES.contains(role.toUpperCase())) 
+                ? role.toUpperCase() 
+                : "BUYER";
+
+        SimpleGrantedAuthority authority = new SimpleGrantedAuthority("ROLE_" + sanitizedRole);
         UsernamePasswordAuthenticationToken auth = new UsernamePasswordAuthenticationToken(
                 userId, null, Collections.singletonList(authority));
         SecurityContextHolder.getContext().setAuthentication(auth);
@@ -183,6 +188,6 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         // Inject verified headers into request wrapper
         request.addHeader("X-User-Id", userId);
         request.addHeader("X-User-Email", email);
-        request.addHeader("X-User-Role", role);
+        request.addHeader("X-User-Role", sanitizedRole);
     }
 }
