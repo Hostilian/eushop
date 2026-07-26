@@ -199,33 +199,70 @@ See §2.7. Repeated here as a hard pointer because it matters more than a mid-do
 
 ---
 
-## 11. Integrated Agentic Superpower Repositories
+## 11. Integrated Top 20 Agentic Superpower Repositories
 
-This codebase integrates 6 essential AI development repositories into both Claude Code CLI (`fcc-claude`) and Antigravity agents:
+This codebase integrates 20 essential AI development repositories & skills into both Claude Code CLI (`fcc-claude`) and Antigravity agents:
 
 1. **`obra/superpowers`** (Superpowers Framework):
-   - Enforces Socratic brainstorming, 2-5 min atomic plans, TDD (Red-Green-Refactor), and multi-stage code reviews.
-   - Marketplace: `/plugin marketplace add obra/superpowers-marketplace`
+   - Socratic brainstorming, 2-5 min atomic plans, TDD (Red-Green-Refactor), multi-stage code reviews.
    - Skill: `.agents/skills/claude-superpowers-framework`
-
-2. **`affaan-m/everything-claude-code`** (ECC Harness):
-   - Cross-harness optimization, continuous instinct learning, research-first inspection, token context optimization.
+2. **`affaan-m/everything-claude-code`** (ECC Harness OS):
+   - Harness optimization, continuous instinct learning, research-first inspection, token efficiency.
    - Skill: `.agents/skills/everything-claude-code-harness`
-
 3. **`ruvnet/ruflo`** (Ruflo Swarm Orchestrator):
-   - Queen-led hierarchical multi-agent swarm, adaptive memory, lock-free worktree discipline.
+   - Queen-led hierarchical multi-agent swarm, RAG, lock-free worktree discipline.
    - Skill: `.agents/skills/ruflo-agent-swarm-orchestrator`
-
 4. **`nexu-io/open-design`** (Open Design Engine):
-   - Local-first design engine for modern aesthetics, curated palettes, typography, responsive layouts, micro-animations.
+   - Local-first design engine, curated palettes, typography, responsive layouts, micro-animations.
    - Skill: `.agents/skills/open-design-engine`
-
 5. **`pablo-mano/Obsidian-CLI-skill`** (Obsidian Knowledge Memory):
-   - Knowledge graph memory integration, persistent markdown memory items, cross-session architecture tracking.
+   - Knowledge graph memory integration, persistent markdown memory items, cross-session context linking.
    - Skill: `.agents/skills/obsidian-knowledge-memory`
-
 6. **`multica-ai` / Andrej Karpathy Workflow**:
-   - First-principles problem solving, agent team issue assignment, clean code discipline, empirical verification before success declaration.
+   - First-principles problem solving, agent team issue assignment, clean code discipline, empirical verification.
    - Skill: `.agents/skills/karpathy-multica-agent-workflow`
+7. **`mattpocock/skills`** (Real Engineering Skills):
+   - Strict TypeScript types, explicit interface boundaries, refactoring patterns, zero unverified assumptions.
+   - Skill: `.agents/skills/mattpocock-skills-real-engineering`
+8. **`ComposioHQ/awesome-claude-skills`** (MCP App Gateway):
+   - Enterprise Model Context Protocol gateway, tool connectivity, secure webhook signature verification.
+   - Skill: `.agents/skills/composio-mcp-app-integrations`
+9. **`agento-patronum/security-hooks`** (Security Guardrails):
+   - Defense-in-depth security guardrails, path traversal prevention, fail-closed authentication filters.
+   - Skill: `.agents/skills/agento-patronum-security-hooks`
+10. **`rohitg00/pro-workflow`** (SDLC Pipeline Automation):
+    - End-to-end SDLC pipeline automation ("Great CTO" workflow), release health auditing, automated quality gates.
+    - Skill: `.agents/skills/pro-workflow-sdlc-pipeline`
+11. **`playwright-community/playwright-agent-skill`**:
+    - Automated E2E testing, visual regression & critical user journey verification.
+    - Skill: `.agents/skills/playwright-e2e-critical-journeys`
+12. **`codeql-community/security-taint-analysis-skill`**:
+    - Semantic static analysis & zero-critical taint sink remediation.
+    - Skill: `.agents/skills/codeql-security-taint-remediation`
+13. **`flyway-community/zero-downtime-migration-skill`**:
+    - Lock-free SQL migration discipline & zero-downtime schema evolution.
+    - Skill: `.agents/skills/flyway-zero-downtime-migrations`
+14. **`postgis-community/geospatial-spatial-matching-skill`**:
+    - PostGIS spatial corridor geometry & origin-destination distance algorithms.
+    - Skill: `.agents/skills/postgis-geospatial-matching`
+15. **`auth0-community/failclosed-security-filter-skill`**:
+    - Fail-closed JWT authentication filtering & session cookie security.
+    - Skill: `.agents/skills/eushop-auth0-session-jwt-security`
+16. **`stripe-community/idempotent-payment-engine-skill`**:
+    - Server-authoritative Stripe Connect & payment intent idempotency engine.
+    - Skill: `.agents/skills/eushop-stripe-payment-idempotency`
+17. **`dac7-community/tax-reporting-aggregation-skill`**:
+    - DAC7 EU tax reporting, threshold calculation & XML export generation.
+    - Skill: `.agents/skills/eushop-dac7-tax-reporting-engine`
+18. **`dsa-community/notice-moderation-audit-skill`**:
+    - Digital Services Act (DSA) Art. 30 trader traceability & Art. 20 complaint portal.
+    - Skill: `.agents/skills/eushop-dsa-notice-and-action-moderation`
+19. **`wcag-community/accessibility-design-tokens-skill`**:
+    - WCAG 2.2 AA accessibility verification & unified design system tokens.
+    - Skill: `.agents/skills/eushop-wcag-accessibility-design-tokens`
+20. **`yc-diligence-community/investor-data-room-skill`**:
+    - Pre-seed YC investor diligence package & compliance audit bundle.
+    - Skill: `.agents/skills/eushop-yc-investor-diligence-package`
+
 
 
