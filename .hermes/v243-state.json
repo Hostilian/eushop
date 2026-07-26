@@ -1,0 +1,34 @@
+{
+  "version": 243,
+  "status": "RECOVERING",
+  "activeTask": "C-02",
+  "branch": "codex/version-44-v243-continuation-20260726",
+  "startingHead": "ab9ec909038fa89ef7959071884a9e9ca9b181f1",
+  "baselineCommit": "fbeddfaf",
+  "lastUpdate": "2026-07-26T15:08:30Z",
+  "completedThisSession": [
+    "startup-recovery",
+    "safe-child-branch",
+    "v243-checkpoint-reconstruction",
+    "shared-vat-source"
+  ],
+  "remainingGoalDomains": [
+    "food-knowledge-graph-verification",
+    "living-map-verification",
+    "multi-seller-commerce-completion",
+    "dsa-trader-traceability-verification",
+    "eambrosia-ingestion-completion",
+    "critical-user-journey-verification"
+  ],
+  "preExistingWorkExcluded": [
+    ".github/workflows/ci-cd-pipeline.yml"
+  ],
+  "backgroundChecks": [
+    {
+      "name": "graphify-offline-code-extraction",
+      "processId": 44516,
+      "status": "COMPLETED",
+      "output": "D:\\CODING\\.codex-tmp\\eushop-v243-graphify-20260726\\graphify-out\\graph.json"
+    }
+  ]
+}

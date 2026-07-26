@@ -2,6 +2,18 @@
 
 ## [Unreleased] — P0 CI/CD & FIC Compliance Fixes (2026-07-26)
 
+### V243 Multi-Seller Checkout Recovery
+- **Shared food VAT data source**: Moved all 27 indicative destination-country
+  food VAT rates into
+  `packages/compliance/src/eu-food-vat-rates.json`, consumed by both the
+  TypeScript compliance engine and the Spring backend.
+- **Fail-closed backend rate provider**: Added `FoodVatRateProvider` so the
+  upcoming server-authoritative checkout rejects unsupported destinations
+  instead of accepting a client-supplied tax total.
+- **Verification**: Added focused TypeScript and Java rate-loading tests.
+- **COMPLIANCE-REVIEW**: These rates remain product-category-sensitive and
+  require qualified tax-advisor sign-off before production invoicing.
+
 ### CI/CD Pipeline (TASK-A1)
 - **Fixed `.github/workflows/ci-cd.yml`**: Added `actions/setup-node@v4` (Node 20) step — was missing entirely, causing build failures on ubuntu-latest.
 - **Pinned pnpm to `9.7.1`** via `pnpm/action-setup@v4` with explicit `version:` field — previously unpinned and using deprecated `@v2`.

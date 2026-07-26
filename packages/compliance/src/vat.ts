@@ -1,3 +1,5 @@
+import foodVatRates from './eu-food-vat-rates.json';
+
 /**
  * VAT Engine — EU One-Stop-Shop (OSS) and destination-country VAT logic.
  *
@@ -49,35 +51,7 @@ export const DAC7_THRESHOLDS = {
  *
  * Source: https://taxation-customs.ec.europa.eu/taxation/vat/vat-rates_en
  */
-export const EU_FOOD_VAT_RATES: Record<string, number> = {
-  AT: 0.10, // Austria — 10% reduced
-  BE: 0.06, // Belgium — 6% reduced
-  BG: 0.09, // Bulgaria — 9% reduced
-  HR: 0.05, // Croatia — 5% reduced
-  CY: 0.05, // Cyprus — 5% reduced
-  CZ: 0.12, // Czech Republic — 12% reduced
-  DK: 0.25, // Denmark — no reduced rate for food (standard 25%)
-  EE: 0.09, // Estonia — 9% reduced
-  FI: 0.14, // Finland — 14% reduced
-  FR: 0.055, // France — 5.5% reduced
-  DE: 0.07, // Germany — 7% reduced
-  GR: 0.13, // Greece — 13% reduced
-  HU: 0.05, // Hungary — 5% reduced
-  IE: 0.00, // Ireland — 0% zero-rated for most food
-  IT: 0.04, // Italy — 4% super-reduced
-  LV: 0.12, // Latvia — 12% reduced
-  LT: 0.09, // Lithuania — 9% reduced
-  LU: 0.08, // Luxembourg — 8% reduced
-  MT: 0.00, // Malta — 0% zero-rated for food
-  NL: 0.09, // Netherlands — 9% reduced
-  PL: 0.05, // Poland — 5% reduced
-  PT: 0.06, // Portugal — 6% reduced
-  RO: 0.09, // Romania — 9% reduced
-  SK: 0.10, // Slovakia — 10% reduced
-  SI: 0.095, // Slovenia — 9.5% reduced
-  ES: 0.04, // Spain — 4% super-reduced
-  SE: 0.12, // Sweden — 12% reduced
-};
+export const EU_FOOD_VAT_RATES: Record<string, number> = { ...foodVatRates };
 
 /**
  * Returns the food VAT rate for a destination country.
