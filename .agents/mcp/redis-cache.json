@@ -1,0 +1,15 @@
+{
+  "name": "eushop-redis-cache",
+  "description": "Redis cache MCP tool for session data, rate limiting counters, and product catalog caching.",
+  "type": "mcp",
+  "config": {
+    "host": "${REDIS_HOST}",
+    "port": 6379,
+    "password": "${REDIS_PASSWORD}",
+    "tls": true,
+    "db": 0,
+    "allowed_operations": ["get", "set", "del", "ttl", "keys_scan", "info"],
+    "blocked_operations": ["flushall", "flushdb"],
+    "comment": "flushall/flushdb require explicit human approval — never auto-execute"
+  }
+}

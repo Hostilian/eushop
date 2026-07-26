@@ -1,0 +1,9 @@
+{
+  "name": "weekly-backup-restore-test",
+  "description": "Weekly PostgreSQL backup restore test to shadow instance — validates backup integrity and PITR capability.",
+  "cron": "0 4 * * 6",
+  "timezone": "UTC",
+  "agent": "database-backup-validation-agent",
+  "prompt": "Restore latest PostgreSQL backup to shadow instance. Validate row counts in users, products, orders, seller_profiles tables match production snapshot. Run constraint checks. Test PITR to 1 hour ago. Report restore time and any discrepancies.",
+  "enabled": true
+}

@@ -1,0 +1,15 @@
+{
+  "name": "eushop-image-cdn-plugin",
+  "version": "1.0.0",
+  "description": "Image CDN & Optimisation Plugin — WebP/AVIF conversion, CDN cache management, alt-text validation, and image accessibility compliance.",
+  "skills": [],
+  "agents": ["image-optimisation-agent"],
+  "config": {
+    "preferred_format": "webp",
+    "fallback_format": "jpeg",
+    "max_file_size_kb": 150,
+    "min_dimension_px": 800,
+    "cdn_cache_ttl_seconds": 86400,
+    "alt_text_required": true
+  }
+}

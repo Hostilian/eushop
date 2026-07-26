@@ -1,0 +1,15 @@
+{
+  "name": "eushop-notification-plugin",
+  "version": "1.0.0",
+  "description": "Multi-channel Notification Plugin — bundles email (SendGrid), push (Expo), SMS (Twilio), consent gating, and bounce management.",
+  "skills": [],
+  "agents": ["notification-delivery-agent", "consent-management-agent"],
+  "config": {
+    "email_provider": "sendgrid",
+    "push_provider": "expo",
+    "sms_provider": "twilio",
+    "max_notifications_per_day": 5,
+    "gdpr_consent_required": true,
+    "unsubscribe_link_required": true
+  }
+}

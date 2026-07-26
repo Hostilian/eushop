@@ -1,0 +1,9 @@
+{
+  "name": "daily-price-integrity-scan",
+  "description": "Daily marketplace price anomaly detection — flags fraudulent pricing patterns and currency errors.",
+  "cron": "0 8 * * *",
+  "timezone": "UTC",
+  "agent": "price-integrity-monitor-agent",
+  "prompt": "Scan all active product listings for price anomalies: prices at €0, negative prices, prices > 10x category average, prices changed > 300% in last 24h. Flag all anomalies. Generate daily price integrity report.",
+  "enabled": true
+}

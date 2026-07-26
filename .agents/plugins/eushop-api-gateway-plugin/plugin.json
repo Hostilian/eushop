@@ -1,0 +1,14 @@
+{
+  "name": "eushop-api-gateway-plugin",
+  "version": "1.0.0",
+  "description": "API Gateway Plugin — rate limiting, API contract validation, OpenAPI spec generation, and TypeScript client SDK auto-publication.",
+  "skills": ["eushop-rate-limiting-api-throttle"],
+  "agents": ["api-contract-validation-agent", "api-documentation-agent"],
+  "config": {
+    "rate_limit_anonymous": 20,
+    "rate_limit_authenticated": 100,
+    "rate_limit_seller": 50,
+    "openapi_spec_path": "services/core-service/src/main/resources/openapi.yaml",
+    "typescript_client_output": "packages/types/src/api-client.d.ts"
+  }
+}

@@ -1,0 +1,14 @@
+{
+  "name": "eushop-incident-response-plugin",
+  "version": "1.0.0",
+  "description": "Incident Response & Runbook Plugin — P0/P1 detection, auto-rollback triggers, RCA template generation, and on-call notification routing.",
+  "skills": [],
+  "agents": ["incident-response-agent", "performance-monitor-agent", "database-backup-validation-agent"],
+  "config": {
+    "p0_alert_seconds": 60,
+    "p1_alert_minutes": 5,
+    "auto_rollback_within_minutes": 10,
+    "health_check_interval_seconds": 30,
+    "on_call_webhook": "${ON_CALL_WEBHOOK_URL}"
+  }
+}

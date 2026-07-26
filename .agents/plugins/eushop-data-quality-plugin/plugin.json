@@ -1,0 +1,14 @@
+{
+  "name": "eushop-data-quality-plugin",
+  "version": "1.0.0",
+  "description": "Data Quality & Integrity Plugin — orphaned record detection, NULL flood alerts, referential integrity validation, and weekly data health reports.",
+  "skills": [],
+  "agents": ["data-quality-validation-agent", "database-backup-validation-agent"],
+  "config": {
+    "check_frequency": "weekly",
+    "alert_on_orphaned_records": true,
+    "alert_on_null_allergens": true,
+    "backup_age_alert_hours": 25,
+    "restore_test_frequency": "weekly"
+  }
+}

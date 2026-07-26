@@ -1,0 +1,14 @@
+{
+  "name": "eushop-opentelemetry-collector",
+  "description": "OpenTelemetry Collector MCP tool for querying trace data, metrics, and logs from the EUshop observability stack.",
+  "type": "mcp",
+  "config": {
+    "otlp_endpoint": "${OTEL_COLLECTOR_ENDPOINT}",
+    "tempo_url": "${TEMPO_URL}",
+    "prometheus_url": "${PROMETHEUS_URL}",
+    "loki_url": "${LOKI_URL}",
+    "allowed_operations": ["query_traces", "query_metrics", "query_logs", "get_service_map"],
+    "read_only": true,
+    "time_range_max_days": 7
+  }
+}

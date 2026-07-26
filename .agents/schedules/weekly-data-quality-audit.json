@@ -1,0 +1,9 @@
+{
+  "name": "weekly-data-quality-audit",
+  "description": "Weekly database data quality audit — orphaned records, NULL floods, constraint violations.",
+  "cron": "0 5 * * 1",
+  "timezone": "UTC",
+  "agent": "data-quality-validation-agent",
+  "prompt": "Run full data quality audit: check for orphaned orders, products without allergen declarations, sellers without DSA Art.30 verification, stuck outbox events. Report row counts for each issue category. Flag any critical integrity violations immediately.",
+  "enabled": true
+}

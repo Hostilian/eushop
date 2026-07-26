@@ -1,0 +1,9 @@
+{
+  "name": "daily-notification-delivery-health",
+  "description": "Daily notification delivery health check — email bounce rates, push delivery rates, SMS opt-out tracking.",
+  "cron": "0 9 * * *",
+  "timezone": "UTC",
+  "agent": "notification-delivery-agent",
+  "prompt": "Check SendGrid email delivery stats from last 24h: delivery rate, open rate, bounce rate, spam complaint rate. Alert if bounce rate > 2% or spam complaint rate > 0.1%. Check Expo push notification delivery rate. Report daily notification health summary.",
+  "enabled": true
+}

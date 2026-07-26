@@ -1,0 +1,13 @@
+{
+  "name": "eushop-sendgrid-email",
+  "description": "SendGrid Email API tool for transactional email sending, bounce handling, and unsubscribe management.",
+  "type": "mcp",
+  "config": {
+    "api_key": "${SENDGRID_API_KEY}",
+    "from_email": "noreply@eushop.eu",
+    "from_name": "EUshop",
+    "allowed_operations": ["send_transactional", "get_bounce_list", "get_unsubscribes", "get_stats"],
+    "blocked_operations": ["delete_unsubscribes"],
+    "comment": "NEVER delete unsubscribes — GDPR violation risk"
+  }
+}

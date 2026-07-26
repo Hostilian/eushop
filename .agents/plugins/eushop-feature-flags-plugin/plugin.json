@@ -1,0 +1,14 @@
+{
+  "name": "eushop-feature-flags-plugin",
+  "version": "1.0.0",
+  "description": "Feature Flag Management Plugin — safe gradual rollouts, A/B testing, kill switches, and flag lifecycle management for EUshop.",
+  "skills": [],
+  "agents": ["feature-flag-management-agent"],
+  "config": {
+    "flag_store": "database",
+    "max_rollout_days_without_review": 14,
+    "kill_switch_instant": true,
+    "ab_test_min_sample_size": 1000,
+    "flag_expiry_required": true
+  }
+}

@@ -1,0 +1,14 @@
+{
+  "name": "eushop-tax-invoicing-plugin",
+  "version": "1.0.0",
+  "description": "EU Tax Invoice Generation Plugin — produces compliant VAT invoices in PDF, UBL 2.1 XML, and ZUGFeRD formats for every completed order.",
+  "skills": [],
+  "agents": ["tax-invoice-generation-agent", "vat-engine-validation-agent"],
+  "config": {
+    "formats": ["pdf", "ubl_xml", "zugferd"],
+    "invoice_retention_years": 7,
+    "sequential_numbering": true,
+    "b2b_reverse_charge": true,
+    "compliance_regulation": "EU VAT Directive 2006/112/EC"
+  }
+}

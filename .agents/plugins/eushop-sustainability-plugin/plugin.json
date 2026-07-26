@@ -1,0 +1,15 @@
+{
+  "name": "eushop-sustainability-plugin",
+  "version": "1.0.0",
+  "description": "Sustainability & Carbon Footprint Plugin — CO2e calculation, green product badges, local sourcing metrics, and sustainability disclosure reports.",
+  "skills": [],
+  "agents": ["carbon-footprint-reporting-agent"],
+  "config": {
+    "emission_factor_road_light": 0.211,
+    "emission_factor_road_heavy": 0.101,
+    "emission_factor_air": 1.013,
+    "emission_factor_sea": 0.016,
+    "display_co2e_badge": true,
+    "methodology": "DEFRA/IPCC 2023"
+  }
+}

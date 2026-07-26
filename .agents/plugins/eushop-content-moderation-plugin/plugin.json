@@ -1,0 +1,14 @@
+{
+  "name": "eushop-content-moderation-plugin",
+  "version": "1.0.0",
+  "description": "DSA Art. 5 Content Moderation Plugin — fake review detection, prohibited content filtering, competitor manipulation detection, and moderation audit trail.",
+  "skills": ["eushop-dsa-notice-and-action-moderation"],
+  "agents": ["seller-review-moderation-agent", "dsa-art30-trader-verification-agent"],
+  "config": {
+    "auto_approve_threshold": 0.9,
+    "auto_reject_threshold": 0.9,
+    "human_review_queue": true,
+    "moderation_log_retention_years": 5,
+    "dsa_art5_compliant": true
+  }
+}

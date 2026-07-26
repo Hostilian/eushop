@@ -1,0 +1,12 @@
+{
+  "name": "eushop-dhl-carrier",
+  "description": "DHL Express and Parcel tracking and shipment MCP tool for EU cross-border delivery management.",
+  "type": "mcp",
+  "config": {
+    "api_key": "${DHL_API_KEY}",
+    "api_base": "https://api.dhl.com",
+    "allowed_operations": ["track_shipment", "get_delivery_status", "get_pickup_slots"],
+    "blocked_operations": ["create_shipment", "book_pickup"],
+    "comment": "Shipment creation requires manual seller confirmation — never auto-book"
+  }
+}

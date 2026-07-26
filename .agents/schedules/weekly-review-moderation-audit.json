@@ -1,0 +1,9 @@
+{
+  "name": "weekly-review-moderation-audit",
+  "description": "Weekly seller review moderation audit — checks moderation queue health and DSA Art. 5 compliance.",
+  "cron": "0 10 * * 3",
+  "timezone": "Europe/Brussels",
+  "agent": "seller-review-moderation-agent",
+  "prompt": "Audit review moderation queue from last 7 days. Check auto-approve and auto-reject rates. Review human queue backlog (alert if > 50 pending). Check for any reviews that bypassed moderation. Verify DSA Art. 5 moderation log completeness. Generate weekly review health report.",
+  "enabled": true
+}

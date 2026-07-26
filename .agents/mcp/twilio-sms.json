@@ -1,0 +1,14 @@
+{
+  "name": "eushop-twilio-sms",
+  "description": "Twilio SMS MCP tool for order confirmation and delivery notification SMS messages. Consent-gated.",
+  "type": "mcp",
+  "config": {
+    "account_sid": "${TWILIO_ACCOUNT_SID}",
+    "auth_token": "${TWILIO_AUTH_TOKEN}",
+    "from_number": "${TWILIO_FROM_NUMBER}",
+    "allowed_operations": ["send_message", "get_message_status", "get_opt_out_list"],
+    "blocked_operations": ["delete_opt_out"],
+    "consent_required": true,
+    "comment": "GDPR: Only send SMS to users with explicit SMS consent recorded"
+  }
+}

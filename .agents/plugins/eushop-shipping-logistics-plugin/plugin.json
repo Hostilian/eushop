@@ -1,0 +1,14 @@
+{
+  "name": "eushop-shipping-logistics-plugin",
+  "version": "1.0.0",
+  "description": "EU Shipping & Logistics Plugin — bundles multi-carrier tracking (DHL, DPD, GLS, PostNL, Colissimo), delivery SLA monitoring, and tracking number validation.",
+  "skills": [],
+  "agents": ["shipping-carrier-integration-agent"],
+  "config": {
+    "carriers": ["dhl", "dpd", "gls", "postnl", "colissimo"],
+    "tracking_poll_hours": 4,
+    "sla_breach_alert": true,
+    "carrier_api_timeout_ms": 5000,
+    "retry_max_attempts": 3
+  }
+}

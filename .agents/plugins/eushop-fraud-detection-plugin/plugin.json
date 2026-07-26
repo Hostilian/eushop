@@ -1,0 +1,22 @@
+---
+name: eushop-fraud-detection-plugin
+version: 1.0.0
+description: Marketplace Fraud Detection Plugin — bundles price anomaly detection, buyer velocity checks, seller impersonation detection, and payment fraud signals.
+---
+
+## EUshop Fraud Detection Plugin
+
+```json
+{
+  "name": "eushop-fraud-detection-plugin",
+  "version": "1.0.0",
+  "skills": [],
+  "agents": ["price-integrity-monitor-agent", "stripe-payment-audit-agent"],
+  "config": {
+    "price_spike_threshold_percent": 300,
+    "velocity_orders_per_hour_limit": 10,
+    "suspicious_ip_block": true,
+    "ml_fraud_score_threshold": 0.85
+  }
+}
+```
