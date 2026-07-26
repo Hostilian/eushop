@@ -1,0 +1,11 @@
+{
+  "name": "eushop-postgres-vacuum-analyze",
+  "description": "PostgreSQL VACUUM and ANALYZE MCP tool for database maintenance and statistics updates.",
+  "type": "mcp",
+  "config": {
+    "connection": "${POSTGRES_CONNECTION_STRING}",
+    "allowed_operations": ["vacuum_analyze", "analyze", "check_bloat", "check_dead_tuples"],
+    "blocked_operations": ["vacuum_full", "drop_table", "truncate"],
+    "comment": "VACUUM FULL requires table lock — never run on production without DBA approval"
+  }
+}

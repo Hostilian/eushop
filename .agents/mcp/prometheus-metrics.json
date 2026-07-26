@@ -1,0 +1,17 @@
+{
+  "name": "eushop-prometheus-metrics",
+  "description": "Prometheus metrics query MCP tool for Spring Boot and Next.js application metrics via PromQL.",
+  "type": "mcp",
+  "config": {
+    "prometheus_url": "${PROMETHEUS_URL}",
+    "allowed_operations": ["query", "query_range", "get_targets", "get_alerts"],
+    "read_only": true,
+    "timeout_seconds": 30,
+    "key_metrics": [
+      "http_server_requests_seconds",
+      "jvm_memory_used_bytes",
+      "hikaricp_connections_active",
+      "process_cpu_usage"
+    ]
+  }
+}

@@ -1,0 +1,12 @@
+{
+  "name": "eushop-jacoco-coverage",
+  "description": "JaCoCo Java code coverage MCP tool for Spring Boot backend — reports coverage percentages per package.",
+  "type": "mcp",
+  "config": {
+    "report_dir": "services/core-service/build/reports/jacoco",
+    "minimum_coverage_percent": 80,
+    "allowed_operations": ["get_coverage", "get_class_coverage", "check_minimum"],
+    "fail_on_below_minimum": true,
+    "excluded_packages": ["**/config/**", "**/dto/**"]
+  }
+}

@@ -1,0 +1,9 @@
+{
+  "name": "daily-sentry-error-review",
+  "description": "Daily Sentry error review — new issues, regression detection, and release health check.",
+  "cron": "30 9 * * *",
+  "timezone": "UTC",
+  "agent": "incident-response-agent",
+  "prompt": "Check Sentry for new issues in last 24h across eushop-web and eushop-api projects. Identify any errors with > 10 occurrences. Check for regressions (issues that appeared after last deploy). Review release health score. Alert on any FATAL or CRITICAL level new errors. Generate daily error health report.",
+  "enabled": true
+}

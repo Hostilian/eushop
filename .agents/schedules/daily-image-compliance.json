@@ -1,0 +1,9 @@
+{
+  "name": "daily-image-compliance-check",
+  "description": "Daily product image quality and accessibility audit — alt-text, dimensions, and CDN cache health.",
+  "cron": "0 7 * * *",
+  "timezone": "UTC",
+  "agent": "image-optimisation-agent",
+  "prompt": "Scan all products activated in last 24h for image compliance: verify primary image is present, dimensions >= 800x800, file size < 150KB WebP, alt-text is present and descriptive. Check CDN cache hit rate. Report any non-compliant listings and block activation if primary image missing.",
+  "enabled": true
+}

@@ -1,0 +1,14 @@
+{
+  "name": "eushop-sentry-error-tracking",
+  "description": "Sentry error tracking MCP tool for querying production errors, release health, and performance issues.",
+  "type": "mcp",
+  "config": {
+    "dsn": "${SENTRY_DSN}",
+    "auth_token": "${SENTRY_AUTH_TOKEN}",
+    "org_slug": "eushop",
+    "project_slugs": ["eushop-web", "eushop-api"],
+    "allowed_operations": ["list_issues", "get_issue", "get_release_health", "list_events"],
+    "read_only": true,
+    "alert_threshold_new_issues_per_hour": 10
+  }
+}

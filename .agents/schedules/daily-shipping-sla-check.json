@@ -1,0 +1,9 @@
+{
+  "name": "daily-shipping-sla-check",
+  "description": "Daily shipping SLA monitoring — identifies orders with delivery SLA breaches and alerts sellers.",
+  "cron": "0 8 * * *",
+  "timezone": "UTC",
+  "agent": "shipping-carrier-integration-agent",
+  "prompt": "Check all orders with status SHIPPED older than seller-stated delivery days. Poll carrier tracking APIs for current delivery status. Flag orders with no tracking update in > 72h. Alert sellers to SLA breach. Report daily shipping health: on-time rate per carrier, average delivery days vs stated.",
+  "enabled": true
+}

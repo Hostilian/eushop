@@ -1,0 +1,26 @@
+{
+  "name": "eushop-compliance-plugin",
+  "version": "1.0.0",
+  "description": "Unified EU Regulatory Compliance Plugin — bundles allergen, VAT, DAC7, DSA Art.30, GDPR, P2B, DMA, GPSR, and consumer rights compliance into a single plugin.",
+  "skills": [
+    "eushop-regulatory-compliance-validator",
+    "eushop-dac7-tax-reporting-engine",
+    "eushop-dsa-notice-and-action-moderation"
+  ],
+  "agents": [
+    "eu-compliance-auditor",
+    "vat-engine-validation-agent",
+    "dsa-art30-trader-verification-agent",
+    "allergen-declaration-audit-agent",
+    "gdpr-erasure-cascade-agent",
+    "consent-management-agent",
+    "gpsr-product-compliance-agent",
+    "tax-invoice-generation-agent"
+  ],
+  "config": {
+    "jurisdiction": "EU",
+    "regulations": ["FIC-1169/2011", "DAC7", "DSA", "GDPR", "P2B-2019/1150", "DMA-2022/1925", "GPSR-2023/988", "CRD-2011/83"],
+    "compliance_review_required": true,
+    "compliance_review_note": "COMPLIANCE-REVIEW: This plugin implements structure only. Legal sign-off required per AGENTS.md."
+  }
+}

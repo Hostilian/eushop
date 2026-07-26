@@ -1,0 +1,9 @@
+{
+  "name": "weekly-consent-audit-report",
+  "description": "Weekly comprehensive GDPR consent audit — consent records completeness, withdrawal cascade, and unlawful sends detection.",
+  "cron": "0 11 * * 0",
+  "timezone": "Europe/Brussels",
+  "agent": "consent-management-agent",
+  "prompt": "Generate weekly GDPR consent audit report: total active consents by category, new consents this week, withdrawals processed, withdrawal cascade success rate, any detected sends without consent. Flag any anomalies. Submit to DPO review queue.",
+  "enabled": true
+}

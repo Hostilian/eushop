@@ -1,0 +1,9 @@
+{
+  "name": "weekly-tax-invoice-audit",
+  "description": "Weekly tax invoice generation completeness audit — ensures all completed orders have valid invoices.",
+  "cron": "0 11 * * 2",
+  "timezone": "Europe/Brussels",
+  "agent": "tax-invoice-generation-agent",
+  "prompt": "Audit invoice records for all orders completed in last 7 days. Verify each has a generated invoice with sequential number, correct VAT amount, seller VAT number, and correct buyer details. Flag any missing invoices. Alert on any invoices with invalid VAT calculations. Generate weekly invoice audit report.",
+  "enabled": true
+}

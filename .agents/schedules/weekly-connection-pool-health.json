@@ -1,0 +1,9 @@
+{
+  "name": "weekly-connection-pool-health",
+  "description": "Weekly HikariCP connection pool health report — utilisation, wait times, and leak detection.",
+  "cron": "0 6 * * 4",
+  "timezone": "UTC",
+  "agent": "performance-monitor-agent",
+  "prompt": "Query Spring Actuator metrics for HikariCP: connection pool size, active connections, pending threads, connection timeout count, leaked connection count. Check pool utilisation trend over last 7 days. Alert if utilisation > 80% or leaked connections > 0. Generate weekly pool health report.",
+  "enabled": true
+}

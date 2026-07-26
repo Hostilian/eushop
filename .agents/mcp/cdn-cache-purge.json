@@ -1,0 +1,13 @@
+{
+  "name": "eushop-cdn-cache-purge",
+  "description": "CDN cache purge MCP tool for invalidating stale product image and page caches after updates.",
+  "type": "mcp",
+  "config": {
+    "provider": "cloudflare",
+    "zone_id": "${CLOUDFLARE_ZONE_ID}",
+    "api_token": "${CLOUDFLARE_API_TOKEN}",
+    "allowed_operations": ["purge_file", "purge_tag", "purge_prefix", "get_cache_stats"],
+    "blocked_operations": ["purge_everything"],
+    "comment": "purge_everything causes all users to have cold cache — requires explicit approval"
+  }
+}

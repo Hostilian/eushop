@@ -1,0 +1,9 @@
+{
+  "name": "monthly-carbon-footprint-report",
+  "description": "Monthly sustainability and carbon footprint aggregate report across all product origins.",
+  "cron": "0 10 3 * *",
+  "timezone": "Europe/Brussels",
+  "agent": "carbon-footprint-reporting-agent",
+  "prompt": "Calculate monthly aggregate CO2e for all orders shipped in previous month. Group by transport mode and product category. Compare vs previous month. Calculate average CO2e per order. Report percentage of orders from locally sourced (< 200km) PDO/PGI products. Generate monthly sustainability report.",
+  "enabled": true
+}

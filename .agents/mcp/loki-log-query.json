@@ -1,0 +1,17 @@
+{
+  "name": "eushop-loki-log-query",
+  "description": "Grafana Loki log query MCP tool for structured log search across EUshop services.",
+  "type": "mcp",
+  "config": {
+    "loki_url": "${LOKI_URL}",
+    "auth_header": "Authorization: Bearer ${LOKI_TOKEN}",
+    "allowed_operations": ["query_logs", "query_range", "get_labels", "get_label_values"],
+    "read_only": true,
+    "max_time_range_hours": 168,
+    "key_streams": [
+      "{service=\"core-service\"}",
+      "{service=\"web\"}",
+      "{job=\"flyway\"}"
+    ]
+  }
+}

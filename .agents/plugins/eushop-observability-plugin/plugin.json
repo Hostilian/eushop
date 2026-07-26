@@ -1,0 +1,22 @@
+{
+  "name": "eushop-observability-plugin",
+  "version": "1.0.0",
+  "description": "Full Observability Stack Plugin — OpenTelemetry traces, Prometheus metrics, Loki logs, Grafana dashboards, Sentry errors, and Spring Actuator health in one plugin.",
+  "skills": [
+    "eushop-opentelemetry-observability-tracing"
+  ],
+  "agents": [
+    "opentelemetry-trace-analysis-agent",
+    "performance-monitor-agent",
+    "incident-response-agent"
+  ],
+  "config": {
+    "otel_exporter": "otlp",
+    "metrics_backend": "prometheus",
+    "logs_backend": "loki",
+    "traces_backend": "tempo",
+    "dashboards": "grafana",
+    "error_tracking": "sentry",
+    "health_endpoint": "/actuator/health"
+  }
+}

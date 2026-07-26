@@ -1,0 +1,17 @@
+{
+  "name": "eushop-grafana-dashboards",
+  "description": "Grafana dashboard MCP tool for accessing pre-built EUshop monitoring dashboards and alerting rules.",
+  "type": "mcp",
+  "config": {
+    "grafana_url": "${GRAFANA_URL}",
+    "api_key": "${GRAFANA_API_KEY}",
+    "allowed_operations": ["get_dashboard", "list_dashboards", "query_panel", "get_alerts"],
+    "read_only": true,
+    "key_dashboards": [
+      "eushop-spring-boot",
+      "eushop-postgresql",
+      "eushop-opensearch",
+      "eushop-business-metrics"
+    ]
+  }
+}
