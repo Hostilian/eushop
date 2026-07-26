@@ -1,18 +1,12 @@
 ---
 name: eushop-nextjs-static-export-pages
-description: "Next.js Pages Router Static Export Pre-rendering & GitHub Pages Deployment Skill for EUshop"
+description: Next.js Pages Router Static Export Pre-rendering & GitHub Pages Deployment Skill for EUshop
 ---
 
-# EUshop Next.js Static Export & GitHub Pages Skill
+# Next.js Static Export Pre-rendering Engine
 
-## Overview
+This skill optimizes Next.js Pages Router static export builds for GitHub Pages.
 
-This skill establishes pre-rendering guidelines for Next.js in `apps/web/` targeting static export for GitHub Pages under `basePath: '/eushop'`.
-
----
-
-## 1. Static Export Rules
-
-- **Base Path**: `next.config.js` sets `basePath: '/eushop'`, `assetPrefix: '/eushop/'`, `trailingSlash: true`.
-- **Pre-rendered Routes**: All 26 static routes must pre-render cleanly without SSR runtime dependencies.
-- **Truthful Demo Fallbacks**: When backend APIs (port 3001) are unreachable, frontend components render isolated demo data labeled as `[DEMO MODE]`.
+## Standards
+1. **`output: 'export'`**: Ensure `next.config.js` configures `basePath: '/eushop'`, `trailingSlash: true`, `images.unoptimized: true`.
+2. **Build Verification**: Verify `out/index.html` and `out/versions/index.html` exist before deploy artifact upload.

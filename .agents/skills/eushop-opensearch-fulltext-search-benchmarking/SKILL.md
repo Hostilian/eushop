@@ -1,21 +1,12 @@
 ---
 name: eushop-opensearch-fulltext-search-benchmarking
-description: "Full-Text Search Benchmarking & OpenSearch Query Engine Skill for EUshop"
+description: Full-Text Search Benchmarking & OpenSearch Query Engine Skill for EUshop
 ---
 
-# EUshop Full-Text Search Benchmarking Skill
+# OpenSearch Full-Text Search & Benchmarking Engine
 
-## Overview
+This skill optimizes food search queries, trigram indexes, and full-text relevance ranking.
 
-This skill provides search benchmarking, PostgreSQL `pg_trgm` trigram indexing, and OpenSearch query abstraction guidelines.
-
----
-
-## 1. Benchmarking Criteria
-
-- **Target Latency**: p50 < 50ms, p95 < 150ms across 100,000 product items.
-- **Typo Tolerance**: Trigram similarity threshold ≥ 0.3 for fuzzy brand and food queries.
-- **Trigram Index Standard**:
-  ```sql
-  CREATE INDEX idx_food_name_trgm ON foods USING gin (name gin_trgm_ops);
-  ```
+## Standards
+1. **Trigram Indexing**: Use PostgreSQL `pg_trgm` or OpenSearch trigram tokenizers for fuzzy food title matching.
+2. **Allergen Filters**: Always exclude foods matching user allergen blacklist.
