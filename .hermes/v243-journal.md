@@ -1,5 +1,16 @@
 # EUshop V243 Continuation Journal
 
+## 2026-07-26T19:24:00Z — Web checkout aggregate integration in progress
+
+- Committed signed webhook and GDPR integration as `5619814b`.
+- Replaced the production checkout call to the client-amount PaymentIntent
+  endpoint with the new server-authoritative marketplace aggregate endpoint.
+- Added per-attempt idempotency fingerprints, server-total reconciliation, and
+  a truthful “Payment Submitted” state pending signed webhook confirmation.
+- Retained legacy per-line browser orders only inside explicit dev/offline
+  simulation.
+- Added a focused buyer checkout regression test; execution is pending.
+
 ## 2026-07-26T19:17:28Z — Aggregate checkout runtime committed
 
 - Commit: `2d7f06e5`

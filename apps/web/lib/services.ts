@@ -71,6 +71,36 @@ export interface PaymentIntentResponse {
   id: string;
 }
 
+export interface MarketplaceCheckoutRequest {
+  items: Array<{ foodId: string; quantity: number }>;
+  destinationCountryIso2: string;
+  shippingAddress: string;
+}
+
+export interface MarketplaceCheckoutResponse {
+  marketplaceOrderId: string;
+  paymentIntentId: string;
+  clientSecret: string;
+  status: string;
+  currency: string;
+  grandSubtotalCents: number;
+  grandShippingCents: number;
+  grandVatCents: number;
+  grandTotalCents: number;
+  sellerOrders: Array<{
+    sellerOrderId: string;
+    sellerId: string;
+    subtotalCents: number;
+    shippingFeeCents: number;
+    vatCents: number;
+    totalCents: number;
+    platformFeeCents: number;
+    sellerPayoutCents: number;
+    status: string;
+  }>;
+  simulated?: boolean;
+}
+
 // -------------------------------------------------------------
 // STATIC MOCK DATABASE FOR OFFLINE / STATIC MODE DEGRADATION
 // -------------------------------------------------------------
@@ -454,6 +484,51 @@ export const paymentAPI = {
       return {
         clientSecret: `pi_mock_secret_${Date.now()}_${Math.random().toString(36).substr(2, 5)}`,
         id: `pi_mock_id_${Date.now()}`
+      };
+    }
+  },
+};
+
+export const marketplaceCheckoutAPI = {
+  createPaymentIntent: async (
+    request: MarketplaceCheckoutRequest,
+    idempotencyKey: string,
+    fallbackTotals: {
+      grandSubtotalCents: number;
+      grandShippingCents: number;
+      grandVatCents: number;
+      grandTotalCents: number;
+    },
+  ): Promise<MarketplaceCheckoutResponse> => {
+    try {
+      const profile = authAPI.getCachedProfile();
+      if (!profile) throw new Error('Not authenticated');
+      const response = await apiClient.post(
+        '/marketplace-checkout/payment-intent',
+        request,
+        {
+          headers: {
+            'X-User-Id': profile.id,
+            'Idempotency-Key': idempotencyKey,
+          },
+        },
+      );
+      return response.data.data || response.data;
+    } catch (error) {
+      if (!shouldUseMock()) throw error;
+      console.warn(
+        'marketplaceCheckoutAPI.createPaymentIntent failed. Returning a simulated local checkout.',
+      );
+      const mockId = `pi_mock_${Date.now()}`;
+      return {
+        marketplaceOrderId: `marketplace_mock_${Date.now()}`,
+        paymentIntentId: mockId,
+        clientSecret: `${mockId}_secret_mock`,
+        status: 'PAYMENT_REQUIRES_ACTION',
+        currency: 'EUR',
+        ...fallbackTotals,
+        sellerOrders: [],
+        simulated: true,
       };
     }
   },

@@ -1,11 +1,18 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import Head from 'next/head';
 import Link from 'next/link';
 import { loadStripe } from '@stripe/stripe-js';
 import { Elements, CardElement, useStripe, useElements } from '@stripe/react-stripe-js';
 import { PageWrapper } from '../components/layout/PageWrapper';
 import { TaxNotice } from '../components/common/TaxNotice';
-import { paymentAPI, orderAPI, foodAPI, authAPI, User } from '../lib/services';
+import {
+  marketplaceCheckoutAPI,
+  orderAPI,
+  foodAPI,
+  authAPI,
+  MarketplaceCheckoutResponse,
+  User,
+} from '../lib/services';
 import {
   calculateFoodVat,
   EU_FOOD_VAT_RATES,
@@ -27,6 +34,13 @@ const EU_COUNTRY_NAMES: Record<string, string> = {
 const VAT_COUNTRY_OPTIONS = Object.keys(EU_FOOD_VAT_RATES).sort((left, right) =>
   EU_COUNTRY_NAMES[left].localeCompare(EU_COUNTRY_NAMES[right])
 );
+
+const createCheckoutIdempotencyKey = (): string => {
+  if (typeof globalThis.crypto?.randomUUID === 'function') {
+    return globalThis.crypto.randomUUID();
+  }
+  return `checkout-${Date.now()}-${Math.random().toString(36).slice(2, 11)}`;
+};
 
 interface CartItem {
   id: string;
@@ -58,6 +72,8 @@ function CheckoutForm() {
   const [loading, setLoading] = useState(false);
   const [errorMessage, setErrorMessage] = useState('');
   const [orderPlaced, setOrderPlaced] = useState(false);
+  const [serverTotals, setServerTotals] = useState<MarketplaceCheckoutResponse | null>(null);
+  const checkoutAttemptRef = useRef<{ fingerprint: string; key: string } | null>(null);
 
   useEffect(() => {
     // Fetch user details
@@ -110,17 +126,51 @@ function CheckoutForm() {
     }
   }, []);
 
-  const subtotal = cartItems.reduce((acc, item) => acc + item.price * item.quantity, 0);
+  useEffect(() => {
+    setServerTotals(null);
+  }, [
+    cartItems,
+    formData.address,
+    formData.city,
+    formData.country,
+    formData.postalCode,
+  ]);
+
+  const localSubtotal = cartItems.reduce((acc, item) => acc + item.price * item.quantity, 0);
+  const sellerSubtotals = cartItems.reduce((groups, item) => {
+    const sellerKey = item.sellerId || `food:${item.id}`;
+    groups.set(
+      sellerKey,
+      (groups.get(sellerKey) || 0) + item.price * item.quantity,
+    );
+    return groups;
+  }, new Map<string, number>());
   // COMPLIANCE-REVIEW: VAT rate source = packages/compliance/src/vat.ts
   // Catalog prices are treated as VAT-exclusive here. A tax advisor must confirm
   // product classification, shipping treatment, and invoice rounding before launch.
   const vatCalculation = formData.country
-    ? calculateFoodVat(subtotal, formData.country)
-    : { rate: 0, vatAmountEur: 0, grossAmountEur: subtotal };
+    ? calculateFoodVat(localSubtotal, formData.country)
+    : { rate: 0, vatAmountEur: 0, grossAmountEur: localSubtotal };
   const vatRate = vatCalculation.rate;
-  const vat = vatCalculation.vatAmountEur;
-  const shipping = subtotal > 0 ? 9.99 : 0;
-  const grandTotal = vatCalculation.grossAmountEur + shipping;
+  const localVat = formData.country
+    ? Array.from(sellerSubtotals.values()).reduce(
+        (total, sellerSubtotal) =>
+          total + calculateFoodVat(sellerSubtotal, formData.country).vatAmountEur,
+        0,
+      )
+    : 0;
+  const localShipping = localSubtotal > 0 ? sellerSubtotals.size * 9.99 : 0;
+  const localGrandTotal = localSubtotal + localVat + localShipping;
+  const subtotal = serverTotals
+    ? serverTotals.grandSubtotalCents / 100
+    : localSubtotal;
+  const vat = serverTotals ? serverTotals.grandVatCents / 100 : localVat;
+  const shipping = serverTotals
+    ? serverTotals.grandShippingCents / 100
+    : localShipping;
+  const grandTotal = serverTotals
+    ? serverTotals.grandTotalCents / 100
+    : localGrandTotal;
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -135,22 +185,56 @@ function CheckoutForm() {
         throw new Error('Card input is not loaded');
       }
 
-      // 1. Create Payment Intent via backend
-      // We pass the sellerAccountId of the first item for simplicity or empty for multi-seller platform collections
-      const sellerId = cartItems.length > 0 ? cartItems[0].sellerId : undefined;
-      const res = await paymentAPI.createPaymentIntent(grandTotal, 'eur', sellerId);
-      const clientSecret = res.clientSecret; // Access directly from response.data
+      // 1. Persist a server-calculated marketplace/seller-order aggregate, then
+      // create or retrieve its idempotent PaymentIntent.
+      const shippingAddressStr = `${formData.address}, ${formData.postalCode} ${formData.city}, ${formData.country}`;
+      const checkoutRequest = {
+        items: cartItems.map(item => ({
+          foodId: item.id,
+          quantity: item.quantity,
+        })),
+        destinationCountryIso2: formData.country,
+        shippingAddress: shippingAddressStr,
+      };
+      const fingerprint = JSON.stringify(checkoutRequest);
+      if (checkoutAttemptRef.current?.fingerprint !== fingerprint) {
+        checkoutAttemptRef.current = {
+          fingerprint,
+          key: createCheckoutIdempotencyKey(),
+        };
+      }
+
+      const expectedTotalCents = Math.round(grandTotal * 100);
+      const res = await marketplaceCheckoutAPI.createPaymentIntent(
+        checkoutRequest,
+        checkoutAttemptRef.current.key,
+        {
+          grandSubtotalCents: Math.round(localSubtotal * 100),
+          grandShippingCents: Math.round(localShipping * 100),
+          grandVatCents: Math.round(localVat * 100),
+          grandTotalCents: Math.round(localGrandTotal * 100),
+        },
+      );
+      const clientSecret = res.clientSecret;
 
       if (!clientSecret) {
         throw new Error('Failed to retrieve client secret from payment provider');
       }
+      if (!res.simulated && res.grandTotalCents !== expectedTotalCents) {
+        setServerTotals(res);
+        setErrorMessage(
+          'The server recalculated this order total. Review the updated VAT and per-seller shipping amount, then submit again.',
+        );
+        return;
+      }
+      setServerTotals(res);
 
       // 2. Confirm card payment with Stripe
-      if (clientSecret.startsWith('pi_mock_secret')) {
+      if (clientSecret.startsWith('pi_mock_')) {
         // Mock success for development fallback
         console.log('Simulating mock checkout success');
       } else {
-        const { error, paymentIntent } = await stripe.confirmCardPayment(clientSecret, {
+        const { error } = await stripe.confirmCardPayment(clientSecret, {
           payment_method: {
             card: cardElement,
             billing_details: {
@@ -165,26 +249,25 @@ function CheckoutForm() {
         }
       }
 
-      // 3. Register orders in backend
-      const shippingAddressStr = `${formData.address}, ${formData.postalCode} ${formData.city}, ${formData.country}`;
-      
-      await Promise.all(cartItems.map(async (item) => {
-        const lineVat = calculateFoodVat(item.price * item.quantity, formData.country);
-        const orderPayload = {
-          foodId: item.id,
-          sellerId: item.sellerId || 'seller_belgium@eushop.local',
-          quantity: item.quantity,
-          totalPrice: item.price * item.quantity,
-          // COMPLIANCE-REVIEW: VAT rate source = packages/compliance/src/vat.ts
-          vatRate: lineVat.rate,
-          vatAmount: lineVat.vatAmountEur,
-          finderFee: (item.finderFee || 5.00) * item.quantity,
-          shippingAddress: shippingAddressStr,
-          message: 'Order placed securely via web portal',
-          stripePaymentIntentId: res.id
-        };
-        await orderAPI.create(orderPayload);
-      }));
+      // 3. Production orders already exist in the server aggregate. The legacy
+      // browser record is retained only for explicit dev/offline simulation.
+      if (res.simulated) {
+        await Promise.all(cartItems.map(async (item) => {
+          const lineVat = calculateFoodVat(item.price * item.quantity, formData.country);
+          await orderAPI.create({
+            foodId: item.id,
+            sellerId: item.sellerId || 'seller_belgium@eushop.local',
+            quantity: item.quantity,
+            totalPrice: item.price * item.quantity,
+            vatRate: lineVat.rate,
+            vatAmount: lineVat.vatAmountEur,
+            finderFee: (item.finderFee || 5.00) * item.quantity,
+            shippingAddress: shippingAddressStr,
+            message: 'Simulated offline order',
+            stripePaymentIntentId: res.paymentIntentId,
+          });
+        }));
+      }
 
       // 4. Clear cart & show confirmation
       writeCart([]);
@@ -203,9 +286,9 @@ function CheckoutForm() {
           <div className="w-16 h-16 bg-success/10 rounded-full flex items-center justify-center mx-auto mb-6 border border-success/20">
             <span className="text-3xl text-success font-bold">✓</span>
           </div>
-          <h1 className="text-2xl font-bold text-brand-dark mb-2">Order Confirmed!</h1>
+          <h1 className="text-2xl font-bold text-brand-dark mb-2">Payment Submitted</h1>
           <p className="text-gray-600 mb-6 text-sm leading-relaxed">
-            Thank you for shopping at EUshop. Your payment has been processed and the orders have been registered with the sellers.
+            Your marketplace order has been registered. Final confirmation follows the signed payment-provider notification.
           </p>
           <div className="bg-gray-50 p-5 rounded-xl border border-gray-100 text-left mb-8 text-sm text-gray-700">
             <p className="font-bold text-brand-dark mb-2">Shipping Details:</p>

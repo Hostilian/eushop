@@ -2,6 +2,11 @@ import '@testing-library/jest-dom';
 import { fireEvent, render, screen, waitFor } from '@testing-library/react';
 import Checkout from '../pages/checkout';
 
+const mockConfirmCardPayment = jest.fn().mockResolvedValue({ error: undefined });
+const mockGetElement = jest.fn(() => ({}));
+const mockCreateMarketplacePaymentIntent = jest.fn();
+const mockCreateLegacyOrder = jest.fn();
+
 jest.mock('@stripe/stripe-js', () => ({
   loadStripe: jest.fn(() => Promise.resolve({})),
 }));
@@ -9,8 +14,8 @@ jest.mock('@stripe/stripe-js', () => ({
 jest.mock('@stripe/react-stripe-js', () => ({
   Elements: ({ children }: { children: React.ReactNode }) => <>{children}</>,
   CardElement: () => <div data-testid="card-element" />,
-  useStripe: () => ({ confirmCardPayment: jest.fn() }),
-  useElements: () => ({ getElement: jest.fn() }),
+  useStripe: () => ({ confirmCardPayment: mockConfirmCardPayment }),
+  useElements: () => ({ getElement: mockGetElement }),
 }));
 
 jest.mock('../components/layout/PageWrapper', () => ({
@@ -30,12 +35,15 @@ jest.mock('../lib/services', () => ({
   foodAPI: {
     getById: jest.fn().mockResolvedValue({ sellerId: 'seller-1', finderFee: 5 }),
   },
-  orderAPI: { create: jest.fn() },
-  paymentAPI: { createPaymentIntent: jest.fn() },
+  orderAPI: { create: mockCreateLegacyOrder },
+  marketplaceCheckoutAPI: {
+    createPaymentIntent: mockCreateMarketplacePaymentIntent,
+  },
 }));
 
 describe('checkout VAT summary', () => {
   beforeEach(() => {
+    jest.clearAllMocks();
     window.localStorage.clear();
     window.localStorage.setItem('cart', JSON.stringify([
       { id: 'food-1', name: 'Test Food', country: 'DE', price: 100, quantity: 1 },
@@ -62,5 +70,55 @@ describe('checkout VAT summary', () => {
       expect(screen.getByTestId('checkout-vat-amount')).toHaveTextContent('25.00');
     });
     expect(screen.getByText(/VAT \(25%.*DK\)/)).toBeInTheDocument();
+  });
+
+  it('uses the server-authoritative aggregate and does not create legacy orders', async () => {
+    mockCreateMarketplacePaymentIntent.mockResolvedValue({
+      marketplaceOrderId: 'marketplace-1',
+      paymentIntentId: 'pi_1',
+      clientSecret: 'pi_1_secret_live',
+      status: 'PAYMENT_REQUIRES_ACTION',
+      currency: 'EUR',
+      grandSubtotalCents: 10_000,
+      grandShippingCents: 999,
+      grandVatCents: 700,
+      grandTotalCents: 11_699,
+      sellerOrders: [],
+    });
+
+    const { container } = render(<Checkout />);
+    await screen.findByDisplayValue('buyer@example.test');
+    const inputs = container.querySelectorAll('input');
+    fireEvent.change(inputs[0], { target: { value: 'Test' } });
+    fireEvent.change(inputs[1], { target: { value: 'Buyer' } });
+    fireEvent.change(inputs[3], { target: { value: 'Main Street 1' } });
+    fireEvent.change(inputs[4], { target: { value: 'Berlin' } });
+    fireEvent.change(inputs[5], { target: { value: '10115' } });
+    fireEvent.click(inputs[6]);
+
+    fireEvent.click(await screen.findByRole('button', { name: /Pay & Place Order/ }));
+
+    await waitFor(() => {
+      expect(mockCreateMarketplacePaymentIntent).toHaveBeenCalledWith(
+        {
+          items: [{ foodId: 'food-1', quantity: 1 }],
+          destinationCountryIso2: 'DE',
+          shippingAddress: 'Main Street 1, 10115 Berlin, DE',
+        },
+        expect.any(String),
+        {
+          grandSubtotalCents: 10_000,
+          grandShippingCents: 999,
+          grandVatCents: 700,
+          grandTotalCents: 11_699,
+        },
+      );
+    });
+    expect(mockConfirmCardPayment).toHaveBeenCalledWith(
+      'pi_1_secret_live',
+      expect.any(Object),
+    );
+    expect(mockCreateLegacyOrder).not.toHaveBeenCalled();
+    expect(await screen.findByText('Payment Submitted')).toBeInTheDocument();
   });
 });
