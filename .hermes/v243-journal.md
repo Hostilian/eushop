@@ -1,5 +1,12 @@
 # EUshop V243 Continuation Journal
 
+## 2026-07-26T15:10:30Z — Shared VAT source committed
+
+- Commit: `50d881ea` (`feat(v243): share VAT rates with backend checkout`).
+- The pre-existing `.github/workflows/ci-cd-pipeline.yml` deletion remains
+  unstaged and untouched.
+- Next action: additive V244 marketplace-checkout schema and aggregate service.
+
 ## 2026-07-26T15:08:30Z — Shared VAT source verified
 
 - Compliance VAT Jest suite: 4/4 passed.
