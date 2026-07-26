@@ -342,18 +342,27 @@ export default function FoodDetailPage() {
             {/* COMPLIANCE-REVIEW: DSA Art. 30 — Full trader traceability card.
                 Shows trade register ID, VAT, address, and self-certified compliance status.
                 Rendered below the persistent seller bar. Falls back gracefully when
-                seller profile data is not yet in the API response. */}
-            {food.seller?.name && (
-              <TraderTraceabilityCard
-                sellerName={food.seller.name.trim()}
-                tradeRegisterNumber={(food.seller as unknown as Record<string, string>).tradeRegisterNumber || 'Pending verification'}
-                vatNumber={(food.seller as unknown as Record<string, string>).vatNumber}
-                address={(food.seller as unknown as Record<string, string>).address || 'Address pending verification'}
-                countryIso2={(food.seller as unknown as Record<string, string>).countryIso2 || food.country?.slice(0, 2)?.toUpperCase() || 'EU'}
-                kycVerified={food.seller.verified || false}
-                selfCertifiedCompliant={(food.seller as unknown as Record<string, boolean>).selfCertifiedCompliant || false}
-              />
-            )}
+                seller profile data is not yet in the API response.
+                Field names match UserDTO: addressStreet, addressCity, addressPostalCode,
+                tradeRegisterNumber, vatNumber, selfCertifiedCompliant, kycVerified. */}
+            {food.seller?.name && (() => {
+              // eslint-disable-next-line @typescript-eslint/no-explicit-any
+              const s = food.seller as any;
+              const parts = [s.addressStreet, s.addressPostalCode, s.addressCity].filter(Boolean);
+              const formattedAddress = parts.length > 0 ? parts.join(', ') : 'Address pending verification';
+              return (
+                <TraderTraceabilityCard
+                  sellerName={food.seller!.name!.trim()}
+                  tradeRegisterNumber={s.tradeRegisterNumber || 'Pending verification'}
+                  vatNumber={s.vatNumber}
+                  address={formattedAddress}
+                  countryIso2={s.country?.slice(0, 2)?.toUpperCase() || food.country?.slice(0, 2)?.toUpperCase() || 'EU'}
+                  kycVerified={s.kycVerified || food.seller!.verified || false}
+                  selfCertifiedCompliant={s.selfCertifiedCompliant || false}
+                />
+              );
+            })()}
+
 
             {/* Description */}
             <p className="text-sm text-gray-700 dark:text-gray-300 leading-relaxed">{food.description}</p>

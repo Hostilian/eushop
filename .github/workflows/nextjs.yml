@@ -52,13 +52,14 @@ jobs:
 
       - name: Setup pnpm
         uses: pnpm/action-setup@v4
+        with:
+          version: 9.7.1
 
       - name: Setup Node.js 20
         uses: actions/setup-node@v4
         with:
           node-version: "20"
-          # Note: do NOT use cache: "pnpm" here — it requires packageManager field in package.json
-          # We handle caching explicitly with actions/cache below
+          cache: "pnpm"
 
       - name: Setup GitHub Pages
         uses: actions/configure-pages@v5
@@ -80,7 +81,7 @@ jobs:
             ${{ runner.os }}-nextjs-${{ hashFiles('**/pnpm-lock.yaml') }}-
 
       - name: Install all dependencies
-        run: pnpm install --no-frozen-lockfile
+        run: pnpm install --frozen-lockfile
 
       - name: Build Next.js static export
         # basePath='/eushop' (set in next.config.js) matches GitHub Pages URL.
