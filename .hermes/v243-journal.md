@@ -1,5 +1,19 @@
 # EUshop V243 Continuation Journal
 
+## 2026-07-26T19:23:14Z — Browser aggregate checkout verified
+
+- Focused checkout regression suite passes 3/3, including the production
+  marketplace aggregate path and the assertion that it creates no legacy
+  browser-side orders.
+- Web TypeScript check passes.
+- A concurrent repository process committed the integration as `7cd47e8d`,
+  switched the shared worktree to `main`, then committed the hoist-safe test
+  repair there as `64acedde`. Restored the safe branch without rewriting
+  history and replayed only that test repair as `7413b449`.
+- External commit `b618f070` also added the multi-seller cart grouping UI and
+  is preserved in the safe-branch history for direct verification.
+- Next action: inspect and implement the remaining refund lifecycle for C-02.
+
 ## 2026-07-26T19:24:00Z — Web checkout aggregate integration in progress
 
 - Committed signed webhook and GDPR integration as `5619814b`.
@@ -9,7 +23,7 @@
   a truthful “Payment Submitted” state pending signed webhook confirmation.
 - Retained legacy per-line browser orders only inside explicit dev/offline
   simulation.
-- Added a focused buyer checkout regression test; execution is pending.
+- Added a focused buyer checkout regression test.
 
 ## 2026-07-26T19:17:28Z — Aggregate checkout runtime committed
 
