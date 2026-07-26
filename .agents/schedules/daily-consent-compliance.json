@@ -1,0 +1,9 @@
+{
+  "name": "daily-consent-compliance-check",
+  "description": "Daily GDPR consent record audit — verifies all marketing communications were consent-gated.",
+  "cron": "0 6 * * *",
+  "timezone": "Europe/Brussels",
+  "agent": "consent-management-agent",
+  "prompt": "Audit marketing emails and SMS sent in last 24h. Verify each recipient had valid GDPR consent at time of sending. Check for any sends to unsubscribed users. Verify cookie banner was shown to new users. Generate daily consent compliance report.",
+  "enabled": true
+}
