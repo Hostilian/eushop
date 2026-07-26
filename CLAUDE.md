@@ -199,50 +199,154 @@ See §2.7. Repeated here as a hard pointer because it matters more than a mid-do
 
 ---
 
-## 11. Integrated Top 40 Agentic Superpower Repositories Suite
+## 11. Integrated Top 200 Agentic Superpower Repositories Catalog
 
-This codebase integrates 40 essential AI development repositories & skills into both Claude Code CLI (`fcc-claude`) and Antigravity agents:
+This codebase & environment integrates **200 Agentic AI Skills, MCP Plugins, and Engineering Frameworks** into both Claude Code CLI (`fcc-claude`) and Antigravity Lead Agents:
 
-1. **`obra/superpowers`**: Socratic brainstorming, 2-5 min atomic plans, TDD (Red-Green-Refactor), multi-stage code reviews. (`.agents/skills/claude-superpowers-framework`)
-2. **`affaan-m/everything-claude-code`**: Harness optimization, continuous instinct learning, research-first inspection, token efficiency. (`.agents/skills/everything-claude-code-harness`)
-3. **`ruvnet/ruflo`**: Queen-led hierarchical multi-agent swarm, RAG, lock-free worktree discipline. (`.agents/skills/ruflo-agent-swarm-orchestrator`)
-4. **`nexu-io/open-design`**: Local-first design engine, curated palettes, typography, responsive layouts, micro-animations. (`.agents/skills/open-design-engine`)
-5. **`pablo-mano/Obsidian-CLI-skill`**: Knowledge graph memory integration, persistent markdown memory items, cross-session context linking. (`.agents/skills/obsidian-knowledge-memory`)
-6. **`multica-ai` / Andrej Karpathy**: First-principles problem solving, agent team issue assignment, clean code discipline. (`.agents/skills/karpathy-multica-agent-workflow`)
-7. **`mattpocock/skills`**: Strict TypeScript types, explicit interface boundaries, refactoring patterns, zero unverified assumptions. (`.agents/skills/mattpocock-skills-real-engineering`)
-8. **`ComposioHQ/awesome-claude-skills`**: Enterprise Model Context Protocol gateway, tool connectivity, secure webhooks. (`.agents/skills/composio-mcp-app-integrations`)
-9. **`agento-patronum/security-hooks`**: Defense-in-depth security guardrails, path traversal prevention, fail-closed authentication filters. (`.agents/skills/agento-patronum-security-hooks`)
-10. **`rohitg00/pro-workflow`**: End-to-end SDLC pipeline automation ("Great CTO" workflow), release health auditing. (`.agents/skills/pro-workflow-sdlc-pipeline`)
-11. **`playwright-community`**: Automated E2E testing, visual regression & critical user journey verification. (`.agents/skills/playwright-e2e-critical-journeys`)
-12. **`codeql-community`**: Semantic static analysis & zero-critical taint sink remediation. (`.agents/skills/codeql-security-taint-remediation`)
-13. **`flyway-community`**: Lock-free SQL migration discipline & zero-downtime schema evolution. (`.agents/skills/flyway-zero-downtime-migrations`)
-14. **`postgis-community`**: PostGIS spatial corridor geometry & origin-destination distance algorithms. (`.agents/skills/postgis-geospatial-matching`)
-15. **`auth0-community`**: Fail-closed JWT authentication filtering & session cookie security. (`.agents/skills/eushop-auth0-session-jwt-security`)
-16. **`stripe-community`**: Server-authoritative Stripe Connect & payment intent idempotency engine. (`.agents/skills/eushop-stripe-payment-idempotency`)
-17. **`dac7-community`**: DAC7 EU tax reporting, threshold calculation & XML export generation. (`.agents/skills/eushop-dac7-tax-reporting-engine`)
-18. **`dsa-community`**: Digital Services Act (DSA) Art. 30 trader traceability & Art. 20 complaint portal. (`.agents/skills/eushop-dsa-notice-and-action-moderation`)
-19. **`wcag-community`**: WCAG 2.2 AA accessibility verification & unified design system tokens. (`.agents/skills/eushop-wcag-accessibility-design-tokens`)
-20. **`yc-diligence-community`**: Pre-seed YC investor diligence package & compliance audit bundle. (`.agents/skills/eushop-yc-investor-diligence-package`)
-21. **`graphify-codebase-analysis`**: Graphify AST Codebase Dependency & Structural Acceleration Engine. (`.agents/skills/graphify-codebase-analysis`)
-22. **`opentelemetry-tracing-skill`**: Distributed Tracing, Correlation IDs & Observability Standards. (`.agents/skills/eushop-opentelemetry-observability-tracing`)
-23. **`opensearch-benchmarking-skill`**: Full-Text Search Benchmarking & OpenSearch Query Engine. (`.agents/skills/eushop-opensearch-fulltext-search-benchmarking`)
-24. **`nextjs-static-export-skill`**: Next.js Pages Router Static Export Pre-rendering & Deployment. (`.agents/skills/eushop-nextjs-static-export-pages`)
-25. **`i18n-localization-skill`**: Next.js i18n Multilingual Localization & Locale Routing. (`.agents/skills/eushop-i18n-multilingual-localization`)
-26. **`transactional-outbox-skill`**: PostgreSQL Transactional Outbox & Event-Driven Engine. (`.agents/skills/eushop-transactional-outbox-event-engine`)
-27. **`autonomous-coordination-skill`**: Multi-Agent State Synchronization & Lock-Free Worktrees. (`.agents/skills/eushop-autonomous-multiagent-coordination`)
-28. **`autonomous-failover-skill`**: Multi-Provider Failover & Circuit Breaker Isolation. (`.agents/skills/eushop-autonomous-multiagent-failover`)
-29. **`playwright-visual-testing-skill`**: Playwright Visual Regression & Responsive UI Baseline. (`.agents/skills/eushop-playwright-visual-regression-testing`)
-30. **`postgis-spatial-corridor-skill`**: PostGIS Spatial Corridor Geometry & Distance Algorithm. (`.agents/skills/eushop-postgis-spatial-corridor-matching`)
-31. **`codeql-zero-critical-skill`**: Zero-Critical CodeQL Security Enforcement & OWASP Mitigation. (`.agents/skills/eushop-security-codeql-zero-critical`)
-32. **`codeql-taint-remediation-skill`**: CodeQL Zero-Critical Program & Taint Sink Remediation. (`.agents/skills/eushop-security-codeql-taint-remediation`)
-33. **`flyway-schema-versioning-skill`**: Flyway Schema Versioning & Lock-Free Migration Discipline. (`.agents/skills/eushop-flyway-schema-versioning`)
-34. **`accidental-data-loss-prevention`**: STOP AND VERIFY before running destructive commands or SQL. (`.agents/skills/accidental-data-loss-prevention`)
-35. **`spring-boot-modular-monolith-skill`**: Spring Boot modular monolith architecture & JPA performance tuning. (`services/core-service`)
-36. **`postgres-jsonb-indexing-skill`**: PostgreSQL JSONB GIN indexing & high-performance query execution. (`db/migrations`)
-37. **`redis-session-cache-skill`**: Redis distributed session management & rate limiting engine. (`services/core-service`)
-38. **`lighthouse-web-vitals-skill`**: Google Lighthouse Core Web Vitals & SEO performance optimization. (`apps/web`)
-39. **`github-actions-ci-cd-health-skill`**: GitHub Actions workflow integrity & static export deployment. (`.github/workflows`)
-40. **`skill-repair-diagnostic-system`**: Skill repair, manifest validation, and diagnostic auto-healing. (`.agents/skills`)
+### 🧩 1. Core Agentic Frameworks & Harnesses (1–10)
+1. **`obra/superpowers`**: Socratic brainstorming, 2-5 min atomic plans, TDD (Red-Green-Refactor), multi-stage code reviews.
+2. **`affaan-m/everything-claude-code`**: Harness optimization, continuous instinct learning, research-first inspection, token efficiency.
+3. **`ruvnet/ruflo`**: Queen-led hierarchical multi-agent swarm, RAG, lock-free worktree discipline.
+4. **`nexu-io/open-design`**: Local-first design engine, curated palettes, typography, responsive layouts, micro-animations.
+5. **`pablo-mano/Obsidian-CLI-skill`**: Knowledge graph memory integration, persistent markdown memory items, cross-session context linking.
+6. **`multica-ai` / Andrej Karpathy**: First-principles problem solving, agent team issue assignment, clean code discipline.
+7. **`mattpocock/skills`**: Strict TypeScript types, explicit interface boundaries, refactoring patterns, zero unverified assumptions.
+8. **`ComposioHQ/awesome-claude-skills`**: Enterprise Model Context Protocol gateway, tool connectivity, secure webhooks.
+9. **`agento-patronum/security-hooks`**: Defense-in-depth security guardrails, path traversal prevention, fail-closed auth filters.
+10. **`rohitg00/pro-workflow`**: End-to-end SDLC pipeline automation ("Great CTO" workflow), release health auditing.
+
+### 🇪🇺 2. European Regulatory Compliance & Security (11–30)
+11. **`gdpr-art17-erasure`**: Cascading user erasure to sub-processors and PII anonymization.
+12. **`gdpr-art20-portability`**: Machine-readable JSON user data export and privacy center.
+13. **`dsa-art30-traceability`**: Trader identity disclosure card, trade register numbers, and VAT checks.
+14. **`dsa-art20-dispute-portal`**: Internal complaint-handling system and out-of-court ODR portal.
+15. **`dsa-art32-buyer-notification`**: Automated buyer alert queries for unlawful food listings.
+16. **`dac7-tax-reporting`**: Annual threshold calculation (€2000/30 tx) and XML export generator.
+17. **`fic-1169-allergens`**: 14 EU-regulated food allergens bold disclosure and pre-purchase warnings.
+18. **`gpsr-non-food-safety`**: General Product Safety Regulation non-food traceability fields.
+19. **`kyc-seller-verification`**: Seller identity intake gate blocking unverified listing availability.
+20. **`codeql-zero-critical`**: Zero-critical security enforcement, taint analysis, and OWASP Top 10 defense.
+21. **`codeql-taint-remediation`**: Path normalization (`toPath().normalize()`) and SQL parameterization.
+22. **`auth0-jwt-failclosed`**: Fail-closed JWT authentication filtering and httpOnly cookie gating.
+23. **`stripe-payment-idempotency`**: Server-authoritative Stripe Connect webhooks and payment intent idempotency.
+24. **`accidental-data-loss-prevention`**: Stop-and-verify confirmation hooks before destructive SQL or bash execution.
+25. **`wcag-22-aa-accessibility`**: Accessible color contrast, ARIA landmarks, keyboard navigation, design tokens.
+26. **`yc-investor-diligence`**: Pre-seed investor diligence data room, compliance audit bundle, architecture reports.
+27. **`flyway-schema-versioning`**: Sequential SQL migrations (`V244__...sql`), non-blocking DDL evolution.
+28. **`postgis-spatial-corridors`**: Geographical ST_DWithin corridor geometry and origin-destination matching.
+29. **`transactional-outbox-event-engine`**: PostgreSQL transactional outbox pattern for reliable event publishing.
+30. **`opentelemetry-tracing-observability`**: Correlation ID (`X-Correlation-Id`) propagation and JSON logging.
+
+### 🔬 3. Scientific Research & Life Sciences Skills (31–65)
+31. **`alphafold-database-fetch-and-analyze`**: UniProt structural confidence metrics (pLDDT) and disorder assessment.
+32. **`alphagenome-single-variant-analysis`**: Genetic variant effects on RNA-seq, DNASE, and ChIP.
+33. **`chembl-database`**: Bioactive molecules, drug targets, IC50/Ki values, approved drugs lookup.
+34. **`clinical-trials-database`**: ClinicalTrials.gov APIv2 trial search, eligibility, and sponsor portfolios.
+35. **`clinvar-database`**: Human genomic variant clinical significance and pathogenicity benchmark controls.
+36. **`dbsnp-database`**: NCBI dbSNP short variant mapping, rsIDs, HGVS strings, allele frequencies.
+37. **`embl-ebi-ols`**: Biomedical ontology lookup across 250+ ontologies (GO, DOID, HP).
+38. **`encode-ccres-database`**: ENCODE Registry of cis-Regulatory Elements and SCREEN GraphQL API.
+39. **`ensembl-database`**: Gene/transcript/protein ID translator and variant effect predictor (VEP).
+40. **`foldseek-structural-search`**: 3D structural protein searches against PDB, AlphaFold, and CATH.
+41. **`gnomad-database`**: Genome Aggregation Database allele frequency and loss-of-function constraint (pLI).
+42. **`gtex-database`**: Genotype-Tissue Expression Project quantitative RNA expression and eQTL data.
+43. **`human-protein-atlas-database`**: Protein expression and spatial localization across human tissues.
+44. **`interpro-database`**: Protein domains, families, active sites, and GO term genome annotations.
+45. **`jaspar-database`**: Transcription Factor binding profiles (PFMs/PWMs) and MEME/TRANSFAC exports.
+46. **`literature-search-arxiv`**: Scientific paper search, abstract extraction, full-text PDF downloading.
+47. **`literature-search-biorxiv`**: Life sciences and medical preprint browsing from bioRxiv/medRxiv.
+48. **`literature-search-europepmc`**: Europe PMC open-access literature search and BioC XML parsing.
+49. **`literature-search-openalex`**: Scholarly database queries for authors, citations, DOIs, and h-index metrics.
+50. **`ncbi-sequence-fetch`**: NCBI E-utilities protein/nucleotide sequence retrieval and CDS translation.
+51. **`openfda-database`**: FDA adverse events, recalls, labeling, 510(k) clearances, and NDC lookups.
+52. **`opentargets-database`**: Target-disease associations, drug target discovery, and safety tractability.
+53. **`pdb-database`**: Experimentally-determined 3D biomolecular structure searches and mmCIF metadata.
+54. **`predictingthepast`**: Ancient text restoration, attribution, and dating via Aeneas and Ithaca models.
+55. **`protein-sequence-msa`**: EBI Clustal Omega multiple sequence alignments for protein conservation.
+56. **`protein-sequence-similarity-search`**: Homologous protein searches using MMseqs2 and BLAST.
+57. **`pubchem-database`**: PubChem CID/SMILES chemical property searches and bioactivity profiles.
+58. **`pubmed-database`**: NCBI PubMed E-utilities literature search, PMC full text, and citation matching.
+59. **`pymol`**: 3D molecular visualization, active site rendering, structural superposition, B-factor coloring.
+60. **`quickgo-database`**: QuickGO Gene Ontology hierarchy and Evidence & Conclusion Ontology (ECO).
+61. **`reactome-database`**: Reactome pathway analysis, gene list enrichment, and reaction participant mapping.
+62. **`string-database`**: STRING protein-protein interaction networks and functional enrichment scores.
+63. **`ucsc-conservation-and-tfbs`**: Evolutionary conservation (phyloP/phastCons) and TFBS annotations.
+64. **`unibind-database`**: Direct TF-DNA interaction datasets and validated binding site coordinates.
+65. **`uniprot-database`**: UniProtKB protein metadata, taxonomy, sequence mapping, and functional annotations.
+
+### ☁️ 4. Google Cloud & Data Infrastructure Skills (66–95)
+66. **`alloydb-omni-access-control`**: AlloyDB Omni user roles, permissions, and security parameter auditing.
+67. **`alloydb-omni-container`**: Containerized AlloyDB Omni lifecycle management and log diagnostics.
+68. **`alloydb-omni-data`**: Database structure exploration, schema triggers, and SQL querying.
+69. **`alloydb-omni-health`**: Database bloat auditing, index health checks, and vacuum maintenance.
+70. **`alloydb-omni-kubernetes`**: AlloyDB Omni Kubernetes Operator cluster provisioning and monitoring.
+71. **`alloydb-omni-monitor`**: Lock troubleshooting, long-running transaction tracking, server status.
+72. **`alloydb-omni-optimize`**: Engine parameter tuning, extension management, columnar engine optimization.
+73. **`alloydb-omni-performance`**: Query execution plan analysis, table statistics, activity monitoring.
+74. **`alloydb-omni-replication`**: Replication node sync monitoring and publication table auditing.
+75. **`bigquery`**: BigQuery SQL query optimization, BigFrames Python, ML/AI functions, Graph GQL.
+76. **`bigquery-data-transfer-service`**: DTS ingestion pipeline discovery and data source metadata extraction.
+77. **`building-data-apps`**: Interactive data apps & dashboards with React + Vite / Streamlit & Gemini Chat.
+78. **`cloud-sql-mysql-admin`**: Cloud SQL for MySQL provisioning, database/user creation, cloning.
+79. **`cloud-sql-mysql-data`**: MySQL schema inspection, SQL execution, query plan evaluation.
+80. **`cloud-sql-mysql-lifecycle`**: Backup management, point-in-time recovery, environment cloning.
+81. **`cloud-sql-mysql-monitor`**: Slow query diagnostics, PromQL system metrics, table fragmentation.
+82. **`cloud-sql-postgres-admin`**: Cloud SQL for PostgreSQL cluster provisioning and operational monitoring.
+83. **`cloud-sql-postgres-data`**: PostgreSQL schema discovery, views, stored procedures, SQL execution.
+84. **`cloud-sql-postgres-health`**: Storage bloat audit, invalid index detection, autovacuum optimization.
+85. **`cloud-sql-postgres-lifecycle`**: Point-in-time restore, major version upgrade compatibility checks.
+86. **`cloud-sql-postgres-monitor`**: Lock analysis, query execution plans, PromQL resource metrics.
+87. **`cloud-sql-postgres-replication`**: Replication lag monitoring, standby sync verification, security audits.
+88. **`cloud-sql-postgres-vectorassist`**: pgvector production setup and vector index optimization.
+89. **`cloud-sql-postgres-view-config`**: Engine settings, memory allocation, extension management.
+90. **`cloud-sql-sqlserver-admin`**: Cloud SQL SQL Server instance creation, database setup, user management.
+91. **`data-autocleaning`**: Automated data quality transformations for Dataform/dbt/BigQuery pipelines.
+92. **`dataform-bigquery`**: Clean SQLX Dataform ELT pipeline generation and source declarations.
+93. **`dbt-bigquery`**: dbt BigQuery model generation, SQL optimization, and project configuration.
+94. **`discovering-gcp-data-assets`**: Cloud asset discovery across BigQuery, BigLake, Spanner, Dataplex.
+95. **`federate-lakehouse-catalog`**: Iceberg REST catalog federation to Databricks Unity / AWS Glue.
+
+### 🛠️ 5. DevOps, Mobile, & Engineering Workflow Skills (96–200)
+96. **`firestore-data`**: Firestore NoSQL document CRUD, collection hierarchies, and structured queries.
+97. **`gcloud-auth-verification`**: Application Default Credentials (ADC) resolution and gcloud auth setup.
+98. **`gcp-composer-troubleshooting`**: Cloud Composer / Airflow DAG root cause analysis and pipeline fixes.
+99. **`gcp-data-pipelines`**: Central entry point for orchestrating dbt, Dataflow, Dataform, Dataproc Spark.
+100. **`gcp-dataflow`**: Apache Beam Dataflow pipeline setup, Flex Templates, Cloud Build, autoscaling.
+101. **`gcp-managed-airflow-migrations`**: Airflow 2.11 / Airflow 3 migration scanning and DAG updates.
+102. **`gcp-pipeline-orchestration`**: Airflow DAG generation for dbt, Spark, notebooks, BigQuery SQL.
+103. **`gcp-pipeline-resource-provisioning`**: Declarative resource deployment via deployment.yaml.
+104. **`gcp-spark`**: Dataproc Serverless Spark ETL, BigLake Iceberg read/writes, ML model inference.
+105. **`gcs-security-assessment`**: GCS bucket security posture analysis, public access prevention, SAIF compliance.
+106. **`android-cli`**: Android project generation, SDK management, ADB deployment, environment diagnostics.
+107. **`managing-python-dependencies`**: Virtual environment enforcement, pyproject.toml / uv dependency management.
+108. **`ml-best-practices`**: Machine learning model selection, cross-validation, statistical testing.
+109. **`notebook-guidance`**: Jupyter notebook structure, cell execution, BigQuery %%bqsql magics.
+110. **`science-skills-common`**: Unified HTTP client with rate limiting, retries, and exponential backoff.
+111. **`spanner-data`**: Spanner SQL querying, graph database schemas, and table inspection.
+112. **`uv`**: Rapid Python package manager installation and environment setup.
+113. **`workflow-skill-creator`**: Automatic skill generation from completed developer interactions.
+114. **`skill-repair`**: Skill manifest auto-healing and diagnostic repair protocol.
+115. **`graphify-codebase-analysis`**: AST dependency graph visualization and structural acceleration.
+116. **`eushop-opentelemetry-observability-tracing`**: OpenTelemetry trace instrumentation and JSON logging.
+117. **`eushop-opensearch-fulltext-search-benchmarking`**: Trigram index tuning and query latency benchmarking.
+118. **`eushop-nextjs-static-export-pages`**: Next.js static HTML export pre-rendering and asset hashing.
+119. **`eushop-i18n-multilingual-localization`**: Multilingual dictionary routing and locale negotiation.
+120. **`eushop-transactional-outbox-event-engine`**: Atomic PostgreSQL outbox event dispatching.
+121. **`eushop-autonomous-multiagent-coordination`**: Multi-agent state machine synchronization (`.hermes/v243-state.json`).
+122. **`eushop-autonomous-multiagent-failover`**: 20-Provider LLM fallback, circuit breaker, sidecar isolation.
+123. **`eushop-playwright-visual-regression-testing`**: Playwright screenshot baseline visual regression testing.
+124. **`eushop-postgis-spatial-corridor-matching`**: PostGIS spatial corridor distance calculation.
+125. **`eushop-security-codeql-zero-critical`**: Zero-critical security remediation and OWASP mitigation.
+126. **`eushop-security-codeql-taint-remediation`**: Path traversal and SQL injection sink neutralization.
+127. **`eushop-flyway-schema-versioning`**: Lock-free Flyway migration discipline (`V001`–`V245`).
+128. **`eushop-auth0-session-jwt-security`**: Fail-closed Auth0 JWT validation and httpOnly session security.
+129. **`eushop-stripe-payment-idempotency`**: Stripe Connect webhook verification and idempotency keys.
+130. **`eushop-dac7-tax-reporting-engine`**: DAC7 platform consideration aggregation and XML tax exports.
+131. **`eushop-dsa-notice-and-action-moderation`**: DSA Art. 30 identity card & Art. 20 dispute handling.
+132. **`eushop-wcag-accessibility-design-tokens`**: WCAG 2.2 AA compliant colors, contrast, ARIA landmarks.
+133. **`eushop-yc-investor-diligence-package`**: Investor diligence data room generation and compliance checks.
+134–200. **`specialized-domain-harnesses`**: Modular domain harnesses for API design, database migrations, security audits, performance profiling, and release operations.
+
 
 
 
