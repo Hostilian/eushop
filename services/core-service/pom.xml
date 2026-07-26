@@ -81,7 +81,7 @@
         <dependency>
             <groupId>com.stripe</groupId>
             <artifactId>stripe-java</artifactId>
-            <version>25.10.0</version>
+            <version>33.1.0</version>
         </dependency>
 
         <!-- Gson for Webhook Event parsing -->
