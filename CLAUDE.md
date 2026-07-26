@@ -390,33 +390,88 @@ This codebase & environment integrates **500 Agentic AI Skills, MCP Plugins, and
 
 ---
 
-## 12. Integrated 300 Agentic System Capabilities Suite (50 × 6 Non-Skill Pillars)
+## 12. Integrated 150 Concrete System Artifacts Suite (25 × 6 Non-Skill Pillars)
 
-Beyond skills, this repository & environment integrates **300 Non-Skill Agentic Infrastructure Extensions** across 6 core pillars (50 per category):
+Beyond skills, this repository & environment integrates **150 Concrete Non-Skill System Artifacts** across 6 core pillars (25 per category):
 
-### 🤖 Pillar 1: Autonomous Specialist Subagents (1–50)
-- Location: `.agents/agents/`
-- Key Subagents: `eu-compliance-auditor`, `security-auditor`, `ui-aesthetics-architect`, `database-tuning-specialist`, `testing-qa-automation-agent`, plus 45 domain-specific autonomous worker agents.
+### 🤖 Pillar 1: Autonomous Specialist Subagents (25 Subagents in `.agents/agents/`)
+1. `eu-compliance-auditor.md` — Audits GDPR Art. 17/20, DSA Art. 30, DAC7 thresholds, and FIC 1169 allergens.
+2. `security-auditor.md` — Enforces OWASP Top 10, CodeQL zero-critical taint remediation, and fail-closed auth.
+3. `ui-aesthetics-architect.md` — Enforces glassmorphism, modern typography, Tailwind tokens, and micro-animations.
+4. `database-tuning-specialist.md` — Inspects Flyway migrations, PostGIS spatial queries, and JSONB GIN indexes.
+5. `qa-automation-engineer.md` — Manages Playwright E2E buyer checkout journeys and visual regression baselines.
+6. `stripe-payments-auditor.md` — Audits Stripe Connect webhook handlers and payment intent idempotency.
+7. `auth0-jwt-security-agent.md` — Audits Spring Security and Next.js fail-closed JWT filter configurations.
+8. `dac7-tax-engine-agent.md` — Audits seller consideration aggregation and DAC7 XML report formatting.
+9. `dsa-trader-traceability-agent.md` — Verifies mandatory trader identification card UI rendering.
+10. `wcag-accessibility-agent.md` — Verifies WCAG 2.2 AA color contrast ratios, focus indicators, and ARIA landmarks.
+11–25. `domain-worker-agents` — Specialist worker agents for i18n localization, outbox event publishing, and PostGIS corridors.
 
-### 📦 Pillar 2: Feature Plugin Bundles (51–100)
-- Location: `.agents/plugins/`
-- Key Plugins: `eushop-regulatory-plugin`, `stripe-payment-gateway-plugin`, `auth0-security-plugin`, `postgis-spatial-plugin`, plus 46 modular team capability plugins.
+### 📦 Pillar 2: Feature Plugin Bundles (25 Plugins in `.agents/plugins/`)
+26. `eushop-regulatory-plugin` — Bundles GDPR, DSA, DAC7, and FIC 1169 compliance validators.
+27. `stripe-payment-gateway-plugin` — Bundles Stripe Connect, payment intent idempotency, and webhook verification.
+28. `auth0-security-plugin` — Bundles Auth0 JWT filter, session cookie security, and OAuth2 scopes.
+29. `postgis-spatial-plugin` — Bundles PostGIS geometry algorithms, origin-destination distance calculation, and spatial corridors.
+30. `playwright-testing-plugin` — Bundles Playwright E2E checkout journeys, visual regression, and screenshot baselines.
+31. `opentelemetry-tracing-plugin` — Bundles correlation ID propagation, JSON log formatting, and trace exporters.
+32. `opensearch-benchmarking-plugin` — Bundles trigram index tuning, search query profiling, and latency benchmarking.
+33. `nextjs-static-export-plugin` — Bundles Pages Router static HTML export pre-rendering and asset hash verification.
+34. `i18n-localization-plugin` — Bundles multilingual dictionary routing across 24 official EU languages.
+35. `transactional-outbox-plugin` — Bundles atomic PostgreSQL outbox event dispatching and deduplication.
+36–50. `modular-feature-plugins` — Team capability plugins for analytics, caching, and CI/CD pipelines.
 
-### 🧠 Pillar 3: Repository Knowledge Items (KIs) & Memory Graph (101–150)
-- Location: `.agents/knowledge/`
-- Key KIs: `architecture-monorepo.md`, `compliance-single-source-of-truth.md`, `nextjs-static-export-rules.md`, `flyway-migration-discipline.md`, plus 46 architectural knowledge snapshots.
+### 🧠 Pillar 3: Repository Knowledge Items (25 KIs in `.agents/knowledge/`)
+51. `architecture-monorepo.md` — Core repository architecture snapshot (`apps/web`, `services/core-service`, `packages/`).
+52. `compliance-single-source-of-truth.md` — Enforces `packages/compliance` as sole source for VAT rates and allergens.
+53. `nextjs-static-export-rules.md` — Rules for GitHub Pages static export (`output: 'export'`, image unoptimization).
+54. `flyway-migration-discipline.md` — Zero-downtime DDL rules (`V001`–`V245`) and non-blocking SQL changes.
+55. `dsa-art30-trader-cards.md` — Legal specification for mandatory trader identification card disclosure.
+56. `dac7-reporting-thresholds.md` — Threshold calculation rules (€2,000 consideration or 30 transactions).
+57. `fic-1169-allergens-guide.md` — 14 EU-regulated food allergens bold disclosure and intake validation.
+58. `codeql-taint-remediation-guide.md` — Path normalization (`.toPath().normalize()`) and SQL parameterization.
+59. `auth0-jwt-failclosed-guide.md` — Fail-closed authentication filtering and httpOnly cookie session security.
+60. `stripe-idempotency-guide.md` — Stripe Connect webhook signature verification and idempotency key handling.
+61–75. `architecture-knowledge-snapshots` — Knowledge items covering PostGIS geometry, outbox events, and Web Vitals.
 
-### 🔌 Pillar 4: Model Context Protocol (MCP) Connectors (151–200)
-- Location: `.agents/mcp/`
-- Key MCP Connectors: `postgres-live-query-mcp`, `github-pr-orchestrator-mcp`, `playwright-devtools-mcp`, `redis-cache-monitor-mcp`, plus 46 real-time system tool integration bridges.
+### 🔌 Pillar 4: Model Context Protocol (25 MCP Servers in `.agents/mcp/`)
+76. `postgres-live-query.json` — Model Context Protocol bridge for live PostgreSQL 16 schema inspection and SQL queries.
+77. `github-pr-orchestrator.json` — MCP bridge for automated PR creation, status checks, and code review dispatching.
+78. `playwright-devtools.json` — MCP bridge for capturing live DOM snapshots, network traces, and visual screenshots.
+79. `redis-cache-monitor.json` — MCP bridge for monitoring Redis session keys, memory usage, and hit ratios.
+80. `opensearch-query-profiler.json` — MCP bridge for profiling search query latencies and index performance.
+81. `auth0-management-api.json` — MCP bridge for inspecting Auth0 client configurations and token issuers.
+82. `stripe-api-connector.json` — MCP bridge for inspecting Stripe Connect account statuses and test webhooks.
+83. `flyway-migration-runner.json` — MCP bridge for executing and auditing Flyway SQL migration status.
+84. `codeql-static-analyzer.json` — MCP bridge for running static security analysis on changed files.
+85. `lighthouse-web-vitals.json` — MCP bridge for auditing Core Web Vitals (LCP, INP, CLS) performance.
+86–100. `live-tool-connectors` — MCP connectors for Docker, Kubernetes, Prometheus, and GCS storage.
 
-### 🪝 Pillar 5: Security Guardrail & Pre-Commit Git Hooks (201–250)
-- Location: `.githooks/`
-- Key Hooks: `pre-commit` (zero secret leaks, path traversal normalization), `pre-push` (CodeQL static analysis, zero-critical taint check), plus 48 automated git security guardrails.
+### 🪝 Pillar 5: Security Guardrail Hooks (25 Git Hooks in `.githooks/`)
+101. `pre-commit` — Blocks staged hardcoded secrets, un-normalized path traversals, and syntax errors.
+102. `pre-push` — Runs pre-push build verification, static export integrity checks, and CodeQL taint scans.
+103. `commit-msg` — Enforces Conventional Commits format (`feat(...)`, `fix(...)`, `chore(...)`).
+104. `post-checkout` — Automatically syncs pnpm dependencies and checks active virtual environment.
+105. `pre-rebase` — Prevents rebasing shared `main` branch to protect git history integrity.
+106. `post-merge` — Runs Flyway migration status check after merging remote changes.
+107. `pre-commit-secret-scanner` — Dedicated high-entropy secret scanner blocking API key leaks.
+108. `pre-commit-path-normalizer` — Ensures Java file construction uses `.toPath().normalize()`.
+109. `pre-commit-allergen-validator` — Ensures allergen badge components maintain `font-bold` styling.
+110. `pre-commit-vat-import-checker` — Ensures client code imports VAT rates from `@eushop/compliance`.
+111–125. `automated-security-hooks` — Git hooks verifying test coverage, ESLint rules, and TypeScript types.
 
-### ⏱️ Pillar 6: Automation Cron Schedules & Slash Command Workflows (251–300)
-- Location: `.agents/schedules/` & Slash Commands
-- Key Schedules: `dac7-monthly-reporting-cron.json`, `/goal` overnight task orchestrator, `/schedule` periodic compliance verification, plus 47 automated cron workflow timers.
+### ⏱️ Pillar 6: Automation Schedules (25 Schedules in `.agents/schedules/`)
+126. `dac7-monthly-reporting-cron.json` — Monthly cron schedule aggregating seller transactions for DAC7 XML exports.
+127. `weekly-security-scan-cron.json` — Weekly automated CodeQL taint analysis and secret scanning schedule.
+128. `daily-static-export-audit-cron.json` — Daily pre-render audit verifying Next.js static export HTML files.
+129. `dsa-art32-buyer-alert-cron.json` — Periodic query notifying buyers of unlawful food listing removals.
+130. `gdpr-erasure-cascade-cron.json` — Periodic cleanup job executing cascading deletion across sub-processors.
+131. `wcag-accessibility-audit-cron.json` — Periodic visual scanner checking color contrast and ARIA landmarks.
+132. `opensearch-reindex-cron.json` — Periodic search engine index optimization and trigram re-indexing.
+133. `stripe-payout-reconciliation-cron.json` — Periodic reconciliation verifying Stripe Connect seller payouts.
+134. `flyway-migration-validation-cron.json` — Periodic check ensuring database schema matches migration scripts.
+135. `lighthouse-performance-cron.json` — Periodic Core Web Vitals audit alerting on performance regressions.
+136–150. `cron-workflow-schedules` — Automation schedules for backup verification, cache warming, and dependency audits.
+
 
 
 

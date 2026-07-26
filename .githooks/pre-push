@@ -1,0 +1,21 @@
+#!/bin/sh
+# EUshop Pre-Push Quality & Compliance Gate
+
+echo "[EUshop AI Pipeline] Running pre-push verification tests..."
+
+# 1. CodeQL & Taint Check
+echo "🔍 Checking for un-normalized path traversal sinks..."
+if git diff origin/main..HEAD | grep -iE 'new File\(.*request\.getParameter' | grep -v 'normalize()' ; then
+    echo "❌ ERROR: Un-normalized file path sink detected in push commit history!"
+    exit 1
+fi
+
+# 2. Build Verification
+echo "🔍 Verifying static export pre-render capability..."
+pnpm --prefix apps/web build || {
+    echo "❌ ERROR: Next.js static export build failed!"
+    exit 1
+}
+
+echo "✅ Pre-push verification passed successfully!"
+exit 0

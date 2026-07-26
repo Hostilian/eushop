@@ -1,0 +1,12 @@
+{
+  "name": "postgres-live-query-mcp",
+  "version": "1.0.0",
+  "description": "Model Context Protocol bridge for live PostgreSQL 16 schema inspection, query execution, and migration verification.",
+  "transport": "stdio",
+  "capabilities": [
+    "execute_sql",
+    "inspect_table_schema",
+    "explain_analyze_query",
+    "list_active_locks"
+  ]
+}

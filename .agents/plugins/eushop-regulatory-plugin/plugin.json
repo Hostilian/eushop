@@ -1,0 +1,13 @@
+{
+  "name": "eushop-regulatory-plugin",
+  "version": "1.0.0",
+  "description": "Pan-European regulatory compliance plugin covering GDPR, DSA Art. 30/20, DAC7 tax engine, and FIC 1169 allergens.",
+  "skills": [
+    "eushop-regulatory-compliance-validator",
+    "eushop-dac7-tax-reporting-engine",
+    "eushop-dsa-notice-and-action-moderation"
+  ],
+  "agents": [
+    "eu-compliance-auditor"
+  ]
+}

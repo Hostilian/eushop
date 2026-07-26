@@ -1,0 +1,7 @@
+{
+  "name": "weekly-security-scan-cron",
+  "description": "Weekly automated CodeQL taint analysis and secret scanning schedule.",
+  "cron_expression": "0 0 2 * * MON",
+  "prompt": "Run full static analysis over apps/web and services/core-service to ensure zero critical taint sinks or secret leaks exist.",
+  "max_iterations": 52
+}
