@@ -1,5 +1,22 @@
 # EUshop V243 Continuation Journal
 
+## 2026-07-26T19:28:12Z — Refund lifecycle implementation in progress
+
+- Direct inspection confirmed that `refunded_amount_cents` and refund enum
+  values were snapshots only; there was no provider call, durable refund
+  request, amount reservation, authorization, or webhook reconciliation.
+- Added an expand-only V245 schema request/migration and the first
+  server-authoritative refund implementation unit.
+- Current official Stripe documentation confirms that partial refunds are
+  bounded by the unrefunded charge amount, creation supports idempotency, and
+  signed `refund.created`, `refund.updated`, and `refund.failed` events carry
+  Refund objects. The implementation reserves locally before the provider call
+  and applies monetary state only from those signed events.
+- A concurrent process advanced the safe branch to `bf5c1c4a`, switched the
+  shared worktree to `main` at `84d6d57d`, and added unrelated agent skills.
+  Restored the safe branch with refund work intact; no history was rewritten.
+- Next action: compile and run the focused refund/payment/webhook tests.
+
 ## 2026-07-26T19:23:14Z — Browser aggregate checkout verified
 
 - Focused checkout regression suite passes 3/3, including the production

@@ -5,9 +5,11 @@ import com.stripe.exception.StripeException;
 import com.stripe.model.Account;
 import com.stripe.model.AccountLink;
 import com.stripe.model.PaymentIntent;
+import com.stripe.model.Refund;
 import com.stripe.param.AccountCreateParams;
 import com.stripe.param.AccountLinkCreateParams;
 import com.stripe.param.PaymentIntentCreateParams;
+import com.stripe.param.RefundCreateParams;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
@@ -187,5 +189,45 @@ public class PaymentService {
         return new MarketplacePaymentIntent(
                 paymentIntent.getId(),
                 paymentIntent.getClientSecret());
+    }
+
+    public MarketplaceRefundResult createMarketplaceRefund(
+            String paymentIntentId,
+            long amountCents,
+            String marketplaceRefundId,
+            String idempotencyKey) throws StripeException {
+        if (paymentIntentId == null || paymentIntentId.isBlank()) {
+            throw new IllegalArgumentException("PaymentIntent ID is required");
+        }
+        if (amountCents <= 0) {
+            throw new IllegalArgumentException("Refund amount must be positive");
+        }
+        if (marketplaceRefundId == null || marketplaceRefundId.isBlank()) {
+            throw new IllegalArgumentException("Marketplace refund ID is required");
+        }
+        if (idempotencyKey == null || idempotencyKey.isBlank()) {
+            throw new IllegalArgumentException("Idempotency key is required");
+        }
+
+        if (isMock()) {
+            String deterministicId = "re_mock_" + UUID.nameUUIDFromBytes(
+                    (marketplaceRefundId + ":" + idempotencyKey)
+                            .getBytes(StandardCharsets.UTF_8))
+                    .toString()
+                    .replace("-", "");
+            return new MarketplaceRefundResult(deterministicId, "pending");
+        }
+
+        RefundCreateParams params = RefundCreateParams.builder()
+                .setPaymentIntent(paymentIntentId)
+                .setAmount(amountCents)
+                .putMetadata("marketplace_refund_id", marketplaceRefundId)
+                .build();
+        com.stripe.net.RequestOptions options =
+                com.stripe.net.RequestOptions.builder()
+                        .setIdempotencyKey("marketplace-refund:" + idempotencyKey)
+                        .build();
+        Refund refund = Refund.create(params, options);
+        return new MarketplaceRefundResult(refund.getId(), refund.getStatus());
     }
 }

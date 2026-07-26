@@ -35,4 +35,32 @@ class PaymentServiceMarketplaceTest {
                         "marketplace-1",
                         "checkout-key-1"));
     }
+
+    @Test
+    void mockRefundIsDeterministicForRequestAndIdempotencyKey()
+            throws Exception {
+        MarketplaceRefundResult first = paymentService.createMarketplaceRefund(
+                "pi_marketplace",
+                1_500L,
+                "refund-1",
+                "refund-key-1");
+        MarketplaceRefundResult retry = paymentService.createMarketplaceRefund(
+                "pi_marketplace",
+                1_500L,
+                "refund-1",
+                "refund-key-1");
+
+        assertEquals(first, retry);
+        assertEquals("pending", first.status());
+    }
+
+    @Test
+    void rejectsNonPositiveMarketplaceRefund() {
+        assertThrows(IllegalArgumentException.class, () ->
+                paymentService.createMarketplaceRefund(
+                        "pi_marketplace",
+                        0L,
+                        "refund-1",
+                        "refund-key-1"));
+    }
 }

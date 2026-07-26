@@ -2,10 +2,12 @@ package com.eushop.core.controller;
 
 import com.eushop.core.entity.Order;
 import com.eushop.core.service.MarketplaceCheckoutService;
+import com.eushop.core.service.MarketplaceRefundService;
 import com.eushop.core.service.OrderService;
 import com.stripe.exception.SignatureVerificationException;
 import com.stripe.model.Event;
 import com.stripe.model.PaymentIntent;
+import com.stripe.model.Refund;
 import com.stripe.net.Webhook;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -34,6 +36,7 @@ public class WebhookController {
 
     private final OrderService orderService;
     private final MarketplaceCheckoutService marketplaceCheckoutService;
+    private final MarketplaceRefundService marketplaceRefundService;
     private final org.springframework.jdbc.core.JdbcTemplate jdbcTemplate;
 
     @Value("${stripe.webhook.secret:whsec_placeholder}")
@@ -45,9 +48,11 @@ public class WebhookController {
     public WebhookController(
             OrderService orderService,
             MarketplaceCheckoutService marketplaceCheckoutService,
+            MarketplaceRefundService marketplaceRefundService,
             org.springframework.jdbc.core.JdbcTemplate jdbcTemplate) {
         this.orderService = orderService;
         this.marketplaceCheckoutService = marketplaceCheckoutService;
+        this.marketplaceRefundService = marketplaceRefundService;
         this.jdbcTemplate = jdbcTemplate;
     }
 
@@ -107,6 +112,8 @@ public class WebhookController {
         switch (event.getType()) {
             case "payment_intent.succeeded" -> handlePaymentIntentSucceeded(event);
             case "payment_intent.payment_failed" -> handlePaymentIntentFailed(event);
+            case "refund.created", "refund.updated", "refund.failed" ->
+                    handleRefundEvent(event);
             case "account.updated" -> log.info("Stripe Connect account updated: {}", event.getId());
             default -> log.debug("Unhandled Stripe event type: {}", event.getType());
         }
@@ -157,6 +164,29 @@ public class WebhookController {
         }
     }
 
+    private void handleRefundEvent(Event event) {
+        Refund refund = requireRefund(event);
+        if (refund.getAmount() == null || refund.getAmount() <= 0) {
+            throw new IllegalStateException(
+                    "Stripe refund has no positive amount: " + refund.getId());
+        }
+        String providerStatus = "refund.failed".equals(event.getType())
+                ? "failed"
+                : refund.getStatus();
+        boolean updated = marketplaceRefundService.applyProviderRefund(
+                refund.getId(),
+                refund.getPaymentIntent(),
+                refund.getAmount(),
+                providerStatus,
+                refund.getFailureReason());
+        if (!updated) {
+            throw new IllegalStateException(
+                    "No refund request found for Stripe refund " + refund.getId());
+        }
+        log.info("Marketplace refund {} reconciled with status {}",
+                refund.getId(), providerStatus);
+    }
+
     private PaymentIntent requirePaymentIntent(Event event) {
         var object = event.getDataObjectDeserializer().getObject()
                 .orElseThrow(() -> new IllegalStateException(
@@ -166,6 +196,17 @@ public class WebhookController {
                     "Stripe event did not contain a PaymentIntent: " + event.getId());
         }
         return paymentIntent;
+    }
+
+    private Refund requireRefund(Event event) {
+        var object = event.getDataObjectDeserializer().getObject()
+                .orElseThrow(() -> new IllegalStateException(
+                        "Could not deserialize Refund from event " + event.getId()));
+        if (!(object instanceof Refund refund)) {
+            throw new IllegalStateException(
+                    "Stripe event did not contain a Refund: " + event.getId());
+        }
+        return refund;
     }
 
     Event constructEvent(String payload, String sigHeader, String secret) throws SignatureVerificationException {
