@@ -1,7 +1,8 @@
 import Link from 'next/link';
-import { useState } from 'react';
+import { useState, useMemo } from 'react';
 import { PageWrapper } from '../components/layout/PageWrapper';
 import { readCart, writeCart } from '../lib/storageSafety';
+import { groupCartBySeller, CartItem as MultiSellerCartItem } from '../lib/multi-seller-cart';
 
 interface CartItem {
   id: string;
@@ -9,6 +10,8 @@ interface CartItem {
   country: string;
   price: number;
   quantity: number;
+  sellerId?: string;
+  sellerName?: string;
 }
 
 const getFoodImage = (foodName: string) => {
@@ -38,6 +41,24 @@ export default function CartPage() {
 
   const removeItem = (id: string) => persist(cartItems.filter(item => item.id !== id));
 
+  // Compute multi-seller grouped summary
+  const groupedSummary = useMemo(() => {
+    const multiItems: MultiSellerCartItem[] = cartItems.map(item => ({
+      id: item.id,
+      offerId: `offer_${item.id}`,
+      producerProductId: `prod_${item.id}`,
+      title: item.name,
+      sellerId: item.sellerId || item.country || 'seller_eu',
+      sellerName: item.sellerName || `${item.country || 'EU'} Specialty Producer`,
+      priceCents: Math.round(item.price * 100),
+      quantity: item.quantity,
+      allergens: [],
+      originCountryIso2: (item.country || 'DE').slice(0, 2).toUpperCase(),
+    }));
+
+    return groupCartBySeller(multiItems, 'DE', '10115');
+  }, [cartItems]);
+
   const subtotal = cartItems.reduce((acc, item) => acc + item.price * item.quantity, 0);
 
   return (
@@ -51,7 +72,7 @@ export default function CartPage() {
             </h1>
           </div>
           <span className="text-xs font-bold px-3 py-1.5 rounded-full bg-[#1845d4]/10 text-[#1845d4] border border-[#1845d4]/20 font-mono">
-            {cartItems.reduce((sum, i) => sum + i.quantity, 0)} Items
+            {cartItems.reduce((sum, i) => sum + i.quantity, 0)} Items ({groupedSummary.sellerSubtotals.length} Producers)
           </span>
         </div>
 
@@ -71,73 +92,109 @@ export default function CartPage() {
           </div>
         ) : (
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-            <div className="lg:col-span-2 space-y-4">
-              {cartItems.map((item) => {
-                const img = getFoodImage(item.name);
-                return (
-                  <div
-                    key={item.id}
-                    className="bg-white dark:bg-gray-900 rounded-2xl border border-gray-100 dark:border-gray-800 p-6 flex flex-col sm:flex-row justify-between items-center gap-4 shadow-sm"
-                  >
-                    <div className="flex items-center gap-4 w-full sm:w-auto">
-                      <div className="h-16 w-16 rounded-xl overflow-hidden bg-brand-sand shrink-0 flex items-center justify-center border border-gray-100 dark:border-gray-800">
-                        {img ? (
-                          // eslint-disable-next-line @next/next/no-img-element
-                          <img src={img} alt={item.name} className="w-full h-full object-cover" />
-                        ) : (
-                          <span className="text-2xl">🧀</span>
-                        )}
-                      </div>
-                      <div>
-                        <h3 className="font-bold text-base text-brand-dark dark:text-white">{item.name}</h3>
-                        <p className="text-gray-500 dark:text-gray-400 text-xs mt-0.5">📍 {item.country}</p>
-                      </div>
+            <div className="lg:col-span-2 space-y-6">
+              {/* Grouped by Seller Sub-Orders (EU Directive 2011/83/EU compliance) */}
+              {groupedSummary.sellerSubtotals.map((group) => (
+                <div
+                  key={group.sellerId}
+                  className="bg-white dark:bg-gray-900 rounded-2xl border border-gray-200 dark:border-gray-800 overflow-hidden shadow-sm"
+                >
+                  {/* Seller Header */}
+                  <div className="bg-gray-50 dark:bg-gray-950 px-6 py-3 border-b border-gray-100 dark:border-gray-800 flex items-center justify-between">
+                    <div className="flex items-center gap-2">
+                      <span className="text-xs font-bold text-[#1845d4] uppercase tracking-wider">Direct Producer</span>
+                      <span className="text-sm font-bold text-gray-900 dark:text-white">• {group.sellerName}</span>
+                      <span className="text-xs font-mono px-2 py-0.5 rounded bg-gray-200 dark:bg-gray-800 text-gray-700 dark:text-gray-300">
+                        📍 {group.originCountryIso2}
+                      </span>
                     </div>
-
-                    <div className="flex items-center justify-between sm:justify-end gap-6 w-full sm:w-auto border-t sm:border-t-0 pt-4 sm:pt-0 border-gray-100 dark:border-gray-800">
-                      <div className="flex items-center border border-gray-200 dark:border-gray-700 rounded-lg overflow-hidden bg-gray-50 dark:bg-gray-950">
-                        <button onClick={() => updateQuantity(item.id, item.quantity - 1)} className="px-3 py-1.5 hover:bg-gray-200 dark:hover:bg-gray-800 text-gray-700 dark:text-gray-300 font-bold transition">−</button>
-                        <span className="px-4 font-bold text-sm text-brand-dark dark:text-white">{item.quantity}</span>
-                        <button onClick={() => updateQuantity(item.id, item.quantity + 1)} className="px-3 py-1.5 hover:bg-gray-200 dark:hover:bg-gray-800 text-gray-700 dark:text-gray-300 font-bold transition">+</button>
-                      </div>
-
-                      <div className="text-right min-w-[90px]">
-                        <p className="font-extrabold text-brand-green dark:text-brand-gold text-base">€{(item.price * item.quantity).toFixed(2)}</p>
-                        <p className="text-gray-400 text-xs mt-0.5">€{item.price.toFixed(2)} each</p>
-                      </div>
-
-                      <button onClick={() => removeItem(item.id)} className="text-danger hover:opacity-75 font-bold text-sm transition">
-                        Remove
-                      </button>
-                    </div>
+                    <span className="text-xs text-gray-500 dark:text-gray-400 font-medium">
+                      Est. Delivery: ~{group.estimatedDeliveryDays} days
+                    </span>
                   </div>
-                );
-              })}
+
+                  {/* Items List */}
+                  <div className="p-6 divide-y divide-gray-100 dark:divide-gray-800 space-y-4 divide-y-0">
+                    {group.items.map((item) => {
+                      const img = getFoodImage(item.title);
+                      const origItem = cartItems.find(i => i.id === item.id);
+                      if (!origItem) return null;
+                      return (
+                        <div
+                          key={item.id}
+                          className="flex flex-col sm:flex-row justify-between items-center gap-4 pt-4 first:pt-0"
+                        >
+                          <div className="flex items-center gap-4 w-full sm:w-auto">
+                            <div className="h-16 w-16 rounded-xl overflow-hidden bg-brand-sand shrink-0 flex items-center justify-center border border-gray-100 dark:border-gray-800">
+                              {img ? (
+                                // eslint-disable-next-line @next/next/no-img-element
+                                <img src={img} alt={item.title} className="w-full h-full object-cover" />
+                              ) : (
+                                <span className="text-2xl">🧀</span>
+                              )}
+                            </div>
+                            <div>
+                              <h3 className="font-bold text-base text-brand-dark dark:text-white">{item.title}</h3>
+                              <p className="text-gray-500 dark:text-gray-400 text-xs mt-0.5">📍 Origin: {item.originCountryIso2}</p>
+                            </div>
+                          </div>
+
+                          <div className="flex items-center justify-between sm:justify-end gap-6 w-full sm:w-auto border-t sm:border-t-0 pt-4 sm:pt-0 border-gray-100 dark:border-gray-800">
+                            <div className="flex items-center border border-gray-200 dark:border-gray-700 rounded-lg overflow-hidden bg-gray-50 dark:bg-gray-950">
+                              <button onClick={() => updateQuantity(item.id, origItem.quantity - 1)} className="px-3 py-1.5 hover:bg-gray-200 dark:hover:bg-gray-800 text-gray-700 dark:text-gray-300 font-bold transition">−</button>
+                              <span className="px-4 font-bold text-sm text-brand-dark dark:text-white">{origItem.quantity}</span>
+                              <button onClick={() => updateQuantity(item.id, origItem.quantity + 1)} className="px-3 py-1.5 hover:bg-gray-200 dark:hover:bg-gray-800 text-gray-700 dark:text-gray-300 font-bold transition">+</button>
+                            </div>
+
+                            <div className="text-right min-w-[90px]">
+                              <p className="font-extrabold text-brand-green dark:text-brand-gold text-base">€{(origItem.price * origItem.quantity).toFixed(2)}</p>
+                              <p className="text-gray-400 text-xs mt-0.5">€{origItem.price.toFixed(2)} each</p>
+                            </div>
+
+                            <button onClick={() => removeItem(item.id)} className="text-danger hover:opacity-75 font-bold text-sm transition">
+                              Remove
+                            </button>
+                          </div>
+                        </div>
+                      );
+                    })}
+                  </div>
+                </div>
+              ))}
             </div>
 
-            <div className="bg-white dark:bg-gray-900 rounded-2xl border border-gray-100 dark:border-gray-800 p-6 h-fit shadow-sm">
-              <h2 className="text-xl font-bold text-brand-dark dark:text-white mb-6 font-display">
+            <div className="bg-white dark:bg-gray-900 rounded-2xl border border-gray-100 dark:border-gray-800 p-6 h-fit shadow-sm space-y-4">
+              <h2 className="text-xl font-bold text-brand-dark dark:text-white font-display">
                 Order Summary
               </h2>
-              <div className="space-y-4 mb-6">
+
+              <div className="space-y-3 border-b border-gray-100 dark:border-gray-800 pb-4">
                 <div className="flex justify-between text-gray-600 dark:text-gray-400 text-sm">
-                  <span>Subtotal</span>
-                  <span className="font-semibold text-brand-dark dark:text-white">€{subtotal.toFixed(2)}</span>
+                  <span>Goods Subtotal ({groupedSummary.sellerSubtotals.length} sellers)</span>
+                  <span className="font-semibold text-brand-dark dark:text-white">€{(groupedSummary.grandSubtotalCents / 100).toFixed(2)}</span>
                 </div>
                 <div className="flex justify-between text-gray-600 dark:text-gray-400 text-sm">
-                  <span>Shipping</span>
-                  <span className="text-success font-bold">FREE</span>
+                  <span>EU Cross-Border Shipping</span>
+                  <span className="font-semibold text-brand-dark dark:text-white">
+                    {groupedSummary.grandShippingCents === 0 ? 'FREE' : `€${(groupedSummary.grandShippingCents / 100).toFixed(2)}`}
+                  </span>
                 </div>
-                <div className="border-t border-gray-100 dark:border-gray-800 pt-4 flex justify-between font-extrabold text-lg text-brand-dark dark:text-white">
-                  <span>Total</span>
-                  <span>€{subtotal.toFixed(2)}</span>
+                <div className="flex justify-between text-gray-600 dark:text-gray-400 text-sm">
+                  <span>Estimated EU Food VAT</span>
+                  <span className="font-semibold text-brand-dark dark:text-white">€{(groupedSummary.grandVatCents / 100).toFixed(2)}</span>
                 </div>
               </div>
+
+              <div className="flex justify-between font-extrabold text-lg text-brand-dark dark:text-white pt-2">
+                <span>Grand Total</span>
+                <span>€{(groupedSummary.grandTotalCents / 100).toFixed(2)}</span>
+              </div>
+
               <Link
                 href="/checkout"
-                className="block w-full bg-brand-green text-white text-center py-3.5 rounded-xl font-bold hover:opacity-90 transition text-sm"
+                className="block w-full bg-brand-green text-white text-center py-3.5 rounded-xl font-bold hover:opacity-90 transition text-sm shadow-md"
               >
-                Proceed to Checkout
+                Proceed to Secure Checkout →
               </Link>
             </div>
           </div>
@@ -146,3 +203,4 @@ export default function CartPage() {
     </PageWrapper>
   );
 }
+
