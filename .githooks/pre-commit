@@ -1,0 +1,19 @@
+#!/bin/sh
+# EUshop Pre-Commit Security & Compliance Guardrail
+
+echo "[EUshop AI Security] Running pre-commit security audit..."
+
+# 1. Zero Hardcoded Secrets Check
+if git diff --cached | grep -iE 'sk_live_|sk_test_|secret_key|private_key|BEGIN PRIVATE KEY' ; then
+    echo "❌ ERROR: Potential hardcoded secret detected in staged files!"
+    echo "Secrets must never touch the repository. Remove secrets before committing."
+    exit 1
+fi
+
+# 2. Path Traversal Safety Check
+if git diff --cached | grep -iE 'new File\(.*request\.getParameter' | grep -v 'normalize()' ; then
+    echo "⚠️ WARNING: Un-normalized file path construction detected. Ensure .toPath().normalize() is used."
+fi
+
+echo "✅ Pre-commit security audit passed successfully!"
+exit 0

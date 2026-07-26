@@ -1,0 +1,7 @@
+{
+  "name": "dac7-monthly-reporting-cron",
+  "description": "Monthly cron schedule aggregating seller transactions and generating DAC7 EU tax XML reports.",
+  "cron_expression": "0 0 0 1 * ?",
+  "prompt": "Run Dac7Service.aggregateMonthlyConsideration() and verify threshold calculations against €2,000 / 30 transaction limits.",
+  "target_service": "services/core-service"
+}
