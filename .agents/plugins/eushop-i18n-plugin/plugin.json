@@ -1,0 +1,13 @@
+{
+  "name": "eushop-i18n-plugin",
+  "version": "1.0.0",
+  "description": "Multilingual i18n Localization Plugin — bundles Next.js locale routing, EU language pack management (24 official EU languages), and RTL support.",
+  "skills": ["eushop-i18n-multilingual-localization"],
+  "agents": [],
+  "config": {
+    "default_locale": "en",
+    "supported_locales": ["en", "de", "fr", "it", "es", "pl", "nl", "pt", "ro", "cs", "hu", "sv", "bg", "hr", "da", "fi", "el", "et", "lv", "lt", "mt", "sk", "sl", "ga"],
+    "rtl_locales": [],
+    "fallback_locale": "en"
+  }
+}

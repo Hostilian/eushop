@@ -1,0 +1,9 @@
+{
+  "name": "daily-allergen-declaration-audit",
+  "description": "Daily allergen declaration completeness audit on all active food product listings.",
+  "cron": "0 6 * * *",
+  "timezone": "UTC",
+  "agent": "allergen-declaration-audit-agent",
+  "prompt": "Query all active food product listings. Check each has allergen_declarations field populated with valid values from the 14-allergen enum. Flag any listings with missing or null allergen fields. Suspend listings with no allergen data at all. Generate daily allergen compliance report.",
+  "enabled": true
+}

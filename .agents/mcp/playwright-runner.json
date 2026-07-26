@@ -1,0 +1,13 @@
+{
+  "name": "eushop-playwright-runner",
+  "description": "Playwright E2E test runner MCP tool for running critical journey tests from agent context.",
+  "type": "mcp",
+  "config": {
+    "test_command": "npx playwright test",
+    "test_dir": "tests/e2e",
+    "browsers": ["chromium", "firefox"],
+    "timeout_ms": 60000,
+    "report_format": "json",
+    "allowed_operations": ["run_all", "run_file", "run_test", "show_report"]
+  }
+}

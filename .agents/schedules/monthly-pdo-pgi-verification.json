@@ -1,0 +1,9 @@
+{
+  "name": "monthly-pdo-pgi-registration-verify",
+  "description": "Monthly PDO/PGI designation verification — checks all badged products against EU GI register.",
+  "cron": "0 10 15 * *",
+  "timezone": "Europe/Brussels",
+  "agent": "gpsr-product-compliance-agent",
+  "prompt": "Query all products with PDO, PGI, or TSG designation. For each, verify EU registration number against the TMDN GI View register. Flag any that cannot be verified. Generate monthly PDO/PGI accuracy report. COMPLIANCE-REVIEW required before removing any badges.",
+  "enabled": true
+}

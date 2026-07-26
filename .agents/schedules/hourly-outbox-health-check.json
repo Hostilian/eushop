@@ -1,0 +1,9 @@
+{
+  "name": "hourly-outbox-event-health-check",
+  "description": "Hourly transactional outbox health check — detects stuck events and triggers retry.",
+  "cron": "0 * * * *",
+  "timezone": "UTC",
+  "agent": "outbox-event-delivery-agent",
+  "prompt": "Check outbox_events table for events with status=PENDING older than 10 minutes. Log count and oldest event age. If any events are stuck > 30 minutes, alert and attempt retry. Report dead-letter queue size.",
+  "enabled": true
+}

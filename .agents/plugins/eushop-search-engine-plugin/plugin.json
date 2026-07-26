@@ -1,0 +1,14 @@
+{
+  "name": "eushop-search-engine-plugin",
+  "version": "1.0.0",
+  "description": "Full-Text Search Engine Plugin — bundles OpenSearch index management, GIN JSONB indexing, search benchmarking, and product catalog search optimization.",
+  "skills": ["eushop-opensearch-fulltext-search-benchmarking"],
+  "agents": ["opensearch-index-health-agent"],
+  "config": {
+    "opensearch_index": "products",
+    "gin_jsonb_index": true,
+    "query_latency_alert_ms": 100,
+    "search_fields": ["name", "description", "origin", "seller_name", "allergens"],
+    "fuzzy_search": true
+  }
+}

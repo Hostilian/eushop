@@ -1,0 +1,9 @@
+{
+  "name": "quarterly-vat-rate-verification",
+  "description": "Quarterly EU VAT rate verification — checks rates in compliance package against EC official database.",
+  "cron": "0 8 1 1,4,7,10 *",
+  "timezone": "Europe/Brussels",
+  "agent": "vat-engine-validation-agent",
+  "prompt": "Query the European Commission VAT information database for current VAT rates. Compare against values in packages/compliance/src/vat.ts. Flag any discrepancies. Generate quarterly VAT rate audit report. COMPLIANCE-REVIEW required before any updates.",
+  "enabled": true
+}

@@ -1,0 +1,14 @@
+{
+  "name": "eushop-auth0-management",
+  "description": "Auth0 Management API tool for user lookup, role assignment, and GDPR erasure operations.",
+  "type": "mcp",
+  "config": {
+    "domain": "${AUTH0_DOMAIN}",
+    "client_id": "${AUTH0_MANAGEMENT_CLIENT_ID}",
+    "client_secret": "${AUTH0_MANAGEMENT_CLIENT_SECRET}",
+    "audience": "https://${AUTH0_DOMAIN}/api/v2/",
+    "allowed_operations": ["get_user", "delete_user", "get_user_roles", "assign_roles"],
+    "gdpr_erasure_enabled": true,
+    "comment": "NEVER log client_secret. Fail closed on auth errors."
+  }
+}

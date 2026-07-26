@@ -1,0 +1,9 @@
+{
+  "name": "daily-gpsr-compliance-check",
+  "description": "Daily GPSR compliance check on all non-food product listings.",
+  "cron": "0 7 * * *",
+  "timezone": "UTC",
+  "agent": "gpsr-product-compliance-agent",
+  "prompt": "Query all active non-food product listings. Verify each has all 5 required GPSR fields: manufacturer_name, manufacturer_address, manufacturer_contact, risk_assessment_status, safety_notice_status. Suspend any non-food listing missing GPSR data. Generate daily GPSR compliance report.",
+  "enabled": true
+}

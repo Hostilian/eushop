@@ -1,0 +1,12 @@
+{
+  "name": "eushop-eu-vat-rates-api",
+  "description": "EU VAT Rates API tool — queries the European Commission's official VAT information API for current rate data by country.",
+  "type": "mcp",
+  "config": {
+    "api_base": "https://ec.europa.eu/taxation_customs/tedb/api",
+    "allowed_operations": ["get_rates_by_country", "get_all_rates"],
+    "read_only": true,
+    "cache_ttl_hours": 24,
+    "comment": "COMPLIANCE-REVIEW: Always verify rates before using in production VAT calculations"
+  }
+}

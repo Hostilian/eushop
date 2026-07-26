@@ -1,0 +1,12 @@
+{
+  "name": "eushop-trpc-client",
+  "description": "tRPC API client MCP tool for querying EUshop type-safe API endpoints from agent context.",
+  "type": "mcp",
+  "config": {
+    "base_url": "http://localhost:3001/trpc",
+    "auth_header": "Authorization: Bearer ${AGENT_JWT_TOKEN}",
+    "allowed_procedures": ["product.list", "product.getById", "seller.getProfile", "order.getStatus"],
+    "read_only": true,
+    "timeout_ms": 10000
+  }
+}

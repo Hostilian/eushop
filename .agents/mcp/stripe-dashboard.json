@@ -1,0 +1,12 @@
+{
+  "name": "eushop-stripe-dashboard",
+  "description": "Stripe Dashboard API tool for checking payment status, webhook events, and connected account health. Read-only access only.",
+  "type": "mcp",
+  "config": {
+    "api_base": "https://api.stripe.com/v1",
+    "secret_key": "${STRIPE_SECRET_KEY}",
+    "allowed_operations": ["retrieve_payment_intent", "list_events", "retrieve_webhook_endpoint", "list_connected_accounts"],
+    "read_only": true,
+    "comment": "NEVER expose STRIPE_SECRET_KEY in code or logs"
+  }
+}

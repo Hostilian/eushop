@@ -1,0 +1,13 @@
+{
+  "name": "eushop-performance-observability-plugin",
+  "version": "1.0.0",
+  "description": "Performance & Observability Plugin — bundles OpenTelemetry tracing, JVM monitoring, Next.js bundle size tracking, and OpenSearch index health.",
+  "skills": ["eushop-opentelemetry-observability-tracing"],
+  "agents": ["performance-monitor-agent", "opentelemetry-trace-analysis-agent", "nextjs-bundle-size-agent", "opensearch-index-health-agent"],
+  "config": {
+    "p99_latency_alert_ms": 200,
+    "first_load_js_budget_kb": 250,
+    "error_rate_alert_threshold": 0.001,
+    "opensearch_query_alert_ms": 100
+  }
+}

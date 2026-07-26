@@ -1,0 +1,14 @@
+{
+  "name": "eushop-maplibre-tiles",
+  "description": "MapLibre GL tile server MCP tool for geospatial map rendering and PDO/PGI boundary overlay.",
+  "type": "mcp",
+  "config": {
+    "tile_server": "${MAPLIBRE_TILE_SERVER}",
+    "style_url": "${MAPLIBRE_STYLE_URL}",
+    "allowed_operations": ["get_tile", "get_style", "geocode", "reverse_geocode"],
+    "read_only": true,
+    "max_zoom": 18,
+    "default_center": [15.0, 50.0],
+    "default_zoom": 5
+  }
+}

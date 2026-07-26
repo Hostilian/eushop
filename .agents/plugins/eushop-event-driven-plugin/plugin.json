@@ -1,0 +1,14 @@
+{
+  "name": "eushop-event-driven-plugin",
+  "version": "1.0.0",
+  "description": "Event-Driven Architecture Plugin — bundles transactional outbox, event delivery monitoring, dead-letter queue management, and PostgreSQL event sourcing.",
+  "skills": ["eushop-transactional-outbox-event-engine"],
+  "agents": ["outbox-event-delivery-agent"],
+  "config": {
+    "outbox_table": "outbox_events",
+    "max_retry_attempts": 3,
+    "retry_backoff_ms": 1000,
+    "dead_letter_queue_table": "outbox_dead_letters",
+    "polling_interval_ms": 5000
+  }
+}

@@ -1,0 +1,13 @@
+{
+  "name": "eushop-eslint-runner",
+  "description": "ESLint MCP tool for running code quality and security linting across all packages.",
+  "type": "mcp",
+  "config": {
+    "command": "npx eslint",
+    "config_file": ".eslintrc.js",
+    "extensions": [".ts", ".tsx"],
+    "allowed_operations": ["lint", "lint_file", "get_errors"],
+    "fail_on_error": true,
+    "fail_on_warning": false
+  }
+}

@@ -1,0 +1,9 @@
+{
+  "name": "weekly-performance-regression-check",
+  "description": "Weekly Spring Boot JVM performance regression check.",
+  "cron": "0 6 * * 3",
+  "timezone": "UTC",
+  "agent": "performance-monitor-agent",
+  "prompt": "Query Spring Boot Actuator /metrics endpoint. Check JVM heap usage trend over last 7 days. Check GC pause times. Check p99 API latency across all endpoints. Identify any regressions > 20% from previous week. Generate weekly performance report.",
+  "enabled": true
+}

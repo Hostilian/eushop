@@ -1,0 +1,9 @@
+{
+  "name": "monthly-dac7-aggregation",
+  "description": "Monthly DAC7 seller transaction aggregation — counts transactions and totals consideration per seller for annual reporting.",
+  "cron": "0 2 1 * *",
+  "timezone": "Europe/Brussels",
+  "agent": "dac7-reporting-cron-agent",
+  "prompt": "Run monthly DAC7 aggregation job. For each active seller, count reportable transactions and sum total consideration for the previous month. Flag sellers approaching DAC7 thresholds (>20 transactions or >€1,500). Update dac7_aggregations table. Log summary report.",
+  "enabled": true
+}

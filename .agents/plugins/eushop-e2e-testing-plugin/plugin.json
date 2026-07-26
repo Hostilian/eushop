@@ -1,0 +1,13 @@
+{
+  "name": "eushop-e2e-testing-plugin",
+  "version": "1.0.0",
+  "description": "Playwright E2E Testing Plugin — bundles critical journey tests, visual regression baselines, buyer checkout flows, and allergen filter verification.",
+  "skills": ["eushop-playwright-e2e-critical-journeys", "eushop-playwright-visual-regression-testing"],
+  "agents": ["ci-pipeline-health-agent"],
+  "config": {
+    "browser_targets": ["chromium", "firefox", "webkit"],
+    "viewport_breakpoints": [375, 768, 1440],
+    "visual_regression_threshold": 0.02,
+    "flaky_test_max_failures": 2
+  }
+}

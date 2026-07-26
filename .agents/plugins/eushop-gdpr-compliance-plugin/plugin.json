@@ -1,0 +1,13 @@
+{
+  "name": "eushop-gdpr-compliance-plugin",
+  "version": "1.0.0",
+  "description": "GDPR Art. 17/20 Cascading Erasure & Data Portability Plugin for EUshop. Bundles erasure workflows, consent management, and subprocessor cascade logic.",
+  "skills": ["eushop-auth0-session-jwt-security"],
+  "agents": ["gdpr-erasure-cascade-agent", "secrets-leak-prevention-agent"],
+  "config": {
+    "retention_days": 2555,
+    "erasure_cascade_targets": ["postgresql", "opensearch", "stripe", "auth0"],
+    "portability_format": "json",
+    "compliance_source": "packages/compliance/src/gdpr.ts"
+  }
+}

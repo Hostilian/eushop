@@ -1,0 +1,14 @@
+{
+  "name": "eushop-spring-boot-plugin",
+  "version": "1.0.0",
+  "description": "Spring Boot Core Service Plugin — bundles modular monolith architecture, Actuator health endpoints, Flyway integration, and JVM performance tuning.",
+  "skills": [],
+  "agents": ["performance-monitor-agent", "database-migration-safety-agent"],
+  "config": {
+    "service_port": 3001,
+    "actuator_endpoints": ["health", "metrics", "info", "flyway"],
+    "jvm_heap_alert_percent": 80,
+    "gc_pause_alert_ms": 50,
+    "datasource_pool_size": 20
+  }
+}

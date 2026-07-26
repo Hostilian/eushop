@@ -1,0 +1,13 @@
+{
+  "name": "eushop-seller-onboarding-plugin",
+  "version": "1.0.0",
+  "description": "Seller Onboarding Plugin — bundles DSA Art. 30 verification, KYB checks, Stripe Connect account creation, and marketplace activation workflow.",
+  "skills": ["eushop-dsa-notice-and-action-moderation"],
+  "agents": ["dsa-art30-trader-verification-agent", "seller-onboarding-kyb-agent", "stripe-payment-audit-agent"],
+  "config": {
+    "dsa_art30_data_points_required": 5,
+    "kyb_verification_required": true,
+    "stripe_connect_type": "express",
+    "activation_requires_all_checks": true
+  }
+}

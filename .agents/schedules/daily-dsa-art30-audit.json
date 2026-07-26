@@ -1,0 +1,9 @@
+{
+  "name": "daily-dsa-art30-compliance-audit",
+  "description": "Daily DSA Art. 30 compliance audit — checks all active sellers have complete 5-point trader card data.",
+  "cron": "0 4 * * *",
+  "timezone": "Europe/Brussels",
+  "agent": "dsa-art30-trader-verification-agent",
+  "prompt": "Query database for all active sellers. Verify each has all 5 DSA Art. 30 data points: legal name, postal address, email, phone, VAT number. Flag any incomplete profiles. Suspend listings of non-compliant sellers. Generate compliance report.",
+  "enabled": true
+}

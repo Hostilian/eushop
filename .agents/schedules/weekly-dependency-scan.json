@@ -1,0 +1,9 @@
+{
+  "name": "weekly-dependency-vulnerability-scan",
+  "description": "Weekly npm audit and OWASP dependency check across all packages.",
+  "cron": "0 3 * * 1",
+  "timezone": "Europe/Brussels",
+  "agent": "dependency-vulnerability-scan-agent",
+  "prompt": "Run npm audit on apps/web, apps/mobile, and all packages. Run OWASP Dependency Check on services/core-service Maven dependencies. Report all HIGH and CRITICAL CVEs. Generate summary report with suggested remediation versions.",
+  "enabled": true
+}

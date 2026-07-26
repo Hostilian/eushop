@@ -1,0 +1,9 @@
+{
+  "name": "daily-seo-structured-data-check",
+  "description": "Daily SEO structured data and Core Web Vitals check on key pages.",
+  "cron": "0 5 * * *",
+  "timezone": "UTC",
+  "agent": "seo-structured-data-agent",
+  "prompt": "Check JSON-LD structured data on homepage, 3 product pages, and category page. Validate Product, BreadcrumbList, and Organization schemas. Check meta titles and descriptions. Run Core Web Vitals check via PageSpeed Insights. Report any issues.",
+  "enabled": true
+}

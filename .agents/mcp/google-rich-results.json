@@ -1,0 +1,12 @@
+{
+  "name": "eushop-google-rich-results",
+  "description": "Google Rich Results API tool for validating JSON-LD structured data on EUshop product and category pages.",
+  "type": "mcp",
+  "config": {
+    "api_base": "https://searchconsole.googleapis.com/v1",
+    "api_key": "${GOOGLE_API_KEY}",
+    "allowed_operations": ["rich_results_test", "url_inspection"],
+    "read_only": true,
+    "test_url_prefix": "https://hostilian.github.io/eushop"
+  }
+}

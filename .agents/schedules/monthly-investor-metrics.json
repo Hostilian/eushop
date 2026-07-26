@@ -1,0 +1,9 @@
+{
+  "name": "monthly-investor-metrics-update",
+  "description": "Monthly investor metrics compilation for YC diligence package and board updates.",
+  "cron": "0 10 2 * *",
+  "timezone": "Europe/Brussels",
+  "agent": "changelog-maintenance-agent",
+  "prompt": "Compile monthly business metrics: active sellers, active products, orders in month, GMV, compliance audit pass rates (DSA, allergen, GDPR), CI success rate, uptime. Update investor diligence data room with fresh metrics. Generate monthly metrics summary report.",
+  "enabled": true
+}

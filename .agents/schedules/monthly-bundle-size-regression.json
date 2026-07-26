@@ -1,0 +1,9 @@
+{
+  "name": "monthly-bundle-size-regression",
+  "description": "Monthly Next.js bundle size trend analysis and Core Web Vitals regression report.",
+  "cron": "0 8 1 * *",
+  "timezone": "UTC",
+  "agent": "nextjs-bundle-size-agent",
+  "prompt": "Run next build analysis on apps/web. Check First Load JS size per route vs last month's baseline. Check LCP, CLS, FCP scores via PageSpeed Insights. Identify any routes that increased > 10KB. Suggest optimizations. Generate monthly bundle size report.",
+  "enabled": true
+}

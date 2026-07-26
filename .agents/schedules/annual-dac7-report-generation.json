@@ -1,0 +1,9 @@
+{
+  "name": "annual-dac7-report-generation",
+  "description": "Annual DAC7 XML report generation — generates seller reporting XML for tax authority submission by January 15.",
+  "cron": "0 9 15 1 *",
+  "timezone": "Europe/Brussels",
+  "agent": "dac7-reporting-cron-agent",
+  "prompt": "Generate annual DAC7 XML report for all sellers who exceeded thresholds in the previous calendar year (30+ transactions or €2,000+ consideration). Validate XML against official DAC7 schema. Archive report. COMPLIANCE-REVIEW required before submission to tax authority.",
+  "enabled": true
+}

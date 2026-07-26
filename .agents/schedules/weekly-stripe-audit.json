@@ -1,0 +1,9 @@
+{
+  "name": "weekly-stripe-payment-audit",
+  "description": "Weekly Stripe Connect payment flow and webhook audit.",
+  "cron": "0 10 * * 1",
+  "timezone": "Europe/Brussels",
+  "agent": "stripe-payment-audit-agent",
+  "prompt": "Review Stripe webhook event log for last 7 days. Check webhook delivery success rate (alert < 99%). Verify all payment_intent.succeeded events were matched to orders. Check for duplicate charge attempts. Verify split payment calculations are correct. Generate weekly payment audit report.",
+  "enabled": true
+}

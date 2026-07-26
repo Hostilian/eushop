@@ -1,0 +1,14 @@
+{
+  "name": "eushop-allergen-safety-plugin",
+  "version": "1.0.0",
+  "description": "EU FIC 1169/2011 Allergen Declaration Plugin — bundles allergen audit, RASFF food safety monitoring, and 14-allergen schema enforcement.",
+  "skills": ["eushop-regulatory-compliance-validator"],
+  "agents": ["allergen-declaration-audit-agent", "rasff-food-safety-agent"],
+  "config": {
+    "regulated_allergens": 14,
+    "regulation": "EU 1169/2011 Annex II",
+    "source_of_truth": "packages/compliance/src/allergens.ts",
+    "block_listing_without_declaration": true,
+    "rasff_poll_interval_hours": 24
+  }
+}

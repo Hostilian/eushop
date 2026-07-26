@@ -1,0 +1,11 @@
+{
+  "name": "eushop-git-operations",
+  "description": "Git operations MCP tool for branch management, commit history analysis, and merge validation.",
+  "type": "mcp",
+  "config": {
+    "repo_path": "d:/CODING/eushop",
+    "allowed_operations": ["log", "diff", "status", "branch_list", "show"],
+    "blocked_operations": ["push --force", "reset --hard HEAD~", "clean -fd"],
+    "comment": "Force push and destructive resets require explicit user approval"
+  }
+}

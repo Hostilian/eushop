@@ -1,0 +1,13 @@
+{
+  "name": "eushop-seo-plugin",
+  "version": "1.0.0",
+  "description": "SEO & Structured Data Plugin — bundles JSON-LD schema validation, Open Graph meta tags, Core Web Vitals monitoring, and sitemap generation.",
+  "skills": ["eushop-nextjs-static-export-pages"],
+  "agents": ["seo-structured-data-agent", "nextjs-bundle-size-agent"],
+  "config": {
+    "structured_data_types": ["Product", "BreadcrumbList", "Organization"],
+    "core_web_vitals_lcp_max_ms": 2500,
+    "core_web_vitals_cls_max": 0.1,
+    "sitemap_auto_generate": true
+  }
+}

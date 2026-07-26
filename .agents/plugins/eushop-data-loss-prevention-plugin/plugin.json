@@ -1,0 +1,14 @@
+{
+  "name": "eushop-data-loss-prevention-plugin",
+  "version": "1.0.0",
+  "description": "Data Loss Prevention Plugin — bundles irreversible-command confirmation guardrails, SQL DELETE/TRUNCATE verification, and production backup validation.",
+  "skills": ["accidental-data-loss-prevention"],
+  "agents": ["database-migration-safety-agent"],
+  "config": {
+    "block_truncate": true,
+    "block_drop_table": true,
+    "require_backup_before_destructive": true,
+    "confirmation_required": true,
+    "audit_all_destructive_ops": true
+  }
+}

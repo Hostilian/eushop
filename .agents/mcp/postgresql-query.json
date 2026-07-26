@@ -1,0 +1,15 @@
+{
+  "name": "eushop-postgresql-query",
+  "description": "Direct PostgreSQL query tool for EUshop production database. Supports read-only queries against products, orders, sellers, and compliance tables.",
+  "type": "mcp",
+  "config": {
+    "host": "${POSTGRES_HOST}",
+    "port": 5432,
+    "database": "eushop",
+    "user": "${POSTGRES_USER}",
+    "password": "${POSTGRES_PASSWORD}",
+    "ssl": true,
+    "read_only": true,
+    "allowed_tables": ["products", "sellers", "orders", "allergen_declarations", "outbox_events", "gdpr_audit_log", "dac7_aggregations"]
+  }
+}

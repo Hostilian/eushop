@@ -1,0 +1,13 @@
+{
+  "name": "eushop-mobile-plugin",
+  "version": "1.0.0",
+  "description": "Expo React Native Mobile Plugin — bundles EAS Build configuration, OTA update management, store submission validation, and mobile-specific compliance checks.",
+  "skills": [],
+  "agents": ["mobile-expo-release-agent"],
+  "config": {
+    "eas_build_profiles": ["development", "preview", "production"],
+    "ota_update_channel": "production",
+    "expo_sdk_version": "51",
+    "target_platforms": ["ios", "android"]
+  }
+}

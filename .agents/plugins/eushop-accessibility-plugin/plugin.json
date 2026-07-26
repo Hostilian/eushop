@@ -1,0 +1,14 @@
+{
+  "name": "eushop-accessibility-plugin",
+  "version": "1.0.0",
+  "description": "WCAG 2.2 AA Accessibility Plugin — bundles design tokens, axe-core audit, keyboard navigation checks, and screen reader compatibility testing.",
+  "skills": ["eushop-wcag-accessibility-design-tokens"],
+  "agents": ["wcag-accessibility-audit-agent"],
+  "config": {
+    "wcag_level": "AA",
+    "wcag_version": "2.2",
+    "contrast_ratio_normal": 4.5,
+    "contrast_ratio_large": 3.0,
+    "run_axe_on_deploy": true
+  }
+}

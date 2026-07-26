@@ -1,0 +1,12 @@
+{
+  "name": "eushop-eu-gi-register",
+  "description": "EU Geographical Indications (GI) register API tool for verifying PDO/PGI/TSG product registrations.",
+  "type": "mcp",
+  "config": {
+    "api_base": "https://www.tmdn.org/giview/api",
+    "allowed_operations": ["search_gi", "get_gi_detail", "verify_registration_number"],
+    "read_only": true,
+    "cache_ttl_hours": 168,
+    "comment": "COMPLIANCE-REVIEW: Always verify PDO/PGI registration before displaying badge"
+  }
+}

@@ -1,0 +1,12 @@
+{
+  "name": "eushop-typescript-compiler",
+  "description": "TypeScript compiler MCP tool for type checking all packages without emitting output.",
+  "type": "mcp",
+  "config": {
+    "command": "tsc --noEmit --strict",
+    "project_root": "d:/CODING/eushop",
+    "packages": ["apps/web", "apps/mobile", "packages/types", "packages/compliance", "packages/ui"],
+    "allowed_operations": ["typecheck", "get_errors", "get_diagnostics"],
+    "fail_on_error": true
+  }
+}

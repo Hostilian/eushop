@@ -1,0 +1,12 @@
+{
+  "name": "eushop-investor-diligence-plugin",
+  "version": "1.0.0",
+  "description": "YC & Investor Diligence Plugin — bundles data room documentation, compliance evidence ledgers, financial metric dashboards, and term sheet validation.",
+  "skills": ["eushop-yc-investor-diligence-package"],
+  "agents": ["changelog-maintenance-agent"],
+  "config": {
+    "data_room_sections": ["financials", "compliance", "technical", "legal", "team"],
+    "auto_generate_metrics": true,
+    "changelog_required_per_session": true
+  }
+}

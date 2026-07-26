@@ -1,0 +1,9 @@
+{
+  "name": "weekly-postgis-index-health",
+  "description": "Weekly PostGIS spatial index health and query performance check.",
+  "cron": "0 3 * * 5",
+  "timezone": "UTC",
+  "agent": "postgis-spatial-query-agent",
+  "prompt": "Check GIST spatial index health on products.origin_geometry. Run EXPLAIN ANALYZE on typical ST_DWithin corridor query. Verify index is being used (not sequential scan). Check index bloat. Report p95 spatial query latency. Alert if > 50ms.",
+  "enabled": true
+}

@@ -1,0 +1,13 @@
+{
+  "name": "eushop-nextjs-build",
+  "description": "Next.js build analysis MCP tool for bundle size reporting and static export validation.",
+  "type": "mcp",
+  "config": {
+    "project_dir": "apps/web",
+    "build_command": "npm run build",
+    "bundle_size_budget_kb": 250,
+    "allowed_operations": ["build_analyze", "check_export", "size_report"],
+    "report_format": "json",
+    "fail_on_budget_exceeded": true
+  }
+}

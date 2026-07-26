@@ -1,0 +1,13 @@
+{
+  "name": "eushop-dsa-moderation-plugin",
+  "version": "1.0.0",
+  "description": "DSA Notice-and-Action Moderation Plugin — bundles notice intake, content moderation audit trail, Art. 16 complaint handling, and transparency report generation.",
+  "skills": ["eushop-dsa-notice-and-action-moderation"],
+  "agents": ["dsa-art30-trader-verification-agent"],
+  "config": {
+    "notice_response_hours": 72,
+    "transparency_report_frequency": "6-monthly",
+    "art16_complaint_handler": true,
+    "content_moderation_audit_trail": true
+  }
+}

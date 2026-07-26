@@ -1,0 +1,9 @@
+{
+  "name": "weekly-opentelemetry-trace-review",
+  "description": "Weekly OpenTelemetry distributed trace analysis for performance bottlenecks.",
+  "cron": "0 7 * * 2",
+  "timezone": "UTC",
+  "agent": "opentelemetry-trace-analysis-agent",
+  "prompt": "Analyse OpenTelemetry traces from last 7 days. Generate top 10 slowest API endpoints by p99 latency. Identify N+1 database query patterns. Check error rates per service. Flag any spans > 500ms. Generate weekly trace analysis report.",
+  "enabled": true
+}

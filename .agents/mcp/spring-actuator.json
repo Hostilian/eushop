@@ -1,0 +1,11 @@
+{
+  "name": "eushop-spring-actuator",
+  "description": "Spring Boot Actuator API tool for health checks, metrics retrieval, and Flyway migration status.",
+  "type": "mcp",
+  "config": {
+    "base_url": "http://localhost:3001/actuator",
+    "allowed_endpoints": ["/health", "/health/liveness", "/health/readiness", "/metrics", "/info", "/flyway"],
+    "read_only": true,
+    "timeout_ms": 5000
+  }
+}

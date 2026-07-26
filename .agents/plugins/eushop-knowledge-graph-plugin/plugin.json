@@ -1,0 +1,13 @@
+{
+  "name": "eushop-knowledge-graph-plugin",
+  "version": "1.0.0",
+  "description": "Knowledge Graph & Memory Plugin — bundles Obsidian vault integration, persistent session memory, knowledge item management, and cross-agent context sharing.",
+  "skills": ["obsidian-knowledge-memory", "graphify-codebase-analysis"],
+  "agents": [],
+  "config": {
+    "vault_path": ".agents/knowledge",
+    "auto_index_on_change": true,
+    "cross_agent_memory": true,
+    "knowledge_retention_days": 365
+  }
+}

@@ -1,0 +1,13 @@
+{
+  "name": "eushop-npm-audit",
+  "description": "npm audit MCP tool for scanning frontend dependencies for known CVEs.",
+  "type": "mcp",
+  "config": {
+    "command": "npm audit",
+    "audit_level": "high",
+    "workspaces": ["apps/web", "apps/mobile"],
+    "allowed_operations": ["audit", "audit_fix_dry_run"],
+    "fail_on_high": true,
+    "fail_on_critical": true
+  }
+}

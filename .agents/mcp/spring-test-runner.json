@@ -1,0 +1,14 @@
+{
+  "name": "eushop-spring-test-runner",
+  "description": "Spring Boot Maven test runner MCP tool for executing JUnit tests and generating coverage reports.",
+  "type": "mcp",
+  "config": {
+    "command": "mvn test",
+    "project_dir": "services/core-service",
+    "test_profiles": ["test"],
+    "coverage_tool": "jacoco",
+    "coverage_minimum_percent": 80,
+    "allowed_operations": ["test", "test_class", "test_method", "coverage_report"],
+    "fail_on_test_failure": true
+  }
+}

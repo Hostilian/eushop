@@ -1,0 +1,14 @@
+{
+  "name": "eushop-stripe-payments-plugin",
+  "version": "1.0.0",
+  "description": "Stripe Connect Marketplace Payment Plugin — bundles payment idempotency, webhook validation, split payment, and refund workflow tools.",
+  "skills": ["eushop-stripe-payment-idempotency"],
+  "agents": ["stripe-payment-audit-agent"],
+  "config": {
+    "idempotency_key_required": true,
+    "webhook_signature_validation": true,
+    "platform_fee_percent": 5,
+    "max_retry_attempts": 3,
+    "secret_key_pattern_block": ["sk_live_", "sk_test_"]
+  }
+}

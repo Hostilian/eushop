@@ -1,0 +1,9 @@
+{
+  "name": "weekly-gdpr-erasure-audit",
+  "description": "Weekly GDPR Art. 17 erasure request audit — verifies all pending erasure requests were fully cascaded.",
+  "cron": "0 9 * * 0",
+  "timezone": "Europe/Brussels",
+  "agent": "gdpr-erasure-cascade-agent",
+  "prompt": "Query gdpr_erasure_requests table for requests completed in the last 7 days. Verify each request was cascaded to all subprocessors: PostgreSQL, OpenSearch, Stripe, Auth0. Flag any incomplete cascades. Generate weekly GDPR erasure audit report.",
+  "enabled": true
+}

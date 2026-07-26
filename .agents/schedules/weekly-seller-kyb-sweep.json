@@ -1,0 +1,9 @@
+{
+  "name": "weekly-seller-kyb-verification-sweep",
+  "description": "Weekly KYB verification sweep — checks all pending seller verifications and flags overdue ones.",
+  "cron": "0 9 * * 3",
+  "timezone": "Europe/Brussels",
+  "agent": "seller-onboarding-kyb-agent",
+  "prompt": "Query seller_profiles for all accounts with kyb_status=PENDING. Flag any pending > 7 days. Send reminder notifications to sellers with incomplete data. Generate KYB pipeline health report showing pending, verified, and rejected counts.",
+  "enabled": true
+}

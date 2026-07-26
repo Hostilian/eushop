@@ -1,0 +1,14 @@
+{
+  "name": "eushop-axe-accessibility",
+  "description": "axe-core accessibility audit MCP tool for running WCAG 2.2 AA audits on EUshop pages.",
+  "type": "mcp",
+  "config": {
+    "tool": "axe-core",
+    "version": "4.9.0",
+    "standard": "WCAG2.2AA",
+    "report_violations_only": true,
+    "allowed_operations": ["audit_url", "audit_page", "generate_report"],
+    "fail_on_critical": true,
+    "fail_on_serious": true
+  }
+}

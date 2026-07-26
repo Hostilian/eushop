@@ -1,0 +1,13 @@
+{
+  "name": "eushop-vat-engine-plugin",
+  "version": "1.0.0",
+  "description": "VAT Engine & OSS Threshold Calculator Plugin for EUshop. Bundles VAT skills, DAC7 agent, and compliance KIs into a single installable package.",
+  "skills": ["eushop-dac7-tax-reporting-engine"],
+  "agents": ["vat-engine-validation-agent", "dac7-reporting-cron-agent"],
+  "config": {
+    "oss_threshold_eur": 10000,
+    "dac7_transaction_threshold": 30,
+    "dac7_value_threshold_eur": 2000,
+    "compliance_source": "packages/compliance/src/vat.ts"
+  }
+}

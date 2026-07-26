@@ -1,0 +1,9 @@
+{
+  "name": "weekly-typescript-type-coverage",
+  "description": "Weekly TypeScript strict mode check and type coverage report.",
+  "cron": "0 4 * * 4",
+  "timezone": "UTC",
+  "agent": "typescript-type-safety-agent",
+  "prompt": "Run tsc --noEmit --strict across all packages. Count remaining `any` type usages. Validate all Zod schemas match TypeScript types. Check type coverage percentage. Report on top 5 files with most type issues. Generate weekly TypeScript health report.",
+  "enabled": true
+}

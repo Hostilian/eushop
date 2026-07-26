@@ -1,0 +1,13 @@
+{
+  "name": "eushop-github-actions",
+  "description": "GitHub Actions API tool for monitoring CI workflow status, triggering re-runs, and fetching build artifacts.",
+  "type": "mcp",
+  "config": {
+    "api_base": "https://api.github.com",
+    "owner": "Hostilian",
+    "repo": "eushop",
+    "token": "${GITHUB_TOKEN}",
+    "allowed_operations": ["list_workflows", "get_workflow_run", "list_artifacts", "rerun_workflow"],
+    "read_write": true
+  }
+}

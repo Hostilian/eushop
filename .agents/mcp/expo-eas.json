@@ -1,0 +1,12 @@
+{
+  "name": "eushop-expo-eas",
+  "description": "Expo EAS Build & Submit MCP tool for managing mobile app builds and store submissions.",
+  "type": "mcp",
+  "config": {
+    "eas_token": "${EXPO_TOKEN}",
+    "project_id": "${EXPO_PROJECT_ID}",
+    "allowed_operations": ["build_list", "build_status", "update_list", "channel_list"],
+    "blocked_operations": ["build_submit", "build_cancel"],
+    "comment": "Submit operations require manual approval — never auto-submit to stores"
+  }
+}

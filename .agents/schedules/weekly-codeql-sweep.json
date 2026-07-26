@@ -1,0 +1,9 @@
+{
+  "name": "weekly-codeql-security-sweep",
+  "description": "Weekly CodeQL security scan on full codebase — catches new taint sinks and security regressions.",
+  "cron": "0 2 * * 6",
+  "timezone": "UTC",
+  "agent": "security-auditor",
+  "prompt": "Run CodeQL security-and-quality analysis on TypeScript/JavaScript and Java code. Check for new path traversal sinks, SQL injection patterns, XSS vectors, SSRF vulnerabilities, and hardcoded credentials. Generate weekly security scan summary. Escalate any CRITICAL findings immediately.",
+  "enabled": true
+}

@@ -1,0 +1,13 @@
+{
+  "name": "eushop-gpsr-product-safety-plugin",
+  "version": "1.0.0",
+  "description": "General Product Safety Regulation (EU 2023/988) Plugin — enforces GPSR fields on all non-food listings, manufacturer data, and safety notice management.",
+  "skills": ["eushop-regulatory-compliance-validator"],
+  "agents": ["gpsr-product-compliance-agent"],
+  "config": {
+    "regulation": "EU 2023/988",
+    "food_exempt": true,
+    "required_fields": ["manufacturer_name", "manufacturer_address", "manufacturer_contact", "risk_assessment_status", "safety_notice_status"],
+    "block_listing_without_gpsr": true
+  }
+}

@@ -1,0 +1,9 @@
+{
+  "name": "weekly-changelog-sync",
+  "description": "Weekly CHANGELOG.md sync — verifies all recent commits have corresponding changelog entries.",
+  "cron": "0 11 * * 5",
+  "timezone": "Europe/Brussels",
+  "agent": "changelog-maintenance-agent",
+  "prompt": "Review all commits to main branch in the last 7 days. Check CHANGELOG.md for corresponding entries. For any commits missing entries, generate draft changelog text following Keep a Changelog format. Suggest semantic version bump based on commit types. Create PR if changes are needed.",
+  "enabled": true
+}

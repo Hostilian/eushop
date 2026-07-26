@@ -1,0 +1,14 @@
+{
+  "name": "eushop-flyway-cli",
+  "description": "Flyway CLI MCP tool for validating and running database migrations in dev/staging environments.",
+  "type": "mcp",
+  "config": {
+    "flyway_url": "jdbc:postgresql://${POSTGRES_HOST}:5432/eushop",
+    "flyway_user": "${FLYWAY_USER}",
+    "flyway_password": "${FLYWAY_PASSWORD}",
+    "locations": "filesystem:db/migrations",
+    "allowed_operations": ["validate", "info", "migrate"],
+    "blocked_operations": ["clean", "repair"],
+    "comment": "clean and repair are blocked — use only in dev with explicit approval"
+  }
+}

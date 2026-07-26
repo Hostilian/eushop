@@ -1,0 +1,15 @@
+{
+  "name": "eushop-opensearch-query",
+  "description": "OpenSearch query tool for EUshop product catalog search. Supports full-text search, geo-distance filters, and allergen exclusion queries.",
+  "type": "mcp",
+  "config": {
+    "endpoint": "${OPENSEARCH_ENDPOINT}",
+    "index": "products",
+    "auth": {
+      "type": "bearer",
+      "token": "${OPENSEARCH_API_KEY}"
+    },
+    "allowed_operations": ["search", "get", "explain"],
+    "read_only": true
+  }
+}

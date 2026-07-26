@@ -1,0 +1,13 @@
+{
+  "name": "eushop-cicd-plugin",
+  "version": "1.0.0",
+  "description": "CI/CD Pipeline Plugin — bundles GitHub Actions health monitoring, static export validation, release automation, and deployment gate enforcement.",
+  "skills": ["pro-workflow-sdlc-pipeline"],
+  "agents": ["ci-pipeline-health-agent"],
+  "config": {
+    "workflow_files": [".github/workflows/ci-cd.yml"],
+    "deployment_gates": ["tests_pass", "codeql_clean", "bundle_size_ok", "accessibility_pass"],
+    "auto_release_notes": true,
+    "main_branch_protection": true
+  }
+}

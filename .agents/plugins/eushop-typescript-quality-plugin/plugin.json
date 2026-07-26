@@ -1,0 +1,14 @@
+{
+  "name": "eushop-typescript-quality-plugin",
+  "version": "1.0.0",
+  "description": "TypeScript Code Quality Plugin — bundles strict type checking, Zod schema validation, ESLint enforcement, and real-engineering patterns per mattpocock standards.",
+  "skills": ["mattpocock-skills-real-engineering"],
+  "agents": ["typescript-type-safety-agent"],
+  "config": {
+    "strict_mode": true,
+    "no_any": true,
+    "zod_schema_required": true,
+    "eslint_no_errors": true,
+    "type_coverage_minimum": 95
+  }
+}

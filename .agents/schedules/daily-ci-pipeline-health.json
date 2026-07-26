@@ -1,0 +1,9 @@
+{
+  "name": "daily-ci-pipeline-health",
+  "description": "Daily GitHub Actions CI pipeline health report.",
+  "cron": "30 8 * * *",
+  "timezone": "Europe/Brussels",
+  "agent": "ci-pipeline-health-agent",
+  "prompt": "Check GitHub Actions workflow run history for last 24 hours. Count failures vs successes on main branch. Identify any flaky tests (failed > 2 times in 10 runs). Check average build time vs previous week. Generate daily CI health report.",
+  "enabled": true
+}

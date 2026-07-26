@@ -1,0 +1,9 @@
+{
+  "name": "daily-db-migration-health",
+  "description": "Daily Flyway migration health check — validates pending migrations and detects checksum changes.",
+  "cron": "30 5 * * *",
+  "timezone": "UTC",
+  "agent": "database-migration-safety-agent",
+  "prompt": "Query Flyway schema history table. Check for any failed migrations. Verify no checksums have changed on applied migrations. List any pending migrations. Alert if any migration has been pending > 24 hours. Generate daily migration health report.",
+  "enabled": true
+}

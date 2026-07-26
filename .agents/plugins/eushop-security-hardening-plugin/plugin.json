@@ -1,0 +1,13 @@
+{
+  "name": "eushop-security-hardening-plugin",
+  "version": "1.0.0",
+  "description": "Security Hardening Plugin — bundles CodeQL zero-critical enforcement, Auth0 JWT filters, OWASP input sanitization, and secrets leak prevention.",
+  "skills": ["eushop-auth0-session-jwt-security", "eushop-security-codeql-zero-critical", "agento-patronum-security-hooks"],
+  "agents": ["security-auditor", "secrets-leak-prevention-agent", "dependency-vulnerability-scan-agent"],
+  "config": {
+    "codeql_severity_block": ["critical", "high"],
+    "owasp_top10_enforce": true,
+    "jwt_fail_closed": true,
+    "secret_scan_on_commit": true
+  }
+}

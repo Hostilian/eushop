@@ -1,0 +1,14 @@
+{
+  "name": "eushop-geospatial-plugin",
+  "version": "1.0.0",
+  "description": "PostGIS Geospatial & PDO/PGI Origin Plugin — bundles spatial corridor matching, origin-destination routing, and Protected Designation of Origin badge enforcement.",
+  "skills": ["eushop-postgis-geospatial-matching", "eushop-postgis-spatial-corridor-matching"],
+  "agents": ["postgis-spatial-query-agent"],
+  "config": {
+    "default_search_radius_km": 500,
+    "pdo_pgi_validation": true,
+    "spatial_index_type": "GIST",
+    "distance_function": "ST_DWithin",
+    "coordinate_system": "EPSG:4326"
+  }
+}

@@ -1,0 +1,9 @@
+{
+  "name": "weekly-wcag-accessibility-audit",
+  "description": "Weekly WCAG 2.2 AA accessibility audit across all key EUshop pages.",
+  "cron": "0 5 * * 2",
+  "timezone": "Europe/Brussels",
+  "agent": "wcag-accessibility-audit-agent",
+  "prompt": "Run axe-core WCAG 2.2 AA audit on: homepage, product listing page, product detail page, checkout flow, seller profile page, allergen filter page. Report all critical and serious violations. Generate weekly accessibility health report.",
+  "enabled": true
+}

@@ -1,0 +1,9 @@
+{
+  "name": "biweekly-e2e-regression-run",
+  "description": "Bi-weekly full Playwright E2E regression run across all critical journeys.",
+  "cron": "0 4 1,15 * *",
+  "timezone": "Europe/Brussels",
+  "agent": "ci-pipeline-health-agent",
+  "prompt": "Trigger full Playwright E2E test suite run on staging environment: checkout flow, allergen filter, seller onboarding, product search, user registration. Run on Chromium, Firefox, and WebKit. Run visual regression tests. Report all failures. Fail if any critical journey breaks.",
+  "enabled": true
+}

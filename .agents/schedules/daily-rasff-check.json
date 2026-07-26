@@ -1,0 +1,9 @@
+{
+  "name": "daily-rasff-food-safety-check",
+  "description": "Daily RASFF food safety alert check — polls EU RASFF API and matches against active marketplace listings.",
+  "cron": "0 6 * * *",
+  "timezone": "Europe/Brussels",
+  "agent": "rasff-food-safety-agent",
+  "prompt": "Check EU RASFF portal for new food safety alerts in the last 24 hours. Match against active product listings. Suspend any matching listings immediately and log to food safety audit trail.",
+  "enabled": true
+}

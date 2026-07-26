@@ -1,0 +1,14 @@
+{
+  "name": "eushop-design-system-plugin",
+  "version": "1.0.0",
+  "description": "Open Design System Plugin — bundles glassmorphism tokens, micro-animation utilities, responsive grid system, and premium UI component library.",
+  "skills": ["open-design-engine", "eushop-wcag-accessibility-design-tokens"],
+  "agents": ["ui-aesthetics-architect"],
+  "config": {
+    "design_tokens_path": "packages/ui/tokens",
+    "glassmorphism": true,
+    "micro_animations": true,
+    "google_fonts": ["Inter", "Outfit"],
+    "dark_mode": true
+  }
+}

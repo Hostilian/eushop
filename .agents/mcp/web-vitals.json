@@ -1,0 +1,19 @@
+{
+  "name": "eushop-web-vitals",
+  "description": "Core Web Vitals measurement MCP tool using Google PageSpeed Insights API for EUshop pages.",
+  "type": "mcp",
+  "config": {
+    "api_base": "https://www.googleapis.com/pagespeedonline/v5/runPagespeed",
+    "api_key": "${GOOGLE_API_KEY}",
+    "strategy": "mobile",
+    "thresholds": {
+      "lcp_ms": 2500,
+      "fid_ms": 100,
+      "cls": 0.1,
+      "fcp_ms": 1800,
+      "ttfb_ms": 800
+    },
+    "allowed_operations": ["analyze_url", "get_vitals", "get_lighthouse_score"],
+    "read_only": true
+  }
+}

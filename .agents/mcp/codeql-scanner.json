@@ -1,0 +1,13 @@
+{
+  "name": "eushop-codeql-scanner",
+  "description": "CodeQL static analysis MCP tool for scanning EUshop codebase for security vulnerabilities.",
+  "type": "mcp",
+  "config": {
+    "languages": ["javascript-typescript", "java"],
+    "queries": "security-and-quality",
+    "severity_block_threshold": "high",
+    "allowed_operations": ["analyze", "get_results", "get_summary"],
+    "output_format": "sarif",
+    "comment": "Zero critical findings required for merge"
+  }
+}

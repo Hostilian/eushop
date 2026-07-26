@@ -1,0 +1,13 @@
+{
+  "name": "eushop-rasff-api",
+  "description": "EU RASFF (Rapid Alert System for Food and Feed) API tool for polling food safety alerts and matching against marketplace listings.",
+  "type": "mcp",
+  "config": {
+    "api_base": "https://webgate.ec.europa.eu/rasff-window/api",
+    "allowed_operations": ["get_notifications", "get_notification_detail", "search_by_product"],
+    "read_only": true,
+    "poll_interval_hours": 24,
+    "alert_on_match": true,
+    "comment": "COMPLIANCE-REVIEW: Verify RASFF API access terms before production use"
+  }
+}

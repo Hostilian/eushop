@@ -1,0 +1,9 @@
+{
+  "name": "daily-opensearch-index-health",
+  "description": "Daily OpenSearch cluster and index health check.",
+  "cron": "0 7 * * *",
+  "timezone": "UTC",
+  "agent": "opensearch-index-health-agent",
+  "prompt": "Check OpenSearch cluster health status. Verify shard allocation. Check index sizes and document counts. Report any red/yellow cluster status. Check search latency p95 from metrics. Alert if > 100ms.",
+  "enabled": true
+}

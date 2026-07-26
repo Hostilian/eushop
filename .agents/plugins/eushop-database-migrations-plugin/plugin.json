@@ -1,0 +1,14 @@
+{
+  "name": "eushop-database-migrations-plugin",
+  "version": "1.0.0",
+  "description": "Flyway Zero-Downtime Database Migrations Plugin — bundles migration safety checks, schema versioning, CONCURRENT index creation, and rollback validation.",
+  "skills": ["eushop-flyway-zero-downtime-migrations", "eushop-flyway-schema-versioning"],
+  "agents": ["database-migration-safety-agent", "database-tuning-specialist"],
+  "config": {
+    "flyway_locations": "db/migrations",
+    "block_drop_table": true,
+    "block_drop_column": true,
+    "require_concurrent_index": true,
+    "sequential_versions_required": true
+  }
+}

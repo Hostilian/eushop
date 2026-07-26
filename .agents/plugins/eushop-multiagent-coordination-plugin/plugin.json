@@ -1,0 +1,14 @@
+{
+  "name": "eushop-multiagent-coordination-plugin",
+  "version": "1.0.0",
+  "description": "Multi-Agent Coordination Plugin — bundles lock-free worktrees, rebase protocol, state synchronization, and circuit breaker failover for AI agent swarms.",
+  "skills": ["eushop-autonomous-multiagent-coordination", "eushop-autonomous-multiagent-failover", "ruflo-agent-swarm-orchestrator"],
+  "agents": [],
+  "config": {
+    "max_concurrent_agents": 8,
+    "circuit_breaker_threshold": 3,
+    "failover_providers": 20,
+    "worktree_isolation": true,
+    "rebase_protocol": "merge-then-rebase"
+  }
+}
