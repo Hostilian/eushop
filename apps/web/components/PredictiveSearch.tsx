@@ -1,4 +1,6 @@
-import { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef, useId } from 'react';
+import { readSafeStorage, writeSafeStorage, StorageSchema } from '../lib/storageSafety';
+import { trackEvent } from '../lib/analytics/events';
 
 interface PredictiveSearchProps {
   onSearch: (query: string, parsedFilters: ParsedFilters) => void;
@@ -12,56 +14,99 @@ export interface ParsedFilters {
   maxPrice?: number;
 }
 
+const RECENT_SEARCHES_SCHEMA: StorageSchema<string[]> = {
+  key: 'eushop_recent_searches',
+  version: 1,
+  area: 'local',
+  fallback: () => [],
+  validate: (val): val is string[] => Array.isArray(val) && val.every(s => typeof s === 'string'),
+};
+
 const PRESET_QUERIES = [
-  { text: 'Lactose-free cheese from Spain', icon: '🧀' },
-  { text: 'Gluten-free Belgian chocolates', icon: '🍫' },
-  { text: 'Aged balsamic vinegar from Italy', icon: '🍇' },
-  { text: 'Smoked ham from Black Forest Germany', icon: '🌲' },
+  { text: 'Lactose-free cheese from Spain', icon: '🧀', category: 'Cheese', country: 'Spain' },
+  { text: 'Gluten-free Belgian chocolates', icon: '🍫', category: 'Chocolate', country: 'Belgium' },
+  { text: 'Aged balsamic vinegar from Italy', icon: '🍷', category: 'Condiment', country: 'Italy' },
+  { text: 'Smoked ham from Black Forest Germany', icon: '🥓', category: 'Charcuterie', country: 'Germany' },
 ];
 
-const STEPS = [
-  'Parsing linguistic intent & semantic matching...',
-  'Checking DAC7 compliance & merchant trade-registers...',
-  'Filtering regulatory allergen profiles (EU 1169/2011)...',
-  'Securing DSA Article 30 KYBC merchant status...',
-  'Mapping OSS VAT rates and shipping lanes...',
+const QUICK_COUNTRIES = [
+  { name: 'Italy', flag: '🇮🇹' },
+  { name: 'France', flag: '🇫🇷' },
+  { name: 'Spain', flag: '🇪🇸' },
+  { name: 'Germany', flag: '🇩🇪' },
+  { name: 'Belgium', flag: '🇧🇪' },
+  { name: 'Greece', flag: '🇬🇷' },
+  { name: 'Portugal', flag: '🇵🇹' },
+];
+
+const QUICK_CATEGORIES = [
+  { name: 'Cheese', icon: '🧀' },
+  { name: 'Chocolate', icon: '🍫' },
+  { name: 'Wine', icon: '🍷' },
+  { name: 'Charcuterie', icon: '🥓' },
+  { name: 'Condiment', icon: '🫒' },
 ];
 
 export default function PredictiveSearch({ onSearch, onClear }: PredictiveSearchProps) {
   const [query, setQuery] = useState('');
   const [isFocused, setIsFocused] = useState(false);
-  const [aiState, setAiState] = useState<'idle' | 'parsing' | 'complete'>('idle');
-  const [reasoningLogs, setReasoningLogs] = useState<string[]>([]);
-  const [activeStep, setActiveStep] = useState(0);
+  const [recentSearches, setRecentSearches] = useState<string[]>([]);
+  const [selectedIndex, setSelectedIndex] = useState<number>(-1);
+  const containerRef = useRef<HTMLDivElement>(null);
+  const inputRef = useRef<HTMLInputElement>(null);
+
+  const searchInputId = useId();
+  const listboxId = useId();
+
+  useEffect(() => {
+    setRecentSearches(readSafeStorage(RECENT_SEARCHES_SCHEMA));
+  }, []);
+
+  // Close dropdown on click outside
+  useEffect(() => {
+    function handleClickOutside(e: MouseEvent) {
+      if (containerRef.current && !containerRef.current.contains(e.target as Node)) {
+        setIsFocused(false);
+      }
+    }
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, []);
+
+  const saveRecentSearch = (searchTerm: string) => {
+    if (!searchTerm.trim()) return;
+    const existing = readSafeStorage(RECENT_SEARCHES_SCHEMA);
+    const updated = [searchTerm, ...existing.filter(s => s !== searchTerm)].slice(0, 5);
+    writeSafeStorage(RECENT_SEARCHES_SCHEMA, updated);
+    setRecentSearches(updated);
+  };
+
+  const clearRecentSearches = () => {
+    writeSafeStorage(RECENT_SEARCHES_SCHEMA, []);
+    setRecentSearches([]);
+  };
 
   const parseNaturalLanguage = (text: string): ParsedFilters => {
     const lower = text.toLowerCase();
     const filters: ParsedFilters = {};
 
-    // Parse Country
     if (lower.includes('spain') || lower.includes('spanish')) filters.country = 'Spain';
     if (lower.includes('belgium') || lower.includes('belgian')) filters.country = 'Belgium';
     if (lower.includes('italy') || lower.includes('italian')) filters.country = 'Italy';
     if (lower.includes('germany') || lower.includes('german')) filters.country = 'Germany';
     if (lower.includes('france') || lower.includes('french')) filters.country = 'France';
     if (lower.includes('greece') || lower.includes('greek')) filters.country = 'Greece';
-    if (lower.includes('austria') || lower.includes('austrian')) filters.country = 'Austria';
     if (lower.includes('portugal') || lower.includes('portuguese')) filters.country = 'Portugal';
-    if (lower.includes('netherlands') || lower.includes('dutch')) filters.country = 'Netherlands';
 
-    // Parse Category
-    if (lower.includes('cheese') || lower.includes('dairy')) filters.category = 'Dairy & Cheese';
-    if (lower.includes('chocolate') || lower.includes('sweet') || lower.includes('confectionery')) {
-      filters.category = 'Sweets & Confectionery';
+    if (lower.includes('cheese') || lower.includes('dairy')) filters.category = 'Cheese';
+    if (lower.includes('chocolate') || lower.includes('praline')) filters.category = 'Chocolate';
+    if (lower.includes('wine') || lower.includes('balsamic') || lower.includes('condiment') || lower.includes('oil')) {
+      filters.category = 'Condiment';
     }
-    if (lower.includes('oil') || lower.includes('vinegar') || lower.includes('condiment') || lower.includes('balsamic')) {
-      filters.category = 'Condiments';
-    }
-    if (lower.includes('ham') || lower.includes('meat') || lower.includes('deli')) {
-      filters.category = 'Meat & Deli';
+    if (lower.includes('ham') || lower.includes('charcuterie') || lower.includes('sausage')) {
+      filters.category = 'Charcuterie';
     }
 
-    // Parse Allergens to avoid (e.g. "lactose-free" or "gluten-free" means we want to exclude items containing Milk or Gluten)
     const avoid: string[] = [];
     if (lower.includes('lactose-free') || lower.includes('dairy-free') || lower.includes('no milk')) {
       avoid.push('Milk');
@@ -69,14 +114,10 @@ export default function PredictiveSearch({ onSearch, onClear }: PredictiveSearch
     if (lower.includes('gluten-free') || lower.includes('no gluten')) {
       avoid.push('Gluten');
     }
-    if (lower.includes('nut-free') || lower.includes('no nuts')) {
-      avoid.push('Nuts');
-    }
     if (avoid.length > 0) {
       filters.allergensAvoid = avoid;
     }
 
-    // Parse Price Limit
     const priceMatch = lower.match(/(?:under|below|max|maximum)\s*(?:€|\$)?\s*(\d+)/);
     if (priceMatch && priceMatch[1]) {
       filters.maxPrice = parseInt(priceMatch[1], 10);
@@ -85,192 +126,207 @@ export default function PredictiveSearch({ onSearch, onClear }: PredictiveSearch
     return filters;
   };
 
-  useEffect(() => {
-    if (aiState === 'parsing') {
-      const interval = setInterval(() => {
-        setActiveStep((prev) => {
-          if (prev < STEPS.length) {
-            setReasoningLogs((logs) => [...logs, STEPS[prev]]);
-            return prev + 1;
-          } else {
-            clearInterval(interval);
-            setAiState('complete');
-            // Execute search after logs finish
-            const filters = parseNaturalLanguage(query);
-            onSearch(query, filters);
-            return prev;
-          }
-        });
-      }, 350); // Fast, satisfying typing interval
+  const executeSearch = (searchTerm: string, filterOverride?: ParsedFilters) => {
+    const term = searchTerm.trim();
+    if (!term) return;
 
-      return () => clearInterval(interval);
-    }
-    return undefined;
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [aiState, query]);
-
-  const handleSearchSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!query.trim()) return;
-    setReasoningLogs([]);
-    setActiveStep(0);
-    setAiState('parsing');
+    saveRecentSearch(term);
+    const filters = filterOverride || parseNaturalLanguage(term);
+    trackEvent('search_query_submitted', { filterValue: term, country: filters.country, category: filters.category });
+    onSearch(term, filters);
+    setIsFocused(false);
   };
 
-  const triggerPreset = (presetText: string) => {
-    setQuery(presetText);
-    setReasoningLogs([]);
-    setActiveStep(0);
-    setAiState('parsing');
+  const handleFormSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    executeSearch(query);
+  };
+
+  const handleKeyDown = (e: React.KeyboardEvent) => {
+    if (e.key === 'Escape') {
+      setIsFocused(false);
+      inputRef.current?.blur();
+    }
   };
 
   const handleClearAll = () => {
     setQuery('');
-    setAiState('idle');
-    setReasoningLogs([]);
+    setSelectedIndex(-1);
     onClear();
+    inputRef.current?.focus();
   };
 
   return (
-    <div className="w-full max-w-4xl mx-auto space-y-6">
-      {/* Outer Glow container */}
+    <div ref={containerRef} className="w-full max-w-4xl mx-auto relative space-y-3">
+      {/* Search Input Bar */}
       <div
-        className={`relative p-0.5 rounded-3xl transition-all duration-500 bg-gradient-to-r ${
-          isFocused || aiState === 'parsing'
-            ? 'from-emerald-500 via-teal-400 to-blue-500 shadow-lg shadow-teal-500/10'
-            : 'from-gray-200/50 to-gray-300/30 dark:from-gray-800/50 dark:to-gray-700/30'
+        className={`relative p-0.5 rounded-3xl transition-all duration-300 bg-gradient-to-r ${
+          isFocused
+            ? 'from-blue-600 via-indigo-500 to-purple-600 shadow-xl shadow-blue-500/10'
+            : 'from-gray-200 to-gray-300 dark:from-gray-800 dark:to-gray-700'
         }`}
       >
         <form
-          onSubmit={handleSearchSubmit}
+          onSubmit={handleFormSubmit}
           className="relative flex items-center bg-white dark:bg-gray-950 rounded-[22px] px-4 py-3"
+          role="search"
         >
-          {/* AI Icon */}
-          <div className="flex items-center justify-center mr-3 text-emerald-500 dark:text-emerald-400">
-            <svg
-              className={`w-6 h-6 ${aiState === 'parsing' ? 'animate-spin' : ''}`}
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
-            >
-              {aiState === 'parsing' ? (
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"
-                />
-              ) : (
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={1.8}
-                  d="M9.663 17h4.673M12 3v1m6.364.364l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z"
-                />
-              )}
+          <div className="flex items-center justify-center mr-3 text-blue-600 dark:text-blue-400">
+            <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
             </svg>
           </div>
 
-          {/* Search Input */}
+          <label htmlFor={searchInputId} className="sr-only">
+            Search European Specialty Foods
+          </label>
           <input
+            ref={inputRef}
+            id={searchInputId}
             type="text"
+            role="combobox"
+            aria-expanded={isFocused}
+            aria-autocomplete="list"
+            aria-controls={listboxId}
             value={query}
-            onChange={(e) => setQuery(e.target.value)}
-            onFocus={() => setIsFocused(true)}
-            onBlur={() => setIsFocused(false)}
-            placeholder="Search with predictive AI (e.g. 'Gluten-free Belgian chocolates under 30 euros')..."
-            className="flex-1 bg-transparent border-none text-gray-800 dark:text-gray-100 placeholder-gray-400 dark:placeholder-gray-600 focus:outline-none focus:ring-0 text-sm md:text-base font-sans"
+            onChange={(e) => {
+              setQuery(e.target.value);
+              setIsFocused(true);
+            }}
+            onFocus={() => {
+              setIsFocused(true);
+              trackEvent('search_started');
+            }}
+            onKeyDown={handleKeyDown}
+            placeholder="Search specialty foods (e.g., 'Gluten-free Manchego from Spain')..."
+            className="w-full bg-transparent border-none text-gray-900 dark:text-white placeholder-gray-400 text-sm font-medium focus:outline-none focus:ring-0"
           />
 
-          {/* Clear Button */}
           {query && (
             <button
               type="button"
               onClick={handleClearAll}
-              className="p-1 hover:bg-gray-100 dark:hover:bg-gray-900 rounded-full text-gray-400 hover:text-gray-600 transition mr-2"
+              className="p-1 rounded-full text-gray-400 hover:text-gray-600 dark:hover:text-gray-200 transition-colors mr-2"
+              aria-label="Clear search query"
             >
-              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
               </svg>
             </button>
           )}
 
-          {/* Action Trigger Button */}
           <button
             type="submit"
-            className="bg-brand-dark dark:bg-emerald-600 dark:hover:bg-emerald-500 text-white font-medium px-4 py-2 rounded-xl text-xs md:text-sm hover:opacity-90 active:scale-95 transition-all flex items-center gap-1.5"
+            className="bg-blue-600 hover:bg-blue-700 text-white text-xs font-semibold px-4 py-2 rounded-xl transition-all shadow-md shadow-blue-500/20 whitespace-nowrap"
           >
-            <span>Ask AI</span>
-            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M14 5l7 7m0 0l-7 7m7-7H3" />
-            </svg>
+            Search
           </button>
         </form>
       </div>
 
-      {/* Preset Suggestions */}
-      {aiState === 'idle' && (
-        <div className="flex flex-wrap gap-2 items-center justify-center animate-fade-in">
-          <span className="text-xs text-gray-400 font-bold uppercase tracking-wider mr-1">Try Prompts:</span>
-          {PRESET_QUERIES.map((preset) => (
-            <button
-              key={preset.text}
-              onClick={() => triggerPreset(preset.text)}
-              className="flex items-center gap-1.5 px-3.5 py-1.5 rounded-full border border-gray-200 dark:border-gray-800 bg-white/70 dark:bg-gray-900/40 text-xs text-gray-600 dark:text-gray-300 hover:border-emerald-500 dark:hover:border-emerald-500 hover:bg-emerald-50/20 hover:text-emerald-700 dark:hover:text-emerald-400 transition duration-200"
-            >
-              <span>{preset.icon}</span>
-              <span>{preset.text}</span>
-            </button>
-          ))}
-        </div>
-      )}
-
-      {/* AI Reasoning Log (Pitch Feature) */}
-      {aiState !== 'idle' && (
-        <div className="bg-gray-900/95 dark:bg-black/80 rounded-2xl border border-gray-800/80 p-5 font-mono text-xs text-emerald-400 space-y-2.5 shadow-2xl relative overflow-hidden backdrop-blur-md">
-          {/* Header Panel */}
-          <div className="flex justify-between items-center border-b border-gray-800 pb-2 mb-3">
-            <div className="flex items-center gap-2">
-              <span className="relative flex h-2 w-2">
-                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
-                <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
-              </span>
-              <span className="font-bold text-emerald-500 tracking-wider">PREDICTIVE SEARCH ENGINE v15.0</span>
+      {/* Zero-Query Suggestions Dropdown */}
+      {isFocused && (
+        <div
+          id={listboxId}
+          role="listbox"
+          className="absolute z-50 left-0 right-0 top-full mt-2 bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 rounded-3xl shadow-2xl overflow-hidden p-6 space-y-6 animate-in fade-in slide-in-from-top-2 duration-200"
+        >
+          {/* Quick Suggestions */}
+          <div>
+            <div className="text-xs font-bold uppercase tracking-wider text-gray-400 dark:text-gray-500 mb-3">
+              Suggested Searches
             </div>
-            <span className="text-[10px] text-gray-500 font-semibold select-none">COSMIC_ROUTER_ONLINE</span>
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+              {PRESET_QUERIES.map((preset, idx) => (
+                <button
+                  key={idx}
+                  type="button"
+                  onClick={() => {
+                    setQuery(preset.text);
+                    executeSearch(preset.text, { country: preset.country, category: preset.category });
+                  }}
+                  className="flex items-center space-x-3 p-3 rounded-2xl border border-gray-100 dark:border-gray-800 hover:border-blue-300 dark:hover:border-blue-700 hover:bg-blue-50/50 dark:hover:bg-blue-950/30 text-left transition-all group"
+                >
+                  <span className="text-xl">{preset.icon}</span>
+                  <span className="text-xs font-medium text-gray-800 dark:text-gray-200 group-hover:text-blue-600 dark:group-hover:text-blue-400">
+                    {preset.text}
+                  </span>
+                </button>
+              ))}
+            </div>
           </div>
 
-          {/* Query Log */}
-          <div className="text-gray-400">
-            <span className="text-emerald-600 font-bold">$</span> query --intent &quot;{query}&quot;
+          {/* Quick Country Filters */}
+          <div>
+            <div className="text-xs font-bold uppercase tracking-wider text-gray-400 dark:text-gray-500 mb-3">
+              Browse Origin Country
+            </div>
+            <div className="flex flex-wrap gap-2">
+              {QUICK_COUNTRIES.map((c) => (
+                <button
+                  key={c.name}
+                  type="button"
+                  onClick={() => {
+                    setQuery(c.name);
+                    executeSearch(c.name, { country: c.name });
+                  }}
+                  className="flex items-center space-x-2 px-3.5 py-1.5 rounded-full border border-gray-200 dark:border-gray-800 hover:border-blue-500 bg-gray-50 dark:bg-gray-800 text-xs font-medium text-gray-700 dark:text-gray-300 transition-all"
+                >
+                  <span>{c.flag}</span>
+                  <span>{c.name}</span>
+                </button>
+              ))}
+            </div>
           </div>
 
-          {/* Typing log lists */}
-          <div className="space-y-2">
-            {reasoningLogs.map((log, index) => (
-              <div key={index} className="flex gap-2 items-start animate-fade-in">
-                <span className="text-emerald-500 shrink-0">✔</span>
-                <span className="text-gray-300 leading-normal">{log}</span>
+          {/* Quick Categories */}
+          <div>
+            <div className="text-xs font-bold uppercase tracking-wider text-gray-400 dark:text-gray-500 mb-3">
+              Browse Categories
+            </div>
+            <div className="flex flex-wrap gap-2">
+              {QUICK_CATEGORIES.map((cat) => (
+                <button
+                  key={cat.name}
+                  type="button"
+                  onClick={() => {
+                    setQuery(cat.name);
+                    executeSearch(cat.name, { category: cat.name });
+                  }}
+                  className="flex items-center space-x-2 px-3.5 py-1.5 rounded-full border border-gray-200 dark:border-gray-800 hover:border-blue-500 bg-gray-50 dark:bg-gray-800 text-xs font-medium text-gray-700 dark:text-gray-300 transition-all"
+                >
+                  <span>{cat.icon}</span>
+                  <span>{cat.name}</span>
+                </button>
+              ))}
+            </div>
+          </div>
+
+          {/* Recent Searches */}
+          {recentSearches.length > 0 && (
+            <div className="pt-3 border-t border-gray-100 dark:border-gray-800 flex flex-wrap items-center justify-between gap-2">
+              <div className="text-xs text-gray-400">
+                Recent searches: {' '}
+                {recentSearches.map((s, idx) => (
+                  <button
+                    key={idx}
+                    type="button"
+                    onClick={() => {
+                      setQuery(s);
+                      executeSearch(s);
+                    }}
+                    className="inline-block underline text-gray-600 dark:text-gray-300 hover:text-blue-600 mr-2"
+                  >
+                    {s}
+                  </button>
+                ))}
               </div>
-            ))}
-
-            {aiState === 'parsing' && (
-              <div className="flex gap-2 items-center text-emerald-400 animate-pulse mt-1 select-none">
-                <span className="animate-spin text-sm">✦</span>
-                <span>Synthesizing product graph matrices...</span>
-              </div>
-            )}
-          </div>
-
-          {/* Final State */}
-          {aiState === 'complete' && (
-            <div className="border-t border-gray-800 pt-3 mt-4 flex items-center justify-between text-[11px] text-emerald-500">
-              <span>➔ Intent mapped. Regulatory controls checked. Displaying results.</span>
               <button
-                onClick={handleClearAll}
-                className="hover:underline font-bold tracking-wide uppercase text-rose-400 flex items-center gap-1"
+                type="button"
+                onClick={clearRecentSearches}
+                className="text-xs text-gray-400 hover:text-red-500"
               >
-                Reset Canvas
+                Clear history
               </button>
             </div>
           )}

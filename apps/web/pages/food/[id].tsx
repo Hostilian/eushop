@@ -12,6 +12,7 @@ import { StartConversationButton } from '../../components/chat/StartConversation
 import { Breadcrumb } from '../../components/layout/Breadcrumb';
 import { readCart, writeCart } from '../../lib/storageSafety';
 import { TraderTraceabilityCard } from '../../components/dsa/TraderTraceabilityCard';
+import { PriceBreakdownCard } from '../../components/discovery/PriceBreakdownCard';
 
 interface FoodDetail {
   id: string;
@@ -560,6 +561,23 @@ export default function FoodDetailPage() {
               >
                 {addingToCart ? 'Adding…' : `Add to cart — €${(food.price * quantity).toFixed(2)}`}
               </button>
+            </div>
+
+            {/* Price Breakdown Component */}
+            <div className="pt-4">
+              <PriceBreakdownCard
+                subtotal={food.price * quantity}
+                shippingBreakdown={[
+                  {
+                    sellerName: food.seller?.name?.trim() || 'Artisan Seller',
+                    country: food.country || 'EU',
+                    shippingFee: food.price * quantity >= 100 ? 0 : 5.90,
+                  },
+                ]}
+                vatRatePercent={19}
+                total={food.price * quantity + (food.price * quantity >= 100 ? 0 : 5.90)}
+                freeShippingThreshold={100}
+              />
             </div>
 
             {/* Message Seller Button */}
