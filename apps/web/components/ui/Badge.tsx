@@ -31,7 +31,9 @@ export function Badge({ children, variant = 'neutral', size = 'sm', icon }: Badg
   return (
     <span
       className={[
-        'inline-flex items-center font-medium rounded-full border',
+        // COMPLIANCE-REVIEW: font-bold required by FIC Reg. 1169/2011 Art. 21 for allergen emphasis.
+        // Also used for other badge variants — bold is acceptable for all label types.
+        'inline-flex items-center font-bold rounded-full border',
         variantClasses[variant],
         sizeClasses[size],
       ].join(' ')}
@@ -41,6 +43,7 @@ export function Badge({ children, variant = 'neutral', size = 'sm', icon }: Badg
     </span>
   );
 }
+
 
 // ─── Specialised variants ─────────────────────────────────────────────────────
 
