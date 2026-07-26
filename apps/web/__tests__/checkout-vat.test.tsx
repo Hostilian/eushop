@@ -1,11 +1,8 @@
 import '@testing-library/jest-dom';
 import { fireEvent, render, screen, waitFor } from '@testing-library/react';
+import { useElements, useStripe } from '@stripe/react-stripe-js';
 import Checkout from '../pages/checkout';
-
-const mockConfirmCardPayment = jest.fn().mockResolvedValue({ error: undefined });
-const mockGetElement = jest.fn(() => ({}));
-const mockCreateMarketplacePaymentIntent = jest.fn();
-const mockCreateLegacyOrder = jest.fn();
+import { marketplaceCheckoutAPI, orderAPI } from '../lib/services';
 
 jest.mock('@stripe/stripe-js', () => ({
   loadStripe: jest.fn(() => Promise.resolve({})),
@@ -14,8 +11,8 @@ jest.mock('@stripe/stripe-js', () => ({
 jest.mock('@stripe/react-stripe-js', () => ({
   Elements: ({ children }: { children: React.ReactNode }) => <>{children}</>,
   CardElement: () => <div data-testid="card-element" />,
-  useStripe: () => ({ confirmCardPayment: mockConfirmCardPayment }),
-  useElements: () => ({ getElement: mockGetElement }),
+  useStripe: jest.fn(),
+  useElements: jest.fn(),
 }));
 
 jest.mock('../components/layout/PageWrapper', () => ({
@@ -35,15 +32,30 @@ jest.mock('../lib/services', () => ({
   foodAPI: {
     getById: jest.fn().mockResolvedValue({ sellerId: 'seller-1', finderFee: 5 }),
   },
-  orderAPI: { create: mockCreateLegacyOrder },
+  orderAPI: { create: jest.fn() },
   marketplaceCheckoutAPI: {
-    createPaymentIntent: mockCreateMarketplacePaymentIntent,
+    createPaymentIntent: jest.fn(),
   },
 }));
+
+const mockConfirmCardPayment = jest.fn().mockResolvedValue({ error: undefined });
+const mockGetElement = jest.fn(() => ({}));
+const mockCreateMarketplacePaymentIntent =
+  marketplaceCheckoutAPI.createPaymentIntent as jest.MockedFunction<
+    typeof marketplaceCheckoutAPI.createPaymentIntent
+  >;
+const mockCreateLegacyOrder = orderAPI.create as jest.MockedFunction<
+  typeof orderAPI.create
+>;
 
 describe('checkout VAT summary', () => {
   beforeEach(() => {
     jest.clearAllMocks();
+    (useStripe as jest.Mock).mockReturnValue({
+      confirmCardPayment: mockConfirmCardPayment,
+    });
+    (useElements as jest.Mock).mockReturnValue({ getElement: mockGetElement });
+    mockConfirmCardPayment.mockResolvedValue({ error: undefined });
     window.localStorage.clear();
     window.localStorage.setItem('cart', JSON.stringify([
       { id: 'food-1', name: 'Test Food', country: 'DE', price: 100, quantity: 1 },
