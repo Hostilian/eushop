@@ -11,6 +11,7 @@ import { EU_ALLERGENS_14 } from '@eushop/compliance';
 import { StartConversationButton } from '../../components/chat/StartConversationButton';
 import { Breadcrumb } from '../../components/layout/Breadcrumb';
 import { readCart, writeCart } from '../../lib/storageSafety';
+import { TraderTraceabilityCard } from '../../components/dsa/TraderTraceabilityCard';
 
 interface FoodDetail {
   id: string;
@@ -337,6 +338,22 @@ export default function FoodDetailPage() {
               <span className="text-sm font-bold text-gray-800 dark:text-gray-200">{food.seller?.name?.trim() || 'Seller identity unavailable'}</span>
               {food.seller?.verified && <VerifiedSellerBadge />}
             </div>
+
+            {/* COMPLIANCE-REVIEW: DSA Art. 30 — Full trader traceability card.
+                Shows trade register ID, VAT, address, and self-certified compliance status.
+                Rendered below the persistent seller bar. Falls back gracefully when
+                seller profile data is not yet in the API response. */}
+            {food.seller?.name && (
+              <TraderTraceabilityCard
+                sellerName={food.seller.name.trim()}
+                tradeRegisterNumber={(food.seller as unknown as Record<string, string>).tradeRegisterNumber || 'Pending verification'}
+                vatNumber={(food.seller as unknown as Record<string, string>).vatNumber}
+                address={(food.seller as unknown as Record<string, string>).address || 'Address pending verification'}
+                countryIso2={(food.seller as unknown as Record<string, string>).countryIso2 || food.country?.slice(0, 2)?.toUpperCase() || 'EU'}
+                kycVerified={food.seller.verified || false}
+                selfCertifiedCompliant={(food.seller as unknown as Record<string, boolean>).selfCertifiedCompliant || false}
+              />
+            )}
 
             {/* Description */}
             <p className="text-sm text-gray-700 dark:text-gray-300 leading-relaxed">{food.description}</p>
