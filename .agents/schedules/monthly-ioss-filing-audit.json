@@ -1,0 +1,9 @@
+{
+  "name": "monthly-ioss-filing-audit",
+  "description": "Monthly reconciliation of IOSS VAT collected against customs import declarations.",
+  "cron": "0 3 5 * *",
+  "timezone": "Europe/Brussels",
+  "agent": "eu-customs-ioss-agent",
+  "prompt": "Reconcile monthly IOSS VAT collections for monthly IOSS tax return submission.",
+  "enabled": true
+}

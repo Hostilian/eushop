@@ -1,0 +1,11 @@
+{
+  "name": "eushop-construction-products-plugin",
+  "version": "1.0.0",
+  "description": "Construction Products CPR Plugin — validates Declarations of Performance (DoP) and CE conformity for building materials.",
+  "skills": ["eushop-cpr-declaration-of-performance"],
+  "agents": ["construction-cpr-agent"],
+  "config": {
+    "dop_required": true,
+    "ce_cpr_check": true
+  }
+}

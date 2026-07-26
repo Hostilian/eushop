@@ -1,0 +1,11 @@
+{
+  "name": "eushop-reach-chemical-safety-plugin",
+  "version": "1.0.0",
+  "description": "REACH Chemical Safety & SVHC Plugin — checks ECHA Candidate List, Safety Data Sheets, and Annex XVII restrictions.",
+  "skills": ["eushop-reach-svhc-verification"],
+  "agents": ["reach-chemical-safety-agent"],
+  "config": {
+    "svhc_threshold_weight_percent": 0.1,
+    "sds_language_auto_detect": true
+  }
+}

@@ -1,0 +1,10 @@
+{
+  "name": "vies-ioss-vat-api",
+  "description": "EU VIES API for validating IOSS VAT numbers and member state tax registrations.",
+  "type": "mcp",
+  "config": {
+    "endpoint": "https://ec.europa.eu/taxation_customs/vies/rest-api",
+    "allowed_operations": ["validate_ioss_number"],
+    "read_only": true
+  }
+}

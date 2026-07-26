@@ -1,0 +1,10 @@
+{
+  "name": "nando-notified-bodies-api",
+  "description": "EU NANDO database API for verifying 4-digit Notified Body identification numbers.",
+  "type": "mcp",
+  "config": {
+    "endpoint": "https://ec.europa.eu/growth/tools-databases/nando/api",
+    "allowed_operations": ["verify_notified_body", "list_scope"],
+    "read_only": true
+  }
+}

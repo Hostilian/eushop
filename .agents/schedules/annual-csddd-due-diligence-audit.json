@@ -1,0 +1,9 @@
+{
+  "name": "annual-csddd-due-diligence-audit",
+  "description": "Annual audit verifying CSDDD due diligence statements and climate plan disclosures.",
+  "cron": "0 2 1 1 *",
+  "timezone": "Europe/Brussels",
+  "agent": "eu-csddd-supply-chain-agent",
+  "prompt": "Audit corporate sellers for CSDDD annual due diligence reporting compliance.",
+  "enabled": true
+}

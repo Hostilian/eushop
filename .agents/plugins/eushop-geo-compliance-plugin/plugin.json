@@ -1,0 +1,12 @@
+{
+  "name": "eushop-geo-compliance-plugin",
+  "version": "1.0.0",
+  "description": "Geo-Blocking & Cross-Border Compliance Plugin — enforces non-discriminatory access and destination-based VAT logic per EU 2018/302.",
+  "skills": ["eushop-geo-blocking-compliance"],
+  "agents": ["geo-fencing-compliance-agent"],
+  "config": {
+    "geo_blocking_enforced": false,
+    "eu_member_states_count": 27,
+    "price_discrimination_allowed": false
+  }
+}

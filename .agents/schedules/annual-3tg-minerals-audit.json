@@ -1,0 +1,9 @@
+{
+  "name": "annual-3tg-minerals-audit",
+  "description": "Annual supply chain due diligence audit for 3TG minerals in electronics and jewelry.",
+  "cron": "0 2 1 12 *",
+  "timezone": "Europe/Brussels",
+  "agent": "conflict-minerals-3tg-agent",
+  "prompt": "Audit 3TG metal suppliers for OECD due diligence compliance.",
+  "enabled": true
+}

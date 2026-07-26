@@ -1,0 +1,9 @@
+{
+  "name": "weekly-organic-cert-revalidation",
+  "description": "Weekly revalidation of seller organic certificates against TRACES DB.",
+  "cron": "0 4 * * 2",
+  "timezone": "Europe/Brussels",
+  "agent": "organic-farming-cert-agent",
+  "prompt": "Re-verify all seller organic certificate expiration dates and status in TRACES DB.",
+  "enabled": true
+}

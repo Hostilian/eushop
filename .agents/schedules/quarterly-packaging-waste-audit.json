@@ -1,0 +1,9 @@
+{
+  "name": "quarterly-packaging-waste-audit",
+  "description": "Quarterly audit of shipping packaging weights and EPR declarations.",
+  "cron": "0 3 1 1,4,7,10 *",
+  "timezone": "Europe/Brussels",
+  "agent": "packaging-waste-ppwr-agent",
+  "prompt": "Aggregate packaging material weights by country for quarterly EPR declarations.",
+  "enabled": true
+}

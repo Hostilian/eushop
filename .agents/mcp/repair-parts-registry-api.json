@@ -1,0 +1,10 @@
+{
+  "name": "repair-parts-registry-api",
+  "description": "API database tool for querying manufacturer spare parts catalogs and repair manuals.",
+  "type": "mcp",
+  "config": {
+    "endpoint": "https://api.repairability.eu",
+    "allowed_operations": ["check_parts_availability"],
+    "read_only": true
+  }
+}

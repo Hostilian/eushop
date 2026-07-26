@@ -1,0 +1,10 @@
+{
+  "name": "price-history-tracker-api",
+  "description": "Internal database API for retrieving 30-day historical price points per product variant.",
+  "type": "mcp",
+  "config": {
+    "endpoint": "http://localhost:3001/api/v1/internal/price-history",
+    "allowed_operations": ["get_30day_lowest_price"],
+    "read_only": true
+  }
+}

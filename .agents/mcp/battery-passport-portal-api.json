@@ -1,0 +1,10 @@
+{
+  "name": "battery-passport-portal-api",
+  "description": "EU central Battery Passport registry API for verifying QR battery passport codes.",
+  "type": "mcp",
+  "config": {
+    "endpoint": "https://ec.europa.eu/battery-passport/api",
+    "allowed_operations": ["verify_passport_qr", "get_recycled_content"],
+    "read_only": true
+  }
+}

@@ -1,0 +1,9 @@
+{
+  "name": "quarterly-textile-fiber-audit",
+  "description": "Quarterly audit of textile product listings for correct composition percentages and fiber names.",
+  "cron": "0 5 1 1,4,7,10 *",
+  "timezone": "Europe/Brussels",
+  "agent": "textile-fiber-labeling-agent",
+  "prompt": "Audit textile category for EU 1007/2011 fiber composition compliance.",
+  "enabled": true
+}

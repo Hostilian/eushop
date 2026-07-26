@@ -1,0 +1,10 @@
+{
+  "name": "csddd-registry-api",
+  "description": "API tool for checking EU CSDDD corporate due diligence filings and public disclosures.",
+  "type": "mcp",
+  "config": {
+    "endpoint": "https://ec.europa.eu/csddd-registry/api",
+    "allowed_operations": ["verify_company_filing"],
+    "read_only": true
+  }
+}

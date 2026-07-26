@@ -1,0 +1,9 @@
+{
+  "name": "monthly-ai-transparency-audit",
+  "description": "Monthly audit verifying synthetic media disclosures and C2PA metadata across generated assets.",
+  "cron": "0 4 1 * *",
+  "timezone": "Europe/Brussels",
+  "agent": "eu-ai-act-transparency-agent",
+  "prompt": "Audit synthetic media assets for C2PA content credentials and EU AI Act Art. 50 disclosure compliance.",
+  "enabled": true
+}

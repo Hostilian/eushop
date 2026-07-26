@@ -1,0 +1,11 @@
+{
+  "name": "eushop-ecodesign-compliance-plugin",
+  "version": "1.0.0",
+  "description": "ESPR Ecodesign & Reparability Plugin — handles Digital Product Passports and repairability scoring.",
+  "skills": ["eushop-ecodesign-durability-rules"],
+  "agents": ["ecodesign-durability-agent"],
+  "config": {
+    "dpp_required": true,
+    "reparability_score_scale": "1-10"
+  }
+}

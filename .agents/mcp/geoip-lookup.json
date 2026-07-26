@@ -1,0 +1,10 @@
+{
+  "name": "eushop-geoip-lookup",
+  "description": "GeoIP lookup MCP tool for resolving IP addresses to country code and checking EU membership status.",
+  "type": "mcp",
+  "config": {
+    "provider": "maxmind",
+    "allowed_operations": ["lookup_ip", "is_eu_country"],
+    "read_only": true
+  }
+}

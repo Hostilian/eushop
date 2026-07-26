@@ -1,0 +1,9 @@
+{
+  "name": "monthly-green-claims-audit",
+  "description": "Monthly scan of marketing copy for non-compliant eco-claims and unverified green badges.",
+  "cron": "0 5 18 * *",
+  "timezone": "Europe/Brussels",
+  "agent": "eco-claims-greenwashing-agent",
+  "prompt": "Scan catalog for vague environmental claims lacking verified LCA data.",
+  "enabled": true
+}

@@ -1,0 +1,11 @@
+{
+  "name": "eushop-weee-e-waste-plugin",
+  "version": "1.0.0",
+  "description": "WEEE E-Waste EPR Compliance Plugin — manages producer registration numbers, eco-contributions, and recycling symbol displays.",
+  "skills": ["eushop-weee-e-waste-registration"],
+  "agents": ["weee-e-waste-compliance-agent"],
+  "config": {
+    "epr_takeback_enabled": true,
+    "national_registers_lookup": true
+  }
+}

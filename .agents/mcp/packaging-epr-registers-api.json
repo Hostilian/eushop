@@ -1,0 +1,10 @@
+{
+  "name": "packaging-epr-registers-api",
+  "description": "API tool for verifying packaging EPR producer numbers across national registries (LUCID in DE, CITEO in FR, etc.).",
+  "type": "mcp",
+  "config": {
+    "endpoint": "https://api.packaging-epr.eu",
+    "allowed_operations": ["verify_packaging_number"],
+    "read_only": true
+  }
+}

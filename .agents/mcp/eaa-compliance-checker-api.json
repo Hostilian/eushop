@@ -1,0 +1,10 @@
+{
+  "name": "eaa-compliance-checker-api",
+  "description": "API tool for running automated EN 301 549 / WCAG accessibility scans on web pages.",
+  "type": "mcp",
+  "config": {
+    "endpoint": "http://localhost:3000/api/internal/accessibility-scan",
+    "allowed_operations": ["run_eaa_scan"],
+    "read_only": true
+  }
+}

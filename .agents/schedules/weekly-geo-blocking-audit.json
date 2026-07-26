@@ -1,0 +1,9 @@
+{
+  "name": "weekly-geo-blocking-compliance-audit",
+  "description": "Weekly audit verifying all 27 EU member states have unrestricted checkout and pricing parity.",
+  "cron": "0 8 * * 1",
+  "timezone": "Europe/Brussels",
+  "agent": "geo-fencing-compliance-agent",
+  "prompt": "Audit checkout endpoints for all 27 EU country codes. Verify no IP blocking or discriminatory pricing rules are active. Generate geo-blocking compliance report.",
+  "enabled": true
+}

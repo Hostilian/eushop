@@ -1,0 +1,11 @@
+{
+  "name": "eushop-fertilizers-compliance-plugin",
+  "version": "1.0.0",
+  "description": "EU Fertilising Products Plugin — verifies CE marking, PFC categories, and contaminant safety disclosures.",
+  "skills": ["eushop-fertilizer-ce-labeling"],
+  "agents": ["fertilizer-ce-marking-agent"],
+  "config": {
+    "pfc_category_required": true,
+    "cadmium_limit_check": true
+  }
+}

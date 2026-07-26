@@ -1,0 +1,10 @@
+{
+  "name": "cpr-dop-registry-api",
+  "description": "API database tool for verifying construction product Declarations of Performance.",
+  "type": "mcp",
+  "config": {
+    "endpoint": "https://ec.europa.eu/growth/cpr/dop/api",
+    "allowed_operations": ["verify_dop_number"],
+    "read_only": true
+  }
+}

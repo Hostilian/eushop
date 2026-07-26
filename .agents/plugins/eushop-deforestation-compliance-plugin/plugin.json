@@ -1,0 +1,11 @@
+{
+  "name": "eushop-deforestation-compliance-plugin",
+  "version": "1.0.0",
+  "description": "EUDR Deforestation Compliance Plugin — validates plot geolocations, Due Diligence Statements, and deforestation-free proof.",
+  "skills": ["eushop-eudr-due-diligence-rules"],
+  "agents": ["deforestation-eudr-compliance-agent"],
+  "config": {
+    "geolocation_mandatory": true,
+    "dds_reference_required": true
+  }
+}

@@ -1,0 +1,11 @@
+{
+  "name": "eushop-beverages-labeling-plugin",
+  "version": "1.0.0",
+  "description": "Wine & Alcoholic Beverages Plugin — manages QR e-labels, energy value displays, and FIC 1169 allergen declarations.",
+  "skills": ["eushop-wine-nutrition-e-labeling"],
+  "agents": ["wine-spirit-beverage-agent"],
+  "config": {
+    "wine_elabel_required": true,
+    "energy_value_physical_label": true
+  }
+}

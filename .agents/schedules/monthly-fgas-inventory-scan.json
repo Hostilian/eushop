@@ -1,0 +1,9 @@
+{
+  "name": "monthly-fgas-inventory-scan",
+  "description": "Monthly audit verifying heat pump and refrigeration equipment GWP disclosures.",
+  "cron": "0 6 22 * *",
+  "timezone": "Europe/Brussels",
+  "agent": "f-gas-refrigerant-agent",
+  "prompt": "Audit HVAC and refrigeration category listings for F-gas GWP disclosures.",
+  "enabled": true
+}

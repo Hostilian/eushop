@@ -1,0 +1,10 @@
+{
+  "name": "sup-banned-items-api",
+  "description": "API database tool for querying EU banned single-use plastic commodity codes.",
+  "type": "mcp",
+  "config": {
+    "endpoint": "https://ec.europa.eu/environment/waste/plastic-bans/api",
+    "allowed_operations": ["check_banned_material"],
+    "read_only": true
+  }
+}

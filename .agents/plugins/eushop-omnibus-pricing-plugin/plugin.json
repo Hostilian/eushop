@@ -1,0 +1,11 @@
+{
+  "name": "eushop-omnibus-pricing-plugin",
+  "version": "1.0.0",
+  "description": "Omnibus Directive Discount Pricing Plugin — tracks 30-day price history and enforces lowest prior price display for discounts.",
+  "skills": ["eushop-omnibus-price-discount-rules"],
+  "agents": ["omnibus-price-reduction-agent"],
+  "config": {
+    "price_history_days": 30,
+    "strict_lowest_price_rule": true
+  }
+}

@@ -1,0 +1,9 @@
+{
+  "name": "monthly-sup-inventory-scan",
+  "description": "Monthly catalog scan ensuring no banned single-use plastic items are active on the marketplace.",
+  "cron": "0 5 1 * *",
+  "timezone": "Europe/Brussels",
+  "agent": "single-use-plastics-sup-agent",
+  "prompt": "Scan product catalog for prohibited single-use plastic items under EU 2019/904.",
+  "enabled": true
+}

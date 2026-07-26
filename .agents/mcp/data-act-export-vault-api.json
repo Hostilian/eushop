@@ -1,0 +1,10 @@
+{
+  "name": "data-act-export-vault-api",
+  "description": "API endpoint generator for streaming full seller/user data export archives.",
+  "type": "mcp",
+  "config": {
+    "endpoint": "http://localhost:3001/api/v1/user/export-data",
+    "allowed_operations": ["generate_export_archive"],
+    "read_only": true
+  }
+}

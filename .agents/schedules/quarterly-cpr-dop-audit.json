@@ -1,0 +1,9 @@
+{
+  "name": "quarterly-cpr-dop-audit",
+  "description": "Quarterly audit verifying construction product listings have valid Declarations of Performance.",
+  "cron": "0 4 1 1,4,7,10 *",
+  "timezone": "Europe/Brussels",
+  "agent": "construction-cpr-agent",
+  "prompt": "Audit building materials category for valid Declaration of Performance (DoP) documents.",
+  "enabled": true
+}

@@ -1,0 +1,11 @@
+{
+  "name": "eushop-ioss-customs-plugin",
+  "version": "1.0.0",
+  "description": "IOSS Customs & VAT Plugin — validates IOSS numbers, applies destination VAT on imports <= €150, and generates IOSS returns.",
+  "skills": ["eushop-ioss-vat-validation"],
+  "agents": ["eu-customs-ioss-agent"],
+  "config": {
+    "ioss_threshold_eur": 150,
+    "destination_vat_enabled": true
+  }
+}

@@ -1,0 +1,10 @@
+{
+  "name": "euipo-craft-gi-register-api",
+  "description": "EUIPO API for querying the official register of protected craft and industrial geographical indications.",
+  "type": "mcp",
+  "config": {
+    "endpoint": "https://euipo.europa.eu/craft-gi/api",
+    "allowed_operations": ["search_craft_gi", "verify_registration"],
+    "read_only": true
+  }
+}

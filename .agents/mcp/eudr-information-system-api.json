@@ -1,0 +1,10 @@
+{
+  "name": "eudr-information-system-api",
+  "description": "EU Information System API for verifying Due Diligence Statements (DDS) and plot geolocations.",
+  "type": "mcp",
+  "config": {
+    "endpoint": "https://ec.europa.eu/eudr-system/api",
+    "allowed_operations": ["verify_dds", "check_geolocation"],
+    "read_only": true
+  }
+}

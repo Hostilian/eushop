@@ -1,0 +1,10 @@
+{
+  "name": "oecd-3tg-smelters-api",
+  "description": "API tool for checking Responsible Minerals Initiative (RMI) conformant smelter and refiner lists.",
+  "type": "mcp",
+  "config": {
+    "endpoint": "https://api.responsiblemineralsinitiative.org/smelters",
+    "allowed_operations": ["verify_smelter"],
+    "read_only": true
+  }
+}

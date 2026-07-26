@@ -1,0 +1,9 @@
+{
+  "name": "monthly-wine-elabel-audit",
+  "description": "Monthly scan verifying wine digital e-label QR links and physical energy disclosures.",
+  "cron": "0 5 14 * *",
+  "timezone": "Europe/Brussels",
+  "agent": "wine-spirit-beverage-agent",
+  "prompt": "Audit wine category for valid QR e-labels and energy value disclosures.",
+  "enabled": true
+}

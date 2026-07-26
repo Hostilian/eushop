@@ -1,0 +1,11 @@
+{
+  "name": "eushop-right-to-repair-plugin",
+  "version": "1.0.0",
+  "description": "Right to Repair Plugin — verifies spare parts availability, repair manuals, and repairability scores under EU 2024/1799.",
+  "skills": ["eushop-right-to-repair-parts"],
+  "agents": ["repair-right-directive-agent"],
+  "config": {
+    "spare_parts_check": true,
+    "repair_manual_required": true
+  }
+}

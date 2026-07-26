@@ -1,0 +1,11 @@
+{
+  "name": "eushop-parcel-shipping-plugin",
+  "version": "1.0.0",
+  "description": "Cross-Border Parcel Plugin — monitors shipping rate transparency and carrier tariff compliance under EU 2018/644.",
+  "skills": ["eushop-parcel-pricing-transparency"],
+  "agents": ["cross-border-parcel-pricing-agent"],
+  "config": {
+    "tariff_transparency_required": true,
+    "ec_price_tool_sync": true
+  }
+}

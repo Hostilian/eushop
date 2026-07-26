@@ -1,0 +1,9 @@
+{
+  "name": "monthly-cpnp-sync",
+  "description": "Monthly verification of seller CPNP notification validity for cosmetic items.",
+  "cron": "0 3 10 * *",
+  "timezone": "Europe/Brussels",
+  "agent": "cosmetics-cpsp-verification-agent",
+  "prompt": "Verify CPNP notification numbers for active cosmetic listings.",
+  "enabled": true
+}

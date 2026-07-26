@@ -1,0 +1,11 @@
+{
+  "name": "eushop-fgas-compliance-plugin",
+  "version": "1.0.0",
+  "description": "F-Gas Regulation Plugin — checks GWP labeling, HFC quotas, and certified technician installation disclosures.",
+  "skills": ["eushop-fgas-quota-verification"],
+  "agents": ["f-gas-refrigerant-agent"],
+  "config": {
+    "gwp_label_mandatory": true,
+    "hfc_quota_check": true
+  }
+}

@@ -1,0 +1,9 @@
+{
+  "name": "monthly-ce-mark-audit",
+  "description": "Monthly audit verifying all active CE-regulated products have valid Declarations of Conformity attached.",
+  "cron": "0 3 5 * *",
+  "timezone": "Europe/Brussels",
+  "agent": "ce-mark-declaration-agent",
+  "prompt": "Audit CE-marked product categories for up-to-date Declaration of Conformity documents. Flag non-compliant listings.",
+  "enabled": true
+}

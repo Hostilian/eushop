@@ -1,0 +1,11 @@
+{
+  "name": "eushop-anti-greenwashing-plugin",
+  "version": "1.0.0",
+  "description": "Anti-Greenwashing Plugin — screens product descriptions for prohibited vague eco-claims and checks EU Ecolabel status.",
+  "skills": ["eushop-green-claims-verification"],
+  "agents": ["eco-claims-greenwashing-agent"],
+  "config": {
+    "vague_claims_block": true,
+    "ecolabel_verification_enabled": true
+  }
+}

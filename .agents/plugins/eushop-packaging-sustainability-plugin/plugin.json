@@ -1,0 +1,11 @@
+{
+  "name": "eushop-packaging-sustainability-plugin",
+  "version": "1.0.0",
+  "description": "Packaging & PPWR Plugin — calculates packaging recyclability, recycled content percentages, and EPR producer compliance.",
+  "skills": ["eushop-packaging-waste-ppwr-rules"],
+  "agents": ["packaging-waste-ppwr-agent"],
+  "config": {
+    "ppwr_recyclability_grade_min": "B",
+    "epr_packaging_number_required": true
+  }
+}

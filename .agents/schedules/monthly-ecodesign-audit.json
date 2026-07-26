@@ -1,0 +1,9 @@
+{
+  "name": "monthly-ecodesign-audit",
+  "description": "Monthly audit verifying all applicable non-food products carry valid Digital Product Passports.",
+  "cron": "0 6 1 * *",
+  "timezone": "Europe/Brussels",
+  "agent": "ecodesign-durability-agent",
+  "prompt": "Audit product catalog for ESPR digital product passport compliance. Generate monthly ecodesign report.",
+  "enabled": true
+}

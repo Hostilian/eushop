@@ -1,0 +1,11 @@
+{
+  "name": "eushop-customs-logistics-plugin",
+  "version": "1.0.0",
+  "description": "Customs & TARIC Tariff Plugin — manages duty calculation, import VAT, and non-EU origin documentation.",
+  "skills": ["eushop-customs-duty-calculation"],
+  "agents": ["customs-duty-calculator-agent"],
+  "config": {
+    "customs_de_minimis_eur": 150,
+    "import_vat_de_minimis_eur": 0
+  }
+}

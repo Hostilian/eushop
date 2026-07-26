@@ -1,0 +1,11 @@
+{
+  "name": "eushop-data-portability-plugin",
+  "version": "1.0.0",
+  "description": "EU Data Act Portability Plugin — provides automated user and seller data export in structured formats.",
+  "skills": ["eushop-data-act-export-format"],
+  "agents": ["eu-data-act-portability-agent"],
+  "config": {
+    "export_formats": ["json", "csv", "parquet"],
+    "zero_cost_switching": true
+  }
+}

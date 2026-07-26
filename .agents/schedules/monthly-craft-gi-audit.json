@@ -1,0 +1,9 @@
+{
+  "name": "monthly-craft-gi-audit",
+  "description": "Monthly audit verifying craft GI badge authenticity on non-food products.",
+  "cron": "0 6 20 * *",
+  "timezone": "Europe/Brussels",
+  "agent": "craft-geographical-indications-agent",
+  "prompt": "Cross-reference craft GI product tags against EUIPO register.",
+  "enabled": true
+}

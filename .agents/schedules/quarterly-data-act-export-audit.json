@@ -1,0 +1,9 @@
+{
+  "name": "quarterly-data-act-export-audit",
+  "description": "Quarterly audit verifying machine-readable data export formats and response latency.",
+  "cron": "0 4 1 1,4,7,10 *",
+  "timezone": "Europe/Brussels",
+  "agent": "eu-data-act-portability-agent",
+  "prompt": "Test data export pipeline for full Data Act format compliance and speed.",
+  "enabled": true
+}

@@ -1,0 +1,9 @@
+{
+  "name": "quarterly-fertilizer-audit",
+  "description": "Quarterly audit verifying CE fertilising product PFC categories and cadmium disclosures.",
+  "cron": "0 5 1 1,4,7,10 *",
+  "timezone": "Europe/Brussels",
+  "agent": "fertilizer-ce-marking-agent",
+  "prompt": "Audit agricultural and gardening fertilizer category for PFC labeling compliance.",
+  "enabled": true
+}

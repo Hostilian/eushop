@@ -1,0 +1,11 @@
+{
+  "name": "eushop-craft-gi-protection-plugin",
+  "version": "1.0.0",
+  "description": "Craft & Industrial GI Protection Plugin — protects non-agricultural regional designations (Murano glass, Solingen steel).",
+  "skills": ["eushop-craft-gi-verification"],
+  "agents": ["craft-geographical-indications-agent"],
+  "config": {
+    "euipo_craft_register_lookup": true,
+    "misleading_claims_block": true
+  }
+}

@@ -1,0 +1,11 @@
+{
+  "name": "eushop-medical-devices-plugin",
+  "version": "1.0.0",
+  "description": "Medical Devices MDR Plugin — validates UDI codes, EUDAMED database entries, and CE conformity under EU 2017/745.",
+  "skills": ["eushop-mdr-ce-device-verification"],
+  "agents": ["medical-devices-mdr-agent"],
+  "config": {
+    "udi_validation_required": true,
+    "eudamed_sync_enabled": true
+  }
+}

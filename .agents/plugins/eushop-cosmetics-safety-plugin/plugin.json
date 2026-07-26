@@ -1,0 +1,11 @@
+{
+  "name": "eushop-cosmetics-safety-plugin",
+  "version": "1.0.0",
+  "description": "Cosmetics Safety & CPNP Plugin — verifies INCI ingredients, CPNP portal registrations, and Responsible Person data.",
+  "skills": ["eushop-cosmetic-cpsp-validation"],
+  "agents": ["cosmetics-cpsp-verification-agent"],
+  "config": {
+    "cpnp_verification_required": true,
+    "inci_ingredient_check": true
+  }
+}

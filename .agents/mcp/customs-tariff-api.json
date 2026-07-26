@@ -1,0 +1,10 @@
+{
+  "name": "customs-tariff-api",
+  "description": "EU TARIC customs database API for retrieving commodity codes and duty rates.",
+  "type": "mcp",
+  "config": {
+    "endpoint": "https://ec.europa.eu/taxation_customs/dds2/taric/taric_consultation.jsp",
+    "allowed_operations": ["get_taric_rate", "search_hs_code"],
+    "read_only": true
+  }
+}

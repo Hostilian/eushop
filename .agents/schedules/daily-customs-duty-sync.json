@@ -1,0 +1,9 @@
+{
+  "name": "daily-customs-duty-sync",
+  "description": "Daily synchronization of TARIC duty rates and exchange rates for import calculations.",
+  "cron": "0 2 * * *",
+  "timezone": "Europe/Brussels",
+  "agent": "customs-duty-calculator-agent",
+  "prompt": "Sync TARIC rates and ECB exchange rates for non-EU currency import duty estimations.",
+  "enabled": true
+}

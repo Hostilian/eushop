@@ -1,0 +1,9 @@
+{
+  "name": "monthly-right-to-repair-audit",
+  "description": "Monthly audit verifying spare parts catalog links and repairability score badges.",
+  "cron": "0 5 15 * *",
+  "timezone": "Europe/Brussels",
+  "agent": "repair-right-directive-agent",
+  "prompt": "Audit electronics listings for spare parts availability and repairability score display.",
+  "enabled": true
+}

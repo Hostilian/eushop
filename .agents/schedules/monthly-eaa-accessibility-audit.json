@@ -1,0 +1,9 @@
+{
+  "name": "monthly-eaa-accessibility-audit",
+  "description": "Monthly audit verifying full EN 301 549 accessibility compliance on mobile and web UI.",
+  "cron": "0 5 28 * *",
+  "timezone": "Europe/Brussels",
+  "agent": "eu-accessibility-act-eaa-agent",
+  "prompt": "Run full EN 301 549 accessibility scan on web and mobile checkout flows.",
+  "enabled": true
+}

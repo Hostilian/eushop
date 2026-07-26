@@ -1,0 +1,10 @@
+{
+  "name": "eu-parcel-price-api",
+  "description": "European Commission parcel tariff comparison tool API for cross-border shipping benchmark rates.",
+  "type": "mcp",
+  "config": {
+    "endpoint": "https://ec.europa.eu/growth/sectors/postal-services/parcel-prices/api",
+    "allowed_operations": ["get_benchmark_rate"],
+    "read_only": true
+  }
+}

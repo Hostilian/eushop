@@ -1,0 +1,10 @@
+{
+  "name": "ce-fertilizers-database-api",
+  "description": "API database for verifying CE fertilising product conformity declarations and component materials.",
+  "type": "mcp",
+  "config": {
+    "endpoint": "https://ec.europa.eu/fertilizers/api",
+    "allowed_operations": ["verify_pfc_compliance"],
+    "read_only": true
+  }
+}

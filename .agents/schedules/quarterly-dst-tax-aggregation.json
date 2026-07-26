@@ -1,0 +1,9 @@
+{
+  "name": "quarterly-dst-tax-aggregation",
+  "description": "Quarterly aggregation of digital intermediation fee revenue for national DST tax filings.",
+  "cron": "0 3 1 1,4,7,10 *",
+  "timezone": "Europe/Brussels",
+  "agent": "digital-services-tax-agent",
+  "prompt": "Aggregate marketplace fee revenue per member state for quarterly DST filings.",
+  "enabled": true
+}

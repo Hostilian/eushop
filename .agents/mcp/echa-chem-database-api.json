@@ -1,0 +1,10 @@
+{
+  "name": "echa-chem-database-api",
+  "description": "European Chemicals Agency (ECHA) database API for querying SVHC candidate lists and restricted substances.",
+  "type": "mcp",
+  "config": {
+    "endpoint": "https://echa.europa.eu/api/substances",
+    "allowed_operations": ["search_cas_number", "check_svhc"],
+    "read_only": true
+  }
+}

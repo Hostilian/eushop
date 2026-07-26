@@ -1,0 +1,9 @@
+{
+  "name": "monthly-cra-sbom-audit",
+  "description": "Monthly audit verifying all digital products have valid SBOM files and active patch windows.",
+  "cron": "0 4 10 * *",
+  "timezone": "Europe/Brussels",
+  "agent": "cyber-resilience-act-agent",
+  "prompt": "Audit software and IoT product listings for CycloneDX SBOM compliance.",
+  "enabled": true
+}

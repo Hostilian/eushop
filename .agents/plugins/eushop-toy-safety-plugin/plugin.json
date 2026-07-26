@@ -1,0 +1,11 @@
+{
+  "name": "eushop-toy-safety-plugin",
+  "version": "1.0.0",
+  "description": "Toy Safety & RAPEX Plugin — manages CE marking, age-group warnings, and Safety Gate alert scanning for toys.",
+  "skills": ["eushop-toy-safety-compliance"],
+  "agents": ["toy-safety-directive-agent"],
+  "config": {
+    "age_warning_mandatory": true,
+    "rapex_toy_scan_enabled": true
+  }
+}

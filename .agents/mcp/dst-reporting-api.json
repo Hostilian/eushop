@@ -1,0 +1,10 @@
+{
+  "name": "dst-reporting-api",
+  "description": "API tool for submitting digital services tax quarterly returns to national tax authorities.",
+  "type": "mcp",
+  "config": {
+    "endpoint": "https://api.taxation.eushop.eu/dst",
+    "allowed_operations": ["calculate_dst", "generate_filing_xml"],
+    "read_only": true
+  }
+}

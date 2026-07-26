@@ -1,0 +1,10 @@
+{
+  "name": "e-label-wine-portal-api",
+  "description": "API validator for checking wine digital e-label QR destinations for tracking scripts and marketing violations.",
+  "type": "mcp",
+  "config": {
+    "endpoint": "https://api.e-label.eushop.eu/verify",
+    "allowed_operations": ["validate_elabel_qr"],
+    "read_only": true
+  }
+}

@@ -1,0 +1,11 @@
+{
+  "name": "eushop-organic-food-plugin",
+  "version": "1.0.0",
+  "description": "EU Organic Product Verification Plugin — validates Euro-leaf logos, control body codes, and TRACES certificates.",
+  "skills": ["eushop-organic-cert-verification"],
+  "agents": ["organic-farming-cert-agent"],
+  "config": {
+    "euroleaf_mandatory": true,
+    "traces_sync_enabled": true
+  }
+}

@@ -1,0 +1,10 @@
+{
+  "name": "weee-national-registers-api",
+  "description": "API tool for verifying WEEE producer numbers across national registries (stiftung ear, SYDEREP, etc.).",
+  "type": "mcp",
+  "config": {
+    "endpoint": "https://api.weee-registers.eu",
+    "allowed_operations": ["verify_producer_number"],
+    "read_only": true
+  }
+}

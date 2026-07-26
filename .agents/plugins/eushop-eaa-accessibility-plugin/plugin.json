@@ -1,0 +1,11 @@
+{
+  "name": "eushop-eaa-accessibility-plugin",
+  "version": "1.0.0",
+  "description": "European Accessibility Act (EAA) Plugin — enforces EN 301 549 & WCAG compliance across all user flows.",
+  "skills": ["eushop-eaa-digital-accessibility"],
+  "agents": ["eu-accessibility-act-eaa-agent"],
+  "config": {
+    "en_301_549_enforced": true,
+    "accessibility_statement_required": true
+  }
+}

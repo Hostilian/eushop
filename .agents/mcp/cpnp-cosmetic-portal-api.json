@@ -1,0 +1,10 @@
+{
+  "name": "cpnp-cosmetic-portal-api",
+  "description": "EU CPNP Cosmetic Products Notification Portal API for checking notification numbers.",
+  "type": "mcp",
+  "config": {
+    "endpoint": "https://webgate.ec.europa.eu/cpnp/api",
+    "allowed_operations": ["verify_cpnp_number"],
+    "read_only": true
+  }
+}

@@ -1,0 +1,11 @@
+{
+  "name": "eushop-dst-taxation-plugin",
+  "version": "1.0.0",
+  "description": "Digital Services Tax Plugin — tracks marketplace fee revenues attributable to DST EU member states.",
+  "skills": ["eushop-dst-tax-reporting"],
+  "agents": ["digital-services-tax-agent"],
+  "config": {
+    "dst_countries": ["FR", "ES", "IT", "AT"],
+    "intermediary_fee_tracking": true
+  }
+}

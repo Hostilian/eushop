@@ -1,0 +1,11 @@
+{
+  "name": "eushop-conflict-minerals-plugin",
+  "version": "1.0.0",
+  "description": "Conflict Minerals 3TG Plugin — checks smelter compliance, OECD due diligence, and 3TG metal origin tracing.",
+  "skills": ["eushop-3tg-conflict-minerals-audit"],
+  "agents": ["conflict-minerals-3tg-agent"],
+  "config": {
+    "rmi_smelter_check": true,
+    "oecd_due_diligence_mandatory": true
+  }
+}

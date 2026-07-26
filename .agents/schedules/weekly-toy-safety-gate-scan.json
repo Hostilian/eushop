@@ -1,0 +1,9 @@
+{
+  "name": "weekly-toy-safety-gate-scan",
+  "description": "Weekly scan matching active toy listings against Safety Gate rapid alert updates.",
+  "cron": "0 6 * * 4",
+  "timezone": "Europe/Brussels",
+  "agent": "toy-safety-directive-agent",
+  "prompt": "Scan active toy listings against latest Safety Gate recall alerts.",
+  "enabled": true
+}

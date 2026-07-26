@@ -1,0 +1,9 @@
+{
+  "name": "monthly-eudr-due-diligence-audit",
+  "description": "Monthly audit verifying EUDR Due Diligence Statements for wood, paper, coffee, and cocoa listings.",
+  "cron": "0 4 25 * *",
+  "timezone": "Europe/Brussels",
+  "agent": "deforestation-eudr-compliance-agent",
+  "prompt": "Audit EUDR relevant product categories for valid geolocation data and DDS reference numbers.",
+  "enabled": true
+}

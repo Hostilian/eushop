@@ -1,0 +1,9 @@
+{
+  "name": "quarterly-weee-reporting-sync",
+  "description": "Quarterly aggregation and reporting of total electronic units sold by category for WEEE EPR filings.",
+  "cron": "0 2 1 1,4,7,10 *",
+  "timezone": "Europe/Brussels",
+  "agent": "weee-e-waste-compliance-agent",
+  "prompt": "Aggregate electrical product sales volume for EPR WEEE quarterly declarations.",
+  "enabled": true
+}

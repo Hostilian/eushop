@@ -1,0 +1,10 @@
+{
+  "name": "safety-gate-toy-alerts-api",
+  "description": "EU Safety Gate API specifically for querying recalled toy models and dangerous products.",
+  "type": "mcp",
+  "config": {
+    "endpoint": "https://ec.europa.eu/safety-gate-alerts/api/toys",
+    "allowed_operations": ["check_toy_recall"],
+    "read_only": true
+  }
+}

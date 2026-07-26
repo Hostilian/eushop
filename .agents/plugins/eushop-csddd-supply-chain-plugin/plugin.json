@@ -1,0 +1,11 @@
+{
+  "name": "eushop-csddd-supply-chain-plugin",
+  "version": "1.0.0",
+  "description": "CSDDD Supply Chain Due Diligence Plugin — evaluates human rights and environmental risk scores across sellers.",
+  "skills": ["eushop-csddd-due-diligence"],
+  "agents": ["eu-csddd-supply-chain-agent"],
+  "config": {
+    "csddd_compliance_mandatory": true,
+    "climate_plan_verification": true
+  }
+}

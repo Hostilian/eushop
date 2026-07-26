@@ -1,0 +1,11 @@
+{
+  "name": "eushop-whistleblower-compliance-plugin",
+  "version": "1.0.0",
+  "description": "Whistleblower Protection Plugin — implements encrypted reporting channels and 7-day response tracking.",
+  "skills": ["eushop-whistleblower-secure-reporting"],
+  "agents": ["whistleblower-protection-agent"],
+  "config": {
+    "ack_deadline_days": 7,
+    "feedback_deadline_months": 3
+  }
+}

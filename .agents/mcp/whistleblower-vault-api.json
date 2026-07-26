@@ -1,0 +1,10 @@
+{
+  "name": "whistleblower-vault-api",
+  "description": "Encrypted API vault for processing anonymous whistleblower disclosures with zero identity retention.",
+  "type": "mcp",
+  "config": {
+    "endpoint": "https://vault.whistleblower.eushop.eu/api",
+    "allowed_operations": ["submit_encrypted_report", "check_report_status"],
+    "read_only": false
+  }
+}

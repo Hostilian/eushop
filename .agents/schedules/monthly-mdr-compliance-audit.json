@@ -1,0 +1,9 @@
+{
+  "name": "monthly-mdr-compliance-audit",
+  "description": "Monthly audit verifying active medical device listings carry valid UDIs and EUDAMED entries.",
+  "cron": "0 4 18 * *",
+  "timezone": "Europe/Brussels",
+  "agent": "medical-devices-mdr-agent",
+  "prompt": "Audit medical device category listings against EUDAMED UDI records.",
+  "enabled": true
+}

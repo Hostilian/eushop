@@ -1,0 +1,11 @@
+{
+  "name": "eushop-textile-labeling-plugin",
+  "version": "1.0.0",
+  "description": "EU Textile Fiber Labeling Plugin — validates fiber percentages, official terminology, and animal-origin disclosures.",
+  "skills": ["eushop-textile-fiber-composition"],
+  "agents": ["textile-fiber-labeling-agent"],
+  "config": {
+    "fiber_sum_check": true,
+    "official_names_only": true
+  }
+}

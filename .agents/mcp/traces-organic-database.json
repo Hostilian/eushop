@@ -1,0 +1,10 @@
+{
+  "name": "traces-organic-database",
+  "description": "EU TRACES NT database API for organic certificate verification.",
+  "type": "mcp",
+  "config": {
+    "endpoint": "https://webgate.ec.europa.eu/tracesnt/api",
+    "allowed_operations": ["verify_certificate", "get_control_body"],
+    "read_only": true
+  }
+}

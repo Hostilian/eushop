@@ -1,0 +1,9 @@
+{
+  "name": "quarterly-whistleblower-log-review",
+  "description": "Quarterly SLA check on whistleblower report acknowledgements (7-day rule) and investigation status.",
+  "cron": "0 2 1 1,4,7,10 *",
+  "timezone": "Europe/Brussels",
+  "agent": "whistleblower-protection-agent",
+  "prompt": "Verify resolution times and 7-day acknowledgement SLAs for open whistleblower reports.",
+  "enabled": true
+}

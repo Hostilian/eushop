@@ -1,0 +1,11 @@
+{
+  "name": "eushop-battery-passport-plugin",
+  "version": "1.0.0",
+  "description": "Battery Regulation & Passport Plugin — validates QR battery passports, recycled metal declarations, and carbon footprint scores.",
+  "skills": ["eushop-battery-passport-validation"],
+  "agents": ["battery-regulation-passport-agent"],
+  "config": {
+    "battery_passport_required": true,
+    "recycled_content_check": true
+  }
+}

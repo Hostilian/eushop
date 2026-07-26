@@ -1,0 +1,10 @@
+{
+  "name": "textile-fiber-names-api",
+  "description": "API dictionary tool for validating EU official textile fiber names and translation equivalents.",
+  "type": "mcp",
+  "config": {
+    "endpoint": "https://ec.europa.eu/growth/sectors/fashion/textiles/api",
+    "allowed_operations": ["validate_fiber_name", "get_translations"],
+    "read_only": true
+  }
+}

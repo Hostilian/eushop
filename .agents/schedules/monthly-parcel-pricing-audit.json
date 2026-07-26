@@ -1,0 +1,9 @@
+{
+  "name": "monthly-parcel-pricing-audit",
+  "description": "Monthly audit comparing seller shipping rates against EU cross-border parcel benchmark prices.",
+  "cron": "0 6 15 * *",
+  "timezone": "Europe/Brussels",
+  "agent": "cross-border-parcel-pricing-agent",
+  "prompt": "Compare checkout shipping rates against EC cross-border parcel price database.",
+  "enabled": true
+}

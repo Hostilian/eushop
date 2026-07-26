@@ -1,0 +1,10 @@
+{
+  "name": "green-claims-verifier-api",
+  "description": "API tool for checking EU Ecolabel database and accredited verifier certificates.",
+  "type": "mcp",
+  "config": {
+    "endpoint": "https://ec.europa.eu/environment/ecolabel/api",
+    "allowed_operations": ["verify_ecolabel_license"],
+    "read_only": true
+  }
+}

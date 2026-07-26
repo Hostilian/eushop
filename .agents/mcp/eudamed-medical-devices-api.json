@@ -1,0 +1,10 @@
+{
+  "name": "eudamed-medical-devices-api",
+  "description": "European database on medical devices (EUDAMED) API for UDI and device registration queries.",
+  "type": "mcp",
+  "config": {
+    "endpoint": "https://ec.europa.eu/tools/eudamed/api",
+    "allowed_operations": ["verify_udi", "get_device_details"],
+    "read_only": true
+  }
+}

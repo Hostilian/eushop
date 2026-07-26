@@ -1,0 +1,11 @@
+{
+  "name": "eushop-ai-transparency-plugin",
+  "version": "1.0.0",
+  "description": "EU AI Act Compliance Plugin — handles synthetic content watermarking, C2PA validation, and bot disclosures.",
+  "skills": ["eushop-eu-ai-act-watermarking"],
+  "agents": ["eu-ai-act-transparency-agent"],
+  "config": {
+    "c2pa_metadata_required": true,
+    "bot_disclosure_mandatory": true
+  }
+}

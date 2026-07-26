@@ -1,0 +1,11 @@
+{
+  "name": "eushop-cyber-resilience-plugin",
+  "version": "1.0.0",
+  "description": "Cyber Resilience Act (CRA) Plugin — manages SBOM validation, ENISA 24h vulnerability alerts, and patch updates.",
+  "skills": ["eushop-cra-software-bill-of-materials"],
+  "agents": ["cyber-resilience-act-agent"],
+  "config": {
+    "sbom_format": "cyclonedx",
+    "enisa_alert_seconds": 86400
+  }
+}

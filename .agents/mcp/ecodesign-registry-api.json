@@ -1,0 +1,10 @@
+{
+  "name": "ecodesign-registry-api",
+  "description": "EU EPREL & DPP Ecodesign registry API for verifying energy labels and Digital Product Passports.",
+  "type": "mcp",
+  "config": {
+    "endpoint": "https://eprel.ec.europa.eu/api",
+    "allowed_operations": ["verify_dpp", "get_energy_label"],
+    "read_only": true
+  }
+}

@@ -1,0 +1,10 @@
+{
+  "name": "ai-act-compliance-registry",
+  "description": "API tool for checking EU AI Act high-risk system registrations and C2PA credential validation.",
+  "type": "mcp",
+  "config": {
+    "endpoint": "https://ec.europa.eu/ai-act-registry/api",
+    "allowed_operations": ["verify_c2pa", "check_risk_category"],
+    "read_only": true
+  }
+}

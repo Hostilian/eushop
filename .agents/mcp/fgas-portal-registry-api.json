@@ -1,0 +1,10 @@
+{
+  "name": "fgas-portal-registry-api",
+  "description": "EU HFC Registry API for checking producer and importer F-gas quota allocations.",
+  "type": "mcp",
+  "config": {
+    "endpoint": "https://ec.europa.eu/fgas-portal/api",
+    "allowed_operations": ["verify_hfc_quota"],
+    "read_only": true
+  }
+}

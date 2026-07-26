@@ -1,0 +1,9 @@
+{
+  "name": "monthly-battery-passport-audit",
+  "description": "Monthly audit verifying battery listings have valid Battery Passports attached.",
+  "cron": "0 4 12 * *",
+  "timezone": "Europe/Brussels",
+  "agent": "battery-regulation-passport-agent",
+  "prompt": "Audit battery categories for valid Digital Battery Passport compliance.",
+  "enabled": true
+}

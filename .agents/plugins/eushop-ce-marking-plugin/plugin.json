@@ -1,0 +1,11 @@
+{
+  "name": "eushop-ce-marking-plugin",
+  "version": "1.0.0",
+  "description": "CE Marking & Conformity Plugin — handles EU Declaration of Conformity verification and NANDO Notified Body lookups.",
+  "skills": ["eushop-ce-mark-compliance"],
+  "agents": ["ce-mark-declaration-agent"],
+  "config": {
+    "doc_required": true,
+    "nando_lookup_enabled": true
+  }
+}

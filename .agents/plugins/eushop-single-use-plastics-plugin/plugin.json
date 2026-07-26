@@ -1,0 +1,11 @@
+{
+  "name": "eushop-single-use-plastics-plugin",
+  "version": "1.0.0",
+  "description": "Single-Use Plastics (SUPD) Plugin — blocks banned plastic items, validates turtle markings, and checks tethered cap compliance.",
+  "skills": ["eushop-sup-directive-compliance"],
+  "agents": ["single-use-plastics-sup-agent"],
+  "config": {
+    "banned_items_block": true,
+    "turtle_logo_verification": true
+  }
+}

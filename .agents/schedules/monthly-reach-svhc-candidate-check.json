@@ -1,0 +1,9 @@
+{
+  "name": "monthly-reach-svhc-candidate-check",
+  "description": "Monthly check of ECHA candidate list updates to ensure newly added SVHC substances are flagged in product listings.",
+  "cron": "0 4 15 * *",
+  "timezone": "Europe/Brussels",
+  "agent": "reach-chemical-safety-agent",
+  "prompt": "Sync latest ECHA SVHC Candidate List additions and re-scan chemical product declarations.",
+  "enabled": true
+}
