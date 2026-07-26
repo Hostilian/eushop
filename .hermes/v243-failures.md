@@ -1,5 +1,16 @@
 # EUshop V243 Continuation Failures
 
+## 2026-07-26T19:28:12Z — Third concurrent worktree branch mutation
+
+- Operation: external agent-skills process advanced the safe branch to
+  `bf5c1c4a`, merged it to `main`, advanced `main` to `84d6d57d`, and switched
+  the shared primary worktree during refund implementation
+- Category: multi-agent coordination / branch isolation failure
+- Fallback: restored the safe branch; all refund changes remained intact and
+  unrelated skill changes remain preserved in history
+- Remaining limitation: branch isolation in the shared primary worktree is not
+  reliable, so branch verification remains mandatory before tests and commits
+
 ## 2026-07-26T19:23:14Z — Repeated concurrent primary-worktree mutation
 
 - Operation: external process committed the dirty checkout files, added a cart

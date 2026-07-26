@@ -2,10 +2,12 @@ package com.eushop.core.controller;
 
 import com.eushop.core.entity.Order;
 import com.eushop.core.service.MarketplaceCheckoutService;
+import com.eushop.core.service.MarketplaceRefundService;
 import com.eushop.core.service.OrderService;
 import com.stripe.exception.SignatureVerificationException;
 import com.stripe.model.Event;
 import com.stripe.model.PaymentIntent;
+import com.stripe.model.Refund;
 import com.stripe.net.Webhook;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -30,6 +32,9 @@ class WebhookControllerTest {
 
     @Mock
     private MarketplaceCheckoutService marketplaceCheckoutService;
+
+    @Mock
+    private MarketplaceRefundService marketplaceRefundService;
 
     @Mock
     private JdbcTemplate jdbcTemplate;
@@ -159,6 +164,46 @@ class WebhookControllerTest {
 
         assertEquals(HttpStatus.OK, response.getStatusCode());
         assertEquals("Received (Duplicate)", response.getBody());
+    }
+
+    @Test
+    void handleStripeWebhook_RefundCreated_ReconcilesReservedRefund()
+            throws Exception {
+        Event mockEvent = mock(Event.class);
+        when(mockEvent.getType()).thenReturn("refund.created");
+        when(mockEvent.getId()).thenReturn("evt_refund");
+
+        Refund mockRefund = mock(Refund.class);
+        when(mockRefund.getId()).thenReturn("re_1");
+        when(mockRefund.getPaymentIntent()).thenReturn("pi_marketplace");
+        when(mockRefund.getAmount()).thenReturn(1_500L);
+        when(mockRefund.getStatus()).thenReturn("succeeded");
+
+        com.stripe.model.EventDataObjectDeserializer mockDeserializer =
+                mock(com.stripe.model.EventDataObjectDeserializer.class);
+        when(mockEvent.getDataObjectDeserializer()).thenReturn(mockDeserializer);
+        when(mockDeserializer.getObject()).thenReturn(Optional.of(mockRefund));
+        when(marketplaceRefundService.applyProviderRefund(
+                "re_1",
+                "pi_marketplace",
+                1_500L,
+                "succeeded",
+                null)).thenReturn(true);
+
+        WebhookController spyController = spy(webhookController);
+        doReturn(mockEvent).when(spyController)
+                .constructEvent(anyString(), anyString(), anyString());
+
+        ResponseEntity<String> response =
+                spyController.handleStripeWebhook(validPayload, validSigHeader);
+
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+        verify(marketplaceRefundService).applyProviderRefund(
+                "re_1",
+                "pi_marketplace",
+                1_500L,
+                "succeeded",
+                null);
     }
 
     // Helper method to mock Webhook.constructEvent
