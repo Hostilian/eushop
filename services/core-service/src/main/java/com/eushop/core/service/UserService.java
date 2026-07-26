@@ -15,6 +15,8 @@ import com.eushop.core.repository.OrderRepository;
 import com.eushop.core.repository.ReviewRepository;
 import com.eushop.core.repository.ConversationRepository;
 import com.eushop.core.repository.MessageRepository;
+import com.eushop.core.repository.MarketplaceOrderRepository;
+import com.eushop.core.repository.SellerOrderRepository;
 
 /**
  * UserService handles user-related business logic including GDPR compliance
@@ -30,19 +32,25 @@ public class UserService {
     private final ReviewRepository reviewRepository;
     private final ConversationRepository conversationRepository;
     private final MessageRepository messageRepository;
+    private final MarketplaceOrderRepository marketplaceOrderRepository;
+    private final SellerOrderRepository sellerOrderRepository;
 
     public UserService(UserRepository userRepository,
                        ConsentLogRepository consentLogRepository,
                        OrderRepository orderRepository,
                        ReviewRepository reviewRepository,
                        ConversationRepository conversationRepository,
-                       MessageRepository messageRepository) {
+                       MessageRepository messageRepository,
+                       MarketplaceOrderRepository marketplaceOrderRepository,
+                       SellerOrderRepository sellerOrderRepository) {
         this.userRepository = userRepository;
         this.consentLogRepository = consentLogRepository;
         this.orderRepository = orderRepository;
         this.reviewRepository = reviewRepository;
         this.conversationRepository = conversationRepository;
         this.messageRepository = messageRepository;
+        this.marketplaceOrderRepository = marketplaceOrderRepository;
+        this.sellerOrderRepository = sellerOrderRepository;
     }
 
     public User createUser(String email, String name, String country, String auth0Sub) {
@@ -171,6 +179,7 @@ public class UserService {
 
         // Clear PII in orders: message and shipping_address
         orderRepository.updateOrderPiiWhereBuyerIdOrSellerId(userId);
+        marketplaceOrderRepository.redactShippingAddressByBuyerId(userId);
 
         // Clear PII in reviews: comment, highlights, improvements
         reviewRepository.updateReviewPiiWhereReviewerIdOrSellerId(userId);
@@ -208,6 +217,10 @@ public class UserService {
         data.put("selfCertifiedCompliant", user.getSelfCertifiedCompliant());
         data.put("createdAt", user.getCreatedAt() != null ? user.getCreatedAt().toString() : null);
         data.put("lastLoginAt", user.getLastLoginAt() != null ? user.getLastLoginAt().toString() : null);
+        data.put("marketplaceOrders",
+                marketplaceOrderRepository.findByBuyerIdOrderByCreatedAtDesc(userId));
+        data.put("sellerOrders",
+                sellerOrderRepository.findBySellerIdOrderByCreatedAtDesc(userId));
         data.put("exportedAt", java.time.Instant.now().toString());
         return data;
     }

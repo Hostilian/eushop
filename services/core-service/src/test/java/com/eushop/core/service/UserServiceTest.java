@@ -20,6 +20,8 @@ import com.eushop.core.repository.OrderRepository;
 import com.eushop.core.repository.ReviewRepository;
 import com.eushop.core.repository.UserRepository;
 import com.eushop.core.repository.ConsentLogRepository;
+import com.eushop.core.repository.MarketplaceOrderRepository;
+import com.eushop.core.repository.SellerOrderRepository;
 
 @ExtendWith(MockitoExtension.class)
 public class UserServiceTest {
@@ -41,6 +43,12 @@ public class UserServiceTest {
 
     @Mock
     private MessageRepository messageRepository;
+
+    @Mock
+    private MarketplaceOrderRepository marketplaceOrderRepository;
+
+    @Mock
+    private SellerOrderRepository sellerOrderRepository;
 
     @InjectMocks
     private UserService userService;
@@ -171,6 +179,7 @@ public class UserServiceTest {
         verify(userRepository, times(1)).findById("test-uuid");
         verify(userRepository, times(1)).save(mockUser);
         verify(orderRepository).updateOrderPiiWhereBuyerIdOrSellerId("test-uuid");
+        verify(marketplaceOrderRepository).redactShippingAddressByBuyerId("test-uuid");
         verify(reviewRepository).updateReviewPiiWhereReviewerIdOrSellerId("test-uuid");
         verify(conversationRepository).updateConversationPiiWhereBuyerIdOrSellerId("test-uuid");
         verify(messageRepository).updateMessagePiiWhereSenderId("test-uuid");
@@ -183,7 +192,13 @@ public class UserServiceTest {
         assertThrows(IllegalArgumentException.class, () -> userService.anonymiseUser("missing-user"));
 
         verify(userRepository, never()).save(any(User.class));
-        verifyNoInteractions(orderRepository, reviewRepository, conversationRepository, messageRepository);
+        verifyNoInteractions(
+                orderRepository,
+                reviewRepository,
+                conversationRepository,
+                messageRepository,
+                marketplaceOrderRepository,
+                sellerOrderRepository);
     }
 
     @Test
@@ -197,8 +212,14 @@ public class UserServiceTest {
         assertEquals("buyer@eushop.eu", data.get("email"));
         assertEquals("Jean Dupont", data.get("name"));
         assertEquals("BUYER", data.get("role"));
+        assertNotNull(data.get("marketplaceOrders"));
+        assertNotNull(data.get("sellerOrders"));
         
         verify(userRepository, times(1)).findById("test-uuid");
+        verify(marketplaceOrderRepository)
+                .findByBuyerIdOrderByCreatedAtDesc("test-uuid");
+        verify(sellerOrderRepository)
+                .findBySellerIdOrderByCreatedAtDesc("test-uuid");
     }
 
     @Test

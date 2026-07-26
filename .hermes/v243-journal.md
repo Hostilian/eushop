@@ -1,5 +1,49 @@
 # EUshop V243 Continuation Journal
 
+## 2026-07-26T19:17:28Z — Aggregate checkout runtime committed
+
+- Commit: `2d7f06e5`
+  (`feat(v243): add server-authoritative marketplace checkout`).
+- Commit contains the aggregate calculation/persistence/payment endpoint and
+  its focused tests; webhook/GDPR integration remains a separate reviewable
+  working-tree unit.
+- Branch and HEAD were rechecked immediately before the commit.
+
+## 2026-07-26T19:16:24Z — Concurrent worktree interference contained
+
+- A concurrent process created `694294ec` and `b8215078`, captured the
+  pre-existing workflow deletion, switched the primary worktree to `main`, and
+  fast-forwarded `main`.
+- Returned immediately to
+  `codex/version-44-v243-continuation-20260726`.
+- Preserved all commits/history and did not reset or rewrite `main`.
+- Logged the synchronization event under
+  `.agent-state/logs/unattended-runner.log` per the coordination skill.
+- The latest focused checkout/webhook/GDPR run passes 22/22 tests.
+- Next action: explicit path-limited staging and commit after branch recheck.
+
+## 2026-07-26T19:11:23Z — Checkout tests added; one expectation repaired
+
+- Core-service compilation passed after the aggregate implementation.
+- Added focused server-calculation, cross-buyer idempotency, fail-closed trader
+  gate, orchestrator retry, and deterministic mock PaymentIntent tests.
+- The first run executed 8 tests; 7 passed and 1 failed because the test
+  expected one line batch for a two-seller cart. The implementation correctly
+  persists one batch per seller, so the verification now expects two.
+- Next action: rerun the same focused suite.
+
+## 2026-07-26T15:18:00Z — Aggregate checkout implementation in progress
+
+- Added the required V244 schema request and expand-only migration without
+  editing V243.
+- Mapped marketplace orders, seller orders, and order lines to JPA entities.
+- Added server-side product/stock/trader validation, shared VAT lookup,
+  per-seller grouping, cent-precision totals, fees, and payout snapshots.
+- Added durable checkout idempotency and a Stripe transfer-group PaymentIntent
+  orchestrator that persists the aggregate before the external call.
+- Added the `Idempotency-Key` CORS allowance and checkout endpoint.
+- Next action: compile, repair, then add focused tests before webhook wiring.
+
 ## 2026-07-26T15:10:30Z — Shared VAT source committed
 
 - Commit: `50d881ea` (`feat(v243): share VAT rates with backend checkout`).

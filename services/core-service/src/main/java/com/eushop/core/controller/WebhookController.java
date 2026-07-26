@@ -1,6 +1,7 @@
 package com.eushop.core.controller;
 
 import com.eushop.core.entity.Order;
+import com.eushop.core.service.MarketplaceCheckoutService;
 import com.eushop.core.service.OrderService;
 import com.stripe.exception.SignatureVerificationException;
 import com.stripe.model.Event;
@@ -11,6 +12,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Optional;
@@ -31,6 +33,7 @@ public class WebhookController {
     private static final Logger log = LoggerFactory.getLogger(WebhookController.class);
 
     private final OrderService orderService;
+    private final MarketplaceCheckoutService marketplaceCheckoutService;
     private final org.springframework.jdbc.core.JdbcTemplate jdbcTemplate;
 
     @Value("${stripe.webhook.secret:whsec_placeholder}")
@@ -39,8 +42,12 @@ public class WebhookController {
     @Value("${spring.profiles.active:dev}")
     private String activeProfile;
 
-    public WebhookController(OrderService orderService, org.springframework.jdbc.core.JdbcTemplate jdbcTemplate) {
+    public WebhookController(
+            OrderService orderService,
+            MarketplaceCheckoutService marketplaceCheckoutService,
+            org.springframework.jdbc.core.JdbcTemplate jdbcTemplate) {
         this.orderService = orderService;
+        this.marketplaceCheckoutService = marketplaceCheckoutService;
         this.jdbcTemplate = jdbcTemplate;
     }
 
@@ -57,6 +64,7 @@ public class WebhookController {
      * The raw request body must be used as-is for signature verification.
      */
     @PostMapping("/stripe")
+    @Transactional
     public ResponseEntity<String> handleStripeWebhook(
             @RequestBody String payload,
             @RequestHeader("Stripe-Signature") String sigHeader) {
@@ -112,47 +120,52 @@ public class WebhookController {
      * The PaymentIntent ID is stored on the order at creation time (see OrderController).
      */
     private void handlePaymentIntentSucceeded(Event event) {
-        try {
-            var dataObjectDeserializer = event.getDataObjectDeserializer();
-            if (dataObjectDeserializer.getObject().isEmpty()) {
-                log.warn("Could not deserialize PaymentIntent from event {}", event.getId());
-                return;
-            }
-            PaymentIntent paymentIntent = (PaymentIntent) dataObjectDeserializer.getObject().get();
-            String paymentIntentId = paymentIntent.getId();
+        PaymentIntent paymentIntent = requirePaymentIntent(event);
+        String paymentIntentId = paymentIntent.getId();
+        log.info("Payment succeeded for PaymentIntent: {}", paymentIntentId);
 
-            log.info("Payment succeeded for PaymentIntent: {}", paymentIntentId);
-
-            // Find the order associated with this PaymentIntent and confirm it
-            Optional<Order> orderOpt = orderService.getOrderByPaymentIntentId(paymentIntentId);
-            if (orderOpt.isPresent()) {
-                orderService.updateOrderStatus(orderOpt.get().getId(), Order.OrderStatus.CONFIRMED);
-                log.info("Order {} confirmed via webhook for PaymentIntent {}", orderOpt.get().getId(), paymentIntentId);
-            } else {
-                log.warn("No order found for PaymentIntent {} — cannot update status", paymentIntentId);
-            }
-        } catch (Exception e) {
-            log.error("Error processing payment_intent.succeeded: {}", e.getMessage(), e);
+        boolean marketplaceUpdated =
+                marketplaceCheckoutService.markPaymentSucceeded(paymentIntentId);
+        Optional<Order> orderOpt = orderService.getOrderByPaymentIntentId(paymentIntentId);
+        if (orderOpt.isPresent()) {
+            orderService.updateOrderStatus(orderOpt.get().getId(), Order.OrderStatus.CONFIRMED);
+            log.info("Legacy order {} confirmed via webhook for PaymentIntent {}",
+                    orderOpt.get().getId(), paymentIntentId);
+        }
+        if (!marketplaceUpdated && orderOpt.isEmpty()) {
+            throw new IllegalStateException(
+                    "No order found for succeeded PaymentIntent " + paymentIntentId);
         }
     }
 
     private void handlePaymentIntentFailed(Event event) {
-        try {
-            var dataObjectDeserializer = event.getDataObjectDeserializer();
-            if (dataObjectDeserializer.getObject().isEmpty()) return;
-            PaymentIntent paymentIntent = (PaymentIntent) dataObjectDeserializer.getObject().get();
-            String paymentIntentId = paymentIntent.getId();
+        PaymentIntent paymentIntent = requirePaymentIntent(event);
+        String paymentIntentId = paymentIntent.getId();
+        log.warn("Payment FAILED for PaymentIntent: {}", paymentIntentId);
 
-            log.warn("Payment FAILED for PaymentIntent: {}", paymentIntentId);
-
-            Optional<Order> orderOpt = orderService.getOrderByPaymentIntentId(paymentIntentId);
-            orderOpt.ifPresent(order -> {
-                orderService.updateOrderStatus(order.getId(), Order.OrderStatus.CANCELLED);
-                log.info("Order {} cancelled due to payment failure for PaymentIntent {}", order.getId(), paymentIntentId);
-            });
-        } catch (Exception e) {
-            log.error("Error processing payment_intent.payment_failed: {}", e.getMessage(), e);
+        boolean marketplaceUpdated =
+                marketplaceCheckoutService.markPaymentFailed(paymentIntentId);
+        Optional<Order> orderOpt = orderService.getOrderByPaymentIntentId(paymentIntentId);
+        orderOpt.ifPresent(order -> {
+            orderService.updateOrderStatus(order.getId(), Order.OrderStatus.CANCELLED);
+            log.info("Legacy order {} cancelled for PaymentIntent {}",
+                    order.getId(), paymentIntentId);
+        });
+        if (!marketplaceUpdated && orderOpt.isEmpty()) {
+            throw new IllegalStateException(
+                    "No order found for failed PaymentIntent " + paymentIntentId);
         }
+    }
+
+    private PaymentIntent requirePaymentIntent(Event event) {
+        var object = event.getDataObjectDeserializer().getObject()
+                .orElseThrow(() -> new IllegalStateException(
+                        "Could not deserialize PaymentIntent from event " + event.getId()));
+        if (!(object instanceof PaymentIntent paymentIntent)) {
+            throw new IllegalStateException(
+                    "Stripe event did not contain a PaymentIntent: " + event.getId());
+        }
+        return paymentIntent;
     }
 
     Event constructEvent(String payload, String sigHeader, String secret) throws SignatureVerificationException {

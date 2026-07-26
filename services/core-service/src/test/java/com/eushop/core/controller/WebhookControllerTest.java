@@ -1,6 +1,7 @@
 package com.eushop.core.controller;
 
 import com.eushop.core.entity.Order;
+import com.eushop.core.service.MarketplaceCheckoutService;
 import com.eushop.core.service.OrderService;
 import com.stripe.exception.SignatureVerificationException;
 import com.stripe.model.Event;
@@ -28,6 +29,9 @@ class WebhookControllerTest {
     private OrderService orderService;
 
     @Mock
+    private MarketplaceCheckoutService marketplaceCheckoutService;
+
+    @Mock
     private JdbcTemplate jdbcTemplate;
 
     @InjectMocks
@@ -48,7 +52,7 @@ class WebhookControllerTest {
     void handleStripeWebhook_ValidSignature_ReturnsOk() throws Exception {
         // Mock Webhook.constructEvent to return a valid event
         Event mockEvent = mock(Event.class);
-        when(mockEvent.getType()).thenReturn("payment_intent.succeeded");
+        when(mockEvent.getType()).thenReturn("account.updated");
         when(mockEvent.getId()).thenReturn("evt_1");
 
         // Mock static Webhook.constructEvent
@@ -95,6 +99,7 @@ class WebhookControllerTest {
         Order mockOrder = new Order();
         mockOrder.setId("order_1");
         when(orderService.getOrderByPaymentIntentId("pi_1")).thenReturn(Optional.of(mockOrder));
+        when(marketplaceCheckoutService.markPaymentSucceeded("pi_1")).thenReturn(false);
 
         // Mock Webhook.constructEvent
         WebhookController spyController = spy(webhookController);
@@ -104,6 +109,35 @@ class WebhookControllerTest {
 
         assertEquals(HttpStatus.OK, response.getStatusCode());
         verify(orderService, times(1)).updateOrderStatus("order_1", Order.OrderStatus.CONFIRMED);
+    }
+
+    @Test
+    void handleStripeWebhook_MarketplacePaymentSucceeded_UpdatesAggregate() throws Exception {
+        Event mockEvent = mock(Event.class);
+        when(mockEvent.getType()).thenReturn("payment_intent.succeeded");
+        when(mockEvent.getId()).thenReturn("evt_marketplace");
+
+        PaymentIntent mockPaymentIntent = mock(PaymentIntent.class);
+        when(mockPaymentIntent.getId()).thenReturn("pi_marketplace");
+        com.stripe.model.EventDataObjectDeserializer mockDeserializer =
+                mock(com.stripe.model.EventDataObjectDeserializer.class);
+        when(mockEvent.getDataObjectDeserializer()).thenReturn(mockDeserializer);
+        when(mockDeserializer.getObject()).thenReturn(Optional.of(mockPaymentIntent));
+        when(marketplaceCheckoutService.markPaymentSucceeded("pi_marketplace"))
+                .thenReturn(true);
+        when(orderService.getOrderByPaymentIntentId("pi_marketplace"))
+                .thenReturn(Optional.empty());
+
+        WebhookController spyController = spy(webhookController);
+        doReturn(mockEvent).when(spyController)
+                .constructEvent(anyString(), anyString(), anyString());
+
+        ResponseEntity<String> response =
+                spyController.handleStripeWebhook(validPayload, validSigHeader);
+
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+        verify(marketplaceCheckoutService).markPaymentSucceeded("pi_marketplace");
+        verify(orderService, never()).updateOrderStatus(anyString(), any());
     }
 
     @Test

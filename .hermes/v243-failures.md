@@ -1,5 +1,34 @@
 # EUshop V243 Continuation Failures
 
+## 2026-07-26T19:16:24Z — Concurrent primary-worktree state mutation
+
+- Operation: external process committed and switched the shared primary
+  worktree during C-02 implementation
+- Category: multi-agent coordination / branch isolation failure
+- Evidence: reflog shows `694294ec`, `b8215078`, checkout to `main`, then
+  fast-forward merge of the safe child branch
+- Fallback: returned to the safe child branch, retained all history, logged the
+  event, and adopted branch verification plus explicit path-limited staging
+- Remaining limitation: `main` was changed by the concurrent process; this
+  agent will not rewrite or force-correct it
+
+## 2026-07-26T19:11:23Z — Focused checkout test expectation
+
+- Operation: 8-test marketplace checkout service/orchestrator/payment suite
+- Category: introduced test-expectation error
+- Evidence: 7 passed; one Mockito verification expected one line-batch save
+  for a cart containing two seller groups
+- Fallback: corrected the expectation to the intended two per-seller batches
+- Remaining limitation: focused suite rerun is pending
+
+## 2026-07-26T19:11:23Z — PowerShell comma parsing in Maven selector
+
+- Operation: unquoted comma-separated `-Dtest` argument
+- Category: shell syntax
+- Retry decision: do not repeat unquoted
+- Fallback: single-quote the full `-Dtest=...` argument
+- Remaining limitation: none
+
 ## 2026-07-26T15:08:30Z — pnpm/Jest forwarding syntax
 
 - Operation: `pnpm --filter @eushop/compliance test -- --runInBand ...`

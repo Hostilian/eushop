@@ -11,8 +11,20 @@
   upcoming server-authoritative checkout rejects unsupported destinations
   instead of accepting a client-supplied tax total.
 - **Verification**: Added focused TypeScript and Java rate-loading tests.
+- **Server-authoritative aggregate checkout**: Added V244 expand-only schema,
+  JPA models, and a checkout endpoint that loads food prices and stock from the
+  database, groups lines by seller, computes VAT/fees/shipping in integer
+  cents, and prepares Stripe only after the marketplace order is persisted.
+- **Payment idempotency and webhooks**: Persisted checkout idempotency keys,
+  reused PaymentIntents on retry, used Stripe transfer groups for future
+  per-seller transfers, and made signed webhook success/failure update all
+  seller sub-orders transactionally.
+- **Privacy cascade**: Included marketplace aggregate records in GDPR Art. 20
+  export and cleared their delivery address during Art. 17 erasure.
 - **COMPLIANCE-REVIEW**: These rates remain product-category-sensitive and
-  require qualified tax-advisor sign-off before production invoicing.
+  require qualified tax-advisor sign-off before production invoicing. Shipping
+  VAT, platform-fee, payout, ledger-retention, and refund allocation also
+  remain human review gates.
 
 ### CI/CD Pipeline (TASK-A1)
 - **Fixed `.github/workflows/ci-cd.yml`**: Added `actions/setup-node@v4` (Node 20) step — was missing entirely, causing build failures on ubuntu-latest.
