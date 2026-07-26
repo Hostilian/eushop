@@ -197,3 +197,35 @@ See §2.7. Repeated here as a hard pointer because it matters more than a mid-do
 
 @.claude/AUTONOMY.md
 
+---
+
+## 11. Integrated Agentic Superpower Repositories
+
+This codebase integrates 6 essential AI development repositories into both Claude Code CLI (`fcc-claude`) and Antigravity agents:
+
+1. **`obra/superpowers`** (Superpowers Framework):
+   - Enforces Socratic brainstorming, 2-5 min atomic plans, TDD (Red-Green-Refactor), and multi-stage code reviews.
+   - Marketplace: `/plugin marketplace add obra/superpowers-marketplace`
+   - Skill: `.agents/skills/claude-superpowers-framework`
+
+2. **`affaan-m/everything-claude-code`** (ECC Harness):
+   - Cross-harness optimization, continuous instinct learning, research-first inspection, token context optimization.
+   - Skill: `.agents/skills/everything-claude-code-harness`
+
+3. **`ruvnet/ruflo`** (Ruflo Swarm Orchestrator):
+   - Queen-led hierarchical multi-agent swarm, adaptive memory, lock-free worktree discipline.
+   - Skill: `.agents/skills/ruflo-agent-swarm-orchestrator`
+
+4. **`nexu-io/open-design`** (Open Design Engine):
+   - Local-first design engine for modern aesthetics, curated palettes, typography, responsive layouts, micro-animations.
+   - Skill: `.agents/skills/open-design-engine`
+
+5. **`pablo-mano/Obsidian-CLI-skill`** (Obsidian Knowledge Memory):
+   - Knowledge graph memory integration, persistent markdown memory items, cross-session architecture tracking.
+   - Skill: `.agents/skills/obsidian-knowledge-memory`
+
+6. **`multica-ai` / Andrej Karpathy Workflow**:
+   - First-principles problem solving, agent team issue assignment, clean code discipline, empirical verification before success declaration.
+   - Skill: `.agents/skills/karpathy-multica-agent-workflow`
+
+
