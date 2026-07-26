@@ -1,0 +1,13 @@
+{
+  "name": "eushop-feature-flag-store",
+  "description": "Feature flag database MCP tool for reading and updating feature flag state across environments.",
+  "type": "mcp",
+  "config": {
+    "host": "${POSTGRES_HOST}",
+    "database": "eushop",
+    "table": "feature_flags",
+    "allowed_operations": ["get_flag", "list_flags", "set_percentage", "toggle"],
+    "blocked_operations": ["delete_flag"],
+    "comment": "Flags must be deprecated, not deleted — to preserve audit trail"
+  }
+}
