@@ -12,8 +12,10 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import jakarta.annotation.PostConstruct;
+import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.UUID;
 
 @Service
 public class PaymentService {
@@ -117,5 +119,73 @@ public class PaymentService {
         response.put("clientSecret", paymentIntent.getClientSecret());
         response.put("id", paymentIntent.getId());
         return response;
+    }
+
+    /**
+     * Creates the platform charge for a server-calculated multi-seller order.
+     * Seller transfers are intentionally deferred until the signed webhook has
+     * confirmed funds; the aggregate ID becomes Stripe's transfer group.
+     */
+    public MarketplacePaymentIntent createMarketplacePaymentIntent(
+            long amountCents,
+            String currency,
+            String marketplaceOrderId,
+            String idempotencyKey) throws StripeException {
+        if (amountCents <= 0) {
+            throw new IllegalArgumentException("Payment amount must be positive");
+        }
+        if (marketplaceOrderId == null || marketplaceOrderId.isBlank()) {
+            throw new IllegalArgumentException("Marketplace order ID is required");
+        }
+        if (idempotencyKey == null || idempotencyKey.isBlank()) {
+            throw new IllegalArgumentException("Idempotency key is required");
+        }
+
+        String normalizedCurrency = currency == null ? "eur" : currency.toLowerCase();
+        if (!"eur".equals(normalizedCurrency)) {
+            throw new IllegalArgumentException("Only EUR marketplace checkout is supported");
+        }
+
+        if (isMock()) {
+            String deterministicId = "pi_mock_" + UUID.nameUUIDFromBytes(
+                    (marketplaceOrderId + ":" + idempotencyKey)
+                            .getBytes(StandardCharsets.UTF_8))
+                    .toString()
+                    .replace("-", "");
+            return new MarketplacePaymentIntent(
+                    deterministicId,
+                    deterministicId + "_secret_mock");
+        }
+
+        PaymentIntentCreateParams params = PaymentIntentCreateParams.builder()
+                .setAmount(amountCents)
+                .setCurrency(normalizedCurrency)
+                .addPaymentMethodType("card")
+                .setTransferGroup(marketplaceOrderId)
+                .putMetadata("marketplace_order_id", marketplaceOrderId)
+                .build();
+        com.stripe.net.RequestOptions options = com.stripe.net.RequestOptions.builder()
+                .setIdempotencyKey("marketplace:" + idempotencyKey)
+                .build();
+        PaymentIntent paymentIntent = PaymentIntent.create(params, options);
+        return new MarketplacePaymentIntent(
+                paymentIntent.getId(),
+                paymentIntent.getClientSecret());
+    }
+
+    public MarketplacePaymentIntent retrieveMarketplacePaymentIntent(
+            String paymentIntentId) throws StripeException {
+        if (paymentIntentId == null || paymentIntentId.isBlank()) {
+            throw new IllegalArgumentException("PaymentIntent ID is required");
+        }
+        if (isMock()) {
+            return new MarketplacePaymentIntent(
+                    paymentIntentId,
+                    paymentIntentId + "_secret_mock");
+        }
+        PaymentIntent paymentIntent = PaymentIntent.retrieve(paymentIntentId);
+        return new MarketplacePaymentIntent(
+                paymentIntent.getId(),
+                paymentIntent.getClientSecret());
     }
 }

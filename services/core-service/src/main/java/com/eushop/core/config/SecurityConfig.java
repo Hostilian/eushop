@@ -63,7 +63,7 @@ public class SecurityConfig {
         configuration.setAllowedOrigins(origins);
         
         configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"));
-        configuration.setAllowedHeaders(Arrays.asList("Authorization", "Content-Type", "X-User-Id", "X-User-Role", "X-User-Email", "X-Correlation-ID", "Cookie"));
+        configuration.setAllowedHeaders(Arrays.asList("Authorization", "Content-Type", "X-User-Id", "X-User-Role", "X-User-Email", "X-Correlation-ID", "Idempotency-Key", "Cookie"));
         configuration.setExposedHeaders(Arrays.asList("Authorization"));
         configuration.setAllowCredentials(true);
         configuration.setMaxAge(3600L); // 1 hour caching of preflight response
@@ -81,7 +81,7 @@ public class SecurityConfig {
                 registry.addMapping("/**")
                         .allowedOrigins(allowedOrigins.split(","))
                         .allowedMethods("GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS")
-                        .allowedHeaders("Authorization", "Content-Type", "X-User-Id", "X-User-Role", "X-User-Email", "X-Correlation-ID", "Cookie")
+                        .allowedHeaders("Authorization", "Content-Type", "X-User-Id", "X-User-Role", "X-User-Email", "X-Correlation-ID", "Idempotency-Key", "Cookie")
                         .exposedHeaders("Authorization")
                         .allowCredentials(true)
                         .maxAge(3600);
