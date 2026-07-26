@@ -1,8 +1,10 @@
 # EUshop — Project Status Report
 
-**Last Updated:** July 2026
+**Last Updated:** 2026-07-26
 
 This is the canonical status tracking document for the `eushop` codebase. It outlines what features are implemented, in progress, or planned, with direct links to the code, tests, and configuration.
+
+**Phase Progress:** Phases 1–4 complete. Working towards launch hardening.
 
 ---
 
@@ -12,7 +14,8 @@ This is the canonical status tracking document for the `eushop` codebase. It out
 | :--- | :--- | :--- | :--- | :--- | :--- |
 | **Database** | Relational Schema & Tables | Phase 0 | **Implemented** | 8-table PostgreSQL schema for users, foods, orders, reviews, chat, notifications. | [001_initial_schema.sql](file:///d:/CODING/eushop/db/migrations/001_initial_schema.sql), [002_compliance_fields.sql](file:///d:/CODING/eushop/db/migrations/002_compliance_fields.sql) |
 | **Backend** | Spring Boot Core Service | Phase 0 | **Implemented** | REST controllers, repositories, JPA entities, and basic services. | [core-service/src](file:///d:/CODING/eushop/services/core-service/src) |
-| **CI/CD** | Automated Workflow | Phase 0 | **Implemented** | GitHub Actions running node linters and tests. | [ci-cd.yml](file:///d:/CODING/eushop/.github/workflows/ci-cd.yml) |
+| **CI/CD** | GitHub Actions Workflows | Phase 0 | **Implemented** | Three workflows: `nextjs.yml` (GitHub Pages deploy), `ci-cd.yml` (lint + Java test), `chat-tests.yml` (path-filtered). K8s pipeline disabled (no cluster). | [nextjs.yml](file:///d:/CODING/eushop/.github/workflows/nextjs.yml), [ci-cd.yml](file:///d:/CODING/eushop/.github/workflows/ci-cd.yml) |
+
 | **Testing** | Automated Test Footprint | Phase 0 | **Implemented** | Contains MockMvc integration tests and JUnit 5 service unit tests. | [SecurityAndControllerTest.java](file:///d:/CODING/eushop/services/core-service/src/test/java/com/eushop/core/controller/SecurityAndControllerTest.java), [UserServiceTest.java](file:///d:/CODING/eushop/services/core-service/src/test/java/com/eushop/core/service/UserServiceTest.java) |
 | **Auth** | User Authentication | Phase 1 | **Implemented** | Centralized Spring Security with Auth0 JWT signature verification and developer mock filters. | [JwtAuthenticationFilter.java](file:///d:/CODING/eushop/services/core-service/src/main/java/com/eushop/core/config/JwtAuthenticationFilter.java), [SecurityConfig.java](file:///d:/CODING/eushop/services/core-service/src/main/java/com/eushop/core/config/SecurityConfig.java) |
 | **Listings** | Food Listings CRUD | Phase 2 | **Implemented** | Create, edit, list, and delete food items. | [FoodController.java](file:///d:/CODING/eushop/services/core-service/src/main/java/com/eushop/core/controller/FoodController.java) |

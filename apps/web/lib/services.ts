@@ -565,4 +565,35 @@ export const orderAPI = {
       throw new Error('Order not found in simulation');
     }
   },
+
+  dispute: async (orderId: string, reason: string): Promise<any> => {
+    try {
+      const profile = authAPI.getCachedProfile();
+      if (!profile) throw new Error('Not authenticated');
+      const response = await apiClient.post(`/orders/${orderId}/dispute`, { reason }, {
+        headers: { 'X-User-Id': profile.id },
+      });
+      return response.data;
+    } catch (e) {
+      if (!shouldUseMock()) throw e;
+      console.warn(`orderAPI.dispute(${orderId}) failed. Simulating dispute submission.`);
+      return { id: orderId, status: 'DISPUTED', reason, simulatedAt: new Date().toISOString() };
+    }
+  },
+
+  refund: async (orderId: string): Promise<any> => {
+    try {
+      const profile = authAPI.getCachedProfile();
+      if (!profile) throw new Error('Not authenticated');
+      const response = await apiClient.post(`/orders/${orderId}/refund`, {}, {
+        headers: { 'X-User-Id': profile.id },
+      });
+      return response.data;
+    } catch (e) {
+      if (!shouldUseMock()) throw e;
+      console.warn(`orderAPI.refund(${orderId}) failed. Simulating refund trigger.`);
+      return { id: orderId, status: 'REFUND_REQUESTED', simulatedAt: new Date().toISOString() };
+    }
+  },
 };
+

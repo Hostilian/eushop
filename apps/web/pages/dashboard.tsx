@@ -75,6 +75,12 @@ export default function DashboardPage() {
                 Seller Dashboard
               </Link>
             )}
+            <Link
+              href="/disputes"
+              className="block w-full border border-gray-300 dark:border-gray-700 text-gray-700 dark:text-gray-300 py-2.5 rounded-xl text-center hover:bg-gray-50 dark:hover:bg-gray-800 font-semibold transition text-sm"
+            >
+              Disputes & Refunds
+            </Link>
             <button
               onClick={handleLogout}
               className="block w-full border border-danger text-danger py-2.5 rounded-xl text-center hover:bg-red-50 dark:hover:bg-red-950/20 font-semibold transition text-sm"
