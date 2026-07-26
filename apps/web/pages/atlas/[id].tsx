@@ -5,8 +5,9 @@ import { useRouter } from 'next/router';
 import { SellerTraceabilityCard } from '../../components/dsa/SellerTraceabilityCard';
 
 export default function AtlasDetailPage() {
-  const router = Router();
+  const router = useRouter();
   const { id } = router.query;
+
 
   return (
     <>
@@ -70,6 +71,4 @@ export default function AtlasDetailPage() {
   );
 }
 
-function Router() {
-  return useRouter();
-}
+
