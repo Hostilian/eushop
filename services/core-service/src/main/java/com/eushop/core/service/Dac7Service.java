@@ -107,7 +107,10 @@ public class Dac7Service {
         List<Dac7AnnualSnapshot> reportable = new ArrayList<>();
 
         for (Dac7AnnualSnapshot snapshot : allSnapshots) {
-            // DAC7 reporting thresholds: total consideration >= €2,000 OR transaction count >= 30
+            // COMPLIANCE-REVIEW: DAC7 reporting thresholds per EU Directive 2021/514 Art. 8(3)(b):
+            // 30 transactions OR €2,000 total consideration for goods sellers.
+            // Source of truth: packages/compliance/src/vat.ts DAC7_THRESHOLDS.
+            // These constants must stay in sync with the frontend compliance package.
             if (snapshot.getTotalConsideration() >= 2000.00 || snapshot.getTransactionCount() >= 30) {
                 reportable.add(snapshot);
             }
