@@ -19,6 +19,10 @@
   reused PaymentIntents on retry, used Stripe transfer groups for future
   per-seller transfers, and made signed webhook success/failure update all
   seller sub-orders transactionally.
+- **Browser checkout integrity**: Routed production checkout through the
+  server-authoritative marketplace aggregate, reused an idempotency key for
+  equivalent retries, reconciled server totals before payment confirmation,
+  and reserved legacy per-line order creation for explicit offline simulation.
 - **Privacy cascade**: Included marketplace aggregate records in GDPR Art. 20
   export and cleared their delivery address during Art. 17 erasure.
 - **COMPLIANCE-REVIEW**: These rates remain product-category-sensitive and

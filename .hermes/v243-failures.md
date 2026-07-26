@@ -1,5 +1,36 @@
 # EUshop V243 Continuation Failures
 
+## 2026-07-26T19:23:14Z — Repeated concurrent primary-worktree mutation
+
+- Operation: external process committed the dirty checkout files, added a cart
+  commit, switched the shared worktree to `main`, and committed the last test
+  repair on `main`
+- Category: multi-agent coordination / branch isolation failure
+- Evidence: safe branch advanced through `b618f070` and `7cd47e8d`; shared
+  worktree then moved to `main` at `64acedde`
+- Fallback: restored the safe branch and cherry-picked only the one-file test
+  repair as `7413b449`; no reset, force-push, or history rewrite
+- Remaining limitation: the external process moved `main`; this agent will not
+  rewrite it and will continue verifying the branch before each commit
+
+## 2026-07-26T19:23:14Z — Web Jest mock initialization
+
+- Operation: focused `checkout-vat.test.tsx` run
+- Category: introduced test fixture / Jest hoisting error
+- Evidence: the mocked services factory read `const` mocks before
+  initialization
+- Fallback: use inline factory mocks and obtain typed references from the
+  mocked module after initialization
+- Remaining limitation: none; the focused suite passes 3/3
+
+## 2026-07-26T19:23:14Z — pnpm web test forwarding syntax
+
+- Operation: `pnpm --filter @eushop/web test -- ... --runInBand`
+- Category: command invocation syntax
+- Retry decision: do not repeat that forwarding form
+- Fallback: `pnpm --dir apps/web exec jest ... --runInBand`
+- Remaining limitation: none; test and type-check commands pass
+
 ## 2026-07-26T19:16:24Z — Concurrent primary-worktree state mutation
 
 - Operation: external process committed and switched the shared primary
