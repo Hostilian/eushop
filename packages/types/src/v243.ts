@@ -5,7 +5,7 @@
  * Multi-Seller Commerce, and Traceability entities.
  */
 import { z } from 'zod';
-import { AllergenSchema } from './index';
+import { AllergenSchema } from './schemas/compliance';
 
 // ─── Geographical Indication (PDO / PGI / TSG) ──────────────────────────────
 

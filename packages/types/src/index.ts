@@ -9,12 +9,9 @@
  * strictly here so drift between clients is a compile error, not a runtime bug.
  */
 import { z } from 'zod';
-import { EU_ALLERGENS_14 } from '@eushop/compliance';
 
-// ─── Allergen ─────────────────────────────────────────────────────────────────
-
-export const AllergenSchema = z.enum(EU_ALLERGENS_14);
-export type Allergen = z.infer<typeof AllergenSchema>;
+// Allergen is now in a separate file to break circular dependencies
+export * from './schemas/compliance';
 
 // ─── Seller ───────────────────────────────────────────────────────────────────
 
